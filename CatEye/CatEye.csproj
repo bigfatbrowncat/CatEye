@@ -75,6 +75,16 @@
     <Compile Include="DoublePixmapViewWidget.cs" />
     <Compile Include="DoublePixmap.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationTitleWidget.cs" />
+    <Compile Include="BasicOpsStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.BasicOpsStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.StageOperationParametersWidget.cs" />
+    <Compile Include="DownscalingStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.DownscalingStageOperationParametersWidget.cs" />
+    <Compile Include="UltraSharpStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UltraSharpStageOperationParametersWidget.cs" />
+    <Compile Include="CompressionStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.CompressionStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

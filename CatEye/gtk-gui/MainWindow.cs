@@ -84,71 +84,27 @@ public partial class MainWindow {
     
     private Gtk.VBox downscaling_vbox;
     
-    private CatEye.StageOperationTitleWidget downscaling_stageoperationtitlewidget;
+    private CatEye.StageOperationTitleWidget downscaling_stageoperation_titlewidget;
     
-    private Gtk.ComboBox scale_combobox;
+    private CatEye.DownscalingStageOperationParametersWidget downscaling_stageoperation_parameterswidget;
     
     private Gtk.VBox basic_ops_vbox;
     
-    private CatEye.StageOperationTitleWidget basic_ops_stageoperationtitlewidget;
+    private CatEye.StageOperationTitleWidget basic_ops_stageoperation_titlewidget;
     
-    private Gtk.Table table3;
-    
-    private Gtk.Entry blue_entry;
-    
-    private Gtk.Entry green_entry;
-    
-    private Gtk.Entry hdr_lightscale_entry;
-    
-    private Gtk.Label label10;
-    
-    private Gtk.Label label11;
-    
-    private Gtk.Label label2;
-    
-    private Gtk.Label label8;
-    
-    private Gtk.Label label9;
-    
-    private Gtk.Entry red_entry;
-    
-    private Gtk.Entry saturation_entry;
+    private CatEye.BasicOpsStageOperationParametersWidget basic_ops_stageoperation_parameterswidget;
     
     private Gtk.VBox compression_vbox;
     
     private CatEye.StageOperationTitleWidget compression_stageoperationtitlewidget;
     
-    private Gtk.Table table2;
-    
-    private Gtk.Entry hdr_bloha_entry;
-    
-    private Gtk.Entry hdr_compressing_power_entry;
-    
-    private Gtk.Label label3;
-    
-    private Gtk.Label label6;
+    private CatEye.CompressionStageOperationParametersWidget compression_stageoperation_parameterswidget;
     
     private Gtk.VBox ultra_sharp_vbox;
     
     private CatEye.StageOperationTitleWidget ultra_sharp_stageoperationtitlewidget;
     
-    private Gtk.Table table1;
-    
-    private Gtk.Entry hdr_sharp_limit_entry;
-    
-    private Gtk.Entry hdr_sharp_power_entry;
-    
-    private Gtk.Entry hdr_sharp_radius_entry;
-    
-    private Gtk.Entry hdr_sharp_weight_entry;
-    
-    private Gtk.Label label12;
-    
-    private Gtk.Label label13;
-    
-    private Gtk.Label label14;
-    
-    private Gtk.Label label7;
+    private CatEye.UltraSharpStageOperationParametersWidget ultra_sharp_stageoperation_parameterswidget;
     
     private Gtk.HBox hbox10;
     
@@ -401,7 +357,6 @@ public partial class MainWindow {
         this.GtkScrolledWindow = new Gtk.ScrolledWindow();
         this.GtkScrolledWindow.Name = "GtkScrolledWindow";
         this.GtkScrolledWindow.HscrollbarPolicy = ((Gtk.PolicyType)(2));
-        this.GtkScrolledWindow.WindowPlacement = ((Gtk.CornerType)(2));
         // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
         Gtk.Viewport w32 = new Gtk.Viewport();
         w32.ShadowType = ((Gtk.ShadowType)(0));
@@ -415,21 +370,23 @@ public partial class MainWindow {
         this.downscaling_vbox.Name = "downscaling_vbox";
         this.downscaling_vbox.Spacing = 6;
         // Container child downscaling_vbox.Gtk.Box+BoxChild
-        this.downscaling_stageoperationtitlewidget = new CatEye.StageOperationTitleWidget();
-        this.downscaling_stageoperationtitlewidget.Events = ((Gdk.EventMask)(256));
-        this.downscaling_stageoperationtitlewidget.Name = "downscaling_stageoperationtitlewidget";
-        this.downscaling_stageoperationtitlewidget.Title = "Downscale";
-        this.downscaling_stageoperationtitlewidget.Active = true;
-        this.downscaling_vbox.Add(this.downscaling_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.downscaling_stageoperationtitlewidget]));
+        this.downscaling_stageoperation_titlewidget = new CatEye.StageOperationTitleWidget();
+        this.downscaling_stageoperation_titlewidget.Events = ((Gdk.EventMask)(256));
+        this.downscaling_stageoperation_titlewidget.Name = "downscaling_stageoperation_titlewidget";
+        this.downscaling_stageoperation_titlewidget.Title = "Downscale";
+        this.downscaling_stageoperation_titlewidget.Active = true;
+        this.downscaling_vbox.Add(this.downscaling_stageoperation_titlewidget);
+        Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.downscaling_stageoperation_titlewidget]));
         w33.Position = 0;
         w33.Expand = false;
         w33.Fill = false;
         // Container child downscaling_vbox.Gtk.Box+BoxChild
-        this.scale_combobox = Gtk.ComboBox.NewText();
-        this.scale_combobox.Name = "scale_combobox";
-        this.downscaling_vbox.Add(this.scale_combobox);
-        Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.scale_combobox]));
+        this.downscaling_stageoperation_parameterswidget = new CatEye.DownscalingStageOperationParametersWidget();
+        this.downscaling_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
+        this.downscaling_stageoperation_parameterswidget.Name = "downscaling_stageoperation_parameterswidget";
+        this.downscaling_stageoperation_parameterswidget.ScaleValue = 0;
+        this.downscaling_vbox.Add(this.downscaling_stageoperation_parameterswidget);
+        Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.downscaling_stageoperation_parameterswidget]));
         w34.Position = 1;
         w34.Expand = false;
         w34.Fill = false;
@@ -443,153 +400,35 @@ public partial class MainWindow {
         this.basic_ops_vbox.Name = "basic_ops_vbox";
         this.basic_ops_vbox.Spacing = 6;
         // Container child basic_ops_vbox.Gtk.Box+BoxChild
-        this.basic_ops_stageoperationtitlewidget = new CatEye.StageOperationTitleWidget();
-        this.basic_ops_stageoperationtitlewidget.Events = ((Gdk.EventMask)(256));
-        this.basic_ops_stageoperationtitlewidget.Name = "basic_ops_stageoperationtitlewidget";
-        this.basic_ops_stageoperationtitlewidget.Title = "Basic operations";
-        this.basic_ops_stageoperationtitlewidget.Active = true;
-        this.basic_ops_vbox.Add(this.basic_ops_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.basic_ops_stageoperationtitlewidget]));
+        this.basic_ops_stageoperation_titlewidget = new CatEye.StageOperationTitleWidget();
+        this.basic_ops_stageoperation_titlewidget.Events = ((Gdk.EventMask)(256));
+        this.basic_ops_stageoperation_titlewidget.Name = "basic_ops_stageoperation_titlewidget";
+        this.basic_ops_stageoperation_titlewidget.Title = "Basic operations";
+        this.basic_ops_stageoperation_titlewidget.Active = true;
+        this.basic_ops_vbox.Add(this.basic_ops_stageoperation_titlewidget);
+        Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.basic_ops_stageoperation_titlewidget]));
         w36.Position = 0;
         w36.Expand = false;
         w36.Fill = false;
         // Container child basic_ops_vbox.Gtk.Box+BoxChild
-        this.table3 = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
-        this.table3.Name = "table3";
-        this.table3.RowSpacing = ((uint)(6));
-        this.table3.ColumnSpacing = ((uint)(6));
-        // Container child table3.Gtk.Table+TableChild
-        this.blue_entry = new Gtk.Entry();
-        this.blue_entry.CanFocus = true;
-        this.blue_entry.Name = "blue_entry";
-        this.blue_entry.Text = Mono.Unix.Catalog.GetString("0.8");
-        this.blue_entry.IsEditable = true;
-        this.blue_entry.WidthChars = 6;
-        this.table3.Add(this.blue_entry);
-        Gtk.Table.TableChild w37 = ((Gtk.Table.TableChild)(this.table3[this.blue_entry]));
-        w37.TopAttach = ((uint)(4));
-        w37.BottomAttach = ((uint)(5));
-        w37.LeftAttach = ((uint)(1));
-        w37.RightAttach = ((uint)(2));
-        w37.XOptions = ((Gtk.AttachOptions)(4));
-        w37.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.green_entry = new Gtk.Entry();
-        this.green_entry.CanFocus = true;
-        this.green_entry.Name = "green_entry";
-        this.green_entry.Text = Mono.Unix.Catalog.GetString("1.05");
-        this.green_entry.IsEditable = true;
-        this.green_entry.WidthChars = 6;
-        this.table3.Add(this.green_entry);
-        Gtk.Table.TableChild w38 = ((Gtk.Table.TableChild)(this.table3[this.green_entry]));
-        w38.TopAttach = ((uint)(3));
-        w38.BottomAttach = ((uint)(4));
-        w38.LeftAttach = ((uint)(1));
-        w38.RightAttach = ((uint)(2));
-        w38.XOptions = ((Gtk.AttachOptions)(4));
-        w38.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.hdr_lightscale_entry = new Gtk.Entry();
-        this.hdr_lightscale_entry.CanFocus = true;
-        this.hdr_lightscale_entry.Name = "hdr_lightscale_entry";
-        this.hdr_lightscale_entry.Text = Mono.Unix.Catalog.GetString("0.8");
-        this.hdr_lightscale_entry.IsEditable = true;
-        this.hdr_lightscale_entry.WidthChars = 6;
-        this.table3.Add(this.hdr_lightscale_entry);
-        Gtk.Table.TableChild w39 = ((Gtk.Table.TableChild)(this.table3[this.hdr_lightscale_entry]));
-        w39.LeftAttach = ((uint)(1));
-        w39.RightAttach = ((uint)(2));
-        w39.YPadding = ((uint)(6));
-        w39.XOptions = ((Gtk.AttachOptions)(4));
-        w39.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.label10 = new Gtk.Label();
-        this.label10.Name = "label10";
-        this.label10.Xalign = 1F;
-        this.label10.LabelProp = Mono.Unix.Catalog.GetString("Green:");
-        this.table3.Add(this.label10);
-        Gtk.Table.TableChild w40 = ((Gtk.Table.TableChild)(this.table3[this.label10]));
-        w40.TopAttach = ((uint)(3));
-        w40.BottomAttach = ((uint)(4));
-        w40.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.label11 = new Gtk.Label();
-        this.label11.Name = "label11";
-        this.label11.Xalign = 1F;
-        this.label11.LabelProp = Mono.Unix.Catalog.GetString("Blue:");
-        this.table3.Add(this.label11);
-        Gtk.Table.TableChild w41 = ((Gtk.Table.TableChild)(this.table3[this.label11]));
-        w41.TopAttach = ((uint)(4));
-        w41.BottomAttach = ((uint)(5));
-        w41.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.label2 = new Gtk.Label();
-        this.label2.Name = "label2";
-        this.label2.Xalign = 1F;
-        this.label2.LabelProp = Mono.Unix.Catalog.GetString("Light scale:");
-        this.table3.Add(this.label2);
-        Gtk.Table.TableChild w42 = ((Gtk.Table.TableChild)(this.table3[this.label2]));
-        w42.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.label8 = new Gtk.Label();
-        this.label8.Name = "label8";
-        this.label8.Xalign = 1F;
-        this.label8.LabelProp = Mono.Unix.Catalog.GetString("Saturation:");
-        this.table3.Add(this.label8);
-        Gtk.Table.TableChild w43 = ((Gtk.Table.TableChild)(this.table3[this.label8]));
-        w43.TopAttach = ((uint)(1));
-        w43.BottomAttach = ((uint)(2));
-        w43.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.label9 = new Gtk.Label();
-        this.label9.Name = "label9";
-        this.label9.Xalign = 1F;
-        this.label9.LabelProp = Mono.Unix.Catalog.GetString("Red:");
-        this.table3.Add(this.label9);
-        Gtk.Table.TableChild w44 = ((Gtk.Table.TableChild)(this.table3[this.label9]));
-        w44.TopAttach = ((uint)(2));
-        w44.BottomAttach = ((uint)(3));
-        w44.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.red_entry = new Gtk.Entry();
-        this.red_entry.CanFocus = true;
-        this.red_entry.Name = "red_entry";
-        this.red_entry.Text = Mono.Unix.Catalog.GetString("1.3");
-        this.red_entry.IsEditable = true;
-        this.red_entry.WidthChars = 6;
-        this.table3.Add(this.red_entry);
-        Gtk.Table.TableChild w45 = ((Gtk.Table.TableChild)(this.table3[this.red_entry]));
-        w45.TopAttach = ((uint)(2));
-        w45.BottomAttach = ((uint)(3));
-        w45.LeftAttach = ((uint)(1));
-        w45.RightAttach = ((uint)(2));
-        w45.XOptions = ((Gtk.AttachOptions)(4));
-        w45.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table3.Gtk.Table+TableChild
-        this.saturation_entry = new Gtk.Entry();
-        this.saturation_entry.CanFocus = true;
-        this.saturation_entry.Name = "saturation_entry";
-        this.saturation_entry.Text = Mono.Unix.Catalog.GetString("0.9");
-        this.saturation_entry.IsEditable = true;
-        this.saturation_entry.WidthChars = 6;
-        this.table3.Add(this.saturation_entry);
-        Gtk.Table.TableChild w46 = ((Gtk.Table.TableChild)(this.table3[this.saturation_entry]));
-        w46.TopAttach = ((uint)(1));
-        w46.BottomAttach = ((uint)(2));
-        w46.LeftAttach = ((uint)(1));
-        w46.RightAttach = ((uint)(2));
-        w46.XOptions = ((Gtk.AttachOptions)(4));
-        w46.YOptions = ((Gtk.AttachOptions)(4));
-        this.basic_ops_vbox.Add(this.table3);
-        Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.table3]));
-        w47.Position = 1;
-        w47.Expand = false;
-        w47.Fill = false;
+        this.basic_ops_stageoperation_parameterswidget = new CatEye.BasicOpsStageOperationParametersWidget();
+        this.basic_ops_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
+        this.basic_ops_stageoperation_parameterswidget.Name = "basic_ops_stageoperation_parameterswidget";
+        this.basic_ops_stageoperation_parameterswidget.Brightness = 0.9;
+        this.basic_ops_stageoperation_parameterswidget.Saturation = 0.9;
+        this.basic_ops_stageoperation_parameterswidget.RedPart = 1;
+        this.basic_ops_stageoperation_parameterswidget.GreenPart = 1;
+        this.basic_ops_stageoperation_parameterswidget.BluePart = 1;
+        this.basic_ops_vbox.Add(this.basic_ops_stageoperation_parameterswidget);
+        Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.basic_ops_stageoperation_parameterswidget]));
+        w37.Position = 1;
+        w37.Expand = false;
+        w37.Fill = false;
         this.stage3_vbox.Add(this.basic_ops_vbox);
-        Gtk.Box.BoxChild w48 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.basic_ops_vbox]));
-        w48.Position = 1;
-        w48.Expand = false;
-        w48.Fill = false;
+        Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.basic_ops_vbox]));
+        w38.Position = 1;
+        w38.Expand = false;
+        w38.Fill = false;
         // Container child stage3_vbox.Gtk.Box+BoxChild
         this.compression_vbox = new Gtk.VBox();
         this.compression_vbox.Name = "compression_vbox";
@@ -601,71 +440,26 @@ public partial class MainWindow {
         this.compression_stageoperationtitlewidget.Title = "Compression";
         this.compression_stageoperationtitlewidget.Active = true;
         this.compression_vbox.Add(this.compression_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w49 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.compression_stageoperationtitlewidget]));
-        w49.Position = 0;
-        w49.Expand = false;
-        w49.Fill = false;
+        Gtk.Box.BoxChild w39 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.compression_stageoperationtitlewidget]));
+        w39.Position = 0;
+        w39.Expand = false;
+        w39.Fill = false;
         // Container child compression_vbox.Gtk.Box+BoxChild
-        this.table2 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
-        this.table2.Name = "table2";
-        this.table2.RowSpacing = ((uint)(6));
-        this.table2.ColumnSpacing = ((uint)(6));
-        // Container child table2.Gtk.Table+TableChild
-        this.hdr_bloha_entry = new Gtk.Entry();
-        this.hdr_bloha_entry.CanFocus = true;
-        this.hdr_bloha_entry.Name = "hdr_bloha_entry";
-        this.hdr_bloha_entry.Text = Mono.Unix.Catalog.GetString("0.01");
-        this.hdr_bloha_entry.IsEditable = true;
-        this.hdr_bloha_entry.WidthChars = 6;
-        this.table2.Add(this.hdr_bloha_entry);
-        Gtk.Table.TableChild w50 = ((Gtk.Table.TableChild)(this.table2[this.hdr_bloha_entry]));
-        w50.TopAttach = ((uint)(1));
-        w50.BottomAttach = ((uint)(2));
-        w50.LeftAttach = ((uint)(1));
-        w50.RightAttach = ((uint)(2));
-        w50.XOptions = ((Gtk.AttachOptions)(4));
-        w50.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table2.Gtk.Table+TableChild
-        this.hdr_compressing_power_entry = new Gtk.Entry();
-        this.hdr_compressing_power_entry.CanFocus = true;
-        this.hdr_compressing_power_entry.Name = "hdr_compressing_power_entry";
-        this.hdr_compressing_power_entry.Text = Mono.Unix.Catalog.GetString("0.7");
-        this.hdr_compressing_power_entry.IsEditable = true;
-        this.hdr_compressing_power_entry.WidthChars = 6;
-        this.table2.Add(this.hdr_compressing_power_entry);
-        Gtk.Table.TableChild w51 = ((Gtk.Table.TableChild)(this.table2[this.hdr_compressing_power_entry]));
-        w51.LeftAttach = ((uint)(1));
-        w51.RightAttach = ((uint)(2));
-        w51.XOptions = ((Gtk.AttachOptions)(4));
-        w51.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table2.Gtk.Table+TableChild
-        this.label3 = new Gtk.Label();
-        this.label3.Name = "label3";
-        this.label3.Xalign = 1F;
-        this.label3.LabelProp = Mono.Unix.Catalog.GetString("Power:");
-        this.table2.Add(this.label3);
-        Gtk.Table.TableChild w52 = ((Gtk.Table.TableChild)(this.table2[this.label3]));
-        w52.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table2.Gtk.Table+TableChild
-        this.label6 = new Gtk.Label();
-        this.label6.Name = "label6";
-        this.label6.Xalign = 1F;
-        this.label6.LabelProp = Mono.Unix.Catalog.GetString("Bloha:");
-        this.table2.Add(this.label6);
-        Gtk.Table.TableChild w53 = ((Gtk.Table.TableChild)(this.table2[this.label6]));
-        w53.TopAttach = ((uint)(1));
-        w53.BottomAttach = ((uint)(2));
-        w53.YOptions = ((Gtk.AttachOptions)(4));
-        this.compression_vbox.Add(this.table2);
-        Gtk.Box.BoxChild w54 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.table2]));
-        w54.Position = 1;
-        w54.Expand = false;
-        w54.Fill = false;
+        this.compression_stageoperation_parameterswidget = new CatEye.CompressionStageOperationParametersWidget();
+        this.compression_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
+        this.compression_stageoperation_parameterswidget.Name = "compression_stageoperation_parameterswidget";
+        this.compression_stageoperation_parameterswidget.Power = 0;
+        this.compression_stageoperation_parameterswidget.Bloha = 0;
+        this.compression_vbox.Add(this.compression_stageoperation_parameterswidget);
+        Gtk.Box.BoxChild w40 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.compression_stageoperation_parameterswidget]));
+        w40.Position = 1;
+        w40.Expand = false;
+        w40.Fill = false;
         this.stage3_vbox.Add(this.compression_vbox);
-        Gtk.Box.BoxChild w55 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.compression_vbox]));
-        w55.Position = 2;
-        w55.Expand = false;
-        w55.Fill = false;
+        Gtk.Box.BoxChild w41 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.compression_vbox]));
+        w41.Position = 2;
+        w41.Expand = false;
+        w41.Fill = false;
         // Container child stage3_vbox.Gtk.Box+BoxChild
         this.ultra_sharp_vbox = new Gtk.VBox();
         this.ultra_sharp_vbox.Name = "ultra_sharp_vbox";
@@ -677,126 +471,33 @@ public partial class MainWindow {
         this.ultra_sharp_stageoperationtitlewidget.Title = "Sharpening";
         this.ultra_sharp_stageoperationtitlewidget.Active = true;
         this.ultra_sharp_vbox.Add(this.ultra_sharp_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w56 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.ultra_sharp_stageoperationtitlewidget]));
-        w56.Position = 0;
-        w56.Expand = false;
-        w56.Fill = false;
+        Gtk.Box.BoxChild w42 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.ultra_sharp_stageoperationtitlewidget]));
+        w42.Position = 0;
+        w42.Expand = false;
+        w42.Fill = false;
         // Container child ultra_sharp_vbox.Gtk.Box+BoxChild
-        this.table1 = new Gtk.Table(((uint)(4)), ((uint)(2)), false);
-        this.table1.Name = "table1";
-        this.table1.RowSpacing = ((uint)(6));
-        this.table1.ColumnSpacing = ((uint)(6));
-        // Container child table1.Gtk.Table+TableChild
-        this.hdr_sharp_limit_entry = new Gtk.Entry();
-        this.hdr_sharp_limit_entry.CanFocus = true;
-        this.hdr_sharp_limit_entry.Name = "hdr_sharp_limit_entry";
-        this.hdr_sharp_limit_entry.Text = Mono.Unix.Catalog.GetString("0.3");
-        this.hdr_sharp_limit_entry.IsEditable = true;
-        this.hdr_sharp_limit_entry.WidthChars = 6;
-        this.table1.Add(this.hdr_sharp_limit_entry);
-        Gtk.Table.TableChild w57 = ((Gtk.Table.TableChild)(this.table1[this.hdr_sharp_limit_entry]));
-        w57.TopAttach = ((uint)(3));
-        w57.BottomAttach = ((uint)(4));
-        w57.LeftAttach = ((uint)(1));
-        w57.RightAttach = ((uint)(2));
-        w57.XOptions = ((Gtk.AttachOptions)(4));
-        w57.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.hdr_sharp_power_entry = new Gtk.Entry();
-        this.hdr_sharp_power_entry.CanFocus = true;
-        this.hdr_sharp_power_entry.Name = "hdr_sharp_power_entry";
-        this.hdr_sharp_power_entry.Text = Mono.Unix.Catalog.GetString("0.3");
-        this.hdr_sharp_power_entry.IsEditable = true;
-        this.hdr_sharp_power_entry.WidthChars = 6;
-        this.table1.Add(this.hdr_sharp_power_entry);
-        Gtk.Table.TableChild w58 = ((Gtk.Table.TableChild)(this.table1[this.hdr_sharp_power_entry]));
-        w58.LeftAttach = ((uint)(1));
-        w58.RightAttach = ((uint)(2));
-        w58.XOptions = ((Gtk.AttachOptions)(4));
-        w58.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.hdr_sharp_radius_entry = new Gtk.Entry();
-        this.hdr_sharp_radius_entry.CanFocus = true;
-        this.hdr_sharp_radius_entry.Name = "hdr_sharp_radius_entry";
-        this.hdr_sharp_radius_entry.Text = Mono.Unix.Catalog.GetString("0.1");
-        this.hdr_sharp_radius_entry.IsEditable = true;
-        this.hdr_sharp_radius_entry.WidthChars = 6;
-        this.table1.Add(this.hdr_sharp_radius_entry);
-        Gtk.Table.TableChild w59 = ((Gtk.Table.TableChild)(this.table1[this.hdr_sharp_radius_entry]));
-        w59.TopAttach = ((uint)(1));
-        w59.BottomAttach = ((uint)(2));
-        w59.LeftAttach = ((uint)(1));
-        w59.RightAttach = ((uint)(2));
-        w59.XOptions = ((Gtk.AttachOptions)(4));
-        w59.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.hdr_sharp_weight_entry = new Gtk.Entry();
-        this.hdr_sharp_weight_entry.CanFocus = true;
-        this.hdr_sharp_weight_entry.Name = "hdr_sharp_weight_entry";
-        this.hdr_sharp_weight_entry.Text = Mono.Unix.Catalog.GetString("80");
-        this.hdr_sharp_weight_entry.IsEditable = true;
-        this.hdr_sharp_weight_entry.WidthChars = 6;
-        this.table1.Add(this.hdr_sharp_weight_entry);
-        Gtk.Table.TableChild w60 = ((Gtk.Table.TableChild)(this.table1[this.hdr_sharp_weight_entry]));
-        w60.TopAttach = ((uint)(2));
-        w60.BottomAttach = ((uint)(3));
-        w60.LeftAttach = ((uint)(1));
-        w60.RightAttach = ((uint)(2));
-        w60.XOptions = ((Gtk.AttachOptions)(4));
-        w60.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.label12 = new Gtk.Label();
-        this.label12.Name = "label12";
-        this.label12.Xalign = 1F;
-        this.label12.LabelProp = Mono.Unix.Catalog.GetString("Radius (part):");
-        this.table1.Add(this.label12);
-        Gtk.Table.TableChild w61 = ((Gtk.Table.TableChild)(this.table1[this.label12]));
-        w61.TopAttach = ((uint)(1));
-        w61.BottomAttach = ((uint)(2));
-        w61.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.label13 = new Gtk.Label();
-        this.label13.Name = "label13";
-        this.label13.Xalign = 1F;
-        this.label13.LabelProp = Mono.Unix.Catalog.GetString("Weight:");
-        this.table1.Add(this.label13);
-        Gtk.Table.TableChild w62 = ((Gtk.Table.TableChild)(this.table1[this.label13]));
-        w62.TopAttach = ((uint)(2));
-        w62.BottomAttach = ((uint)(3));
-        w62.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.label14 = new Gtk.Label();
-        this.label14.Name = "label14";
-        this.label14.Xalign = 1F;
-        this.label14.LabelProp = Mono.Unix.Catalog.GetString("Limit:");
-        this.table1.Add(this.label14);
-        Gtk.Table.TableChild w63 = ((Gtk.Table.TableChild)(this.table1[this.label14]));
-        w63.TopAttach = ((uint)(3));
-        w63.BottomAttach = ((uint)(4));
-        w63.YOptions = ((Gtk.AttachOptions)(4));
-        // Container child table1.Gtk.Table+TableChild
-        this.label7 = new Gtk.Label();
-        this.label7.Name = "label7";
-        this.label7.Xalign = 1F;
-        this.label7.LabelProp = Mono.Unix.Catalog.GetString("Power:");
-        this.table1.Add(this.label7);
-        Gtk.Table.TableChild w64 = ((Gtk.Table.TableChild)(this.table1[this.label7]));
-        w64.YOptions = ((Gtk.AttachOptions)(4));
-        this.ultra_sharp_vbox.Add(this.table1);
-        Gtk.Box.BoxChild w65 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.table1]));
-        w65.Position = 1;
-        w65.Expand = false;
-        w65.Fill = false;
+        this.ultra_sharp_stageoperation_parameterswidget = new CatEye.UltraSharpStageOperationParametersWidget();
+        this.ultra_sharp_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
+        this.ultra_sharp_stageoperation_parameterswidget.Name = "ultra_sharp_stageoperation_parameterswidget";
+        this.ultra_sharp_stageoperation_parameterswidget.Power = 0.3;
+        this.ultra_sharp_stageoperation_parameterswidget.Radius = 0.1;
+        this.ultra_sharp_stageoperation_parameterswidget.Weight = 80;
+        this.ultra_sharp_stageoperation_parameterswidget.Limit = 0.3;
+        this.ultra_sharp_vbox.Add(this.ultra_sharp_stageoperation_parameterswidget);
+        Gtk.Box.BoxChild w43 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.ultra_sharp_stageoperation_parameterswidget]));
+        w43.Position = 1;
+        w43.Expand = false;
+        w43.Fill = false;
         this.stage3_vbox.Add(this.ultra_sharp_vbox);
-        Gtk.Box.BoxChild w66 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.ultra_sharp_vbox]));
-        w66.Position = 3;
-        w66.Expand = false;
-        w66.Fill = false;
+        Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.ultra_sharp_vbox]));
+        w44.Position = 3;
+        w44.Expand = false;
+        w44.Fill = false;
         w32.Add(this.stage3_vbox);
         this.GtkScrolledWindow.Add(w32);
         this.right_vbox.Add(this.GtkScrolledWindow);
-        Gtk.Box.BoxChild w69 = ((Gtk.Box.BoxChild)(this.right_vbox[this.GtkScrolledWindow]));
-        w69.Position = 1;
+        Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.right_vbox[this.GtkScrolledWindow]));
+        w47.Position = 1;
         // Container child right_vbox.Gtk.Box+BoxChild
         this.hbox10 = new Gtk.HBox();
         this.hbox10.Name = "hbox10";
@@ -807,24 +508,24 @@ public partial class MainWindow {
         this.apply_stage3_button.Name = "apply_stage3_button";
         this.apply_stage3_button.UseUnderline = true;
         // Container child apply_stage3_button.Gtk.Container+ContainerChild
-        Gtk.Alignment w70 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+        Gtk.Alignment w48 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
         // Container child GtkAlignment.Gtk.Container+ContainerChild
-        Gtk.HBox w71 = new Gtk.HBox();
-        w71.Spacing = 2;
+        Gtk.HBox w49 = new Gtk.HBox();
+        w49.Spacing = 2;
         // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Image w72 = new Gtk.Image();
-        w72.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
-        w71.Add(w72);
+        Gtk.Image w50 = new Gtk.Image();
+        w50.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
+        w49.Add(w50);
         // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Label w74 = new Gtk.Label();
-        w74.LabelProp = Mono.Unix.Catalog.GetString("Update stage 3");
-        w74.UseUnderline = true;
-        w71.Add(w74);
-        w70.Add(w71);
-        this.apply_stage3_button.Add(w70);
+        Gtk.Label w52 = new Gtk.Label();
+        w52.LabelProp = Mono.Unix.Catalog.GetString("Update stage 3");
+        w52.UseUnderline = true;
+        w49.Add(w52);
+        w48.Add(w49);
+        this.apply_stage3_button.Add(w48);
         this.hbox10.Add(this.apply_stage3_button);
-        Gtk.Box.BoxChild w78 = ((Gtk.Box.BoxChild)(this.hbox10[this.apply_stage3_button]));
-        w78.Position = 0;
+        Gtk.Box.BoxChild w56 = ((Gtk.Box.BoxChild)(this.hbox10[this.apply_stage3_button]));
+        w56.Position = 0;
         // Container child hbox10.Gtk.Box+BoxChild
         this.show_stage3_radiobutton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Show"));
         this.show_stage3_radiobutton.CanFocus = true;
@@ -833,25 +534,25 @@ public partial class MainWindow {
         this.show_stage3_radiobutton.UseUnderline = true;
         this.show_stage3_radiobutton.Group = this.show_stage2_radiobutton.Group;
         this.hbox10.Add(this.show_stage3_radiobutton);
-        Gtk.Box.BoxChild w79 = ((Gtk.Box.BoxChild)(this.hbox10[this.show_stage3_radiobutton]));
-        w79.Position = 1;
-        w79.Expand = false;
+        Gtk.Box.BoxChild w57 = ((Gtk.Box.BoxChild)(this.hbox10[this.show_stage3_radiobutton]));
+        w57.Position = 1;
+        w57.Expand = false;
         this.right_vbox.Add(this.hbox10);
-        Gtk.Box.BoxChild w80 = ((Gtk.Box.BoxChild)(this.right_vbox[this.hbox10]));
-        w80.Position = 2;
-        w80.Expand = false;
-        w80.Fill = false;
+        Gtk.Box.BoxChild w58 = ((Gtk.Box.BoxChild)(this.right_vbox[this.hbox10]));
+        w58.Position = 2;
+        w58.Expand = false;
+        w58.Fill = false;
         this.hbox5.Add(this.right_vbox);
-        Gtk.Box.BoxChild w81 = ((Gtk.Box.BoxChild)(this.hbox5[this.right_vbox]));
-        w81.Position = 2;
-        w81.Expand = false;
-        w81.Fill = false;
+        Gtk.Box.BoxChild w59 = ((Gtk.Box.BoxChild)(this.hbox5[this.right_vbox]));
+        w59.Position = 2;
+        w59.Expand = false;
+        w59.Fill = false;
         this.vbox1.Add(this.hbox5);
-        Gtk.Box.BoxChild w82 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
-        w82.Position = 0;
+        Gtk.Box.BoxChild w60 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+        w60.Position = 0;
         this.vbox2.Add(this.vbox1);
-        Gtk.Box.BoxChild w83 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
-        w83.Position = 1;
+        Gtk.Box.BoxChild w61 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
+        w61.Position = 1;
         this.Add(this.vbox2);
         if ((this.Child != null)) {
             this.Child.ShowAll();
@@ -865,12 +566,12 @@ public partial class MainWindow {
         this.ImportFromDCRawAction.Activated += new System.EventHandler(this.OnImportFromDCRawActionActivated);
         this.apply_stage2_button.Clicked += new System.EventHandler(this.OnApplyStage2ButtonClicked);
         this.show_stage2_radiobutton.Toggled += new System.EventHandler(this.OnShowStage2RadiobuttonToggled);
-        this.downscaling_stageoperationtitlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetChangeStageButtonClicked);
-        this.downscaling_stageoperationtitlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetUpButtonClicked);
-        this.downscaling_stageoperationtitlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetDownButtonClicked);
-        this.basic_ops_stageoperationtitlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetChangeStageButtonClicked);
-        this.basic_ops_stageoperationtitlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetUpButtonClicked);
-        this.basic_ops_stageoperationtitlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetDownButtonClicked);
+        this.downscaling_stageoperation_titlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetChangeStageButtonClicked);
+        this.downscaling_stageoperation_titlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetUpButtonClicked);
+        this.downscaling_stageoperation_titlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetDownButtonClicked);
+        this.basic_ops_stageoperation_titlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetChangeStageButtonClicked);
+        this.basic_ops_stageoperation_titlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetUpButtonClicked);
+        this.basic_ops_stageoperation_titlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetDownButtonClicked);
         this.compression_stageoperationtitlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetChangeStageButtonClicked);
         this.compression_stageoperationtitlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetUpButtonClicked);
         this.compression_stageoperationtitlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetDownButtonClicked);

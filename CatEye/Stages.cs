@@ -92,7 +92,7 @@ namespace CatEye
 			Index = index;
 		}
 		
-		public void DoOperation(DoublePixmap hdp)
+		public virtual void OnDo(DoublePixmap hdp)
 		{
 			if (Do != null) 
 				Do(this, new DoStageOperationEventArgs(hdp));
@@ -143,7 +143,7 @@ namespace CatEye
 				{
 					if (_Stage2[j].Index == i)
 					{
-						_Stage2[j].DoOperation(hdp);
+						_Stage2[j].OnDo(hdp);
 					}
 				}
 			}
@@ -156,7 +156,7 @@ namespace CatEye
 				{
 					if (_Stage3[j].Index == i)
 					{
-						_Stage3[j].DoOperation(hdp);
+						_Stage3[j].OnDo(hdp);
 					}
 				}
 			}

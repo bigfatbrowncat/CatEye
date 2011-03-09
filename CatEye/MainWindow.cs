@@ -76,7 +76,6 @@ public partial class MainWindow : Gtk.Window
 		
 		Gtk.ComboBox pres_cb = prescale_combobox;
 		pres_cb.Model = ls;
-		scale_combobox.Model = ls;
 		
 //		CellRendererText txt = new CellRendererText();
 //		pres_cb.PackStart(txt, true);
@@ -86,7 +85,6 @@ public partial class MainWindow : Gtk.Window
 		TreeIter ti;
 		ls.GetIterFirst(out ti);
 		pres_cb.SetActiveIter(ti);
-		scale_combobox.SetActiveIter(ti);
 		
 		// Creating stages
 		stage_vboxes.Add(Stage.Stage2, stage2_vbox);
@@ -134,8 +132,8 @@ public partial class MainWindow : Gtk.Window
 		stage_op_boxes.Add(ultra_sharp_stage_op, ultra_sharp_vbox);
 		
 		// Adding stage operation--title widgets to dictionary
-		stage_op_titles.Add(downscaling_stage_op, downscaling_stageoperationtitlewidget);
-		stage_op_titles.Add(basic_ops_stage_op, basic_ops_stageoperationtitlewidget);
+		stage_op_titles.Add(downscaling_stage_op, downscaling_stageoperation_titlewidget);
+		stage_op_titles.Add(basic_ops_stage_op, basic_ops_stageoperation_titlewidget);
 		stage_op_titles.Add(compression_stage_op, compression_stageoperationtitlewidget);
 		stage_op_titles.Add(ultra_sharp_stage_op, ultra_sharp_stageoperationtitlewidget);
 		
@@ -300,10 +298,10 @@ public partial class MainWindow : Gtk.Window
 		if (ultra_sharp_stageoperationtitlewidget.Active)
 		{
 			Console.WriteLine("Sharpening...");
-			e.HDP.SharpenLight(double.Parse(hdr_sharp_radius_entry.Text, nfi),
-					                 	  double.Parse(hdr_sharp_power_entry.Text, nfi),
-					                	  double.Parse(hdr_sharp_weight_entry.Text, nfi),
-					                 	  double.Parse(hdr_sharp_limit_entry.Text, nfi),
+			e.HDP.SharpenLight(ultra_sharp_stageoperation_parameterswidget.Radius,
+					           ultra_sharp_stageoperation_parameterswidget.Power,
+					           ultra_sharp_stageoperation_parameterswidget.Weight,
+					           ultra_sharp_stageoperation_parameterswidget.Limit,
 					                 	  new DoublePixmap.MonteCarloSharpeningSamplingMethod(200, new Random()));
 		}
 	}
@@ -315,41 +313,35 @@ public partial class MainWindow : Gtk.Window
 		if (compression_stageoperationtitlewidget.Active)
 		{
 			Console.WriteLine("Compressing...");
-			e.HDP.CompressLight(double.Parse(hdr_compressing_power_entry.Text, nfi),
-										   double.Parse(hdr_bloha_entry.Text, nfi));			
+			e.HDP.CompressLight(compression_stageoperation_parameterswidget.Power,
+								compression_stageoperation_parameterswidget.Bloha);			
 		}
 	}
 
 	void HandleBasic_ops_stage_opDo (object sender, DoStageOperationEventArgs e)
 	{
-		System.Globalization.NumberFormatInfo nfi = System.Globalization.NumberFormatInfo.InvariantInfo;
-
-		if (basic_ops_stageoperationtitlewidget.Active)
+		if (basic_ops_stageoperation_titlewidget.Active)
 		{
 			Console.WriteLine("Basic operations: scaling channels...");
-			e.HDP.ApplyChannelsScale(double.Parse(red_entry.Text, nfi),
-				                       			double.Parse(green_entry.Text, nfi),
-				                       			double.Parse(blue_entry.Text, nfi));
+			e.HDP.ApplyChannelsScale(basic_ops_stageoperation_parameterswidget.RedPart,
+				                     basic_ops_stageoperation_parameterswidget.GreenPart,
+				                     basic_ops_stageoperation_parameterswidget.BluePart);
 				
 			Console.WriteLine("Basic operations: applying saturation...");
-			e.HDP.ApplySaturation(double.Parse(saturation_entry.Text, nfi));
+			e.HDP.ApplySaturation(basic_ops_stageoperation_parameterswidget.Saturation);
 				
 			Console.WriteLine("Basic operations: scaling light...");
-			e.HDP.ScaleLight(double.Parse(hdr_lightscale_entry.Text, nfi));
+			e.HDP.ScaleLight(basic_ops_stageoperation_parameterswidget.Brightness);
 		}
 	}
 
 	void HandleDownscaling_stage_opDo (object sender, DoStageOperationEventArgs e)
 	{
-		if (downscaling_stageoperationtitlewidget.Active)
+		if (downscaling_stageoperation_titlewidget.Active)
 		{
 			Console.WriteLine("Downscaling...");
-			TreeIter ti;
-			scale_combobox.GetActiveIter(out ti);
-			int downscale_by = (int)(((ListStore)scale_combobox.Model).GetValue(ti, 1));
-				
-			if (downscale_by != 1)
-				e.HDP.Downscale(downscale_by);
+			if (downscaling_stageoperation_parameterswidget.ScaleValue != 1)
+				e.HDP.Downscale(downscaling_stageoperation_parameterswidget.ScaleValue);
 		}
 	}
 
