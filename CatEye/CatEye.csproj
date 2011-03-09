@@ -85,6 +85,10 @@
     <Compile Include="gtk-gui\CatEye.UltraSharpStageOperationParametersWidget.cs" />
     <Compile Include="CompressionStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.CompressionStageOperationParametersWidget.cs" />
+    <Compile Include="BasicOpsStageOperation.cs" />
+    <Compile Include="CompressionStageOperation.cs" />
+    <Compile Include="DownscalingStageOperation.cs" />
+    <Compile Include="UltraSharpStageOperation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

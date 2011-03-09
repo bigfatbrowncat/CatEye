@@ -15,10 +15,10 @@ public partial class MainWindow : Gtk.Window
 	Dictionary<StageOperation, StageOperationTitleWidget> stage_op_titles = new Dictionary<StageOperation, StageOperationTitleWidget>();
 	Dictionary<Stage, Gtk.VBox> stage_vboxes = new Dictionary<Stage, Gtk.VBox>();
 	
-	StageOperation downscaling_stage_op = new StageOperation(0);
-	StageOperation compression_stage_op = new StageOperation(1);
-	StageOperation ultra_sharp_stage_op = new StageOperation(2);
-	StageOperation basic_ops_stage_op = new StageOperation(3);
+	StageOperation downscaling_stage_op;
+	StageOperation compression_stage_op;
+	StageOperation ultra_sharp_stage_op;
+	StageOperation basic_ops_stage_op;
 	
 	StageOperation[] all_operations_sorted;
 	
@@ -90,30 +90,32 @@ public partial class MainWindow : Gtk.Window
 		stage_vboxes.Add(Stage.Stage2, stage2_vbox);
 		stage_vboxes.Add(Stage.Stage3, stage3_vbox);
 		
+		// Creating stage operations
+		downscaling_stage_op = new DownscalingStageOperation(0, downscaling_stageoperation_parameterswidget);
+		compression_stage_op = new CompressionStageOperation(1, compression_stageoperation_parameterswidget);
+		ultra_sharp_stage_op = new UltraSharpStageOperation(2, ultra_sharp_stageoperation_parameterswidget);
+		basic_ops_stage_op = new BasicOpsStageOperation(3, basic_ops_stageoperation_parameterswidget);
+		
 		// Adding moving handlers to stage operations
 		downscaling_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		downscaling_stage_op.Do += HandleDownscaling_stage_opDo;
 		downscaling_stage_op.IndexChanged += HandleStageOperationIndexChanged;
 		downscaling_stage_op.MovedToStage += delegate {
 			ArrangeStageOperationBoxes();
 		};
 		
 		basic_ops_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		basic_ops_stage_op.Do += HandleBasic_ops_stage_opDo;
 		basic_ops_stage_op.IndexChanged += HandleStageOperationIndexChanged;
 		basic_ops_stage_op.MovedToStage += delegate {
 			ArrangeStageOperationBoxes();
 		};
 		
 		compression_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		compression_stage_op.Do += HandleCompression_stage_opDo;
 		compression_stage_op.IndexChanged += HandleStageOperationIndexChanged;
 		compression_stage_op.MovedToStage += delegate {
 			ArrangeStageOperationBoxes();
 		};
 		
 		ultra_sharp_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		ultra_sharp_stage_op.Do += HandleUltra_sharp_stage_opDo;
 		ultra_sharp_stage_op.IndexChanged += HandleStageOperationIndexChanged;
 		ultra_sharp_stage_op.MovedToStage += delegate {
 			ArrangeStageOperationBoxes();
@@ -290,61 +292,6 @@ public partial class MainWindow : Gtk.Window
 	{
 		UpdateStage2(true);
 	}
-	
-	void HandleUltra_sharp_stage_opDo (object sender, DoStageOperationEventArgs e)
-	{
-		System.Globalization.NumberFormatInfo nfi = System.Globalization.NumberFormatInfo.InvariantInfo;
-		
-		if (ultra_sharp_stageoperationtitlewidget.Active)
-		{
-			Console.WriteLine("Sharpening...");
-			e.HDP.SharpenLight(ultra_sharp_stageoperation_parameterswidget.Radius,
-					           ultra_sharp_stageoperation_parameterswidget.Power,
-					           ultra_sharp_stageoperation_parameterswidget.Weight,
-					           ultra_sharp_stageoperation_parameterswidget.Limit,
-					                 	  new DoublePixmap.MonteCarloSharpeningSamplingMethod(200, new Random()));
-		}
-	}
-
-	void HandleCompression_stage_opDo (object sender, DoStageOperationEventArgs e)
-	{
-		System.Globalization.NumberFormatInfo nfi = System.Globalization.NumberFormatInfo.InvariantInfo;
-
-		if (compression_stageoperationtitlewidget.Active)
-		{
-			Console.WriteLine("Compressing...");
-			e.HDP.CompressLight(compression_stageoperation_parameterswidget.Power,
-								compression_stageoperation_parameterswidget.Bloha);			
-		}
-	}
-
-	void HandleBasic_ops_stage_opDo (object sender, DoStageOperationEventArgs e)
-	{
-		if (basic_ops_stageoperation_titlewidget.Active)
-		{
-			Console.WriteLine("Basic operations: scaling channels...");
-			e.HDP.ApplyChannelsScale(basic_ops_stageoperation_parameterswidget.RedPart,
-				                     basic_ops_stageoperation_parameterswidget.GreenPart,
-				                     basic_ops_stageoperation_parameterswidget.BluePart);
-				
-			Console.WriteLine("Basic operations: applying saturation...");
-			e.HDP.ApplySaturation(basic_ops_stageoperation_parameterswidget.Saturation);
-				
-			Console.WriteLine("Basic operations: scaling light...");
-			e.HDP.ScaleLight(basic_ops_stageoperation_parameterswidget.Brightness);
-		}
-	}
-
-	void HandleDownscaling_stage_opDo (object sender, DoStageOperationEventArgs e)
-	{
-		if (downscaling_stageoperation_titlewidget.Active)
-		{
-			Console.WriteLine("Downscaling...");
-			if (downscaling_stageoperation_parameterswidget.ScaleValue != 1)
-				e.HDP.Downscale(downscaling_stageoperation_parameterswidget.ScaleValue);
-		}
-	}
-
 	
 	void UpdateStage2(bool update_stage_3_and_view)
 	{

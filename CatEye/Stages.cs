@@ -57,6 +57,7 @@ namespace CatEye
 		public event EventHandler<IndexChangedEventArgs> IndexChanged;
 		
 		private Stage _CurrentStage;
+		protected StageOperationParametersWidget mParametersWidget;
 		public Stage CurrentStage { get { return _CurrentStage; } } 
 		
 		protected internal void SetStage(Stage s) { _CurrentStage = s; }
@@ -87,9 +88,10 @@ namespace CatEye
 					AddedToStage(this, new AddedToStageEventArgs(target));
 			}
 		}
-		public StageOperation(int index)
+		public StageOperation(int index, StageOperationParametersWidget parametersWidget)
 		{
 			Index = index;
+			mParametersWidget = parametersWidget;
 		}
 		
 		public virtual void OnDo(DoublePixmap hdp)
