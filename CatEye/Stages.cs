@@ -53,13 +53,21 @@ namespace CatEye
 				OperationIndexChanged(this, EventArgs.Empty);
 		}
 		
-		public void ApplyOperations(DoublePixmap hdp)
+		public bool ApplyOperations(DoublePixmap hdp)
 		{
-			for (int j = 0; j < _StageQueue.Count; j++)
+			try
 			{
-				if (_Holders[_StageQueue[j]].Active)
-					_StageQueue[j].OnDo(hdp);
+				for (int j = 0; j < _StageQueue.Count; j++)
+				{
+					if (_Holders[_StageQueue[j]].Active)
+						_StageQueue[j].OnDo(hdp);
+				}
 			}
+			catch (UserCancelException ex)
+			{
+				return false;
+			}
+			return true;
 		}
 		
 		protected void ArrangeVBoxes()

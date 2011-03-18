@@ -3,8 +3,11 @@ using System;
 
 namespace CatEye
 {
-
-
+	public delegate bool ProgressReporter(double progress);
+	public class UserCancelException : Exception
+	{
+	}
+	
 	public class DoublePixmap
 	{
 		double[,] r_chan, g_chan, b_chan;
@@ -69,7 +72,7 @@ namespace CatEye
 			return (byte)val;
 		}
 		
-		public void Downscale(int k)
+		public void Downscale(int k, ProgressReporter callback)
 		{
 			double[,] new_r = new double[width / k, height / k];
 			double[,] new_g = new double[width / k, height / k];
@@ -77,6 +80,13 @@ namespace CatEye
 
 			for (int i = 0; i < width / k; i++)
 			{
+				if (callback != null)
+				{
+					if (!callback((double)i / (width / k)))
+					{
+						throw new UserCancelException();
+					}
+				}
 				for (int j = 0; j < height / k; j++)
 				{
 					double r = 0, g = 0, b = 0;
@@ -278,7 +288,7 @@ namespace CatEye
 			}			
 		}
 		
-		public void SharpenLight(double radius_part, double power, double sharp_weight, double delta_limit, ISharpeningSamplingMethod ssm)
+		public void SharpenLight(double radius_part, double power, double sharp_weight, double delta_limit, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
 			double[,] light = new double[width, height];
 			double Max = CalcMaxLight();
@@ -305,10 +315,13 @@ namespace CatEye
 			
 			Console.WriteLine("Calculating scale factors...");
 			unsafe {
-				
 				for (int i = 0; i < width; i++)
 				{
-					Console.WriteLine("Line " + i + " of " + width);
+					if (callback != null)
+					{
+						if (!callback((double)i / width))
+							throw new UserCancelException();
+					}
 	
 					for (int j = 0; j < height; j++)
 					{

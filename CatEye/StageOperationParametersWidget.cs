@@ -1,9 +1,7 @@
-
 using System;
 
 namespace CatEye
 {
-
 
 	//[System.ComponentModel.ToolboxItem(true)]
 	public partial class StageOperationParametersWidget : Gtk.Bin

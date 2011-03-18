@@ -16,7 +16,10 @@ namespace CatEye
 			
 			Console.WriteLine("Ultra sharpening...");
 			hdp.SharpenLight(pw.Radius, pw.Power, pw.Weight, pw.Limit,
-					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(pw.Points, new Random()));
+					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(pw.Points, new Random()), 
+			                 delegate (double progress) {
+				return OnReportProgress(progress);
+			});
 			
 			base.OnDo (hdp);
 		}

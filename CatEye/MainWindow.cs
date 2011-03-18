@@ -16,7 +16,8 @@ public partial class MainWindow : Gtk.Window
 	
 
 	bool any_stage_modified = true;
-	
+	bool cancel_pending = false;
+
 	private void ArrangeStageOperationBoxes()
 	{
 		stage_vbox.CheckResize();
@@ -50,15 +51,19 @@ public partial class MainWindow : Gtk.Window
 		
 		downscaling_stage_op = new DownscalingStageOperation(new DownscalingStageOperationParametersWidget(), stages);
 		stages.AddStageOperation(downscaling_stage_op);
+		downscaling_stage_op.ReportProgress += HandleProgress;
 		
 		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget(), stages);
 		stages.AddStageOperation(compression_stage_op);
+		compression_stage_op.ReportProgress += HandleProgress;
 		
 		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget(), stages);
 		stages.AddStageOperation(ultra_sharp_stage_op);
+		ultra_sharp_stage_op.ReportProgress += HandleProgress;
 
 		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget(), stages);
 		stages.AddStageOperation(basic_ops_stage_op);
+		basic_ops_stage_op.ReportProgress += HandleProgress;
 		
 		stages.OperationAddedToStage += delegate {
 			ArrangeStageOperationBoxes();
@@ -66,6 +71,20 @@ public partial class MainWindow : Gtk.Window
 		
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
+	}
+
+	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
+	{
+		progressbar.Fraction = e.Progress;
+		object[] attrs = sender.GetType().GetCustomAttributes(typeof(StageOperationDescriptionAttribute), false);
+		if (attrs.Length > 0) 
+			progressbar.Text = (attrs[0] as StageOperationDescriptionAttribute).Name + ": ";
+		progressbar.Text += (e.Progress * 100).ToString("0") + "%";
+		
+		while (Gtk.Application.EventsPending())
+			Gtk.Application.RunIteration();
+		
+		if (cancel_pending) e.Cancel = true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -184,15 +203,23 @@ public partial class MainWindow : Gtk.Window
 	
 	void UpdateStage()
 	{
+		cancel_button.Sensitive = true;
 		if (ppl != null)
 		{
 			hdr = DoublePixmap.FromPPM(ppl);
 
-			stages.ApplyOperations(hdr);
-			
-			Console.WriteLine("Stage updated.");
-			ppmviewwidget1.HDR = hdr;
+			if (stages.ApplyOperations(hdr))
+			{
+				Console.WriteLine("Stage updated.");
+				ppmviewwidget1.HDR = hdr;
+			}
+			else
+			{
+				progressbar.Text = "User cancelled the operation!";
+				cancel_pending = false;//  .Active = false;
+			}
 		}
+		cancel_button.Sensitive = false;
 	}
 	
 	private System.IO.Stream ImportRaw(string filename)
@@ -275,34 +302,10 @@ public partial class MainWindow : Gtk.Window
 
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
+	{
+		cancel_pending = true;
+	}
 	
 	
 }

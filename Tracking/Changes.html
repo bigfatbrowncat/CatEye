@@ -1,0 +1,42 @@
+<html>
+<head>
+	<title>Changes made for CatEye project</title>
+	<style>
+		body { font-family: sans; font-size: 80%; margin: 0 }
+		table { font-family: sans; font-size: 70% }
+		div { -moz-border-radius: 5px; background-color: #eeeeee; padding: 10px; margin: 10px; }
+	</style>
+</head>
+
+<div>
+	<h3 style="margin-top: 0">Change #1</h3>
+	<p>Stage operations processing now doesn't stop the UI. It's not parallelized actually, it's still running 
+	in the UI thread, but now it
+	processes system messages and reports it's progress with a progress bar. Additionally it's possible now for the user 
+	to interrupt the image processing with hitting the "Cancel" button.</p>
+	<p>Introduced <b>ReportStageOperationProgressEventArgs</b> class and EventHandler<> with this EventArgs subclass contained, named 
+	<i>ReportProgress</i> inside the StageOperation class.
+	This event is called after every small part of the process is completed (at the discretion of the StageOperation itself) and 
+	reports the progress value in percents (as a double value between 0 and 1). Also this event contains <b>Cancel</b> 
+	property which should be set by the outer caller to interrupt the stage operation. Since most of stage operations
+	are simply covers to some functions inside the DoublePixmap class, <b>ProgressReporter</b> delegate was created to reporting/interrupting
+	these functions.
+	</p>
+	<p>
+	If Cancel is set to true inside the handler, the process interrupts itself with the new <b>UserCancelException</b> which is handled in
+	caller function.
+	</p>
+	<table>
+		<tr>
+			<td><b>Type</b></td><td>Architecture improvement</td>
+		</tr>
+		<tr>
+			<td><b>Implements</b></td><td>Improvement idea #2, Improvement idea #3</td>
+		</tr>
+		<tr>
+			<td><b>Topicality</b></td><td>Actual</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

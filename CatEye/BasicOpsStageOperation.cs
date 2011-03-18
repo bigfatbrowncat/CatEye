@@ -16,12 +16,15 @@ namespace CatEye
 			
 			Console.WriteLine("Basic operations: scaling channels...");
 			hdp.ApplyChannelsScale(pw.RedPart, pw.GreenPart, pw.BluePart);
+			OnReportProgress(0.33);
 				
 			Console.WriteLine("Basic operations: applying saturation...");
 			hdp.ApplySaturation(pw.Saturation);
+			OnReportProgress(0.66);
 				
 			Console.WriteLine("Basic operations: scaling light...");
 			hdp.ScaleLight(pw.Brightness);
+			OnReportProgress(0.99);
 			
 			base.OnDo (hdp);
 		}

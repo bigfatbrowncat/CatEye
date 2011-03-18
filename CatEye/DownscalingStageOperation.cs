@@ -15,7 +15,9 @@ namespace CatEye
 			DownscalingStageOperationParametersWidget pw = (DownscalingStageOperationParametersWidget)ParametersWidget;
 			
 			Console.WriteLine("Downscaling...");
-			if (pw.ScaleValue != 1) hdp.Downscale(pw.ScaleValue);
+			if (pw.ScaleValue != 1) hdp.Downscale(pw.ScaleValue, delegate (double progress) {
+				return OnReportProgress(progress);
+			});
 
 			base.OnDo (hdp);
 		}
