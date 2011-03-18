@@ -18,12 +18,6 @@ namespace CatEye
 			set { _TitleWidget.Active = value; }
 		}
 		
-		public Stage CurrentStage
-		{
-			get { return _TitleWidget.CurrentStage; }
-			set { _TitleWidget.CurrentStage = value; }
-		}
-		
 		public string Title
 		{
 			get { return _TitleWidget.Title; }
@@ -57,9 +51,6 @@ namespace CatEye
 			((Gtk.Box.BoxChild)vbox[operation.ParametersWidget]).Fill = false;
 			((Gtk.Box.BoxChild)vbox[operation.ParametersWidget]).Expand = false;
 			
-			_TitleWidget.ChangeStageButtonClicked += delegate {
-				OnChangeStageTitleButtonClicked(this, EventArgs.Empty);
-			};
 			_TitleWidget.UpButtonClicked += delegate {
 				OnUpTitleButtonClicked(this, EventArgs.Empty);
 			};

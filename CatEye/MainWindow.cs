@@ -6,8 +6,7 @@ using CatEye;
 public partial class MainWindow : Gtk.Window
 {
 	PPMLoader ppl = null;
-	DoublePixmap hdr_after_stage2 = null;
-	DoublePixmap hdr_after_stage3 = null;
+	DoublePixmap hdr = null;
 	Stages stages;
 
 	StageOperation downscaling_stage_op;
@@ -20,24 +19,7 @@ public partial class MainWindow : Gtk.Window
 	
 	private void ArrangeStageOperationBoxes()
 	{
-		// Check if we are using stage 3
-		if (stages.Stage3.Length > 0)
-		{
-			// Show right panel with stage 3
-			right_vbox.Visible = true;
-			// Show "Show" button near "Update view" button
-			show_stage2_radiobutton.Visible = true;
-		}
-		else
-		{
-			// Hide right panel with stage 3
-			right_vbox.Visible = false;
-			// Hide "Show" button near "Update view" button
-			show_stage2_radiobutton.Visible = false;
-		}
-		
-		stage2_vbox.CheckResize();
-		stage3_vbox.CheckResize();
+		stage_vbox.CheckResize();
 	}
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
@@ -64,19 +46,19 @@ public partial class MainWindow : Gtk.Window
 		pres_cb.SetActiveIter(ti);
 		
 		// Creating stage operations and stages
-		stages = new Stages(stage2_vbox, stage3_vbox);
+		stages = new Stages(stage_vbox);
 		
 		downscaling_stage_op = new DownscalingStageOperation(new DownscalingStageOperationParametersWidget(), stages);
-		stages.AddStageOperation(downscaling_stage_op, Stage.Stage2);
+		stages.AddStageOperation(downscaling_stage_op);
 		
 		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget(), stages);
-		stages.AddStageOperation(compression_stage_op, Stage.Stage2);
+		stages.AddStageOperation(compression_stage_op);
 		
 		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget(), stages);
-		stages.AddStageOperation(ultra_sharp_stage_op, Stage.Stage2);
+		stages.AddStageOperation(ultra_sharp_stage_op);
 
 		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget(), stages);
-		stages.AddStageOperation(basic_ops_stage_op, Stage.Stage2);
+		stages.AddStageOperation(basic_ops_stage_op);
 		
 		stages.OperationAddedToStage += delegate {
 			ArrangeStageOperationBoxes();
@@ -127,13 +109,16 @@ public partial class MainWindow : Gtk.Window
 		fcd.Destroy();
 	}
 	
-	private void LoadFile(string FileName)
+	private void ClearHDR()
 	{
 		ppmviewwidget1.HDR = null;
-		hdr_after_stage2 = null;
-		hdr_after_stage3 = null;
+		hdr = null;
 		GC.Collect();		// For freeng memory from unused hdr_src
-		
+	}
+	
+	private void LoadFile(string FileName)
+	{
+		ClearHDR();
 		ppl = PPMLoader.FromFile(FileName);
 
 		TreeIter ti;
@@ -143,16 +128,12 @@ public partial class MainWindow : Gtk.Window
 		if (downscale_by != 1)
 			ppl.Downscale(downscale_by);
 		
-		hdr_after_stage2 = DoublePixmap.FromPPM(ppl);
+		//hdr = DoublePixmap.FromPPM(ppl);
 	}
 
 	private void LoadStream(System.IO.Stream stream)
 	{
-		ppmviewwidget1.HDR = null;
-		hdr_after_stage2 = null;
-		hdr_after_stage3 = null;
-		GC.Collect();		// For freeng memory from unused hdr_src
-		
+		ClearHDR();
 		ppl = PPMLoader.FromStream(stream);
 
 		TreeIter ti;
@@ -162,7 +143,7 @@ public partial class MainWindow : Gtk.Window
 		if (downscale_by != 1)
 			ppl.Downscale(downscale_by);
 		
-		hdr_after_stage2 = DoublePixmap.FromPPM(ppl);
+		//hdr_after_stage2 = DoublePixmap.FromPPM(ppl);
 	}
 	
 	protected virtual void OnOpenActionActivated (object sender, System.EventArgs e)
@@ -198,70 +179,20 @@ public partial class MainWindow : Gtk.Window
 
 	protected virtual void OnApplyStage2ButtonClicked (object sender, System.EventArgs e)
 	{
-		UpdateStage2(true);
+		UpdateStage();
 	}
 	
-	void UpdateStage2(bool update_stage_3_and_view)
+	void UpdateStage()
 	{
 		if (ppl != null)
 		{
-			hdr_after_stage2 = DoublePixmap.FromPPM(ppl);
+			hdr = DoublePixmap.FromPPM(ppl);
 
-			stages.DoStage2(hdr_after_stage2);
+			stages.ApplyOperations(hdr);
 			
-			Console.WriteLine("Stage 2 completed.");
-			if (update_stage_3_and_view)
-			{
-				UpdateStage3();
-				UpdateHDRView();
-			}
+			Console.WriteLine("Stage updated.");
+			ppmviewwidget1.HDR = hdr;
 		}
-	}
-	
-	void UpdateStage3()
-	{
-		if (hdr_after_stage2 == null || any_stage_modified)
-		{
-			UpdateStage2(false);
-		}
-		
-		if (hdr_after_stage2 != null)
-		{
-			hdr_after_stage3 = new DoublePixmap(hdr_after_stage2);
-
-			stages.DoStage3(hdr_after_stage3);
-			
-			UpdateHDRView();
-			any_stage_modified = false;
-			Console.WriteLine("Stage 3 completed.");
-		}
-	}
-	
-	void UpdateHDRView()
-	{
-		if (show_stage3_radiobutton.Active)
-		{
-			ppmviewwidget1.HDR = hdr_after_stage3;
-		}	
-		if (show_stage2_radiobutton.Active)
-		{
-			ppmviewwidget1.HDR = hdr_after_stage2;
-		}		
-	}
-	
-	protected virtual void OnApplyStage3ButtonClicked (object sender, System.EventArgs e)
-	{
-		UpdateStage3();
-	}
-	
-	protected virtual void OnShowStage3RadiobuttonToggled (object sender, System.EventArgs e)
-	{
-		UpdateHDRView();
-	}
-	
-	protected virtual void OnShowStage2RadiobuttonToggled (object sender, System.EventArgs e)
-	{
-		UpdateHDRView();
 	}
 	
 	private System.IO.Stream ImportRaw(string filename)

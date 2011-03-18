@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/PPMView.exe" internal="true" />
+    <widget-library name="../bin/Release/PPMView.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -204,7 +204,7 @@
                             <property name="MemberName" />
                             <property name="ShadowType">None</property>
                             <child>
-                              <widget class="Gtk.VBox" id="stage2_vbox">
+                              <widget class="Gtk.VBox" id="stage_vbox">
                                 <property name="MemberName" />
                                 <property name="ShowScrollbars">True</property>
                                 <property name="Spacing">6</property>
@@ -248,22 +248,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.RadioButton" id="show_stage2_radiobutton">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Label" translatable="yes">Show</property>
-                            <property name="Active">True</property>
-                            <property name="DrawIndicator">False</property>
-                            <property name="HasLabel">True</property>
-                            <property name="UseUnderline">True</property>
-                            <property name="Group">what_stage_to_show</property>
-                            <signal name="Toggled" handler="OnShowStage2RadiobuttonToggled" />
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                          </packing>
+                          <placeholder />
                         </child>
                         <child>
                           <placeholder />
@@ -352,116 +337,6 @@
                     <property name="AutoSize">True</property>
                   </packing>
                 </child>
-                <child>
-                  <widget class="Gtk.VBox" id="right_vbox">
-                    <property name="MemberName" />
-                    <property name="Spacing">10</property>
-                    <property name="BorderWidth">4</property>
-                    <child>
-                      <widget class="Gtk.Label" id="label16">
-                        <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">&lt;b&gt;Stage 3&lt;/b&gt;</property>
-                        <property name="UseMarkup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-                        <property name="MemberName" />
-                        <property name="HscrollbarPolicy">Never</property>
-                        <child>
-                          <widget class="Gtk.Viewport" id="GtkViewport1">
-                            <property name="MemberName" />
-                            <property name="ShadowType">None</property>
-                            <child>
-                              <widget class="Gtk.VBox" id="stage3_vbox">
-                                <property name="MemberName" />
-                                <property name="ShowScrollbars">True</property>
-                                <property name="Spacing">6</property>
-                                <property name="BorderWidth">4</property>
-                                <child>
-                                  <placeholder />
-                                </child>
-                                <child>
-                                  <placeholder />
-                                </child>
-                                <child>
-                                  <placeholder />
-                                </child>
-                                <child>
-                                  <placeholder />
-                                </child>
-                              </widget>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.HBox" id="hbox10">
-                        <property name="MemberName" />
-                        <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.Button" id="apply_stage3_button">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Type">TextAndIcon</property>
-                            <property name="Icon">stock:gtk-refresh Menu</property>
-                            <property name="Label" translatable="yes">Update stage 3</property>
-                            <property name="UseUnderline">True</property>
-                            <signal name="Clicked" handler="OnApplyStage3ButtonClicked" />
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.RadioButton" id="show_stage3_radiobutton">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Label" translatable="yes">Show</property>
-                            <property name="DrawIndicator">False</property>
-                            <property name="HasLabel">True</property>
-                            <property name="UseUnderline">True</property>
-                            <property name="Group">what_stage_to_show</property>
-                            <signal name="Toggled" handler="OnShowStage3RadiobuttonToggled" />
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <placeholder />
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -484,29 +359,6 @@
       <widget class="Gtk.HBox" id="hbox">
         <property name="MemberName" />
         <child>
-          <widget class="Gtk.Button" id="change_stage_button">
-            <property name="MemberName" />
-            <property name="WidthRequest">23</property>
-            <property name="CanFocus">True</property>
-            <property name="Type">Custom</property>
-            <property name="Relief">None</property>
-            <signal name="Clicked" handler="OnChangeStageButtonClicked" />
-            <child>
-              <widget class="Gtk.Arrow" id="change_stage_arrow">
-                <property name="MemberName" />
-                <property name="ArrowType">Left</property>
-                <property name="ShadowType">None</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.Button" id="up_button">
             <property name="MemberName" />
             <property name="WidthRequest">23</property>
@@ -523,7 +375,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -546,7 +398,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -568,7 +420,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">2</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>

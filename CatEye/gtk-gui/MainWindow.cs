@@ -56,13 +56,11 @@ public partial class MainWindow {
     
     private Gtk.ScrolledWindow GtkScrolledWindow1;
     
-    private Gtk.VBox stage2_vbox;
+    private Gtk.VBox stage_vbox;
     
     private Gtk.HBox hbox9;
     
     private Gtk.Button apply_stage2_button;
-    
-    private Gtk.RadioButton show_stage2_radiobutton;
     
     private Gtk.VBox vbox3;
     
@@ -73,20 +71,6 @@ public partial class MainWindow {
     private Gtk.HBox status_bar_hbox;
     
     private Gtk.Label label4;
-    
-    private Gtk.VBox right_vbox;
-    
-    private Gtk.Label label16;
-    
-    private Gtk.ScrolledWindow GtkScrolledWindow;
-    
-    private Gtk.VBox stage3_vbox;
-    
-    private Gtk.HBox hbox10;
-    
-    private Gtk.Button apply_stage3_button;
-    
-    private Gtk.RadioButton show_stage3_radiobutton;
     
     protected virtual void Build() {
         Stetic.Gui.Initialize(this);
@@ -143,7 +127,6 @@ public partial class MainWindow {
         w2.Fill = false;
         // Container child vbox2.Gtk.Box+BoxChild
         this.vbox1 = new Gtk.VBox();
-        this.vbox1.Name = "vbox1";
         this.vbox1.Spacing = 4;
         this.vbox1.BorderWidth = ((uint)(4));
         // Container child vbox1.Gtk.Box+BoxChild
@@ -212,11 +195,11 @@ public partial class MainWindow {
         Gtk.Viewport w8 = new Gtk.Viewport();
         w8.ShadowType = ((Gtk.ShadowType)(0));
         // Container child GtkViewport2.Gtk.Container+ContainerChild
-        this.stage2_vbox = new Gtk.VBox();
-        this.stage2_vbox.Name = "stage2_vbox";
-        this.stage2_vbox.Spacing = 6;
-        this.stage2_vbox.BorderWidth = ((uint)(3));
-        w8.Add(this.stage2_vbox);
+        this.stage_vbox = new Gtk.VBox();
+        this.stage_vbox.Name = "stage_vbox";
+        this.stage_vbox.Spacing = 6;
+        this.stage_vbox.BorderWidth = ((uint)(3));
+        w8.Add(this.stage_vbox);
         this.GtkScrolledWindow1.Add(w8);
         this.left_vbox.Add(this.GtkScrolledWindow1);
         Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.left_vbox[this.GtkScrolledWindow1]));
@@ -249,27 +232,16 @@ public partial class MainWindow {
         this.hbox9.Add(this.apply_stage2_button);
         Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox9[this.apply_stage2_button]));
         w20.Position = 0;
-        // Container child hbox9.Gtk.Box+BoxChild
-        this.show_stage2_radiobutton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Show"));
-        this.show_stage2_radiobutton.CanFocus = true;
-        this.show_stage2_radiobutton.Name = "show_stage2_radiobutton";
-        this.show_stage2_radiobutton.DrawIndicator = false;
-        this.show_stage2_radiobutton.UseUnderline = true;
-        this.show_stage2_radiobutton.Group = new GLib.SList(System.IntPtr.Zero);
-        this.hbox9.Add(this.show_stage2_radiobutton);
-        Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox9[this.show_stage2_radiobutton]));
-        w21.Position = 1;
-        w21.Expand = false;
         this.left_vbox.Add(this.hbox9);
-        Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.left_vbox[this.hbox9]));
-        w22.Position = 4;
+        Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.left_vbox[this.hbox9]));
+        w21.Position = 4;
+        w21.Expand = false;
+        w21.Fill = false;
+        this.hbox5.Add(this.left_vbox);
+        Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox5[this.left_vbox]));
+        w22.Position = 0;
         w22.Expand = false;
         w22.Fill = false;
-        this.hbox5.Add(this.left_vbox);
-        Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox5[this.left_vbox]));
-        w23.Position = 0;
-        w23.Expand = false;
-        w23.Fill = false;
         // Container child hbox5.Gtk.Box+BoxChild
         this.vbox3 = new Gtk.VBox();
         this.vbox3.Name = "vbox3";
@@ -280,17 +252,17 @@ public partial class MainWindow {
         this.scrolledwindow3.Name = "scrolledwindow3";
         this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
         // Container child scrolledwindow3.Gtk.Container+ContainerChild
-        Gtk.Viewport w24 = new Gtk.Viewport();
-        w24.ShadowType = ((Gtk.ShadowType)(0));
+        Gtk.Viewport w23 = new Gtk.Viewport();
+        w23.ShadowType = ((Gtk.ShadowType)(0));
         // Container child GtkViewport.Gtk.Container+ContainerChild
         this.ppmviewwidget1 = new CatEye.DoublePixmapViewWidget();
         this.ppmviewwidget1.Events = ((Gdk.EventMask)(256));
         this.ppmviewwidget1.Name = "ppmviewwidget1";
-        w24.Add(this.ppmviewwidget1);
-        this.scrolledwindow3.Add(w24);
+        w23.Add(this.ppmviewwidget1);
+        this.scrolledwindow3.Add(w23);
         this.vbox3.Add(this.scrolledwindow3);
-        Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
-        w27.Position = 1;
+        Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
+        w26.Position = 1;
         // Container child vbox3.Gtk.Box+BoxChild
         this.status_bar_hbox = new Gtk.HBox();
         this.status_bar_hbox.Name = "status_bar_hbox";
@@ -301,106 +273,24 @@ public partial class MainWindow {
         this.label4.LabelProp = Mono.Unix.Catalog.GetString("Change anything and hit <b>Update view</b> button to apply changes");
         this.label4.UseMarkup = true;
         this.status_bar_hbox.Add(this.label4);
-        Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.label4]));
-        w28.Position = 0;
+        Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.label4]));
+        w27.Position = 0;
+        w27.Expand = false;
+        w27.Fill = false;
+        this.vbox3.Add(this.status_bar_hbox);
+        Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox3[this.status_bar_hbox]));
+        w28.Position = 2;
         w28.Expand = false;
         w28.Fill = false;
-        this.vbox3.Add(this.status_bar_hbox);
-        Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox3[this.status_bar_hbox]));
-        w29.Position = 2;
-        w29.Expand = false;
-        w29.Fill = false;
         this.hbox5.Add(this.vbox3);
-        Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox3]));
-        w30.Position = 1;
-        // Container child hbox5.Gtk.Box+BoxChild
-        this.right_vbox = new Gtk.VBox();
-        this.right_vbox.Name = "right_vbox";
-        this.right_vbox.Spacing = 10;
-        this.right_vbox.BorderWidth = ((uint)(4));
-        // Container child right_vbox.Gtk.Box+BoxChild
-        this.label16 = new Gtk.Label();
-        this.label16.Name = "label16";
-        this.label16.Xalign = 0F;
-        this.label16.LabelProp = Mono.Unix.Catalog.GetString("<b>Stage 3</b>");
-        this.label16.UseMarkup = true;
-        this.right_vbox.Add(this.label16);
-        Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.right_vbox[this.label16]));
-        w31.Position = 0;
-        w31.Expand = false;
-        w31.Fill = false;
-        // Container child right_vbox.Gtk.Box+BoxChild
-        this.GtkScrolledWindow = new Gtk.ScrolledWindow();
-        this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-        this.GtkScrolledWindow.HscrollbarPolicy = ((Gtk.PolicyType)(2));
-        // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-        Gtk.Viewport w32 = new Gtk.Viewport();
-        w32.ShadowType = ((Gtk.ShadowType)(0));
-        // Container child GtkViewport1.Gtk.Container+ContainerChild
-        this.stage3_vbox = new Gtk.VBox();
-        this.stage3_vbox.Name = "stage3_vbox";
-        this.stage3_vbox.Spacing = 6;
-        this.stage3_vbox.BorderWidth = ((uint)(4));
-        w32.Add(this.stage3_vbox);
-        this.GtkScrolledWindow.Add(w32);
-        this.right_vbox.Add(this.GtkScrolledWindow);
-        Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.right_vbox[this.GtkScrolledWindow]));
-        w35.Position = 1;
-        // Container child right_vbox.Gtk.Box+BoxChild
-        this.hbox10 = new Gtk.HBox();
-        this.hbox10.Name = "hbox10";
-        this.hbox10.Spacing = 6;
-        // Container child hbox10.Gtk.Box+BoxChild
-        this.apply_stage3_button = new Gtk.Button();
-        this.apply_stage3_button.CanFocus = true;
-        this.apply_stage3_button.Name = "apply_stage3_button";
-        this.apply_stage3_button.UseUnderline = true;
-        // Container child apply_stage3_button.Gtk.Container+ContainerChild
-        Gtk.Alignment w36 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-        // Container child GtkAlignment.Gtk.Container+ContainerChild
-        Gtk.HBox w37 = new Gtk.HBox();
-        w37.Spacing = 2;
-        // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Image w38 = new Gtk.Image();
-        w38.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
-        w37.Add(w38);
-        // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Label w40 = new Gtk.Label();
-        w40.LabelProp = Mono.Unix.Catalog.GetString("Update stage 3");
-        w40.UseUnderline = true;
-        w37.Add(w40);
-        w36.Add(w37);
-        this.apply_stage3_button.Add(w36);
-        this.hbox10.Add(this.apply_stage3_button);
-        Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.hbox10[this.apply_stage3_button]));
-        w44.Position = 0;
-        // Container child hbox10.Gtk.Box+BoxChild
-        this.show_stage3_radiobutton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Show"));
-        this.show_stage3_radiobutton.CanFocus = true;
-        this.show_stage3_radiobutton.Name = "show_stage3_radiobutton";
-        this.show_stage3_radiobutton.DrawIndicator = false;
-        this.show_stage3_radiobutton.UseUnderline = true;
-        this.show_stage3_radiobutton.Group = this.show_stage2_radiobutton.Group;
-        this.hbox10.Add(this.show_stage3_radiobutton);
-        Gtk.Box.BoxChild w45 = ((Gtk.Box.BoxChild)(this.hbox10[this.show_stage3_radiobutton]));
-        w45.Position = 1;
-        w45.Expand = false;
-        this.right_vbox.Add(this.hbox10);
-        Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.right_vbox[this.hbox10]));
-        w46.Position = 2;
-        w46.Expand = false;
-        w46.Fill = false;
-        this.hbox5.Add(this.right_vbox);
-        Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.hbox5[this.right_vbox]));
-        w47.Position = 2;
-        w47.Expand = false;
-        w47.Fill = false;
+        Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox3]));
+        w29.Position = 1;
         this.vbox1.Add(this.hbox5);
-        Gtk.Box.BoxChild w48 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
-        w48.Position = 0;
+        Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+        w30.Position = 0;
         this.vbox2.Add(this.vbox1);
-        Gtk.Box.BoxChild w49 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
-        w49.Position = 1;
+        Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
+        w31.Position = 1;
         this.Add(this.vbox2);
         if ((this.Child != null)) {
             this.Child.ShowAll();
@@ -413,8 +303,5 @@ public partial class MainWindow {
         this.saveAsAction.Activated += new System.EventHandler(this.OnSaveAsActionActivated);
         this.ImportFromDCRawAction.Activated += new System.EventHandler(this.OnImportFromDCRawActionActivated);
         this.apply_stage2_button.Clicked += new System.EventHandler(this.OnApplyStage2ButtonClicked);
-        this.show_stage2_radiobutton.Toggled += new System.EventHandler(this.OnShowStage2RadiobuttonToggled);
-        this.apply_stage3_button.Clicked += new System.EventHandler(this.OnApplyStage3ButtonClicked);
-        this.show_stage3_radiobutton.Toggled += new System.EventHandler(this.OnShowStage3RadiobuttonToggled);
     }
 }

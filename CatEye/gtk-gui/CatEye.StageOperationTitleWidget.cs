@@ -15,10 +15,6 @@ namespace CatEye {
         
         private Gtk.HBox hbox;
         
-        private Gtk.Button change_stage_button;
-        
-        private Gtk.Arrow change_stage_arrow;
-        
         private Gtk.Button up_button;
         
         private Gtk.Arrow arrow5;
@@ -40,22 +36,6 @@ namespace CatEye {
             this.hbox = new Gtk.HBox();
             this.hbox.Name = "hbox";
             // Container child hbox.Gtk.Box+BoxChild
-            this.change_stage_button = new Gtk.Button();
-            this.change_stage_button.WidthRequest = 23;
-            this.change_stage_button.CanFocus = true;
-            this.change_stage_button.Name = "change_stage_button";
-            this.change_stage_button.Relief = ((Gtk.ReliefStyle)(2));
-            // Container child change_stage_button.Gtk.Container+ContainerChild
-            this.change_stage_arrow = new Gtk.Arrow(((Gtk.ArrowType)(2)), ((Gtk.ShadowType)(0)));
-            this.change_stage_arrow.Name = "change_stage_arrow";
-            this.change_stage_button.Add(this.change_stage_arrow);
-            this.change_stage_button.Label = null;
-            this.hbox.Add(this.change_stage_button);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox[this.change_stage_button]));
-            w2.Position = 0;
-            w2.Expand = false;
-            w2.Fill = false;
-            // Container child hbox.Gtk.Box+BoxChild
             this.up_button = new Gtk.Button();
             this.up_button.WidthRequest = 23;
             this.up_button.CanFocus = true;
@@ -67,10 +47,10 @@ namespace CatEye {
             this.up_button.Add(this.arrow5);
             this.up_button.Label = null;
             this.hbox.Add(this.up_button);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox[this.up_button]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox[this.up_button]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
             // Container child hbox.Gtk.Box+BoxChild
             this.down_button = new Gtk.Button();
             this.down_button.WidthRequest = 23;
@@ -83,10 +63,10 @@ namespace CatEye {
             this.down_button.Add(this.arrow6);
             this.down_button.Label = null;
             this.hbox.Add(this.down_button);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.down_button]));
-            w6.Position = 2;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox[this.down_button]));
+            w4.Position = 1;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child hbox.Gtk.Box+BoxChild
             this.togglebutton = new Gtk.ToggleButton();
             this.togglebutton.CanFocus = true;
@@ -101,14 +81,13 @@ namespace CatEye {
             this.togglebutton.Add(this.title_label);
             this.togglebutton.Label = null;
             this.hbox.Add(this.togglebutton);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox[this.togglebutton]));
-            w8.Position = 3;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.togglebutton]));
+            w6.Position = 2;
             this.Add(this.hbox);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Hide();
-            this.change_stage_button.Clicked += new System.EventHandler(this.OnChangeStageButtonClicked);
             this.up_button.Clicked += new System.EventHandler(this.OnUpButtonClicked);
             this.down_button.Clicked += new System.EventHandler(this.OnDownButtonClicked);
         }
