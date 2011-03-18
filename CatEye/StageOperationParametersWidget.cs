@@ -5,7 +5,7 @@ namespace CatEye
 {
 
 
-	[System.ComponentModel.ToolboxItem(true)]
+	//[System.ComponentModel.ToolboxItem(true)]
 	public partial class StageOperationParametersWidget : Gtk.Bin
 	{
 		private bool mModifiedByUser = true;

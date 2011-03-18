@@ -2,16 +2,17 @@ using System;
 
 namespace CatEye
 {
+	[StageOperationDescription("Downscaling")]
 	public class DownscalingStageOperation : StageOperation
 	{
-		public DownscalingStageOperation (int index, DownscalingStageOperationParametersWidget parametersWidget)
-			: base (index, parametersWidget)
+		public DownscalingStageOperation (DownscalingStageOperationParametersWidget parametersWidget, Stages owner)
+			: base (parametersWidget, owner)
 		{
 		}
 		
-		public override void OnDo (DoublePixmap hdp)
+		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			DownscalingStageOperationParametersWidget pw = (DownscalingStageOperationParametersWidget)mParametersWidget;
+			DownscalingStageOperationParametersWidget pw = (DownscalingStageOperationParametersWidget)ParametersWidget;
 			
 			Console.WriteLine("Downscaling...");
 			if (pw.ScaleValue != 1) hdp.Downscale(pw.ScaleValue);

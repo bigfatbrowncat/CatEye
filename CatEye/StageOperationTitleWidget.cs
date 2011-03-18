@@ -7,6 +7,7 @@ namespace CatEye
 	public partial class StageOperationTitleWidget : Gtk.Bin
 	{
 		private Stage _CurrentStage;
+		private StageOperation _Operation;
 		private string _Title;
 
 		public Stage CurrentStage 
@@ -25,7 +26,14 @@ namespace CatEye
 			}
 		}
 		
-		
+		public StageOperation Operation
+		{
+			get { return _Operation; }
+			set 
+			{ 
+				_Operation = value;
+			}
+		}
 		
 		public string Title
 		{

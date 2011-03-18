@@ -163,7 +163,6 @@ namespace CatEye
                 while (headerItemCount < 4)
                 {
 					bool sr = binReader.BaseStream.CanRead;
-					Console.WriteLine(sr);
 					
                     char nextChar = (char)binReader.PeekChar();
                     if (nextChar == '#')    // comment

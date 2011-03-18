@@ -2,16 +2,17 @@ using System;
 
 namespace CatEye
 {
+	[StageOperationDescription("Basic operations")]
 	public class BasicOpsStageOperation : StageOperation
 	{
-		public BasicOpsStageOperation (int index, BasicOpsStageOperationParametersWidget parametersWidget)
-			: base (index, parametersWidget)
+		public BasicOpsStageOperation (BasicOpsStageOperationParametersWidget parametersWidget, Stages owner)
+			: base (parametersWidget, owner)
 		{
 		}
 		
-		public override void OnDo (DoublePixmap hdp)
+		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			BasicOpsStageOperationParametersWidget pw = (BasicOpsStageOperationParametersWidget)mParametersWidget;
+			BasicOpsStageOperationParametersWidget pw = (BasicOpsStageOperationParametersWidget)ParametersWidget;
 			
 			Console.WriteLine("Basic operations: scaling channels...");
 			hdp.ApplyChannelsScale(pw.RedPart, pw.GreenPart, pw.BluePart);

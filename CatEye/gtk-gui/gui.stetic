@@ -6,9 +6,9 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Release/PPMView.exe" internal="true" />
+    <widget-library name="../bin/Debug/PPMView.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="861 500">
+  <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
       <action id="ScaledRangeAction">
         <property name="Type">Radio</property>
@@ -252,6 +252,7 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">Show</property>
+                            <property name="Active">True</property>
                             <property name="DrawIndicator">False</property>
                             <property name="HasLabel">True</property>
                             <property name="UseUnderline">True</property>
@@ -382,183 +383,19 @@
                               <widget class="Gtk.VBox" id="stage3_vbox">
                                 <property name="MemberName" />
                                 <property name="ShowScrollbars">True</property>
-                                <property name="Spacing">10</property>
+                                <property name="Spacing">6</property>
                                 <property name="BorderWidth">4</property>
                                 <child>
-                                  <widget class="Gtk.VBox" id="downscaling_vbox">
-                                    <property name="MemberName" />
-                                    <property name="Spacing">6</property>
-                                    <child>
-                                      <widget class="CatEye.StageOperationTitleWidget" id="downscaling_stageoperation_titlewidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Title">Downscale</property>
-                                        <property name="Active">True</property>
-                                        <signal name="ChangeStageButtonClicked" handler="OnDownscalingStageoperationtitlewidgetChangeStageButtonClicked" />
-                                        <signal name="UpButtonClicked" handler="OnDownscalingStageoperationtitlewidgetUpButtonClicked" />
-                                        <signal name="DownButtonClicked" handler="OnDownscalingStageoperationtitlewidgetDownButtonClicked" />
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">0</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="CatEye.DownscalingStageOperationParametersWidget" id="downscaling_stageoperation_parameterswidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="ScaleValue">0</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">1</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="Position">0</property>
-                                    <property name="AutoSize">True</property>
-                                    <property name="Expand">False</property>
-                                    <property name="Fill">False</property>
-                                  </packing>
+                                  <placeholder />
                                 </child>
                                 <child>
-                                  <widget class="Gtk.VBox" id="basic_ops_vbox">
-                                    <property name="MemberName" />
-                                    <property name="Spacing">6</property>
-                                    <child>
-                                      <widget class="CatEye.StageOperationTitleWidget" id="basic_ops_stageoperation_titlewidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Title">Basic operations</property>
-                                        <property name="Active">True</property>
-                                        <signal name="ChangeStageButtonClicked" handler="OnBasicOpsStageoperationtitlewidgetChangeStageButtonClicked" />
-                                        <signal name="UpButtonClicked" handler="OnBasicOpsStageoperationtitlewidgetUpButtonClicked" />
-                                        <signal name="DownButtonClicked" handler="OnBasicOpsStageoperationtitlewidgetDownButtonClicked" />
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">0</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="CatEye.BasicOpsStageOperationParametersWidget" id="basic_ops_stageoperation_parameterswidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Brightness">0.9</property>
-                                        <property name="Saturation">0.9</property>
-                                        <property name="RedPart">1</property>
-                                        <property name="GreenPart">1</property>
-                                        <property name="BluePart">1</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">1</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="Position">1</property>
-                                    <property name="AutoSize">True</property>
-                                    <property name="Expand">False</property>
-                                    <property name="Fill">False</property>
-                                  </packing>
+                                  <placeholder />
                                 </child>
                                 <child>
-                                  <widget class="Gtk.VBox" id="compression_vbox">
-                                    <property name="MemberName" />
-                                    <property name="Spacing">6</property>
-                                    <child>
-                                      <widget class="CatEye.StageOperationTitleWidget" id="compression_stageoperationtitlewidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Title">Compression</property>
-                                        <property name="Active">True</property>
-                                        <signal name="ChangeStageButtonClicked" handler="OnCompressionStageoperationtitlewidgetChangeStageButtonClicked" />
-                                        <signal name="UpButtonClicked" handler="OnCompressionStageoperationtitlewidgetUpButtonClicked" />
-                                        <signal name="DownButtonClicked" handler="OnCompressionStageoperationtitlewidgetDownButtonClicked" />
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">0</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="CatEye.CompressionStageOperationParametersWidget" id="compression_stageoperation_parameterswidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Power">0</property>
-                                        <property name="Bloha">0</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">1</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="Position">2</property>
-                                    <property name="AutoSize">True</property>
-                                    <property name="Expand">False</property>
-                                    <property name="Fill">False</property>
-                                  </packing>
+                                  <placeholder />
                                 </child>
                                 <child>
-                                  <widget class="Gtk.VBox" id="ultra_sharp_vbox">
-                                    <property name="MemberName" />
-                                    <property name="Spacing">6</property>
-                                    <child>
-                                      <widget class="CatEye.StageOperationTitleWidget" id="ultra_sharp_stageoperationtitlewidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Title">Sharpening</property>
-                                        <property name="Active">True</property>
-                                        <signal name="ChangeStageButtonClicked" handler="OnSharpeningStageoperationtitlewidgetChangeStageButtonClicked" />
-                                        <signal name="UpButtonClicked" handler="OnSharpeningStageoperationtitlewidgetUpButtonClicked" />
-                                        <signal name="DownButtonClicked" handler="OnSharpeningStageoperationtitlewidgetDownButtonClicked" />
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">0</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="CatEye.UltraSharpStageOperationParametersWidget" id="ultra_sharp_stageoperation_parameterswidget">
-                                        <property name="MemberName" />
-                                        <property name="Events">ButtonPressMask</property>
-                                        <property name="Power">0.3</property>
-                                        <property name="Radius">0.1</property>
-                                        <property name="Weight">80</property>
-                                        <property name="Limit">0.3</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="Position">1</property>
-                                        <property name="AutoSize">True</property>
-                                        <property name="Expand">False</property>
-                                        <property name="Fill">False</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="Position">3</property>
-                                    <property name="AutoSize">True</property>
-                                    <property name="Expand">False</property>
-                                    <property name="Fill">False</property>
-                                  </packing>
+                                  <placeholder />
                                 </child>
                               </widget>
                             </child>
@@ -993,7 +830,7 @@
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">4</property>
+        <property name="NRows">5</property>
         <property name="NColumns">2</property>
         <property name="Homogeneous">True</property>
         <property name="RowSpacing">6</property>
@@ -1056,6 +893,26 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.Label" id="label15">
+            <property name="MemberName" />
+            <property name="Xalign">1</property>
+            <property name="LabelProp" translatable="yes">Points:</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">4</property>
+            <property name="BottomAttach">5</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Label" id="label7">
             <property name="MemberName" />
             <property name="Xalign">1</property>
@@ -1089,6 +946,31 @@
             <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">True</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Entry" id="points_entry">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Text" translatable="yes">200</property>
+            <property name="IsEditable">True</property>
+            <property name="WidthChars">6</property>
+            <signal name="Changed" handler="OnPointsEntryChanged" />
+          </widget>
+          <packing>
+            <property name="TopAttach">4</property>
+            <property name="BottomAttach">5</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -1261,6 +1143,32 @@
             <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="CatEye.StageOperationHolderWidget" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.VBox" id="vbox">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="CatEye.StageOperationTitleWidget" id="_TitleWidget">
+            <property name="MemberName">_TitleWidget</property>
+            <property name="Events">ButtonPressMask</property>
+            <property name="Active">False</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder />
         </child>
       </widget>
     </child>

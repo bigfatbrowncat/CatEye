@@ -21,9 +21,13 @@ namespace CatEye {
         
         private Gtk.Label label14;
         
+        private Gtk.Label label15;
+        
         private Gtk.Label label7;
         
         private Gtk.Entry limit_entry;
+        
+        private Gtk.Entry points_entry;
         
         private Gtk.Entry power_entry;
         
@@ -37,7 +41,7 @@ namespace CatEye {
             Stetic.BinContainer.Attach(this);
             this.Name = "CatEye.UltraSharpStageOperationParametersWidget";
             // Container child CatEye.UltraSharpStageOperationParametersWidget.Gtk.Container+ContainerChild
-            this.table1 = new Gtk.Table(((uint)(4)), ((uint)(2)), true);
+            this.table1 = new Gtk.Table(((uint)(5)), ((uint)(2)), true);
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
@@ -72,13 +76,24 @@ namespace CatEye {
             w3.BottomAttach = ((uint)(4));
             w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
+            this.label15 = new Gtk.Label();
+            this.label15.Name = "label15";
+            this.label15.Xalign = 1F;
+            this.label15.LabelProp = Mono.Unix.Catalog.GetString("Points:");
+            this.table1.Add(this.label15);
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.label15]));
+            w4.TopAttach = ((uint)(4));
+            w4.BottomAttach = ((uint)(5));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 1F;
             this.label7.LabelProp = Mono.Unix.Catalog.GetString("Power:");
             this.table1.Add(this.label7);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.label7]));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label7]));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.limit_entry = new Gtk.Entry();
             this.limit_entry.CanFocus = true;
@@ -87,12 +102,27 @@ namespace CatEye {
             this.limit_entry.IsEditable = true;
             this.limit_entry.WidthChars = 6;
             this.table1.Add(this.limit_entry);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.limit_entry]));
-            w5.TopAttach = ((uint)(3));
-            w5.BottomAttach = ((uint)(4));
-            w5.LeftAttach = ((uint)(1));
-            w5.RightAttach = ((uint)(2));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.limit_entry]));
+            w6.TopAttach = ((uint)(3));
+            w6.BottomAttach = ((uint)(4));
+            w6.LeftAttach = ((uint)(1));
+            w6.RightAttach = ((uint)(2));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
+            this.points_entry = new Gtk.Entry();
+            this.points_entry.CanFocus = true;
+            this.points_entry.Name = "points_entry";
+            this.points_entry.Text = Mono.Unix.Catalog.GetString("200");
+            this.points_entry.IsEditable = true;
+            this.points_entry.WidthChars = 6;
+            this.table1.Add(this.points_entry);
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.points_entry]));
+            w7.TopAttach = ((uint)(4));
+            w7.BottomAttach = ((uint)(5));
+            w7.LeftAttach = ((uint)(1));
+            w7.RightAttach = ((uint)(2));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.power_entry = new Gtk.Entry();
             this.power_entry.CanFocus = true;
@@ -101,10 +131,10 @@ namespace CatEye {
             this.power_entry.IsEditable = true;
             this.power_entry.WidthChars = 6;
             this.table1.Add(this.power_entry);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.power_entry]));
-            w6.LeftAttach = ((uint)(1));
-            w6.RightAttach = ((uint)(2));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.power_entry]));
+            w8.LeftAttach = ((uint)(1));
+            w8.RightAttach = ((uint)(2));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.radius_entry = new Gtk.Entry();
             this.radius_entry.CanFocus = true;
@@ -113,12 +143,12 @@ namespace CatEye {
             this.radius_entry.IsEditable = true;
             this.radius_entry.WidthChars = 6;
             this.table1.Add(this.radius_entry);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.radius_entry]));
-            w7.TopAttach = ((uint)(1));
-            w7.BottomAttach = ((uint)(2));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.radius_entry]));
+            w9.TopAttach = ((uint)(1));
+            w9.BottomAttach = ((uint)(2));
+            w9.LeftAttach = ((uint)(1));
+            w9.RightAttach = ((uint)(2));
+            w9.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.weight_entry = new Gtk.Entry();
             this.weight_entry.CanFocus = true;
@@ -127,12 +157,12 @@ namespace CatEye {
             this.weight_entry.IsEditable = true;
             this.weight_entry.WidthChars = 6;
             this.table1.Add(this.weight_entry);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.weight_entry]));
-            w8.TopAttach = ((uint)(2));
-            w8.BottomAttach = ((uint)(3));
-            w8.LeftAttach = ((uint)(1));
-            w8.RightAttach = ((uint)(2));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table1[this.weight_entry]));
+            w10.TopAttach = ((uint)(2));
+            w10.BottomAttach = ((uint)(3));
+            w10.LeftAttach = ((uint)(1));
+            w10.RightAttach = ((uint)(2));
+            w10.YOptions = ((Gtk.AttachOptions)(4));
             this.Add(this.table1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -141,6 +171,7 @@ namespace CatEye {
             this.weight_entry.Changed += new System.EventHandler(this.OnWeightEntryChanged);
             this.radius_entry.Changed += new System.EventHandler(this.OnRadiusEntryChanged);
             this.power_entry.Changed += new System.EventHandler(this.OnPowerEntryChanged);
+            this.points_entry.Changed += new System.EventHandler(this.OnPointsEntryChanged);
             this.limit_entry.Changed += new System.EventHandler(this.OnLimitEntryChanged);
         }
     }

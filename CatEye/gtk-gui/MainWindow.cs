@@ -82,30 +82,6 @@ public partial class MainWindow {
     
     private Gtk.VBox stage3_vbox;
     
-    private Gtk.VBox downscaling_vbox;
-    
-    private CatEye.StageOperationTitleWidget downscaling_stageoperation_titlewidget;
-    
-    private CatEye.DownscalingStageOperationParametersWidget downscaling_stageoperation_parameterswidget;
-    
-    private Gtk.VBox basic_ops_vbox;
-    
-    private CatEye.StageOperationTitleWidget basic_ops_stageoperation_titlewidget;
-    
-    private CatEye.BasicOpsStageOperationParametersWidget basic_ops_stageoperation_parameterswidget;
-    
-    private Gtk.VBox compression_vbox;
-    
-    private CatEye.StageOperationTitleWidget compression_stageoperationtitlewidget;
-    
-    private CatEye.CompressionStageOperationParametersWidget compression_stageoperation_parameterswidget;
-    
-    private Gtk.VBox ultra_sharp_vbox;
-    
-    private CatEye.StageOperationTitleWidget ultra_sharp_stageoperationtitlewidget;
-    
-    private CatEye.UltraSharpStageOperationParametersWidget ultra_sharp_stageoperation_parameterswidget;
-    
     private Gtk.HBox hbox10;
     
     private Gtk.Button apply_stage3_button;
@@ -363,141 +339,13 @@ public partial class MainWindow {
         // Container child GtkViewport1.Gtk.Container+ContainerChild
         this.stage3_vbox = new Gtk.VBox();
         this.stage3_vbox.Name = "stage3_vbox";
-        this.stage3_vbox.Spacing = 10;
+        this.stage3_vbox.Spacing = 6;
         this.stage3_vbox.BorderWidth = ((uint)(4));
-        // Container child stage3_vbox.Gtk.Box+BoxChild
-        this.downscaling_vbox = new Gtk.VBox();
-        this.downscaling_vbox.Name = "downscaling_vbox";
-        this.downscaling_vbox.Spacing = 6;
-        // Container child downscaling_vbox.Gtk.Box+BoxChild
-        this.downscaling_stageoperation_titlewidget = new CatEye.StageOperationTitleWidget();
-        this.downscaling_stageoperation_titlewidget.Events = ((Gdk.EventMask)(256));
-        this.downscaling_stageoperation_titlewidget.Name = "downscaling_stageoperation_titlewidget";
-        this.downscaling_stageoperation_titlewidget.Title = "Downscale";
-        this.downscaling_stageoperation_titlewidget.Active = true;
-        this.downscaling_vbox.Add(this.downscaling_stageoperation_titlewidget);
-        Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.downscaling_stageoperation_titlewidget]));
-        w33.Position = 0;
-        w33.Expand = false;
-        w33.Fill = false;
-        // Container child downscaling_vbox.Gtk.Box+BoxChild
-        this.downscaling_stageoperation_parameterswidget = new CatEye.DownscalingStageOperationParametersWidget();
-        this.downscaling_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
-        this.downscaling_stageoperation_parameterswidget.Name = "downscaling_stageoperation_parameterswidget";
-        this.downscaling_stageoperation_parameterswidget.ScaleValue = 0;
-        this.downscaling_vbox.Add(this.downscaling_stageoperation_parameterswidget);
-        Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.downscaling_vbox[this.downscaling_stageoperation_parameterswidget]));
-        w34.Position = 1;
-        w34.Expand = false;
-        w34.Fill = false;
-        this.stage3_vbox.Add(this.downscaling_vbox);
-        Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.downscaling_vbox]));
-        w35.Position = 0;
-        w35.Expand = false;
-        w35.Fill = false;
-        // Container child stage3_vbox.Gtk.Box+BoxChild
-        this.basic_ops_vbox = new Gtk.VBox();
-        this.basic_ops_vbox.Name = "basic_ops_vbox";
-        this.basic_ops_vbox.Spacing = 6;
-        // Container child basic_ops_vbox.Gtk.Box+BoxChild
-        this.basic_ops_stageoperation_titlewidget = new CatEye.StageOperationTitleWidget();
-        this.basic_ops_stageoperation_titlewidget.Events = ((Gdk.EventMask)(256));
-        this.basic_ops_stageoperation_titlewidget.Name = "basic_ops_stageoperation_titlewidget";
-        this.basic_ops_stageoperation_titlewidget.Title = "Basic operations";
-        this.basic_ops_stageoperation_titlewidget.Active = true;
-        this.basic_ops_vbox.Add(this.basic_ops_stageoperation_titlewidget);
-        Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.basic_ops_stageoperation_titlewidget]));
-        w36.Position = 0;
-        w36.Expand = false;
-        w36.Fill = false;
-        // Container child basic_ops_vbox.Gtk.Box+BoxChild
-        this.basic_ops_stageoperation_parameterswidget = new CatEye.BasicOpsStageOperationParametersWidget();
-        this.basic_ops_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
-        this.basic_ops_stageoperation_parameterswidget.Name = "basic_ops_stageoperation_parameterswidget";
-        this.basic_ops_stageoperation_parameterswidget.Brightness = 0.9;
-        this.basic_ops_stageoperation_parameterswidget.Saturation = 0.9;
-        this.basic_ops_stageoperation_parameterswidget.RedPart = 1;
-        this.basic_ops_stageoperation_parameterswidget.GreenPart = 1;
-        this.basic_ops_stageoperation_parameterswidget.BluePart = 1;
-        this.basic_ops_vbox.Add(this.basic_ops_stageoperation_parameterswidget);
-        Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.basic_ops_vbox[this.basic_ops_stageoperation_parameterswidget]));
-        w37.Position = 1;
-        w37.Expand = false;
-        w37.Fill = false;
-        this.stage3_vbox.Add(this.basic_ops_vbox);
-        Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.basic_ops_vbox]));
-        w38.Position = 1;
-        w38.Expand = false;
-        w38.Fill = false;
-        // Container child stage3_vbox.Gtk.Box+BoxChild
-        this.compression_vbox = new Gtk.VBox();
-        this.compression_vbox.Name = "compression_vbox";
-        this.compression_vbox.Spacing = 6;
-        // Container child compression_vbox.Gtk.Box+BoxChild
-        this.compression_stageoperationtitlewidget = new CatEye.StageOperationTitleWidget();
-        this.compression_stageoperationtitlewidget.Events = ((Gdk.EventMask)(256));
-        this.compression_stageoperationtitlewidget.Name = "compression_stageoperationtitlewidget";
-        this.compression_stageoperationtitlewidget.Title = "Compression";
-        this.compression_stageoperationtitlewidget.Active = true;
-        this.compression_vbox.Add(this.compression_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w39 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.compression_stageoperationtitlewidget]));
-        w39.Position = 0;
-        w39.Expand = false;
-        w39.Fill = false;
-        // Container child compression_vbox.Gtk.Box+BoxChild
-        this.compression_stageoperation_parameterswidget = new CatEye.CompressionStageOperationParametersWidget();
-        this.compression_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
-        this.compression_stageoperation_parameterswidget.Name = "compression_stageoperation_parameterswidget";
-        this.compression_stageoperation_parameterswidget.Power = 0;
-        this.compression_stageoperation_parameterswidget.Bloha = 0;
-        this.compression_vbox.Add(this.compression_stageoperation_parameterswidget);
-        Gtk.Box.BoxChild w40 = ((Gtk.Box.BoxChild)(this.compression_vbox[this.compression_stageoperation_parameterswidget]));
-        w40.Position = 1;
-        w40.Expand = false;
-        w40.Fill = false;
-        this.stage3_vbox.Add(this.compression_vbox);
-        Gtk.Box.BoxChild w41 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.compression_vbox]));
-        w41.Position = 2;
-        w41.Expand = false;
-        w41.Fill = false;
-        // Container child stage3_vbox.Gtk.Box+BoxChild
-        this.ultra_sharp_vbox = new Gtk.VBox();
-        this.ultra_sharp_vbox.Name = "ultra_sharp_vbox";
-        this.ultra_sharp_vbox.Spacing = 6;
-        // Container child ultra_sharp_vbox.Gtk.Box+BoxChild
-        this.ultra_sharp_stageoperationtitlewidget = new CatEye.StageOperationTitleWidget();
-        this.ultra_sharp_stageoperationtitlewidget.Events = ((Gdk.EventMask)(256));
-        this.ultra_sharp_stageoperationtitlewidget.Name = "ultra_sharp_stageoperationtitlewidget";
-        this.ultra_sharp_stageoperationtitlewidget.Title = "Sharpening";
-        this.ultra_sharp_stageoperationtitlewidget.Active = true;
-        this.ultra_sharp_vbox.Add(this.ultra_sharp_stageoperationtitlewidget);
-        Gtk.Box.BoxChild w42 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.ultra_sharp_stageoperationtitlewidget]));
-        w42.Position = 0;
-        w42.Expand = false;
-        w42.Fill = false;
-        // Container child ultra_sharp_vbox.Gtk.Box+BoxChild
-        this.ultra_sharp_stageoperation_parameterswidget = new CatEye.UltraSharpStageOperationParametersWidget();
-        this.ultra_sharp_stageoperation_parameterswidget.Events = ((Gdk.EventMask)(256));
-        this.ultra_sharp_stageoperation_parameterswidget.Name = "ultra_sharp_stageoperation_parameterswidget";
-        this.ultra_sharp_stageoperation_parameterswidget.Power = 0.3;
-        this.ultra_sharp_stageoperation_parameterswidget.Radius = 0.1;
-        this.ultra_sharp_stageoperation_parameterswidget.Weight = 80;
-        this.ultra_sharp_stageoperation_parameterswidget.Limit = 0.3;
-        this.ultra_sharp_vbox.Add(this.ultra_sharp_stageoperation_parameterswidget);
-        Gtk.Box.BoxChild w43 = ((Gtk.Box.BoxChild)(this.ultra_sharp_vbox[this.ultra_sharp_stageoperation_parameterswidget]));
-        w43.Position = 1;
-        w43.Expand = false;
-        w43.Fill = false;
-        this.stage3_vbox.Add(this.ultra_sharp_vbox);
-        Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.stage3_vbox[this.ultra_sharp_vbox]));
-        w44.Position = 3;
-        w44.Expand = false;
-        w44.Fill = false;
         w32.Add(this.stage3_vbox);
         this.GtkScrolledWindow.Add(w32);
         this.right_vbox.Add(this.GtkScrolledWindow);
-        Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.right_vbox[this.GtkScrolledWindow]));
-        w47.Position = 1;
+        Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.right_vbox[this.GtkScrolledWindow]));
+        w35.Position = 1;
         // Container child right_vbox.Gtk.Box+BoxChild
         this.hbox10 = new Gtk.HBox();
         this.hbox10.Name = "hbox10";
@@ -508,24 +356,24 @@ public partial class MainWindow {
         this.apply_stage3_button.Name = "apply_stage3_button";
         this.apply_stage3_button.UseUnderline = true;
         // Container child apply_stage3_button.Gtk.Container+ContainerChild
-        Gtk.Alignment w48 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+        Gtk.Alignment w36 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
         // Container child GtkAlignment.Gtk.Container+ContainerChild
-        Gtk.HBox w49 = new Gtk.HBox();
-        w49.Spacing = 2;
+        Gtk.HBox w37 = new Gtk.HBox();
+        w37.Spacing = 2;
         // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Image w50 = new Gtk.Image();
-        w50.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
-        w49.Add(w50);
+        Gtk.Image w38 = new Gtk.Image();
+        w38.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
+        w37.Add(w38);
         // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Label w52 = new Gtk.Label();
-        w52.LabelProp = Mono.Unix.Catalog.GetString("Update stage 3");
-        w52.UseUnderline = true;
-        w49.Add(w52);
-        w48.Add(w49);
-        this.apply_stage3_button.Add(w48);
+        Gtk.Label w40 = new Gtk.Label();
+        w40.LabelProp = Mono.Unix.Catalog.GetString("Update stage 3");
+        w40.UseUnderline = true;
+        w37.Add(w40);
+        w36.Add(w37);
+        this.apply_stage3_button.Add(w36);
         this.hbox10.Add(this.apply_stage3_button);
-        Gtk.Box.BoxChild w56 = ((Gtk.Box.BoxChild)(this.hbox10[this.apply_stage3_button]));
-        w56.Position = 0;
+        Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.hbox10[this.apply_stage3_button]));
+        w44.Position = 0;
         // Container child hbox10.Gtk.Box+BoxChild
         this.show_stage3_radiobutton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Show"));
         this.show_stage3_radiobutton.CanFocus = true;
@@ -534,30 +382,30 @@ public partial class MainWindow {
         this.show_stage3_radiobutton.UseUnderline = true;
         this.show_stage3_radiobutton.Group = this.show_stage2_radiobutton.Group;
         this.hbox10.Add(this.show_stage3_radiobutton);
-        Gtk.Box.BoxChild w57 = ((Gtk.Box.BoxChild)(this.hbox10[this.show_stage3_radiobutton]));
-        w57.Position = 1;
-        w57.Expand = false;
+        Gtk.Box.BoxChild w45 = ((Gtk.Box.BoxChild)(this.hbox10[this.show_stage3_radiobutton]));
+        w45.Position = 1;
+        w45.Expand = false;
         this.right_vbox.Add(this.hbox10);
-        Gtk.Box.BoxChild w58 = ((Gtk.Box.BoxChild)(this.right_vbox[this.hbox10]));
-        w58.Position = 2;
-        w58.Expand = false;
-        w58.Fill = false;
+        Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.right_vbox[this.hbox10]));
+        w46.Position = 2;
+        w46.Expand = false;
+        w46.Fill = false;
         this.hbox5.Add(this.right_vbox);
-        Gtk.Box.BoxChild w59 = ((Gtk.Box.BoxChild)(this.hbox5[this.right_vbox]));
-        w59.Position = 2;
-        w59.Expand = false;
-        w59.Fill = false;
+        Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.hbox5[this.right_vbox]));
+        w47.Position = 2;
+        w47.Expand = false;
+        w47.Fill = false;
         this.vbox1.Add(this.hbox5);
-        Gtk.Box.BoxChild w60 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
-        w60.Position = 0;
+        Gtk.Box.BoxChild w48 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+        w48.Position = 0;
         this.vbox2.Add(this.vbox1);
-        Gtk.Box.BoxChild w61 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
-        w61.Position = 1;
+        Gtk.Box.BoxChild w49 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
+        w49.Position = 1;
         this.Add(this.vbox2);
         if ((this.Child != null)) {
             this.Child.ShowAll();
         }
-        this.DefaultWidth = 861;
+        this.DefaultWidth = 879;
         this.DefaultHeight = 500;
         this.Show();
         this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
@@ -566,18 +414,6 @@ public partial class MainWindow {
         this.ImportFromDCRawAction.Activated += new System.EventHandler(this.OnImportFromDCRawActionActivated);
         this.apply_stage2_button.Clicked += new System.EventHandler(this.OnApplyStage2ButtonClicked);
         this.show_stage2_radiobutton.Toggled += new System.EventHandler(this.OnShowStage2RadiobuttonToggled);
-        this.downscaling_stageoperation_titlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetChangeStageButtonClicked);
-        this.downscaling_stageoperation_titlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetUpButtonClicked);
-        this.downscaling_stageoperation_titlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnDownscalingStageoperationtitlewidgetDownButtonClicked);
-        this.basic_ops_stageoperation_titlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetChangeStageButtonClicked);
-        this.basic_ops_stageoperation_titlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetUpButtonClicked);
-        this.basic_ops_stageoperation_titlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnBasicOpsStageoperationtitlewidgetDownButtonClicked);
-        this.compression_stageoperationtitlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetChangeStageButtonClicked);
-        this.compression_stageoperationtitlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetUpButtonClicked);
-        this.compression_stageoperationtitlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnCompressionStageoperationtitlewidgetDownButtonClicked);
-        this.ultra_sharp_stageoperationtitlewidget.ChangeStageButtonClicked += new System.EventHandler<System.EventArgs>(this.OnSharpeningStageoperationtitlewidgetChangeStageButtonClicked);
-        this.ultra_sharp_stageoperationtitlewidget.UpButtonClicked += new System.EventHandler<System.EventArgs>(this.OnSharpeningStageoperationtitlewidgetUpButtonClicked);
-        this.ultra_sharp_stageoperationtitlewidget.DownButtonClicked += new System.EventHandler<System.EventArgs>(this.OnSharpeningStageoperationtitlewidgetDownButtonClicked);
         this.apply_stage3_button.Clicked += new System.EventHandler(this.OnApplyStage3ButtonClicked);
         this.show_stage3_radiobutton.Toggled += new System.EventHandler(this.OnShowStage3RadiobuttonToggled);
     }

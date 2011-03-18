@@ -7,6 +7,7 @@ namespace CatEye
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private double mPower = 0.3, mRadius = 0.1, mWeight = 80, mLimit = 0.3;
+		private int mPoints = 200;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		public UltraSharpStageOperationParametersWidget ()
@@ -51,6 +52,15 @@ namespace CatEye
 				limit_entry.Text = value.ToString();
 			}
 		}
+		public int Points
+		{
+			get { return mPoints; }
+			set 
+			{
+				mPoints = value;
+				points_entry.Text = value.ToString();
+			}
+		}
 		
 		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
 		{
@@ -91,6 +101,17 @@ namespace CatEye
 				OnUserModified();
 			}
 		}
+		
+		protected virtual void OnPointsEntryChanged (object sender, System.EventArgs e)
+		{
+			int res = 100;
+			if (int.TryParse(points_entry.Text, NumberStyles.Integer, nfi, out res))
+			{
+				mPoints = res;
+				OnUserModified();
+			}
+		}
+		
 		
 		
 		

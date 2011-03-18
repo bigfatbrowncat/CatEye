@@ -2,20 +2,21 @@ using System;
 
 namespace CatEye
 {
+	[StageOperationDescription("Ultra sharping")]
 	public class UltraSharpStageOperation : StageOperation
 	{
-		public UltraSharpStageOperation (int index, UltraSharpStageOperationParametersWidget parametersWidget)
-			: base (index, parametersWidget)
+		public UltraSharpStageOperation (UltraSharpStageOperationParametersWidget parametersWidget, Stages owner)
+			: base (parametersWidget, owner)
 		{
 		}
 		
-		public override void OnDo (DoublePixmap hdp)
+		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			UltraSharpStageOperationParametersWidget pw = (UltraSharpStageOperationParametersWidget)mParametersWidget;
+			UltraSharpStageOperationParametersWidget pw = (UltraSharpStageOperationParametersWidget)ParametersWidget;
 			
 			Console.WriteLine("Ultra sharpening...");
 			hdp.SharpenLight(pw.Radius, pw.Power, pw.Weight, pw.Limit,
-					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(200, new Random()));
+					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(pw.Points, new Random()));
 			
 			base.OnDo (hdp);
 		}

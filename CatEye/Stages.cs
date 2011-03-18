@@ -5,251 +5,250 @@ using System.Collections.Generic;
 namespace CatEye
 {
 	public enum Stage { Stage2, Stage3 };
-	public class MovedToStageEventArgs : EventArgs
+	public class OperationRemovedFromStageEventArgs : EventArgs
 	{
-		Stage _SourceStage, _DestinationStage;
+		Stage _SourceStage;
+		StageOperation _Operation;
 		public Stage SourceStage { get { return _SourceStage; } }
-		public Stage DestinationStage { get { return _DestinationStage; } }
-		public MovedToStageEventArgs(Stage source, Stage destination)
+		public OperationRemovedFromStageEventArgs(StageOperation operation, Stage source)
 		{
-			_DestinationStage = destination;
 			_SourceStage = source;
-		}
-	}
-	public class IndexChangedEventArgs : EventArgs
-	{
-		int _OldIndex, _NewIndex;
-		public int OldIndex { get { return _OldIndex; } }
-		public int NewIndex { get { return _NewIndex; } }
-		public IndexChangedEventArgs(int oldindex, int newindex)
-		{
-			_NewIndex = newindex;
-			_OldIndex = oldindex;
+			_Operation = operation;
 		}
 	}
 	
-	public class DoStageOperationEventArgs : EventArgs
-	{
-		DoublePixmap _hdp;
-		public DoublePixmap HDP { get { return _hdp; } }
-		public DoStageOperationEventArgs(DoublePixmap hdp) { _hdp = hdp; }
-	}
-	
-	public class AddedToStageEventArgs : EventArgs
+	public class OperationAddedToStageEventArgs : EventArgs
 	{
 		Stage _TargetStage;
+		StageOperation _Operation;
 		public Stage TargetStage { get { return _TargetStage; } }
-		public AddedToStageEventArgs(Stage target)
+		public StageOperation Operation { get { return _Operation; } }
+		public OperationAddedToStageEventArgs(StageOperation operation, Stage target)
 		{
 			_TargetStage = target;
+			_Operation = operation;
 		}
 	}
-	public class StageOperation : IComparable<StageOperation>
-	{
-		public int CompareTo (StageOperation other)
-		{
-			return Index - other.Index;
-		}
-		
-		public event EventHandler<MovedToStageEventArgs> MovedToStage;
-		public event EventHandler<AddedToStageEventArgs> AddedToStage;
-		public event EventHandler<DoStageOperationEventArgs> Do;
-		public event EventHandler<IndexChangedEventArgs> IndexChanged;
-		
-		private Stage _CurrentStage;
-		protected StageOperationParametersWidget mParametersWidget;
-		public Stage CurrentStage { get { return _CurrentStage; } } 
-		
-		protected internal void SetStage(Stage s) { _CurrentStage = s; }
-		
-		private int _Index;
-		public int Index
-		{
-			get { return _Index; }
-			set
-			{
-				if (value != _Index)
-				{
-					int oldi = _Index;
-					_Index = value;
-					if (IndexChanged != null) 
-						IndexChanged(this, new IndexChangedEventArgs(oldi, _Index));
-				}
-			}
-		}
-		
-
-		public void AddToStage(Stage target)
-		{
-			if (MovedToStage != null) 
-			{
-				_CurrentStage = target;
-				if (AddedToStage != null)
-					AddedToStage(this, new AddedToStageEventArgs(target));
-			}
-		}
-		public StageOperation(int index, StageOperationParametersWidget parametersWidget)
-		{
-			Index = index;
-			mParametersWidget = parametersWidget;
-		}
-		
-		public virtual void OnDo(DoublePixmap hdp)
-		{
-			if (Do != null) 
-				Do(this, new DoStageOperationEventArgs(hdp));
-		}
-		
-		protected internal virtual void OnMovedToStage(Stage oldstage, Stage newstage)
-		{
-			if (MovedToStage != null) 
-				MovedToStage(this, new MovedToStageEventArgs(oldstage, newstage));
-		}
-	}
-
+	
 	public class Stages
 	{
 		private List<StageOperation> _Stage2, _Stage3;
+		private Gtk.VBox _Stage2VBox, _Stage3VBox;
+		private Dictionary<StageOperation, StageOperationHolderWidget> _Holders = new Dictionary<StageOperation, StageOperationHolderWidget>();
+		
 		public StageOperation[] Stage2 { get { return _Stage2.ToArray(); } }
 		public StageOperation[] Stage3 { get { return _Stage3.ToArray(); } }
+		
+		public event EventHandler<OperationRemovedFromStageEventArgs> OperationRemovedFromStage;
+		public event EventHandler<OperationAddedToStageEventArgs> OperationAddedToStage;
+		public event EventHandler<EventArgs> OperationIndexChanged;
 
-		public void ChangeStage(StageOperation sop)
+		protected virtual void OnAddedToStage(StageOperation operation, Stage target)
 		{
-			Stage olds = Stage.Stage2, news = Stage.Stage2;
-			
-			if (sop.CurrentStage == Stage.Stage2)
-			{
-				olds = Stage.Stage2;
-				news = Stage.Stage3;
-				
-				_Stage2.Remove(sop);
-				_Stage3.Add(sop);
-			}
-			else if (sop.CurrentStage == Stage.Stage3)
-			{
-				olds = Stage.Stage3;
-				news = Stage.Stage2;
-				
-				_Stage3.Remove(sop);
-				_Stage2.Add(sop);
-			}
-			sop.SetStage(news);
-			sop.OnMovedToStage(olds, news);
+			if (OperationAddedToStage != null) 
+				OperationAddedToStage(this, new OperationAddedToStageEventArgs(operation, target));
+		}
+		protected virtual void OnRemovedFromStage(StageOperation operation, Stage source)
+		{
+			if (OperationRemovedFromStage != null) 
+				OperationRemovedFromStage(this, new OperationRemovedFromStageEventArgs(operation, source));
+		}
+		protected virtual void OnOperationindexChanged()
+		{
+			if (OperationIndexChanged != null)
+				OperationIndexChanged(this, EventArgs.Empty);
 		}
 		
 		public void DoStage2(DoublePixmap hdp)
 		{
-			for (int i = 0; i <= _Stage2.Count + _Stage3.Count - 1; i++)
+			for (int j = 0; j < _Stage2.Count; j++)
 			{
-				for (int j = 0; j < _Stage2.Count; j++)
-				{
-					if (_Stage2[j].Index == i)
-					{
-						_Stage2[j].OnDo(hdp);
-					}
-				}
+				if (_Holders[_Stage2[j]].Active)
+					_Stage2[j].OnDo(hdp);
 			}
 		}
 		public void DoStage3(DoublePixmap hdp)
 		{
-			for (int i = 0; i <= _Stage2.Count + _Stage3.Count - 1; i++)
+			for (int j = 0; j < _Stage3.Count; j++)
 			{
-				for (int j = 0; j < _Stage3.Count; j++)
-				{
-					if (_Stage3[j].Index == i)
-					{
-						_Stage3[j].OnDo(hdp);
-					}
-				}
+				if (_Holders[_Stage3[j]].Active)
+					_Stage3[j].OnDo(hdp);
 			}
 		}
 		
-		public Stages (StageOperation[] stage_ops)
+		public Stage StageOf(StageOperation sop)
 		{
-			_Stage2 = new List<StageOperation>();
-			_Stage3 = new List<StageOperation>();
-			for (int i = 0; i < stage_ops.Length; i++)
-			{
-				if (stage_ops[i].CurrentStage == Stage.Stage2)
-				{
-					_Stage2.Add(stage_ops[i]);
-				}
-				if (stage_ops[i].CurrentStage == Stage.Stage3) 
-				{
-					_Stage3.Add(stage_ops[i]);
-				}
-			}
+			if (_Stage2.Contains(sop)) return Stage.Stage2;
+			if (_Stage3.Contains(sop)) return Stage.Stage3;
+			throw new Exception("The operation isn't contained in any stage.");
 		}
-		public StageOperation[] AllOperationsSorted
+		
+		protected void ArrangeVBoxes()
 		{
-			get
+			// Arranging stage 2
+			for (int i = 0; i < _Stage2.Count; i++)
 			{
-				List<StageOperation> sop = new List<StageOperation>();
-				sop.AddRange(_Stage2);
-				sop.AddRange(_Stage3);
-				sop.Sort();
-				return sop.ToArray();
+				StageOperationHolderWidget sohw = _Holders[_Stage2[i]];
+				((Gtk.Box.BoxChild)_Stage2VBox[sohw]).Position = i;
+			}
+			// Arranging stage 3
+			for (int i = 0; i < _Stage3.Count; i++)
+			{
+				StageOperationHolderWidget sohw = _Holders[_Stage3[i]];
+				((Gtk.Box.BoxChild)_Stage3VBox[sohw]).Position = i;
 			}
 		}
 		
-		public void MoveStageOperationUp(StageOperation op)
+		public void AddStageOperation(StageOperation operation, Stage stage)
 		{
-			if (op.CurrentStage == Stage.Stage2)
+			if (stage == Stage.Stage2)
+				_Stage2.Add(operation);
+			else
+				_Stage3.Add(operation);
+				
+			// Creating stage operation holder
+			StageOperationHolderWidget sohw = new StageOperationHolderWidget(operation);
+			sohw.CurrentStage = stage;
+
+			// Getting stage operation name from attribute
+			object[] attrs = operation.GetType().GetCustomAttributes(typeof(StageOperationDescriptionAttribute), true);
+			if (attrs != null && attrs.Length > 0)
+				sohw.Title = (attrs[0] as StageOperationDescriptionAttribute).Name;
+			
+			sohw.ChangeStageTitleButtonClicked += HandleHolderTitleWidgetChangeStageButtonClicked;
+			sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
+			sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
+			
+			if (stage == Stage.Stage2)
 			{
-				for (int k = 1; op.Index - k >= 0; k++)
-				for (int i = 0; i < _Stage2.Count; i++)
+				_Stage2VBox.Add(sohw);
+				((Gtk.Box.BoxChild)_Stage2VBox[sohw]).Fill = false;
+				((Gtk.Box.BoxChild)_Stage2VBox[sohw]).Expand = false;
+			}
+			else
+			{
+				_Stage3VBox.Add(sohw);
+				((Gtk.Box.BoxChild)_Stage3VBox[sohw]).Fill = false;
+				((Gtk.Box.BoxChild)_Stage3VBox[sohw]).Expand = false;
+			}
+			
+			_Holders.Add(operation, sohw);
+			sohw.Show();
+			ArrangeVBoxes();
+			OnAddedToStage(operation, stage);
+		}
+
+		void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
+		{
+			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			Stage stg = StageOf(sop);
+			if (stg == Stage.Stage2)
+			{
+				int index = _Stage2.IndexOf(sop);
+				if (index < _Stage2.Count - 1)
 				{
-					if (_Stage2[i].Index == op.Index - k)
-					{
-						_Stage2[i].Index += k;
-						op.Index -= k;
-						return;
-					}
+					_Stage2.Remove(sop);
+					_Stage2.Insert(index + 1, sop);
+					ArrangeVBoxes();
+					OnOperationindexChanged();
 				}
 			}
-			else if (op.CurrentStage == Stage.Stage3)
+			else if (stg == Stage.Stage3)
 			{
-				for (int k = 1; op.Index - k >= 0; k++)
-				for (int i = 0; i < _Stage3.Count; i++)
+				int index = _Stage3.IndexOf(sop);
+				if (index < _Stage3.Count - 1)
 				{
-					if (_Stage3[i].Index == op.Index - k)
-					{
-						_Stage3[i].Index += k;
-						op.Index -= k;
-						return;
-					}
+					_Stage3.Remove(sop);
+					_Stage3.Insert(index + 1, sop);
+					ArrangeVBoxes();
+					OnOperationindexChanged();
 				}
 			}
 		}
 
-		public void MoveStageOperationDown(StageOperation op)
+		void HandleSohwUpTitleButtonClicked (object sender, EventArgs e)
 		{
-			if (op.CurrentStage == Stage.Stage2)
+			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			Stage stg = StageOf(sop);
+			if (stg == Stage.Stage2)
 			{
-				for (int k = 1; op.Index + k < _Stage2.Count + _Stage3.Count; k++)
-				for (int i = 0; i < _Stage2.Count; i++)
+				int index = _Stage2.IndexOf(sop);
+				if (index > 0)
 				{
-					if (_Stage2[i].Index == op.Index + k)
-					{
-						_Stage2[i].Index -= k;
-						op.Index += k;
-						return;
-					}
+					_Stage2.Remove(sop);
+					_Stage2.Insert(index - 1, sop);
+					ArrangeVBoxes();
+					OnOperationindexChanged();
 				}
 			}
-			else if (op.CurrentStage == Stage.Stage3)
+			else if (stg == Stage.Stage3)
 			{
-				for (int k = 1; op.Index + k < _Stage2.Count + _Stage3.Count; k++)
-				for (int i = 0; i < _Stage3.Count; i++)
+				int index = _Stage3.IndexOf(sop);
+				if (index > 0)
 				{
-					if (_Stage3[i].Index == op.Index + k)
-					{
-						_Stage3[i].Index -= k;
-						op.Index += k;
-						return;
-					}
+					_Stage3.Remove(sop);
+					_Stage3.Insert(index - 1, sop);
+					ArrangeVBoxes();
+					OnOperationindexChanged();
 				}
 			}
-		}		
+		}
+
+		void HandleHolderTitleWidgetChangeStageButtonClicked (object sender, EventArgs e)
+		{
+			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			ToggleStage(sop);
+			(sender as StageOperationHolderWidget).CurrentStage = StageOf(sop);
+		}
+		
+		public void ToggleStage(StageOperation operation)
+		{
+			Stage curStage = StageOf(operation);
+				
+			
+			StageOperationHolderWidget sohw = _Holders[operation];
+			if (curStage == Stage.Stage2)
+			{
+				_Stage2VBox.Remove(sohw);
+				sohw.CurrentStage = Stage.Stage3;
+				_Stage3VBox.Add(sohw);
+
+				((Gtk.Box.BoxChild)_Stage3VBox[sohw]).Fill = false;
+				((Gtk.Box.BoxChild)_Stage3VBox[sohw]).Expand = false;
+				
+				_Stage2.Remove(operation);
+				_Stage3.Add(operation);
+				
+				ArrangeVBoxes();
+				OnRemovedFromStage(operation, Stage.Stage2);
+				OnAddedToStage(operation, Stage.Stage3);
+			}
+			else
+			{
+				_Stage3VBox.Remove(sohw);
+				sohw.CurrentStage = Stage.Stage2;
+				_Stage2VBox.Add(sohw);
+
+				((Gtk.Box.BoxChild)_Stage2VBox[sohw]).Fill = false;
+				((Gtk.Box.BoxChild)_Stage2VBox[sohw]).Expand = false;
+
+				_Stage3.Remove(operation);
+				_Stage2.Add(operation);
+
+				OnRemovedFromStage(operation, Stage.Stage3);
+				OnAddedToStage(operation, Stage.Stage2);
+				ArrangeVBoxes();
+			}
+		}
+		
+		public Stages (Gtk.VBox stage2_box, Gtk.VBox stage3_box)
+		{
+			_Stage2 = new List<StageOperation>();
+			_Stage3 = new List<StageOperation>();
+			
+			_Stage2VBox = stage2_box;
+			_Stage3VBox = stage3_box;
+			
+		}
 	}
 }

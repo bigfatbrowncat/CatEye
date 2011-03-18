@@ -10,18 +10,12 @@ public partial class MainWindow : Gtk.Window
 	DoublePixmap hdr_after_stage3 = null;
 	Stages stages;
 
-	// Stage boxes and stage operation boxes
-	Dictionary<StageOperation, VBox> stage_op_boxes = new Dictionary<StageOperation, VBox>();
-	Dictionary<StageOperation, StageOperationTitleWidget> stage_op_titles = new Dictionary<StageOperation, StageOperationTitleWidget>();
-	Dictionary<Stage, Gtk.VBox> stage_vboxes = new Dictionary<Stage, Gtk.VBox>();
-	
 	StageOperation downscaling_stage_op;
 	StageOperation compression_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
 	
-	StageOperation[] all_operations_sorted;
-	
+
 	bool any_stage_modified = true;
 	
 	private void ArrangeStageOperationBoxes()
@@ -42,22 +36,6 @@ public partial class MainWindow : Gtk.Window
 			show_stage2_radiobutton.Visible = false;
 		}
 		
-		// Arrange stage operations in stages
-		int index_in_stage2 = 0, index_in_stage3 = 0;
-		StageOperation[] sops = stages.AllOperationsSorted;
-		for (int i = 0; i < sops.Length; i++)
-		{
-			if (sops[i].CurrentStage == Stage.Stage2)
-			{
-				((Box.BoxChild)stage2_vbox[stage_op_boxes[sops[i]]]).Position = index_in_stage2;
-				index_in_stage2++;
-			}
-			else if (sops[i].CurrentStage == Stage.Stage3)
-			{
-				((Box.BoxChild)stage3_vbox[stage_op_boxes[sops[i]]]).Position = index_in_stage3;
-				index_in_stage3++;
-			}
-		}
 		stage2_vbox.CheckResize();
 		stage3_vbox.CheckResize();
 	}
@@ -70,118 +48,48 @@ public partial class MainWindow : Gtk.Window
 		Gtk.ListStore ls = new Gtk.ListStore(typeof(string), typeof(int));
 		ls.AppendValues("No downscaling", 1);
 		ls.AppendValues("Divide by 2", 2);
+		ls.AppendValues("Divide by 3", 3);
 		ls.AppendValues("Divide by 4", 4);
+		ls.AppendValues("Divide by 5", 5);
+		ls.AppendValues("Divide by 6", 6);
+		ls.AppendValues("Divide by 7", 7);
 		ls.AppendValues("Divide by 8", 8);
-		ls.AppendValues("Divide by 16", 16);
 		
 		Gtk.ComboBox pres_cb = prescale_combobox;
 		pres_cb.Model = ls;
-		
-//		CellRendererText txt = new CellRendererText();
-//		pres_cb.PackStart(txt, true);
-//		pres_cb.AddAttribute(txt, "text", 0);
 		
 		// Selecting "No downscale"
 		TreeIter ti;
 		ls.GetIterFirst(out ti);
 		pres_cb.SetActiveIter(ti);
 		
-		// Creating stages
-		stage_vboxes.Add(Stage.Stage2, stage2_vbox);
-		stage_vboxes.Add(Stage.Stage3, stage3_vbox);
+		// Creating stage operations and stages
+		stages = new Stages(stage2_vbox, stage3_vbox);
 		
-		// Creating stage operations
-		downscaling_stage_op = new DownscalingStageOperation(0, downscaling_stageoperation_parameterswidget);
-		compression_stage_op = new CompressionStageOperation(1, compression_stageoperation_parameterswidget);
-		ultra_sharp_stage_op = new UltraSharpStageOperation(2, ultra_sharp_stageoperation_parameterswidget);
-		basic_ops_stage_op = new BasicOpsStageOperation(3, basic_ops_stageoperation_parameterswidget);
+		downscaling_stage_op = new DownscalingStageOperation(new DownscalingStageOperationParametersWidget(), stages);
+		stages.AddStageOperation(downscaling_stage_op, Stage.Stage2);
 		
-		// Adding moving handlers to stage operations
-		downscaling_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		downscaling_stage_op.IndexChanged += HandleStageOperationIndexChanged;
-		downscaling_stage_op.MovedToStage += delegate {
-			ArrangeStageOperationBoxes();
-		};
+		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget(), stages);
+		stages.AddStageOperation(compression_stage_op, Stage.Stage2);
 		
-		basic_ops_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		basic_ops_stage_op.IndexChanged += HandleStageOperationIndexChanged;
-		basic_ops_stage_op.MovedToStage += delegate {
-			ArrangeStageOperationBoxes();
-		};
-		
-		compression_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		compression_stage_op.IndexChanged += HandleStageOperationIndexChanged;
-		compression_stage_op.MovedToStage += delegate {
-			ArrangeStageOperationBoxes();
-		};
-		
-		ultra_sharp_stage_op.MovedToStage += Handle_stage_op_MovedToStage;
-		ultra_sharp_stage_op.IndexChanged += HandleStageOperationIndexChanged;
-		ultra_sharp_stage_op.MovedToStage += delegate {
-			ArrangeStageOperationBoxes();
-		};
+		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget(), stages);
+		stages.AddStageOperation(ultra_sharp_stage_op, Stage.Stage2);
 
-		// Adding stage operations to stages
-		downscaling_stage_op.AddToStage(Stage.Stage3);
-		basic_ops_stage_op.AddToStage(Stage.Stage3);
-		compression_stage_op.AddToStage(Stage.Stage3);
-		ultra_sharp_stage_op.AddToStage(Stage.Stage3);
-
-		// Adding stage operation--boxes to dictionary
-		stage_op_boxes.Add(downscaling_stage_op, downscaling_vbox);
-		stage_op_boxes.Add(basic_ops_stage_op, basic_ops_vbox);
-		stage_op_boxes.Add(compression_stage_op, compression_vbox);
-		stage_op_boxes.Add(ultra_sharp_stage_op, ultra_sharp_vbox);
+		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget(), stages);
+		stages.AddStageOperation(basic_ops_stage_op, Stage.Stage2);
 		
-		// Adding stage operation--title widgets to dictionary
-		stage_op_titles.Add(downscaling_stage_op, downscaling_stageoperation_titlewidget);
-		stage_op_titles.Add(basic_ops_stage_op, basic_ops_stageoperation_titlewidget);
-		stage_op_titles.Add(compression_stage_op, compression_stageoperationtitlewidget);
-		stage_op_titles.Add(ultra_sharp_stage_op, ultra_sharp_stageoperationtitlewidget);
-		
-		// Creating stages
-		stages = new Stages(new StageOperation[] { 
-			downscaling_stage_op,  
-			basic_ops_stage_op,
-			compression_stage_op,
-			ultra_sharp_stage_op
-		});
-		
-		// Move all operations to stage 2
-		while (stages.Stage3.Length > 0)
-		{
-			stages.ChangeStage(stages.Stage3[0]);
-		}
+		stages.OperationAddedToStage += delegate {
+			ArrangeStageOperationBoxes();
+		};
 		
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
-	}
-
-	void HandleStageOperationIndexChanged (object sender, IndexChangedEventArgs e)
-	{
-		ArrangeStageOperationBoxes();
-	}
-
-
-	void Handle_stage_op_MovedToStage (object sender, MovedToStageEventArgs e)
-	{
-		VBox box = stage_op_boxes[(sender as StageOperation)];
-		stage_vboxes[e.SourceStage].Remove(box);
-		stage_vboxes[e.DestinationStage].Add(box);
-		stage_op_titles[(sender as StageOperation)].CurrentStage = e.DestinationStage;
-		ArrangeStageOperationBoxes();
-		any_stage_modified = true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
 		Application.Quit ();
 		a.RetVal = true;
-	}
-	
-	protected virtual void OnBrightnessRangeSetButtonClicked (object sender, System.EventArgs e)
-	{
-
 	}
 	
 	protected virtual void OnSaveAsActionActivated (object sender, System.EventArgs e)
@@ -354,70 +262,6 @@ public partial class MainWindow : Gtk.Window
 	protected virtual void OnShowStage2RadiobuttonToggled (object sender, System.EventArgs e)
 	{
 		UpdateHDRView();
-	}
-	
-	protected virtual void OnDownscalingStageoperationtitlewidgetChangeStageButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.ChangeStage(downscaling_stage_op);
-		//downscaling_stageoperationtitlewidget.CurrentStage = downscaling_stage_op.CurrentStage;
-	}
-	
-	protected virtual void OnBasicOpsStageoperationtitlewidgetChangeStageButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.ChangeStage(basic_ops_stage_op);
-		//basic_ops_stageoperationtitlewidget.CurrentStage = basic_ops_stage_op.CurrentStage;
-	}
-	
-	protected virtual void OnCompressionStageoperationtitlewidgetChangeStageButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.ChangeStage(compression_stage_op);
-		//compression_stageoperationtitlewidget.CurrentStage = compression_stage_op.CurrentStage;
-	}
-	
-	protected virtual void OnSharpeningStageoperationtitlewidgetChangeStageButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.ChangeStage(ultra_sharp_stage_op);
-		//ultra_sharp_stageoperationtitlewidget.CurrentStage = ultra_sharp_stage_op.CurrentStage;
-	}
-	
-	protected virtual void OnDownscalingStageoperationtitlewidgetUpButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationUp(downscaling_stage_op);
-	}
-	
-	protected virtual void OnDownscalingStageoperationtitlewidgetDownButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationDown(downscaling_stage_op);
-	}
-	
-	protected virtual void OnBasicOpsStageoperationtitlewidgetUpButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationUp(basic_ops_stage_op);
-	}
-	
-	protected virtual void OnBasicOpsStageoperationtitlewidgetDownButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationDown(basic_ops_stage_op);
-	}
-	
-	protected virtual void OnCompressionStageoperationtitlewidgetUpButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationUp(compression_stage_op);
-	}
-	
-	protected virtual void OnCompressionStageoperationtitlewidgetDownButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationDown(compression_stage_op);
-	}
-	
-	protected virtual void OnSharpeningStageoperationtitlewidgetUpButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationUp(ultra_sharp_stage_op);
-	}
-	
-	protected virtual void OnSharpeningStageoperationtitlewidgetDownButtonClicked (object sender, System.EventArgs e)
-	{
-		stages.MoveStageOperationDown(ultra_sharp_stage_op);
 	}
 	
 	private System.IO.Stream ImportRaw(string filename)

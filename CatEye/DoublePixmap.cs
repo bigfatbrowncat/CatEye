@@ -326,15 +326,11 @@ namespace CatEye
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									// Delta should be limited by some maximum value
-									//double limited_delta = Math.Abs(delta) < delta_limit ? delta : delta_limit * Math.Sign(delta);
-								
 									double f = Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
 									
 									double scale = sharp_weight * f * falloff;
 									double limited_scale = Math.Abs(scale) < delta_limit ? scale : delta_limit * Math.Sign(scale);
 									
-									//double limited_scale = delta_limit * (1 - Math.Exp( - Math.Abs(scale) / delta_limit));
 									scale_matrix[u, v] += limited_scale;
 									
 									scale_matrix_adds[u, v] ++;
