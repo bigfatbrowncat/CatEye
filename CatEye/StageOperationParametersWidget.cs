@@ -4,7 +4,7 @@ namespace CatEye
 {
 
 	//[System.ComponentModel.ToolboxItem(true)]
-	public partial class StageOperationParametersWidget : Gtk.Bin
+	public class StageOperationParametersWidget : Gtk.Bin
 	{
 		private bool mModifiedByUser = true;
 		
@@ -22,7 +22,6 @@ namespace CatEye
 
 		public StageOperationParametersWidget ()
 		{
-			this.Build ();
 		}
 	}
 }
