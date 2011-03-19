@@ -63,7 +63,7 @@ namespace CatEye
 						_StageQueue[j].OnDo(hdp);
 				}
 			}
-			catch (UserCancelException ex)
+			catch (UserCancelException)
 			{
 				return false;
 			}

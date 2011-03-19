@@ -15,7 +15,6 @@ public partial class MainWindow : Gtk.Window
 	StageOperation basic_ops_stage_op;
 	
 
-	bool any_stage_modified = true;
 	bool cancel_pending = false;
 
 	private void ArrangeStageOperationBoxes()

@@ -46,15 +46,7 @@ namespace CatEye
 			res.r_chan = new double[res.width, res.height];
 			res.g_chan = new double[res.width, res.height];
 			res.b_chan = new double[res.width, res.height];
-			
-			int N = 0;
-			switch (ppm.BytesPerChannel)
-			{
-			case 1: N = 256; break;
-			case 2: N = 65536; break;
-			default: throw new Exception("only 1 or 2 bytes per channel supported");
-			}
-			
+
 			for (int i = 0; i < res.width; i++)
 			for (int j = 0; j < res.height; j++)
 			{

@@ -10,11 +10,8 @@ namespace CatEye
 	{
 		public enum ScaleType { None, Divide, Multiply };
 
-		private int scaleK = 5;
-		private ScaleType theScaleType = ScaleType.Divide;
 		private DoublePixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
-		private double linearScaleA = 0, linearScaleB = 0.8;
 		
 		public DoublePixmap HDR
 		{
@@ -53,7 +50,7 @@ namespace CatEye
 			
 			if (_HDR != null && _RenderedPicture != null)
 			{
-				int w, h, x = 0, y = 0, d, nch = 3, dstx = 0, dsty = 0;
+				int w, h, x = 0, y = 0, d, dstx = 0, dsty = 0;
 				GdkWindow.GetGeometry(out x, out y, out w, out h, out d);
 				
 				if (w > _RenderedPicture.Width)
