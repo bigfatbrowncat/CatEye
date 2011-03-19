@@ -1,63 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug-MinGW</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>CatEye</RootNamespace>
-    <AssemblyName>PPMView</AssemblyName>
+    <AssemblyName>CatEye</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug-MinGW</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" pauseExternalConsole="true" />
+        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${TargetDir}" pauseExternalConsole="true" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-MinGW|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Release-MinGW</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" pauseExternalConsole="true" />
+        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${TargetDir}" pauseExternalConsole="true" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Unix|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>bin\x86\Debug-Unix</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" pauseExternalConsole="true" />
+        <Command type="AfterClean" command="rm -f dcraw" workingdir="${TargetDir}" pauseExternalConsole="true" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Unix|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\x86\Release-Unix</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" pauseExternalConsole="true" />
+        <Command type="AfterClean" command="rm -f dcraw" workingdir="${TargetDir}" pauseExternalConsole="true" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>glade-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
-    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -95,4 +123,7 @@
     <Compile Include="gtk-gui\CatEye.StageOperationHolderWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="dcraw.c" />
+  </ItemGroup>
 </Project>
