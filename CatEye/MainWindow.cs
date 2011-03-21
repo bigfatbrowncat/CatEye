@@ -72,6 +72,7 @@ public partial class MainWindow : Gtk.Window
 		ArrangeStageOperationBoxes();
 	}
 
+	double old_frac = 0;
 	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
 	{
 		progressbar.Fraction = e.Progress;
@@ -79,6 +80,13 @@ public partial class MainWindow : Gtk.Window
 		if (attrs.Length > 0) 
 			progressbar.Text = (attrs[0] as StageOperationDescriptionAttribute).Name + ": ";
 		progressbar.Text += (e.Progress * 100).ToString("0") + "%";
+		
+		if (Math.Abs(progressbar.Fraction - old_frac) > 0.1)
+		{
+			ppmviewwidget1.UpdatePicture();
+			ppmviewwidget1.QueueDraw();
+			old_frac = progressbar.Fraction;
+		}
 		
 		while (Gtk.Application.EventsPending())
 			Gtk.Application.RunIteration();
@@ -206,6 +214,7 @@ public partial class MainWindow : Gtk.Window
 		if (ppl != null)
 		{
 			hdr = DoublePixmap.FromPPM(ppl);
+			ppmviewwidget1.HDR = hdr;
 
 			if (stages.ApplyOperations(hdr))
 			{

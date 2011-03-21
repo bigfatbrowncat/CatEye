@@ -19,7 +19,7 @@ namespace CatEye
 			set 
 			{ 
 				_HDR = value; 
-				updatePicture();
+				UpdatePicture();
 			}
 		}
 		
@@ -28,7 +28,7 @@ namespace CatEye
 		{
 		}
 
-		private void updatePicture()
+		public void UpdatePicture()
 		{
 			if (_HDR != null)
 			{

@@ -15,7 +15,7 @@ namespace CatEye
 			UltraSharpStageOperationParametersWidget pw = (UltraSharpStageOperationParametersWidget)ParametersWidget;
 			
 			Console.WriteLine("Ultra sharpening...");
-			hdp.SharpenLight(pw.Radius, pw.Power, pw.Weight, pw.Limit,
+			hdp.SharpenLight(pw.Radius, pw.Power, pw.Delta0,
 					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(pw.Points, new Random()), 
 			                 delegate (double progress) {
 				return OnReportProgress(progress);

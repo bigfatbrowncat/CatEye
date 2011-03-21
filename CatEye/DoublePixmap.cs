@@ -54,6 +54,17 @@ namespace CatEye
 				res.g_chan[i, j] = ppm.GChannel[i, j]; //- N * Math.Log(((double)N - (double)ppm.GChannel[i, j]) / N);
 				res.b_chan[i, j] = ppm.BChannel[i, j]; //- N * Math.Log(((double)N - (double)ppm.BChannel[i, j]) / N);
 			}
+			
+			// Scaling res to 0..1
+			double Max = res.CalcMaxLight();
+			for (int i = 0; i < res.width; i++)
+			for (int j = 0; j < res.height; j++)
+			{
+				res.r_chan[i, j] /= Max;
+				res.g_chan[i, j] /= Max;
+				res.b_chan[i, j] /= Max;
+			}
+			
 			return res;
 		}
 
@@ -196,16 +207,11 @@ namespace CatEye
 		public void CompressLight(double power, double bloha)
 		{
 			double[,] light = new double[width, height];
-			double Max = CalcMaxLight();
 
 			// Normalizing image and calculating light
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				r_chan[i, j] /= Max;
-				g_chan[i, j] /= Max;
-				b_chan[i, j] /= Max;
-			
 				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 							  			g_chan[i, j] * g_chan[i, j] + 
 						      			b_chan[i, j] * b_chan[i, j]);
@@ -280,20 +286,16 @@ namespace CatEye
 			}			
 		}
 		
-		public void SharpenLight(double radius_part, double power, double sharp_weight, double delta_limit, ISharpeningSamplingMethod ssm, ProgressReporter callback)
+		public void SharpenLight(double radius_part, double power, double delta_0, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
 			double[,] light = new double[width, height];
 			double Max = CalcMaxLight();
 			unsafe {
 	
-				// Normalizing image and calculating light
+				// Сalculating light
 				for (int i = 0; i < width; i++)
 				for (int j = 0; j < height; j++)
 				{
-					r_chan[i, j] /= Max;
-					g_chan[i, j] /= Max;
-					b_chan[i, j] /= Max;
-
 					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 								  			g_chan[i, j] * g_chan[i, j] + 
 							      			b_chan[i, j] * b_chan[i, j]);
@@ -307,17 +309,18 @@ namespace CatEye
 			
 			Console.WriteLine("Calculating scale factors...");
 			unsafe {
-				for (int i = 0; i < width; i++)
+				for (int i = 0; i < width + radius; i++)	// "radius" added to process all "i_back" values
 				{
+					int i_back = i - radius;
 					if (callback != null)
 					{
-						if (!callback((double)i / width))
+						if (!callback((double)i / (width + radius)))
 							throw new UserCancelException();
 					}
 	
 					for (int j = 0; j < height; j++)
 					{
-						if (sharp_weight > 0)
+						if (i < width)
 						{
 							ssm.DoSampling(delegate (int u, int v) {
 								u += i; v += j;
@@ -331,43 +334,37 @@ namespace CatEye
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									double f = Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
+									double f = Math.Log(Math.Abs(delta / delta_0) + 1) * Math.Sign(delta);
 									
-									double scale = sharp_weight * f * falloff;
-									double limited_scale = Math.Abs(scale) < delta_limit ? scale : delta_limit * Math.Sign(scale);
+									double scale = f * falloff;
+									//double limited_scale = Math.Abs(scale) < delta_limit ? scale : delta_limit * Math.Sign(scale);
 									
-									scale_matrix[u, v] += limited_scale;
+									scale_matrix[u, v] += scale;//limited_scale;
 									
 									scale_matrix_adds[u, v] ++;
 								}
 							}, radius);
 						}
+							
+						if (i_back >= 0)
+						{
+							// Scaling amplitudes
+							double kcomp;
+							if (scale_matrix_adds[i_back, j] == 0)
+								kcomp = 1;
+							else
+								kcomp = Math.Pow(scale_matrix[i_back, j] / scale_matrix_adds[i_back, j] + 1, power);
+							
+							r_chan[i_back, j] = r_chan[i_back, j] * kcomp;
+							g_chan[i_back, j] = g_chan[i_back, j] * kcomp;
+							b_chan[i_back, j] = b_chan[i_back, j] * kcomp;
+			
+							//if (r_chan[i_back, j] > 0.99999) r_chan[i_back, j] = 0.99999;
+							//if (g_chan[i_back, j] > 0.99999) g_chan[i_back, j] = 0.99999;
+							//if (b_chan[i_back, j] > 0.99999) b_chan[i_back, j] = 0.99999;
+						}
 					}
 				}
-	
-				Console.WriteLine("Scaling amplitudes...");
-				
-				for (int i = 0; i < width; i++)
-				for (int j = 0; j < height; j++)
-				{
-					double kcomp;
-					if (scale_matrix_adds[i, j] == 0)
-						kcomp = 0;
-					else
-						kcomp = Math.Pow(scale_matrix[i, j] / scale_matrix_adds[i, j] + 1, power);
-					
-					r_chan[i, j] = r_chan[i, j] * kcomp;
-					g_chan[i, j] = g_chan[i, j] * kcomp;
-					b_chan[i, j] = b_chan[i, j] * kcomp;
-
-					if (r_chan[i, j] > 0.99999) r_chan[i, j] = 0.99999;
-					if (g_chan[i, j] > 0.99999) g_chan[i, j] = 0.99999;
-					if (b_chan[i, j] > 0.99999) b_chan[i, j] = 0.99999;
-					
-				}
-
-				Console.WriteLine("Complete.");
-				
 			}
 			
 		}

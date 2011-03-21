@@ -6,7 +6,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mPower = 0.3, mRadius = 0.1, mWeight = 80, mLimit = 0.3;
+		private double mPower = 0.3, mRadius = 0.1, mDelta0 = 0.3;
 		private int mPoints = 200;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
@@ -31,25 +31,16 @@ namespace CatEye
 			set 
 			{
 				mRadius = value;
-				radius_entry.Text = value.ToString();
+				radius_hscale.Value = value;
 			}
 		}
-		public double Weight
+		public double Delta0
 		{
-			get { return mWeight; }
+			get { return mDelta0; }
 			set 
 			{
-				mWeight = value;
-				weight_entry.Text = value.ToString();
-			}
-		}
-		public double Limit
-		{
-			get { return mLimit; }
-			set 
-			{
-				mLimit = value;
-				limit_entry.Text = value.ToString();
+				mDelta0 = value;
+				delta_0_entry.Text = value.ToString();
 			}
 		}
 		public int Points
@@ -72,32 +63,12 @@ namespace CatEye
 			}
 		}
 		
-		protected virtual void OnRadiusEntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 0;
-			if (double.TryParse(radius_entry.Text, NumberStyles.Float, nfi, out res))
-			{
-				mRadius = res;
-				OnUserModified();
-			}
-		}
-		
-		protected virtual void OnWeightEntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 1;
-			if (double.TryParse(weight_entry.Text, NumberStyles.Float, nfi, out res))
-			{
-				mWeight = res;
-				OnUserModified();
-			}
-		}
-		
 		protected virtual void OnLimitEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 1;
-			if (double.TryParse(limit_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(delta_0_entry.Text, NumberStyles.Float, nfi, out res))
 			{
-				mLimit = res;
+				mDelta0 = res;
 				OnUserModified();
 			}
 		}
@@ -111,6 +82,19 @@ namespace CatEye
 				OnUserModified();
 			}
 		}
+		
+		protected virtual void OnRadiusHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			
+		}
+		
+		protected virtual void OnRadiusHscaleMoveSlider (object o, Gtk.MoveSliderArgs args)
+		{
+			mRadius = radius_hscale.Value;
+			OnUserModified();
+		}
+		
+		
 		
 		
 		
