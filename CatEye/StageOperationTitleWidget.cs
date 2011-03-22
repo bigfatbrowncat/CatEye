@@ -30,12 +30,13 @@ namespace CatEye
 		
 		public bool Active
 		{
-			get { return togglebutton.Active; }
-			set { togglebutton.Active = value; }
+			get { return title_togglebutton.Active; }
+			set { title_togglebutton.Active = value; }
 		}
 		
 		public event EventHandler<EventArgs> UpButtonClicked;
 		public event EventHandler<EventArgs> DownButtonClicked;
+		public event EventHandler<EventArgs> TitleButtonClicked;
 
 		public StageOperationTitleWidget ()
 		{
@@ -54,7 +55,11 @@ namespace CatEye
 				DownButtonClicked(this, EventArgs.Empty);
 		}
 		
-		
+		protected virtual void OnTitleButtonClicked (object sender, System.EventArgs e)
+		{
+			if (TitleButtonClicked != null)
+				TitleButtonClicked(this, EventArgs.Empty);
+		}
 		
 	}
 }

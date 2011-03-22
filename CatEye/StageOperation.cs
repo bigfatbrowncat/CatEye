@@ -67,10 +67,10 @@ namespace CatEye
 		
 		protected internal virtual void OnDo(DoublePixmap hdp)
 		{
-			OnReportProgress(0);
+			if (!OnReportProgress(0)) throw new UserCancelException();
 			if (Do != null)
 				Do(this, new DoStageOperationEventArgs(hdp));
-			OnReportProgress(1);
+			if (!OnReportProgress(1)) throw new UserCancelException();
 		}
 	}
 

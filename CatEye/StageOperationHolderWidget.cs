@@ -8,7 +8,7 @@ namespace CatEye
 		public StageOperation Operation { get { return _Operation; } }
 		//public StageOperationTitleWidget TitleWidget { get { return _TitleWidget; } }
 		
-		public event EventHandler<EventArgs> ChangeStageTitleButtonClicked;
+		public event EventHandler<EventArgs> StageActiveButtonClicked;
 		public event EventHandler<EventArgs> UpTitleButtonClicked;
 		public event EventHandler<EventArgs> DownTitleButtonClicked;
 		
@@ -30,10 +30,10 @@ namespace CatEye
 				UpTitleButtonClicked(this, EventArgs.Empty);
 		}
 		
-		protected virtual void OnChangeStageTitleButtonClicked (object sender, System.EventArgs e)
+		protected virtual void OnStageActiveButtonClicked (object sender, System.EventArgs e)
 		{
-			if (ChangeStageTitleButtonClicked != null)
-				ChangeStageTitleButtonClicked(this, EventArgs.Empty);
+			if (StageActiveButtonClicked != null)
+				StageActiveButtonClicked(this, EventArgs.Empty);
 		}
 		
 		protected virtual void OnDownTitleButtonClicked (object sender, System.EventArgs e)
@@ -56,6 +56,9 @@ namespace CatEye
 			};
 			_TitleWidget.DownButtonClicked += delegate {
 				OnDownTitleButtonClicked(this, EventArgs.Empty);
+			};
+			_TitleWidget.TitleButtonClicked += delegate {
+				OnStageActiveButtonClicked(this, EventArgs.Empty);
 			};
 			
 			operation.ParametersWidget.Show();

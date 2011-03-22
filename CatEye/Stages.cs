@@ -36,6 +36,7 @@ namespace CatEye
 		public event EventHandler<OperationRemovedFromStageEventArgs> OperationRemovedFromStage;
 		public event EventHandler<OperationAddedToStageEventArgs> OperationAddedToStage;
 		public event EventHandler<EventArgs> OperationIndexChanged;
+		public event EventHandler<EventArgs> OperationActivityChanged;
 
 		protected virtual void OnAddedToStage(StageOperation operation)
 		{
@@ -47,10 +48,15 @@ namespace CatEye
 			if (OperationRemovedFromStage != null) 
 				OperationRemovedFromStage(this, new OperationRemovedFromStageEventArgs(operation));
 		}
-		protected virtual void OnOperationindexChanged()
+		protected virtual void OnOperationIndexChanged()
 		{
 			if (OperationIndexChanged != null)
 				OperationIndexChanged(this, EventArgs.Empty);
+		}
+		protected virtual void OnOperationActivityChanged()
+		{
+			if (OperationActivityChanged != null)
+				OperationActivityChanged(this, EventArgs.Empty);
 		}
 		
 		public bool ApplyOperations(DoublePixmap hdp)
@@ -94,6 +100,7 @@ namespace CatEye
 			
 			sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
 			sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
+			sohw.StageActiveButtonClicked += HandleSohwStageActiveButtonClicked;
 			
 			_StageVBox.Add(sohw);
 			((Gtk.Box.BoxChild)_StageVBox[sohw]).Fill = false;
@@ -103,6 +110,11 @@ namespace CatEye
 			sohw.Show();
 			ArrangeVBoxes();
 			OnAddedToStage(operation);
+		}
+
+		void HandleSohwStageActiveButtonClicked (object sender, EventArgs e)
+		{
+			OnOperationActivityChanged();
 		}
 
 		void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
@@ -115,7 +127,7 @@ namespace CatEye
 				_StageQueue.Remove(sop);
 				_StageQueue.Insert(index + 1, sop);
 				ArrangeVBoxes();
-				OnOperationindexChanged();
+				OnOperationIndexChanged();
 			}
 		}
 
@@ -129,7 +141,7 @@ namespace CatEye
 				_StageQueue.Remove(sop);
 				_StageQueue.Insert(index - 1, sop);
 				ArrangeVBoxes();
-				OnOperationindexChanged();
+				OnOperationIndexChanged();
 			}
 		}
 

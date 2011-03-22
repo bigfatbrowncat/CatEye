@@ -23,7 +23,7 @@ namespace CatEye {
         
         private Gtk.Arrow arrow6;
         
-        private Gtk.ToggleButton togglebutton;
+        private Gtk.ToggleButton title_togglebutton;
         
         private Gtk.Label title_label;
         
@@ -68,20 +68,21 @@ namespace CatEye {
             w4.Expand = false;
             w4.Fill = false;
             // Container child hbox.Gtk.Box+BoxChild
-            this.togglebutton = new Gtk.ToggleButton();
-            this.togglebutton.CanFocus = true;
-            this.togglebutton.Name = "togglebutton";
-            this.togglebutton.Relief = ((Gtk.ReliefStyle)(2));
-            // Container child togglebutton.Gtk.Container+ContainerChild
+            this.title_togglebutton = new Gtk.ToggleButton();
+            this.title_togglebutton.CanFocus = true;
+            this.title_togglebutton.Name = "title_togglebutton";
+            this.title_togglebutton.Relief = ((Gtk.ReliefStyle)(2));
+            this.title_togglebutton.Active = true;
+            // Container child title_togglebutton.Gtk.Container+ContainerChild
             this.title_label = new Gtk.Label();
             this.title_label.Name = "title_label";
             this.title_label.LabelProp = Mono.Unix.Catalog.GetString("<b>Title</b>");
             this.title_label.UseMarkup = true;
             this.title_label.SingleLineMode = true;
-            this.togglebutton.Add(this.title_label);
-            this.togglebutton.Label = null;
-            this.hbox.Add(this.togglebutton);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.togglebutton]));
+            this.title_togglebutton.Add(this.title_label);
+            this.title_togglebutton.Label = null;
+            this.hbox.Add(this.title_togglebutton);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.title_togglebutton]));
             w6.Position = 2;
             this.Add(this.hbox);
             if ((this.Child != null)) {
@@ -90,6 +91,7 @@ namespace CatEye {
             this.Hide();
             this.up_button.Clicked += new System.EventHandler(this.OnUpButtonClicked);
             this.down_button.Clicked += new System.EventHandler(this.OnDownButtonClicked);
+            this.title_togglebutton.Clicked += new System.EventHandler(this.OnTitleButtonClicked);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mPower = 0.3, mRadius = 0.1, mDelta0 = 0.3;
+		private double mPower = 0.3, mRadius = 0.1, mDelta0 = 0.01;
 		private int mPoints = 200;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 

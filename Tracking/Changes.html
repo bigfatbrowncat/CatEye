@@ -55,5 +55,24 @@
 		</tr>
 	</table>
 </div>
+<div>
+	<h3 style="margin-top: 0">Change #3</h3>
+	<p>Images loading and importing now doesn't stop the UI. The solution is the same as Change #2. Introduced new type
+	<b>ProgressMessageReporter</b> inside MainWindow class &#151; to report the message about some process and update the progress bar 
+	(the assigned function should return true if "Cancel" button isn't clicked. Also now PPMLoader.FromFile and PPMLoader.FromStream functions take 
+	ProgressReporter to report their progress to caller.
+	</p>
+	<table>
+		<tr>
+			<td><b>Type</b></td><td>Architecture improvement</td>
+		</tr>
+		<tr>
+			<td><b>Implements</b></td><td>Improvement idea #5</td>
+		</tr>
+		<tr>
+			<td><b>Topicality</b></td><td>Actual</td>
+		</tr>
+	</table>
+</div>
 </body>
 </html>

@@ -125,13 +125,13 @@ namespace CatEye
 			this.stride = stride;
 		}
 
-        public static PPMLoader FromFile(string filename)
+        public static PPMLoader FromFile(string filename, ProgressReporter callback)
         {
 			PPMLoader ppml;
             if (File.Exists(filename))
             {
                 FileStream stream = new FileStream(filename, FileMode.Open);
-                ppml = FromStream(stream);
+                ppml = FromStream(stream, callback);
                 stream.Close();
             }
             else
@@ -151,7 +151,7 @@ namespace CatEye
             return int.Parse(value);
         }
         		
-        public static PPMLoader FromStream(Stream stream)
+        public static PPMLoader FromStream(Stream stream, ProgressReporter callback)
         {
             PixelMapHeader header = new PixelMapHeader();
             BinaryReader binReader = new BinaryReader(stream);
@@ -241,6 +241,11 @@ namespace CatEye
 				
 				for (int i = 0; i < header.Width; i++)
 				{
+					if (callback != null)
+					{
+						if (!callback((double)i / header.Width)) 
+							return null;
+					}
 					for (int j = 0; j < header.Height; j++)
 					{
 						r_chan[i, j] = GetChannelValue(imageData, i, j, PPMLoader.ChannelIndex.Red, bytesPerPixel / 3, stride);

@@ -58,21 +58,17 @@ public partial class MainWindow {
     
     private Gtk.VBox stage_vbox;
     
-    private Gtk.HBox hbox9;
+    private Gtk.HBox status_bar_hbox;
     
-    private Gtk.Button apply_stage2_button;
+    private Gtk.ProgressBar progressbar;
+    
+    private Gtk.Button cancel_button;
     
     private Gtk.VBox vbox3;
     
     private Gtk.ScrolledWindow scrolledwindow3;
     
     private CatEye.DoublePixmapViewWidget ppmviewwidget1;
-    
-    private Gtk.HBox status_bar_hbox;
-    
-    private Gtk.ProgressBar progressbar;
-    
-    private Gtk.Button cancel_button;
     
     protected virtual void Build() {
         Stetic.Gui.Initialize(this);
@@ -140,7 +136,7 @@ public partial class MainWindow {
         this.left_vbox = new Gtk.VBox();
         this.left_vbox.Name = "left_vbox";
         this.left_vbox.Spacing = 10;
-        this.left_vbox.BorderWidth = ((uint)(4));
+        this.left_vbox.BorderWidth = ((uint)(3));
         // Container child left_vbox.Gtk.Box+BoxChild
         this.label5 = new Gtk.Label();
         this.label5.Name = "label5";
@@ -208,43 +204,38 @@ public partial class MainWindow {
         Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.left_vbox[this.GtkScrolledWindow1]));
         w11.Position = 3;
         // Container child left_vbox.Gtk.Box+BoxChild
-        this.hbox9 = new Gtk.HBox();
-        this.hbox9.Name = "hbox9";
-        this.hbox9.Spacing = 6;
-        // Container child hbox9.Gtk.Box+BoxChild
-        this.apply_stage2_button = new Gtk.Button();
-        this.apply_stage2_button.CanFocus = true;
-        this.apply_stage2_button.Name = "apply_stage2_button";
-        this.apply_stage2_button.UseUnderline = true;
-        // Container child apply_stage2_button.Gtk.Container+ContainerChild
-        Gtk.Alignment w12 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-        // Container child GtkAlignment.Gtk.Container+ContainerChild
-        Gtk.HBox w13 = new Gtk.HBox();
-        w13.Spacing = 2;
-        // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Image w14 = new Gtk.Image();
-        w14.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
-        w13.Add(w14);
-        // Container child GtkHBox.Gtk.Container+ContainerChild
-        Gtk.Label w16 = new Gtk.Label();
-        w16.LabelProp = Mono.Unix.Catalog.GetString("Update view");
-        w16.UseUnderline = true;
-        w13.Add(w16);
-        w12.Add(w13);
-        this.apply_stage2_button.Add(w12);
-        this.hbox9.Add(this.apply_stage2_button);
-        Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox9[this.apply_stage2_button]));
-        w20.Position = 0;
-        this.left_vbox.Add(this.hbox9);
-        Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.left_vbox[this.hbox9]));
-        w21.Position = 4;
-        w21.Expand = false;
-        w21.Fill = false;
+        this.status_bar_hbox = new Gtk.HBox();
+        this.status_bar_hbox.Name = "status_bar_hbox";
+        this.status_bar_hbox.Spacing = 6;
+        // Container child status_bar_hbox.Gtk.Box+BoxChild
+        this.progressbar = new Gtk.ProgressBar();
+        this.progressbar.Name = "progressbar";
+        this.status_bar_hbox.Add(this.progressbar);
+        Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.progressbar]));
+        w12.Position = 0;
+        // Container child status_bar_hbox.Gtk.Box+BoxChild
+        this.cancel_button = new Gtk.Button();
+        this.cancel_button.Sensitive = false;
+        this.cancel_button.CanFocus = true;
+        this.cancel_button.Name = "cancel_button";
+        this.cancel_button.UseStock = true;
+        this.cancel_button.UseUnderline = true;
+        this.cancel_button.Label = "gtk-cancel";
+        this.status_bar_hbox.Add(this.cancel_button);
+        Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.cancel_button]));
+        w13.Position = 1;
+        w13.Expand = false;
+        w13.Fill = false;
+        this.left_vbox.Add(this.status_bar_hbox);
+        Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.left_vbox[this.status_bar_hbox]));
+        w14.Position = 4;
+        w14.Expand = false;
+        w14.Fill = false;
         this.hbox5.Add(this.left_vbox);
-        Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox5[this.left_vbox]));
-        w22.Position = 0;
-        w22.Expand = false;
-        w22.Fill = false;
+        Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox5[this.left_vbox]));
+        w15.Position = 0;
+        w15.Expand = false;
+        w15.Fill = false;
         // Container child hbox5.Gtk.Box+BoxChild
         this.vbox3 = new Gtk.VBox();
         this.vbox3.Name = "vbox3";
@@ -255,54 +246,26 @@ public partial class MainWindow {
         this.scrolledwindow3.Name = "scrolledwindow3";
         this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
         // Container child scrolledwindow3.Gtk.Container+ContainerChild
-        Gtk.Viewport w23 = new Gtk.Viewport();
-        w23.ShadowType = ((Gtk.ShadowType)(0));
+        Gtk.Viewport w16 = new Gtk.Viewport();
+        w16.ShadowType = ((Gtk.ShadowType)(0));
         // Container child GtkViewport.Gtk.Container+ContainerChild
         this.ppmviewwidget1 = new CatEye.DoublePixmapViewWidget();
         this.ppmviewwidget1.Events = ((Gdk.EventMask)(256));
         this.ppmviewwidget1.Name = "ppmviewwidget1";
-        w23.Add(this.ppmviewwidget1);
-        this.scrolledwindow3.Add(w23);
+        w16.Add(this.ppmviewwidget1);
+        this.scrolledwindow3.Add(w16);
         this.vbox3.Add(this.scrolledwindow3);
-        Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
-        w26.Position = 1;
-        // Container child vbox3.Gtk.Box+BoxChild
-        this.status_bar_hbox = new Gtk.HBox();
-        this.status_bar_hbox.Name = "status_bar_hbox";
-        this.status_bar_hbox.Spacing = 6;
-        // Container child status_bar_hbox.Gtk.Box+BoxChild
-        this.progressbar = new Gtk.ProgressBar();
-        this.progressbar.Name = "progressbar";
-        this.status_bar_hbox.Add(this.progressbar);
-        Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.progressbar]));
-        w27.Position = 0;
-        // Container child status_bar_hbox.Gtk.Box+BoxChild
-        this.cancel_button = new Gtk.Button();
-        this.cancel_button.Sensitive = false;
-        this.cancel_button.CanFocus = true;
-        this.cancel_button.Name = "cancel_button";
-        this.cancel_button.UseStock = true;
-        this.cancel_button.UseUnderline = true;
-        this.cancel_button.Label = "gtk-cancel";
-        this.status_bar_hbox.Add(this.cancel_button);
-        Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.status_bar_hbox[this.cancel_button]));
-        w28.Position = 1;
-        w28.Expand = false;
-        w28.Fill = false;
-        this.vbox3.Add(this.status_bar_hbox);
-        Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox3[this.status_bar_hbox]));
-        w29.Position = 2;
-        w29.Expand = false;
-        w29.Fill = false;
+        Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
+        w19.Position = 1;
         this.hbox5.Add(this.vbox3);
-        Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox3]));
-        w30.Position = 1;
+        Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox3]));
+        w20.Position = 1;
         this.vbox1.Add(this.hbox5);
-        Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
-        w31.Position = 0;
+        Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+        w21.Position = 0;
         this.vbox2.Add(this.vbox1);
-        Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
-        w32.Position = 1;
+        Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
+        w22.Position = 1;
         this.Add(this.vbox2);
         if ((this.Child != null)) {
             this.Child.ShowAll();
@@ -312,9 +275,9 @@ public partial class MainWindow {
         this.Show();
         this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
         this.openAction.Activated += new System.EventHandler(this.OnOpenActionActivated);
+        this.quitAction.Activated += new System.EventHandler(this.OnQuitActionActivated);
         this.saveAsAction.Activated += new System.EventHandler(this.OnSaveAsActionActivated);
         this.ImportFromDCRawAction.Activated += new System.EventHandler(this.OnImportFromDCRawActionActivated);
-        this.apply_stage2_button.Clicked += new System.EventHandler(this.OnApplyStage2ButtonClicked);
         this.cancel_button.Clicked += new System.EventHandler(this.OnCancelButtonClicked);
     }
 }
