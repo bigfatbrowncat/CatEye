@@ -10,6 +10,7 @@
     <RootNamespace>CatEye</RootNamespace>
     <AssemblyName>CatEye</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
     <DebugType>none</DebugType>
