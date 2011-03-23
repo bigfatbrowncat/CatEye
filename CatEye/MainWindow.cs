@@ -5,6 +5,8 @@ using CatEye;
 
 public partial class MainWindow : Gtk.Window
 {
+	public delegate bool ProgressMessageReporter(double progress, string status);
+
 	PPMLoader ppl = null;
 	DoublePixmap hdr = null;
 	Stages stages;
@@ -302,8 +304,6 @@ public partial class MainWindow : Gtk.Window
 		cancel_button.Sensitive = false;
 		processing = false;
 	}
-	
-	public delegate bool ProgressMessageReporter(double progress, string status);
 	
 	bool ImportRawAndLoadingReporter(double progress, string status)
 	{
