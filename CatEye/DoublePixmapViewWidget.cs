@@ -12,6 +12,7 @@ namespace CatEye
 
 		private DoublePixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
+		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
 		
 		public DoublePixmap HDR
 		{
@@ -23,13 +24,16 @@ namespace CatEye
 			}
 		}
 		
+		public TimeSpan UpdateTimeSpan { get { return _UpdateTimeSpan; } }
 		
 		public DoublePixmapViewWidget()
 		{
 		}
 
+		
 		public void UpdatePicture()
 		{
+			DateTime update_start = DateTime.Now;
 			if (_HDR != null)
 			{
 				if (_RenderedPicture != null)
@@ -39,6 +43,8 @@ namespace CatEye
 		
 				_HDR.DrawToPixbuf(_RenderedPicture);
 			}
+			_UpdateTimeSpan = DateTime.Now - update_start;
+			Console.WriteLine(_UpdateTimeSpan);
 			QueueResizeNoRedraw();
 			QueueDraw();
 		}

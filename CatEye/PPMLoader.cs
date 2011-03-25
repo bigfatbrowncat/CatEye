@@ -261,19 +261,16 @@ namespace CatEye
 						if (maxchan < b_chan[i, j]) maxchan = b_chan[i, j];
 					}
 				}
-				Console.WriteLine(maxchan);
 				return new PPMLoader(header, r_chan, g_chan, b_chan, minchan, maxchan, bytesPerPixel, stride);
             }
 
             // If the end of the stream is reached before reading all of the expected values raise an exception.
             catch (EndOfStreamException e)
             {
-                Console.WriteLine(e.Message);
                 throw new Exception("Error reading the stream! ", e);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 throw new Exception("Error reading the stream! ", ex);
             }
             finally
@@ -331,7 +328,7 @@ namespace CatEye
             }
         }
 		
-		public void Downscale(int k)
+		public bool Downscale(int k, ProgressReporter callback)
 		{
 			ushort[,] new_r = new ushort[header.Width / k, header.Height / k];
 			ushort[,] new_g = new ushort[header.Width / k, header.Height / k];
@@ -339,8 +336,12 @@ namespace CatEye
 
 			for (int i = 0; i < header.Width / k; i++)
 			{
-				//Console.WriteLine("" + i + " of " + header.Width);
-	
+				if (callback != null)
+				{
+					if (!callback((double)i / (header.Width / k))) 
+						return false;
+				}
+
 				for (int j = 0; j < header.Height / k; j++)
 				{
 					double r = 0, g = 0, b = 0;
@@ -370,6 +371,8 @@ namespace CatEye
 			b_channel = new_b;
 			header.Width /= k;
 			header.Height /= k;
+			
+			return true;
 		}
 		
 		

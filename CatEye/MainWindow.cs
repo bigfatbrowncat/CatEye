@@ -19,9 +19,13 @@ public partial class MainWindow : Gtk.Window
 	bool user_modified_parameter = false;
 	bool cancel_pending = false;
 	bool processing = false;
+	bool loading = false;
 
+	DateTime lastupdate;
+	
 	private void ArrangeStageOperationBoxes()
 	{
+		left_vbox.CheckResize();
 		stage_vbox.CheckResize();
 	}
 	
@@ -29,25 +33,6 @@ public partial class MainWindow : Gtk.Window
 	{
 		Build ();
 
-		// Adding prescale list
-		Gtk.ListStore ls = new Gtk.ListStore(typeof(string), typeof(int));
-		ls.AppendValues("No downscaling", 1);
-		ls.AppendValues("Divide by 2", 2);
-		ls.AppendValues("Divide by 3", 3);
-		ls.AppendValues("Divide by 4", 4);
-		ls.AppendValues("Divide by 5", 5);
-		ls.AppendValues("Divide by 6", 6);
-		ls.AppendValues("Divide by 7", 7);
-		ls.AppendValues("Divide by 8", 8);
-		
-		Gtk.ComboBox pres_cb = prescale_combobox;
-		pres_cb.Model = ls;
-		
-		// Selecting "No downscale"
-		TreeIter ti;
-		ls.GetIterFirst(out ti);
-		pres_cb.SetActiveIter(ti);
-		
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
 		
@@ -107,7 +92,7 @@ public partial class MainWindow : Gtk.Window
 		}));
 	}
 
-	double old_frac = 0;
+
 	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
 	{
 		progressbar.Fraction = e.Progress;
@@ -116,11 +101,11 @@ public partial class MainWindow : Gtk.Window
 			progressbar.Text = (attrs[0] as StageOperationDescriptionAttribute).Name + ": ";
 		progressbar.Text += (e.Progress * 100).ToString("0") + "%";
 		
-		if (Math.Abs(progressbar.Fraction - old_frac) > 0.1)
+		if ((DateTime.Now - lastupdate).TotalMilliseconds / ppmviewwidget1.UpdateTimeSpan.TotalMilliseconds > 5)
 		{
 			ppmviewwidget1.UpdatePicture();
 			ppmviewwidget1.QueueDraw();
-			old_frac = progressbar.Fraction;
+			lastupdate = DateTime.Now;
 		}
 		
 		while (Gtk.Application.EventsPending())
@@ -174,51 +159,17 @@ public partial class MainWindow : Gtk.Window
 	{
 		ppmviewwidget1.HDR = null;
 		hdr = null;
-		GC.Collect();		// For freeng memory from unused hdr_src
+		GC.Collect();		// For freeing memory from unused hdr_src
 	}
 	
-	
-	
-	private void LoadFile(string FileName, ProgressMessageReporter callback)
-	{
-		ppl = PPMLoader.FromFile(FileName, delegate (double progress) {
-			if (callback != null) 
-			{
-				return callback(progress, "Loading...");
-			}
-			else 
-				return true; // If callback is not assigned, just continue
-		});
-		
-		if (ppl == null)
-		{
-			if (callback != null)
-			{
-				cancel_pending = false;
-				callback(0, "Loading cancelled");
-			}
-		}
-		else
-		{
-			ClearHDR();
-			
-			TreeIter ti;
-			prescale_combobox.GetActiveIter(out ti);
-			int downscale_by = (int)(((ListStore)prescale_combobox.Model).GetValue(ti, 1));
-			
-			if (downscale_by != 1)
-				ppl.Downscale(downscale_by);
-		}
-	}
-
-	private void LoadStream(System.IO.Stream stream, ProgressMessageReporter callback)
+	private void LoadStream(System.IO.Stream stream, ProgressMessageReporter callback, int downscale_by)
 	{
 		ClearHDR();
 		
 		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
 			if (callback != null) 
 			{
-				return callback(progress, "Loading...");
+				return callback(progress, "Parsing image...");
 			}
 			else 
 				return true; // If callback is not assigned, just continue
@@ -234,75 +185,60 @@ public partial class MainWindow : Gtk.Window
 		}
 		else
 		{
-			TreeIter ti;
-			prescale_combobox.GetActiveIter(out ti);
-			int downscale_by = (int)(((ListStore)prescale_combobox.Model).GetValue(ti, 1));
-			
-			if (downscale_by != 1)
-				ppl.Downscale(downscale_by);
-			
+			if (downscale_by != 1)		
+			{
+				bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
+					if (callback != null) 
+					{
+						return callback(progress, "Downscaling...");
+					}
+					else 
+						return true; // If callback is not assigned, just continue
+				});
+				
+				if (dsres == false)
+				{
+					ppl = null;
+					if (callback != null)
+					{
+						cancel_pending = false;
+						callback(0, "Loading cancelled");
+					}
+				}
+			}
+			loading = false;
 			UpdateStage();
 		}
 	}
 	
-	protected virtual void OnOpenActionActivated (object sender, System.EventArgs e)
-	{
-		cancel_button.Sensitive = true;
-		
-		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Open photo", this, 
-		                                                      FileChooserAction.Open,
-		                                                      "Cancel", ResponseType.Cancel,
-		                                                      "Open", ResponseType.Accept);
-		
-		FileFilter[] ffs = new FileFilter[1];
-		ffs[0] = new FileFilter();
-		ffs[0].AddPattern("*.ppm");
-		ffs[0].Name = "PPM image";
-		
-		fcd.AddFilter(ffs[0]);
-
-		string filename = null;
-		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
-		{
-			if (fcd.Filter == ffs[0])
-			{
-				filename = fcd.Filename;
-			}
-		}
-		fcd.Destroy();
-		
-		if (filename != null)
-		{
-			LoadFile(filename, ImportRawAndLoadingReporter);
-		}
-		cancel_button.Sensitive = false;
-	}
-	
 	void UpdateStage()
 	{
-		processing = true;
-		cancel_button.Sensitive = true;
-		
-		if (ppl != null)
+		if (!loading)
 		{
-			hdr = DoublePixmap.FromPPM(ppl);
-			ppmviewwidget1.HDR = hdr;
-
-			if (stages.ApplyOperations(hdr))
+			processing = true;
+			cancel_button.Sensitive = true;
+			
+			if (ppl != null)
 			{
-				progressbar.Text = "Operation completed";
-				progressbar.Fraction = 0;
-				ppmviewwidget1.UpdatePicture();
+				hdr = DoublePixmap.FromPPM(ppl);
+				ppmviewwidget1.HDR = hdr;
+	
+				if (stages.ApplyOperations(hdr))
+				{
+					progressbar.Text = "Operation completed";
+					progressbar.Fraction = 0;
+					ppmviewwidget1.UpdatePicture();
+				}
+				else
+				{
+					progressbar.Text = "Operation cancelled";
+					progressbar.Fraction = 0;
+					cancel_pending = false;
+				}
 			}
-			else
-			{
-				progressbar.Text = "Operation cancelled";
-				progressbar.Fraction = 0;
-				cancel_pending = false;
-			}
+			cancel_button.Sensitive = false;
+			processing = false;
 		}
-		cancel_button.Sensitive = false;
-		processing = false;
 	}
 	
 	bool ImportRawAndLoadingReporter(double progress, string status)
@@ -317,25 +253,13 @@ public partial class MainWindow : Gtk.Window
 	private System.IO.Stream ImportRaw(string filename, ProgressMessageReporter callback)
 	{
 		if (callback != null)
-			if (!callback(0, "Waiting for dcraw to complete...")) return null;
+			if (!callback(0, "Waiting for dcraw...")) return null;
 		
-		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
-		string dcraw_path =  mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "dcraw";
-		if (Environment.OSVersion.Platform == PlatformID.Win32NT || 
-		    Environment.OSVersion.Platform == PlatformID.Win32Windows)
-		{
-			dcraw_path += ".exe";
-		}
+		System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -c \"" + filename + "\"");
 		
-		if (System.IO.File.Exists(dcraw_path))
+		int cnt = 0;
+		if (prc != null)
 		{
-			System.Diagnostics.Process prc = new System.Diagnostics.Process();
-			prc.StartInfo.UseShellExecute = false;
-			prc.StartInfo.FileName = dcraw_path;
-			prc.StartInfo.Arguments = "-4 -w -c \"" + filename + "\"";
-			prc.StartInfo.RedirectStandardOutput = true;
-			prc.StartInfo.CreateNoWindow = true;
-			int cnt = 0;
 			if (prc.Start())
 			{
 				int readed = 0;
@@ -367,60 +291,81 @@ public partial class MainWindow : Gtk.Window
 				ms.Seek(0, System.IO.SeekOrigin.Begin);
 				return ms;
 			}
+			else
+			{
+				Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+				                                             MessageType.Error, ButtonsType.Ok, 
+				                                             "Can not start DCRaw process");
+				md.Title = "Error";
+				md.Run();
+				md.Destroy();
+			}
 		}
 		else
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
-			                                             "dcraw not found at location \"" + mylocation + "\"");
+			                                             "DCRaw executable not found");
 			md.Title = "Error";
-			if (md.Run() == (int)Gtk.ResponseType.Ok)
-			{
-				md.Destroy();
-			}
+			md.Run();
+			md.Destroy();
 		}
 		return null;
 	}
 	
+	protected void LoadRawImage()
+	{
+		Console.WriteLine("!!!");
+		if (loading)
+		{
+			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+			                                             MessageType.Error, ButtonsType.Ok, 
+			                                             "Can not start DCRaw process");
+			md.Title = "Error";
+			md.Run();
+			md.Destroy();
+		}
+		else
+		{
+			string filename = null;
+	
+			int downscale_by = 1;
+			RawImportDialog rid = new RawImportDialog();
+			
+			if (rid.Run() == (int)Gtk.ResponseType.Accept)
+			{
+				filename = rid.Filename;
+				downscale_by = rid.PreScale;
+			}
+			rid.Destroy();
+			
+			if (filename != null)
+			{
+				loading = true;
+				cancel_button.Sensitive = true;
+				System.IO.Stream strm = ImportRaw(filename, ImportRawAndLoadingReporter);
+				if (strm == null)
+				{
+					cancel_pending = false;
+					progressbar.Fraction = 0;
+					progressbar.Text = "Importing cancelled";
+				}
+				else
+				{
+					LoadStream(strm, ImportRawAndLoadingReporter, downscale_by);
+				}
+				cancel_button.Sensitive = false;
+				loading = false;
+			}
+		}
+	}
+	
 	protected virtual void OnImportFromDCRawActionActivated (object sender, System.EventArgs e)
 	{
-		cancel_button.Sensitive = true;
-		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Import raw", this, 
-		                                                      FileChooserAction.Open,
-		                                                      "Cancel", ResponseType.Cancel,
-		                                                      "Open", ResponseType.Accept);
-		
-		FileFilter[] ffs = new FileFilter[1];
-		ffs[0] = new FileFilter();
-		ffs[0].AddPattern("*");
-		ffs[0].Name = "RAW images accepted by dcraw";
-		
-		fcd.AddFilter(ffs[0]);
-
-		string filename = null;
-		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
-		{
-			if (fcd.Filter == ffs[0])
-			{
-				filename = fcd.Filename;
-			}
-		}
-		fcd.Destroy();
-		
-		if (filename != null)
-		{
-			System.IO.Stream strm = ImportRaw(filename, ImportRawAndLoadingReporter);
-			if (strm == null)
-			{
-				cancel_pending = false;
-				progressbar.Fraction = 0;
-				progressbar.Text = "Importing cancelled";
-				cancel_button.Sensitive = false;
-			}
-			else
-				LoadStream(strm, ImportRawAndLoadingReporter);
-		}
-		cancel_button.Sensitive = false;
+		GLib.Timeout.Add(1, delegate {
+			LoadRawImage();
+			return false;
+		});
 	}
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
@@ -430,6 +375,8 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
+		if (loading || processing)
+			cancel_pending = true;
 		Application.Quit();
 	}
 	
