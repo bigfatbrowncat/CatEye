@@ -5,8 +5,8 @@ namespace CatEye
 	[StageOperationDescription("Compression")]
 	public class CompressionStageOperation : StageOperation
 	{
-		public CompressionStageOperation (CompressionStageOperationParametersWidget parametersWidget, Stages owner)
-			: base (parametersWidget, owner)
+		public CompressionStageOperation (CompressionStageOperationParametersWidget parametersWidget)
+			: base (parametersWidget)
 		{
 		}
 		

@@ -40,17 +40,15 @@ namespace CatEye
 	public class StageOperation
 	{
 		private StageOperationParametersWidget mParametersWidget;
-		private Stages mOwner;
 
 		public event EventHandler<DoStageOperationEventArgs> Do;
 		public event EventHandler<ReportStageOperationProgressEventArgs> ReportProgress;
 		
 		public StageOperationParametersWidget ParametersWidget { get { return mParametersWidget; } }
 		
-		protected StageOperation(StageOperationParametersWidget parametersWidget, Stages owner)
+		protected StageOperation(StageOperationParametersWidget parametersWidget)
 		{
 			mParametersWidget = parametersWidget;
-			mOwner = owner;
 		}
 		
 		protected virtual bool OnReportProgress(double progress)

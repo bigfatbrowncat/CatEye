@@ -42,6 +42,7 @@ namespace CatEye
 	
 		protected virtual void OnFilechooserwidgetSelectionChanged (object sender, System.EventArgs e)
 		{
+			thumb_image.Clear();
 			open_button.Sensitive = false;
 			file_is_good = false;
 			
@@ -113,10 +114,6 @@ namespace CatEye
 								}
 								while (readed > 0);
 					
-								//if (callback != null)
-								//{
-								//	if (!callback(0, "Data reading complete.")) return null;
-								//}
 								while (Application.EventsPending()) Application.RunIteration();
 				
 								ms.Seek(0, System.IO.SeekOrigin.Begin);

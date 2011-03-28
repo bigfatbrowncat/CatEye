@@ -5,8 +5,8 @@ namespace CatEye
 	[StageOperationDescription("Basic operations")]
 	public class BasicOpsStageOperation : StageOperation
 	{
-		public BasicOpsStageOperation (BasicOpsStageOperationParametersWidget parametersWidget, Stages owner)
-			: base (parametersWidget, owner)
+		public BasicOpsStageOperation (BasicOpsStageOperationParametersWidget parametersWidget)
+			: base (parametersWidget)
 		{
 		}
 		

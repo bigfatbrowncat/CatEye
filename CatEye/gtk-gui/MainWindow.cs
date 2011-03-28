@@ -23,11 +23,11 @@ public partial class MainWindow
 
 	private global::Gtk.VBox vbox2;
 
-	private global::Gtk.MenuBar menubar1;
+	private global::Gtk.MenuBar main_menubar;
 
 	private global::Gtk.VBox vbox1;
 
-	private global::Gtk.HBox hbox5;
+	private global::Gtk.HBox main_hbox;
 
 	private global::Gtk.VBox left_vbox;
 
@@ -87,11 +87,11 @@ public partial class MainWindow
 		this.vbox2 = new global::Gtk.VBox ();
 		this.vbox2.Name = "vbox2";
 		// Container child vbox2.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='loadAction' action='loadAction'/><menuitem name='saveAsAction' action='saveAsAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
-		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
-		this.menubar1.Name = "menubar1";
-		this.vbox2.Add (this.menubar1);
-		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.menubar1]));
+		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadAction' action='loadAction'/><menuitem name='saveAsAction' action='saveAsAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.main_menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/main_menubar")));
+		this.main_menubar.Name = "main_menubar";
+		this.vbox2.Add (this.main_menubar);
+		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.main_menubar]));
 		w2.Position = 0;
 		w2.Expand = false;
 		w2.Fill = false;
@@ -100,13 +100,13 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 4;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.hbox5 = new global::Gtk.HBox ();
-		this.hbox5.Name = "hbox5";
-		this.hbox5.Spacing = 6;
-		// Container child hbox5.Gtk.Box+BoxChild
+		this.main_hbox = new global::Gtk.HBox ();
+		this.main_hbox.Name = "main_hbox";
+		this.main_hbox.Spacing = 1;
+		// Container child main_hbox.Gtk.Box+BoxChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";
-		this.left_vbox.Spacing = 10;
+		this.left_vbox.Spacing = 5;
 		this.left_vbox.BorderWidth = ((uint)(3));
 		// Container child left_vbox.Gtk.Box+BoxChild
 		this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
@@ -167,11 +167,11 @@ public partial class MainWindow
 		w17.Position = 1;
 		w17.Expand = false;
 		w17.Fill = false;
-		this.hbox5.Add (this.left_vbox);
-		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.left_vbox]));
+		this.main_hbox.Add (this.left_vbox);
+		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.main_hbox[this.left_vbox]));
 		w18.Position = 0;
 		w18.Expand = false;
-		// Container child hbox5.Gtk.Box+BoxChild
+		// Container child main_hbox.Gtk.Box+BoxChild
 		this.vbox3 = new global::Gtk.VBox ();
 		this.vbox3.Name = "vbox3";
 		this.vbox3.Spacing = 6;
@@ -192,11 +192,11 @@ public partial class MainWindow
 		this.vbox3.Add (this.scrolledwindow3);
 		global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
 		w22.Position = 0;
-		this.hbox5.Add (this.vbox3);
-		global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.vbox3]));
+		this.main_hbox.Add (this.vbox3);
+		global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.main_hbox[this.vbox3]));
 		w23.Position = 1;
-		this.vbox1.Add (this.hbox5);
-		global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+		this.vbox1.Add (this.main_hbox);
+		global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.main_hbox]));
 		w24.Position = 0;
 		this.vbox2.Add (this.vbox1);
 		global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));

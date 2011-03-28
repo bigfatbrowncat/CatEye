@@ -5,8 +5,8 @@ namespace CatEye
 	[StageOperationDescription("Ultra sharping")]
 	public class UltraSharpStageOperation : StageOperation
 	{
-		public UltraSharpStageOperation (UltraSharpStageOperationParametersWidget parametersWidget, Stages owner)
-			: base (parametersWidget, owner)
+		public UltraSharpStageOperation (UltraSharpStageOperationParametersWidget parametersWidget)
+			: base (parametersWidget)
 		{
 		}
 		

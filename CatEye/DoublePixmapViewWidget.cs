@@ -44,7 +44,6 @@ namespace CatEye
 				_HDR.DrawToPixbuf(_RenderedPicture);
 			}
 			_UpdateTimeSpan = DateTime.Now - update_start;
-			Console.WriteLine(_UpdateTimeSpan);
 			QueueResizeNoRedraw();
 			QueueDraw();
 		}

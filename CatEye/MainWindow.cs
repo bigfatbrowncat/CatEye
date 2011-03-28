@@ -5,21 +5,52 @@ using CatEye;
 
 public partial class MainWindow : Gtk.Window
 {
+	protected enum UIState { Processing, Loading, Free };
+	private UIState _TheUIState = UIState.Free;
+	protected UIState TheUIState 
+	{ 
+		get { return _TheUIState; } 
+		set
+		{
+			if (_TheUIState != value)
+			{
+				_TheUIState = value;
+				if (value == MainWindow.UIState.Free)
+				{
+					loadAction.Sensitive = true;
+					saveAsAction.Sensitive = true;
+					cancel_button.Sensitive = false;
+				}
+				else if (value == MainWindow.UIState.Loading)
+				{
+					loadAction.Sensitive = false;
+					saveAsAction.Sensitive = false;
+					cancel_button.Sensitive = true;
+				}
+				else if (value == MainWindow.UIState.Processing)
+				{
+					loadAction.Sensitive = true;
+					saveAsAction.Sensitive = true;
+					cancel_button.Sensitive = true;
+				}
+			}
+		}
+	}
+	
 	public delegate bool ProgressMessageReporter(double progress, string status);
 
 	PPMLoader ppl = null;
 	DoublePixmap hdr = null;
 	Stages stages;
 
-	StageOperation downscaling_stage_op;
 	StageOperation compression_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
 	
 	bool user_modified_parameter = false;
 	bool cancel_pending = false;
-	bool processing = false;
-	bool loading = false;
+	
+	uint update_timer_delay = 500;
 
 	DateTime lastupdate;
 	
@@ -36,32 +67,37 @@ public partial class MainWindow : Gtk.Window
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
 		
-		downscaling_stage_op = new DownscalingStageOperation(new DownscalingStageOperationParametersWidget(), stages);
-		stages.AddStageOperation(downscaling_stage_op);
-		downscaling_stage_op.ReportProgress += HandleProgress;
-		downscaling_stage_op.ParametersWidget.UserModified += HandleUserModifiedStageOperation;
-		
-		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget(), stages);
+		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget());
 		stages.AddStageOperation(basic_ops_stage_op);
 		basic_ops_stage_op.ReportProgress += HandleProgress;
-		basic_ops_stage_op.ParametersWidget.UserModified += HandleUserModifiedStageOperation;
+		basic_ops_stage_op.ParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
 
-		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget(), stages);
+		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget());
 		stages.AddStageOperation(compression_stage_op);
 		compression_stage_op.ReportProgress += HandleProgress;
-		compression_stage_op.ParametersWidget.UserModified += HandleUserModifiedStageOperation;
+		compression_stage_op.ParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
 		
-		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget(), stages);
+		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget());
 		stages.AddStageOperation(ultra_sharp_stage_op);
 		ultra_sharp_stage_op.ReportProgress += HandleProgress;
-		ultra_sharp_stage_op.ParametersWidget.UserModified += HandleUserModifiedStageOperation;
+		ultra_sharp_stage_op.ParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
 
-		stages.OperationActivityChanged += HandleUserModifiedStageOperation;
+		stages.OperationActivityChanged += delegate {
+			LaunchUpdateTimer();
+		};
+		stages.OperationIndexChanged += delegate {
+			LaunchUpdateTimer();
+		};
 		stages.OperationAddedToStage += delegate {
 			LaunchUpdateTimer();
 			ArrangeStageOperationBoxes();
 		};
-		stages.OperationIndexChanged += HandleUserModifiedStageOperation;
 		stages.OperationRemovedFromStage += delegate {
 			LaunchUpdateTimer();
 			ArrangeStageOperationBoxes();
@@ -71,25 +107,34 @@ public partial class MainWindow : Gtk.Window
 		ArrangeStageOperationBoxes();
 	}
 
-	void HandleUserModifiedStageOperation (object sender, EventArgs e)
-	{
-		LaunchUpdateTimer();
-	}
-	
 	protected void LaunchUpdateTimer()
 	{
-		user_modified_parameter = true;
-		if (processing) cancel_pending = true;
-		
-		GLib.Timeout.Add(1000, new GLib.TimeoutHandler(delegate {
-			if (processing) return true;
-			if (user_modified_parameter)
-			{
+		if (!user_modified_parameter)
+		{
+			user_modified_parameter = true;
+			GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
 				user_modified_parameter = false;
-				UpdateStage();
-			}
-			return false;
-		}));
+				switch (TheUIState)
+				{
+				case UIState.Processing:
+					// Already processing. Image processing needs to be interrupted, after 
+					// that we have to hit the update timer again
+					cancel_pending = true;
+					return true;
+				
+				case UIState.Loading:
+					// The image is loading. No refresh allowed. Just ignoring the command
+					return false;
+					
+				case UIState.Free:
+					// Updating and stopping the timer
+					UpdateStage();
+					return false;
+				default:
+					throw new Exception("Unhandled case occured: " + TheUIState);
+				}
+			}));
+		}
 	}
 
 
@@ -206,17 +251,17 @@ public partial class MainWindow : Gtk.Window
 					}
 				}
 			}
-			loading = false;
-			UpdateStage();
 		}
+		TheUIState = MainWindow.UIState.Free;
+		UpdateStage();
 	}
 	
 	void UpdateStage()
 	{
-		if (!loading)
+		if (TheUIState != MainWindow.UIState.Processing)
 		{
-			processing = true;
-			cancel_button.Sensitive = true;
+			UIState curstate = TheUIState;
+			TheUIState = MainWindow.UIState.Processing;
 			
 			if (ppl != null)
 			{
@@ -236,8 +281,7 @@ public partial class MainWindow : Gtk.Window
 					cancel_pending = false;
 				}
 			}
-			cancel_button.Sensitive = false;
-			processing = false;
+			TheUIState = curstate;
 		}
 	}
 	
@@ -313,10 +357,9 @@ public partial class MainWindow : Gtk.Window
 		return null;
 	}
 	
-	protected void LoadRawImage()
+	protected void LoadRawImageActionPicked()
 	{
-		Console.WriteLine("!!!");
-		if (loading)
+		if (TheUIState == MainWindow.UIState.Loading)
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
@@ -341,8 +384,8 @@ public partial class MainWindow : Gtk.Window
 			
 			if (filename != null)
 			{
-				loading = true;
-				cancel_button.Sensitive = true;
+				UIState curstate = TheUIState;
+				TheUIState = MainWindow.UIState.Loading;
 				System.IO.Stream strm = ImportRaw(filename, ImportRawAndLoadingReporter);
 				if (strm == null)
 				{
@@ -354,8 +397,7 @@ public partial class MainWindow : Gtk.Window
 				{
 					LoadStream(strm, ImportRawAndLoadingReporter, downscale_by);
 				}
-				cancel_button.Sensitive = false;
-				loading = false;
+				TheUIState = curstate;
 			}
 		}
 	}
@@ -363,7 +405,7 @@ public partial class MainWindow : Gtk.Window
 	protected virtual void OnImportFromDCRawActionActivated (object sender, System.EventArgs e)
 	{
 		GLib.Timeout.Add(1, delegate {
-			LoadRawImage();
+			LoadRawImageActionPicked();
 			return false;
 		});
 	}
@@ -375,7 +417,7 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		if (loading || processing)
+		if (TheUIState != MainWindow.UIState.Free)
 			cancel_pending = true;
 		Application.Quit();
 	}
