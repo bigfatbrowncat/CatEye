@@ -47,6 +47,7 @@ public partial class MainWindow : Gtk.Window
 	StageOperation compression_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
+	StageOperation brightness_stage_op;
 	
 	bool update_timer_launched = false;
 	bool freezing_timer_launched = false;
@@ -69,14 +70,14 @@ public partial class MainWindow : Gtk.Window
 
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
-		
-		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget());
-		stages.AddStageOperation(basic_ops_stage_op);
-		basic_ops_stage_op.ReportProgress += HandleProgress;
-		basic_ops_stage_op.ParametersWidget.UserModified += delegate {
+
+		brightness_stage_op = new BrightnessStageOperation(new BrightnessStageOperationParametersWidget());
+		stages.AddStageOperation(brightness_stage_op);
+		brightness_stage_op.ReportProgress += HandleProgress;
+		brightness_stage_op.ParametersWidget.UserModified += delegate {
 			LaunchUpdateTimer();
 		};
-
+		
 		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget());
 		stages.AddStageOperation(compression_stage_op);
 		compression_stage_op.ReportProgress += HandleProgress;
@@ -91,6 +92,14 @@ public partial class MainWindow : Gtk.Window
 			LaunchUpdateTimer();
 		};
 
+		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget());
+		stages.AddStageOperation(basic_ops_stage_op);
+		basic_ops_stage_op.ReportProgress += HandleProgress;
+		basic_ops_stage_op.ParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		
+		
 		stages.OperationActivityChanged += delegate {
 			LaunchUpdateTimer();
 		};
@@ -109,55 +118,11 @@ public partial class MainWindow : Gtk.Window
 			LaunchUpdateTimer();
 		};
 		stages.OperationFrozen += delegate {
-			if (stages.FrozenAt != null) 
-				LaunchFreezingTimer();
-			else
-			{
-				frozen = null;
-				LaunchUpdateTimer();
-			}
+			LaunchUpdateTimer();
 		};
 		
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
-	}
-
-	protected void LaunchFreezingTimer ()
-	{
-		if (!freezing_timer_launched)
-		{
-			freezing_timer_launched = true;
-			GLib.Timeout.Add(freezing_timer_delay, new GLib.TimeoutHandler(delegate {
-				freezing_timer_launched = false;
-				switch (TheUIState)
-				{
-				case UIState.Processing:
-					// Already processing. Image processing needs to be interrupted, after 
-					// that we have to hit the update timer again
-					cancel_pending = true;
-					return true;
-				
-				case UIState.Loading:
-					// The image is loading. No freezing allowed. Setting back to unfrozen state
-					stages.FrozenAt = null;
-					return false;
-					
-				case UIState.Free:
-					// Updating and stopping the timer
-					if (!UpdateFrozen())
-					{
-						stages.FrozenAt = null;
-					}
-					else
-					{
-						UpdateStage();
-					}
-					return false;
-				default:
-					throw new Exception("Unhandled case occured: " + TheUIState);
-				}
-			}));
-		}
 	}
 
 	protected void LaunchUpdateTimer()
@@ -181,7 +146,33 @@ public partial class MainWindow : Gtk.Window
 					
 				case UIState.Free:
 					// Updating and stopping the timer
-					UpdateStage();
+					if (stages.FrozenAt == null)
+					{
+						frozen = null;
+						UpdateStageAfterFrozen();
+					}
+					else
+					{
+						if (frozen == null)
+						{
+							if (UpdateFrozen())
+							{
+								UpdateStageAfterFrozen();
+							}
+							else
+							{
+								Console.WriteLine("Frozen image isn't updated.");
+							}
+						}
+						else
+						{
+							UpdateStageAfterFrozen();
+						}
+						
+					}
+					
+
+					
 					return false;
 				default:
 					throw new Exception("Unhandled case occured: " + TheUIState);
@@ -257,6 +248,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		ppmviewwidget1.HDR = null;
 		hdr = null;
+		frozen = null;
 		GC.Collect();		// For freeing memory from unused hdr_src
 	}
 	
@@ -306,7 +298,7 @@ public partial class MainWindow : Gtk.Window
 			}
 		}
 		TheUIState = MainWindow.UIState.Free;
-		UpdateStage();
+		LaunchUpdateTimer();
 	}
 	
 	/// <summary>
@@ -355,7 +347,10 @@ public partial class MainWindow : Gtk.Window
 		return res;
 	}
 	
-	void UpdateStage()
+	/// <summary>
+	/// Assumes that frozen image is prepared already
+	/// </summary>
+	void UpdateStageAfterFrozen()
 	{
 		if (TheUIState != MainWindow.UIState.Processing)
 		{
@@ -524,6 +519,14 @@ public partial class MainWindow : Gtk.Window
 			cancel_pending = true;
 		Application.Quit();
 	}
+	
+	protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
+	{
+		AboutBox abb = new AboutBox();
+		abb.Run();
+		abb.Destroy();
+	}
+	
 	
 	
 	

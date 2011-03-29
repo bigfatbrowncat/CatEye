@@ -42,7 +42,6 @@ namespace CatEye
 			set 
 			{ 
 				_TitleWidget.View = value; 
-				Console.WriteLine(this.Operation.GetType().Name + " set to " + value);
 			}
 		}
 		

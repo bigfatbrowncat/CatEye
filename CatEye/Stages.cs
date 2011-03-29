@@ -49,7 +49,6 @@ namespace CatEye
 							_FrozenPanel.View = (_StageQueue[i] == value);
 					}
 					_ViewedOperation = value;
-					Console.WriteLine(_ViewedOperation);
 					OnViewedOperationChanged();
 				}
 			}
@@ -73,7 +72,6 @@ namespace CatEye
 				}
 				else
 				{
-					Console.WriteLine("setting frozenat to not null");
 					bool frozenfound = false;
 					bool viewedfound = false;
 					for (int i = 0; i < _StageQueue.Count; i++)

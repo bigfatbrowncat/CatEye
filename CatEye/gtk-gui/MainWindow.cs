@@ -86,7 +86,7 @@ public partial class MainWindow
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
-		this.Title = global::Mono.Unix.Catalog.GetString ("CatEye 0.2");
+		this.Title = global::Mono.Unix.Catalog.GetString ("CatEye 0.3");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vbox2 = new global::Gtk.VBox ();
@@ -217,6 +217,7 @@ public partial class MainWindow
 		this.quitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
 		this.saveAsAction.Activated += new global::System.EventHandler (this.OnSaveAsActionActivated);
 		this.loadAction.Activated += new global::System.EventHandler (this.OnImportFromDCRawActionActivated);
+		this.aboutAction.Activated += new global::System.EventHandler (this.OnAboutActionActivated);
 		this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 	}
 }

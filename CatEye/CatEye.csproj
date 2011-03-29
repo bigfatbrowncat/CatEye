@@ -129,6 +129,11 @@
     <Compile Include="DCRawConnection.cs" />
     <Compile Include="FrozenPanel.cs" />
     <Compile Include="gtk-gui\CatEye.FrozenPanel.cs" />
+    <Compile Include="AboutBox.cs" />
+    <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
+    <Compile Include="BrightnessStageOperation.cs" />
+    <Compile Include="BrightnessStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.BrightnessStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
