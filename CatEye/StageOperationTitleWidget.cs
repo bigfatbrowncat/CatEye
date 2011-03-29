@@ -8,6 +8,8 @@ namespace CatEye
 	{
 		private StageOperation _Operation;
 		private string _Title;
+		private bool _ViewToggledFromCode = false;
+		private bool _FreezeToggledFromCode = false;
 
 		public StageOperation Operation
 		{
@@ -30,13 +32,51 @@ namespace CatEye
 		
 		public bool Active
 		{
-			get { return title_togglebutton.Active; }
-			set { title_togglebutton.Active = value; }
+			get { return title_checkbutton.Active; }
+			set { title_checkbutton.Active = value; }
+		}
+		
+		public bool View
+		{
+			get { return view_togglebutton.Active; }
+			set 
+			{
+				_ViewToggledFromCode = true;
+				view_togglebutton.Active = value; 
+				_ViewToggledFromCode = false;
+			}
+		}
+		
+		public bool Freeze
+		{
+			get { return freeze_togglebutton.Active; }
+			set 
+			{
+				_FreezeToggledFromCode = true;
+				freeze_togglebutton.Active = value; 
+				_FreezeToggledFromCode = false;
+			}
+		}
+		
+		bool _FrozenButtonsState = false;
+		
+		public bool FrozenButtonsState
+		{
+			get { return _FrozenButtonsState; }
+			set
+			{
+				_FrozenButtonsState = value;
+				freeze_togglebutton.Sensitive = !value;
+				up_button.Sensitive = !value;
+				down_button.Sensitive = !value;
+			}
 		}
 		
 		public event EventHandler<EventArgs> UpButtonClicked;
 		public event EventHandler<EventArgs> DownButtonClicked;
-		public event EventHandler<EventArgs> TitleButtonClicked;
+		public event EventHandler<EventArgs> TitleCheckButtonClicked;
+		public event EventHandler<EventArgs> ViewButtonClicked;
+		public event EventHandler<EventArgs> FreezeButtonClicked;
 
 		public StageOperationTitleWidget ()
 		{
@@ -55,11 +95,38 @@ namespace CatEye
 				DownButtonClicked(this, EventArgs.Empty);
 		}
 		
-		protected virtual void OnTitleButtonClicked (object sender, System.EventArgs e)
+		protected virtual void OnTitleCheckbuttonToggled (object sender, System.EventArgs e)
 		{
-			if (TitleButtonClicked != null)
-				TitleButtonClicked(this, EventArgs.Empty);
+			if (TitleCheckButtonClicked != null)
+				TitleCheckButtonClicked(this, EventArgs.Empty);
 		}
+
+		protected virtual void OnViewTogglebuttonToggled (object sender, System.EventArgs e)
+		{
+			if (!_ViewToggledFromCode)
+			{
+				if (ViewButtonClicked != null)
+					ViewButtonClicked(this, EventArgs.Empty);
+			}
+		}
+		
+		protected virtual void OnFreezeTogglebuttonToggled (object sender, System.EventArgs e)
+		{
+			if (!_FreezeToggledFromCode)
+			{
+				if (FreezeButtonClicked != null)
+					FreezeButtonClicked(this, EventArgs.Empty);
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 	}
 }

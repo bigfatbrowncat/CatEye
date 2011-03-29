@@ -64,6 +64,11 @@
         <property name="ShortLabel" translatable="yes">About CatEye...</property>
         <property name="StockId">gtk-about</property>
       </action>
+      <action id="StageAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Stage</property>
+        <property name="ShortLabel" translatable="yes">Stage</property>
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye 0.2</property>
@@ -235,12 +240,70 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.StageOperationTitleWidget" design-size="200 27">
+  <widget class="Gtk.Bin" id="CatEye.StageOperationTitleWidget" design-size="328 32">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox">
         <property name="MemberName" />
+        <child>
+          <widget class="Gtk.CheckButton" id="title_checkbutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">checkbutton2</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">False</property>
+            <property name="UseUnderline">True</property>
+            <signal name="Toggled" handler="OnTitleCheckbuttonToggled" />
+            <child>
+              <widget class="Gtk.Label" id="title_label">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Title&lt;/b&gt;</property>
+                <property name="UseMarkup">True</property>
+                <property name="SingleLineMode">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+            <property name="Padding">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ToggleButton" id="view_togglebutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">View</property>
+            <property name="UseUnderline">True</property>
+            <property name="Relief">None</property>
+            <signal name="Toggled" handler="OnViewTogglebuttonToggled" />
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ToggleButton" id="freeze_togglebutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">Freeze</property>
+            <property name="UseUnderline">True</property>
+            <property name="Relief">None</property>
+            <signal name="Toggled" handler="OnFreezeTogglebuttonToggled" />
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Button" id="up_button">
             <property name="MemberName" />
@@ -258,7 +321,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">0</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -281,31 +344,10 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.ToggleButton" id="title_togglebutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Type">Custom</property>
-            <property name="Relief">None</property>
-            <signal name="Clicked" handler="OnTitleButtonClicked" />
-            <child>
-              <widget class="Gtk.Label" id="title_label">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Title&lt;/b&gt;</property>
-                <property name="UseMarkup">True</property>
-                <property name="SingleLineMode">True</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">False</property>
           </packing>
         </child>
       </widget>
@@ -850,6 +892,9 @@
             <property name="MemberName">_TitleWidget</property>
             <property name="Events">ButtonPressMask</property>
             <property name="Active">False</property>
+            <property name="View">False</property>
+            <property name="Freeze">False</property>
+            <property name="FrozenButtonsState">False</property>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -1016,6 +1061,48 @@
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="CatEye.FrozenPanel" design-size="312 27">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.HBox" id="hbox1">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.ToggleButton" id="view_togglebutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">View</property>
+            <property name="UseUnderline">True</property>
+            <property name="Active">True</property>
+            <signal name="Released" handler="OnViewTogglebuttonReleased" />
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="unfreeze_button">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">Unfreeze</property>
+            <property name="UseUnderline">True</property>
+            <signal name="Clicked" handler="OnUnfreezeButtonClicked" />
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder />
         </child>
       </widget>
     </child>

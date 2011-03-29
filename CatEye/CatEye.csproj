@@ -127,6 +127,8 @@
     <Compile Include="RawImportDialog.cs" />
     <Compile Include="gtk-gui\CatEye.RawImportDialog.cs" />
     <Compile Include="DCRawConnection.cs" />
+    <Compile Include="FrozenPanel.cs" />
+    <Compile Include="gtk-gui\CatEye.FrozenPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

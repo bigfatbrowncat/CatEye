@@ -23,6 +23,9 @@ namespace CatEye
 			this._TitleWidget.Events = ((global::Gdk.EventMask)(256));
 			this._TitleWidget.Name = "_TitleWidget";
 			this._TitleWidget.Active = false;
+			this._TitleWidget.View = false;
+			this._TitleWidget.Freeze = false;
+			this._TitleWidget.FrozenButtonsState = false;
 			this.vbox.Add (this._TitleWidget);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox[this._TitleWidget]));
 			w1.Position = 0;

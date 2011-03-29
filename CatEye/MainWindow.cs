@@ -41,16 +41,19 @@ public partial class MainWindow : Gtk.Window
 
 	PPMLoader ppl = null;
 	DoublePixmap hdr = null;
+	DoublePixmap frozen = null;
 	Stages stages;
 
 	StageOperation compression_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
 	
-	bool user_modified_parameter = false;
+	bool update_timer_launched = false;
+	bool freezing_timer_launched = false;
 	bool cancel_pending = false;
 	
 	uint update_timer_delay = 500;
+	uint freezing_timer_delay = 10;
 
 	DateTime lastupdate;
 	
@@ -102,18 +105,68 @@ public partial class MainWindow : Gtk.Window
 			LaunchUpdateTimer();
 			ArrangeStageOperationBoxes();
 		};
+		stages.ViewedOperationChanged += delegate {
+			LaunchUpdateTimer();
+		};
+		stages.OperationFrozen += delegate {
+			if (stages.FrozenAt != null) 
+				LaunchFreezingTimer();
+			else
+			{
+				frozen = null;
+				LaunchUpdateTimer();
+			}
+		};
 		
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
 	}
 
+	protected void LaunchFreezingTimer ()
+	{
+		if (!freezing_timer_launched)
+		{
+			freezing_timer_launched = true;
+			GLib.Timeout.Add(freezing_timer_delay, new GLib.TimeoutHandler(delegate {
+				freezing_timer_launched = false;
+				switch (TheUIState)
+				{
+				case UIState.Processing:
+					// Already processing. Image processing needs to be interrupted, after 
+					// that we have to hit the update timer again
+					cancel_pending = true;
+					return true;
+				
+				case UIState.Loading:
+					// The image is loading. No freezing allowed. Setting back to unfrozen state
+					stages.FrozenAt = null;
+					return false;
+					
+				case UIState.Free:
+					// Updating and stopping the timer
+					if (!UpdateFrozen())
+					{
+						stages.FrozenAt = null;
+					}
+					else
+					{
+						UpdateStage();
+					}
+					return false;
+				default:
+					throw new Exception("Unhandled case occured: " + TheUIState);
+				}
+			}));
+		}
+	}
+
 	protected void LaunchUpdateTimer()
 	{
-		if (!user_modified_parameter)
+		if (!update_timer_launched)
 		{
-			user_modified_parameter = true;
+			update_timer_launched = true;
 			GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
-				user_modified_parameter = false;
+				update_timer_launched = false;
 				switch (TheUIState)
 				{
 				case UIState.Processing:
@@ -256,6 +309,52 @@ public partial class MainWindow : Gtk.Window
 		UpdateStage();
 	}
 	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns>
+	/// True if complete, false if user hit Cancel
+	/// </returns>
+	bool UpdateFrozen()
+	{
+		bool res;
+		if (TheUIState != MainWindow.UIState.Processing)
+		{
+			UIState curstate = TheUIState;
+			TheUIState = MainWindow.UIState.Processing;
+			
+			if (ppl != null)
+			{
+				frozen = DoublePixmap.FromPPM(ppl);
+
+				if (stages.ApplyOperationsBeforeFrozenLine(frozen))
+				{
+					progressbar.Text = "Operation completed";
+					progressbar.Fraction = 0;
+					res = true;
+				}
+				else
+				{
+					progressbar.Text = "Operation cancelled";
+					progressbar.Fraction = 0;
+					cancel_pending = false;
+					res = false;
+				}
+			}
+			else
+			{
+				res = false;
+			}
+			
+			TheUIState = curstate;
+		}
+		else
+		{
+			res = false;
+		}
+		return res;
+	}
+	
 	void UpdateStage()
 	{
 		if (TheUIState != MainWindow.UIState.Processing)
@@ -265,10 +364,14 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				hdr = DoublePixmap.FromPPM(ppl);
+				if (frozen == null)
+					hdr = DoublePixmap.FromPPM(ppl);
+				else
+					hdr = new DoublePixmap(frozen);
+				
 				ppmviewwidget1.HDR = hdr;
 	
-				if (stages.ApplyOperations(hdr))
+				if (stages.ApplyOperationsAfterFrozenLine(hdr))
 				{
 					progressbar.Text = "Operation completed";
 					progressbar.Fraction = 0;

@@ -21,6 +21,8 @@ public partial class MainWindow
 
 	private global::Gtk.Action aboutAction;
 
+	private global::Gtk.Action StageAction;
+
 	private global::Gtk.VBox vbox2;
 
 	private global::Gtk.MenuBar main_menubar;
@@ -78,6 +80,9 @@ public partial class MainWindow
 		this.aboutAction = new global::Gtk.Action ("aboutAction", global::Mono.Unix.Catalog.GetString ("About CatEye..."), null, "gtk-about");
 		this.aboutAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("About CatEye...");
 		w1.Add (this.aboutAction, null);
+		this.StageAction = new global::Gtk.Action ("StageAction", global::Mono.Unix.Catalog.GetString ("Stage"), null, null);
+		this.StageAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Stage");
+		w1.Add (this.StageAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
