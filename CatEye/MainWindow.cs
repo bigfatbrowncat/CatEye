@@ -50,11 +50,9 @@ public partial class MainWindow : Gtk.Window
 	StageOperation brightness_stage_op;
 	
 	bool update_timer_launched = false;
-	bool freezing_timer_launched = false;
 	bool cancel_pending = false;
 	
 	uint update_timer_delay = 500;
-	uint freezing_timer_delay = 10;
 
 	DateTime lastupdate;
 	
@@ -205,6 +203,8 @@ public partial class MainWindow : Gtk.Window
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
+		if (TheUIState != MainWindow.UIState.Free)
+			cancel_pending = true;
 		Application.Quit ();
 		a.RetVal = true;
 	}
@@ -317,10 +317,11 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				frozen = DoublePixmap.FromPPM(ppl);
+				DoublePixmap frozen_tmp = DoublePixmap.FromPPM(ppl);
 
-				if (stages.ApplyOperationsBeforeFrozenLine(frozen))
+				if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
 				{
+					frozen = frozen_tmp;
 					progressbar.Text = "Operation completed";
 					progressbar.Fraction = 0;
 					res = true;

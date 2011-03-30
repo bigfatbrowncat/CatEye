@@ -206,40 +206,18 @@ namespace CatEye
 		
 		public void CompressLight(double power, double bloha)
 		{
-			double[,] light = new double[width, height];
-
-			// Normalizing image and calculating light
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]);
-			}
-			
-			double[,] scale_matrix = new double[width, height];
-			
-			for (int i = 0; i < width; i++)
-			{
-				for (int j = 0; j < height; j++)
-				{
-					scale_matrix[i, j] += 1.0 / (light[i, j] + bloha);
-				}
-			}
 	
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				double kcomp = Math.Pow(scale_matrix[i, j], power);
+				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+				                         g_chan[i, j] * g_chan[i, j] +
+				                         b_chan[i, j] * b_chan[i, j]);
 				
-				r_chan[i, j] = r_chan[i, j] * kcomp;
-				g_chan[i, j] = g_chan[i, j] * kcomp;
-				b_chan[i, j] = b_chan[i, j] * kcomp;
+				r_chan[i, j] = r_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
+				g_chan[i, j] = g_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
+				b_chan[i, j] = b_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
 
-				if (r_chan[i, j] > 0.99999) r_chan[i, j] = 0.99999;
-				if (g_chan[i, j] > 0.99999) g_chan[i, j] = 0.99999;
-				if (b_chan[i, j] > 0.99999) b_chan[i, j] = 0.99999;
-				
 			}
 			
 		}
@@ -427,10 +405,25 @@ namespace CatEye
 		
 		public unsafe void DrawToPixbuf(Gdk.Pixbuf buf)
 		{
-			int N = 256;	// Screen assumed being always 8 bit per channel.
+			double N = 1;	// This is the norm. It should be equal to the
+							// value which means the lightest point of 
+							// the screen
 			
 			int chan = buf.NChannels;
 			int w = buf.Width, h = buf.Height, stride = buf.Rowstride;
+			
+			// counting the maximum channel value
+			double max = 0;
+			for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+			{
+				double r = N * (1 - Math.Exp(-r_chan[i, j] / N));
+				double g = N * (1 - Math.Exp(-g_chan[i, j] / N));
+				double b = N * (1 - Math.Exp(-b_chan[i, j] / N));
+				if (r > max) max = r;
+				if (g > max) max = g;
+				if (b > max) max = b;
+			}
 			
 			byte *cur_row = (byte *)buf.Pixels;
 			for (int j = 0; j < h; j++)
@@ -451,9 +444,9 @@ namespace CatEye
 					double g = N * (1 - Math.Exp(-g_chan[i, j] / N));
 					double b = N * (1 - Math.Exp(-b_chan[i, j] / N));
 					
-					cur_pixel[0] = cut(r * 255);      // Red
-					cur_pixel[1] = cut(g * 255);      // Green
-					cur_pixel[2] = cut(b * 255);      // Blue
+					cur_pixel[0] = cut(r / max * 255);      // Red
+					cur_pixel[1] = cut(g / max * 255);      // Green
+					cur_pixel[2] = cut(b / max * 255);      // Blue
 					cur_pixel += chan;
 				}
 				cur_row += stride;
