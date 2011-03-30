@@ -30,6 +30,7 @@ namespace CatEye
 			// Widget CatEye.RawImportDialog
 			this.Name = "CatEye.RawImportDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Import raw images");
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.cateye-small.png");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;

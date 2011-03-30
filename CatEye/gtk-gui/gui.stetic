@@ -73,6 +73,7 @@
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye 0.3</property>
+    <property name="Icon">resource:CatEye.res.cateye-small.png</property>
     <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
@@ -913,6 +914,7 @@
   <widget class="Gtk.Dialog" id="CatEye.RawImportDialog" design-size="718 421">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Import raw images</property>
+    <property name="Icon">resource:CatEye.res.cateye-small.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -1108,14 +1110,17 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="424 277">
+  <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="424 275">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
+    <property name="Icon">resource:CatEye.res.cateye-small.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
     <property name="Resizable">False</property>
     <property name="DestroyWithParent">True</property>
+    <property name="SkipPagerHint">True</property>
+    <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
@@ -1134,6 +1139,7 @@
                 <child>
                   <widget class="Gtk.Image" id="image20">
                     <property name="MemberName" />
+                    <property name="Pixbuf">resource:CatEye.res.cateye.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1143,7 +1149,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="label1">
+                  <widget class="Gtk.Label" id="title_label">
                     <property name="MemberName" />
                     <property name="LabelProp" translatable="yes">&lt;b&gt;CatEye 0.3&lt;/b&gt;</property>
                     <property name="UseMarkup">True</property>
@@ -1152,6 +1158,20 @@
                     <property name="Position">1</property>
                     <property name="AutoSize">False</property>
                     <property name="Padding">13</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Fixed" id="fixed1">
+                    <property name="MemberName" />
+                    <property name="WidthRequest">48</property>
+                    <property name="HeightRequest">48</property>
+                    <property name="HasWindow">False</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>
@@ -1165,7 +1185,6 @@
             <child>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
-                <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Idea, design and development:</property>
                 <property name="UseMarkup">True</property>
               </widget>
@@ -1194,7 +1213,6 @@
             <child>
               <widget class="Gtk.Label" id="label4">
                 <property name="MemberName" />
-                <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Special thanks to:</property>
               </widget>
               <packing>
@@ -1250,15 +1268,15 @@
         <property name="Size">1</property>
         <property name="LayoutStyle">End</property>
         <child>
-          <widget class="Gtk.Button" id="ok_button">
+          <widget class="Gtk.Button" id="close_button">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
-            <property name="StockId">gtk-ok</property>
-            <property name="ResponseId">-5</property>
-            <property name="label">gtk-ok</property>
+            <property name="StockId">gtk-close</property>
+            <property name="ResponseId">-7</property>
+            <property name="label">gtk-close</property>
           </widget>
           <packing>
             <property name="Expand">False</property>

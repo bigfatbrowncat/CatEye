@@ -6,6 +6,8 @@ namespace CatEye
 		public AboutBox ()
 		{
 			this.Build ();
+			
+			title_label.ModifyFont(Pango.FontDescription.FromString("19"));
 		}
 	}
 }
