@@ -6,7 +6,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class BasicOpsStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mBrightness = 0.9, mSaturation = 0.9, mRedPart = 1, mGreenPart = 1, mBluePart = 1;
+		private double mBrightness = 1, mSaturation = 1, mRedPart = 1, mGreenPart = 1, mBluePart = 1;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		public BasicOpsStageOperationParametersWidget ()

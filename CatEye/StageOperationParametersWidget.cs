@@ -2,6 +2,10 @@ using System;
 
 namespace CatEye
 {
+	public class IncorrectValueException : Exception
+	{
+		public IncorrectValueException() : base("Incorrect value") {}
+	}
 
 	//[System.ComponentModel.ToolboxItem(true)]
 	public class StageOperationParametersWidget : Gtk.Bin

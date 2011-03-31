@@ -5,9 +5,10 @@ namespace CatEye
 	public partial class FrozenPanel : Gtk.Bin
 	{
 
-		public event EventHandler<EventArgs> ViewButtonClicked;
+		//public event EventHandler<EventArgs> ViewButtonClicked;
 		public event EventHandler<EventArgs> UnfreezeButtonClicked;
 
+		/*
 		public bool View
 		{
 			get { return view_togglebutton.Active; }
@@ -15,6 +16,7 @@ namespace CatEye
 				view_togglebutton.Active = value; 
 			}
 		}
+		*/
 		
 		public FrozenPanel ()
 		{
@@ -29,6 +31,7 @@ namespace CatEye
 			}
 		}
 		
+		/*
 		protected virtual void OnViewTogglebuttonReleased (object sender, System.EventArgs e)
 		{
 			if (ViewButtonClicked != null)
@@ -36,8 +39,7 @@ namespace CatEye
 				ViewButtonClicked(this, EventArgs.Empty);
 			}
 		}
-		
-		
+		*/		
 		
 	}
 }

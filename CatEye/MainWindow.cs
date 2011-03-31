@@ -44,6 +44,7 @@ public partial class MainWindow : Gtk.Window
 	DoublePixmap frozen = null;
 	Stages stages;
 
+	StageOperation crop_stage_op;
 	StageOperation compression_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
@@ -69,6 +70,13 @@ public partial class MainWindow : Gtk.Window
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
 
+		crop_stage_op = new CropStageOperation(new CropStageOperationParametersWidget());
+		stages.AddStageOperation(crop_stage_op);
+		crop_stage_op.ReportProgress += HandleProgress;
+		crop_stage_op.ParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		
 		brightness_stage_op = new BrightnessStageOperation(new BrightnessStageOperationParametersWidget());
 		stages.AddStageOperation(brightness_stage_op);
 		brightness_stage_op.ReportProgress += HandleProgress;
@@ -169,8 +177,6 @@ public partial class MainWindow : Gtk.Window
 						
 					}
 					
-
-					
 					return false;
 				default:
 					throw new Exception("Unhandled case occured: " + TheUIState);
@@ -188,11 +194,14 @@ public partial class MainWindow : Gtk.Window
 			progressbar.Text = (attrs[0] as StageOperationDescriptionAttribute).Name + ": ";
 		progressbar.Text += (e.Progress * 100).ToString("0") + "%";
 		
-		if ((DateTime.Now - lastupdate).TotalMilliseconds / ppmviewwidget1.UpdateTimeSpan.TotalMilliseconds > 5)
+		if (UpdateDuringProcessingAction.Active)
 		{
-			ppmviewwidget1.UpdatePicture();
-			ppmviewwidget1.QueueDraw();
-			lastupdate = DateTime.Now;
+			if ((DateTime.Now - lastupdate).TotalMilliseconds / ppmviewwidget1.UpdateTimeSpan.TotalMilliseconds > 5)
+			{
+				ppmviewwidget1.UpdatePicture();
+				ppmviewwidget1.QueueDraw();
+				lastupdate = DateTime.Now;
+			}
 		}
 		
 		while (Gtk.Application.EventsPending())
@@ -317,14 +326,26 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				DoublePixmap frozen_tmp = DoublePixmap.FromPPM(ppl);
-
-				if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
+				DoublePixmap frozen_tmp = DoublePixmap.FromPPM(ppl, delegate (double progress) {
+					return ImportRawAndLoadingReporter(progress, "Loading source image...");
+					
+				});
+				if (frozen_tmp != null)
 				{
-					frozen = frozen_tmp;
-					progressbar.Text = "Operation completed";
-					progressbar.Fraction = 0;
-					res = true;
+					if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
+					{
+						frozen = frozen_tmp;
+						progressbar.Text = "Operation completed";
+						progressbar.Fraction = 0;
+						res = true;
+					}
+					else
+					{
+						progressbar.Text = "Operation cancelled";
+						progressbar.Fraction = 0;
+						cancel_pending = false;
+						res = false;
+					}
 				}
 				else
 				{
@@ -361,17 +382,31 @@ public partial class MainWindow : Gtk.Window
 			if (ppl != null)
 			{
 				if (frozen == null)
-					hdr = DoublePixmap.FromPPM(ppl);
+				{
+					hdr = DoublePixmap.FromPPM(ppl, delegate (double progress) {
+						return ImportRawAndLoadingReporter(progress, "Loading source image...");
+					});
+				}
 				else
 					hdr = new DoublePixmap(frozen);
 				
 				ppmviewwidget1.HDR = hdr;
-	
-				if (stages.ApplyOperationsAfterFrozenLine(hdr))
+				
+				if (hdr != null)
 				{
-					progressbar.Text = "Operation completed";
-					progressbar.Fraction = 0;
-					ppmviewwidget1.UpdatePicture();
+					if (stages.ApplyOperationsAfterFrozenLine(hdr))
+					{
+						progressbar.Text = "Operation completed";
+						progressbar.Fraction = 0;
+						ppmviewwidget1.UpdatePicture();
+						ppmviewwidget1.QueueDraw();
+					}
+					else
+					{
+						progressbar.Text = "Operation cancelled";
+						progressbar.Fraction = 0;
+						cancel_pending = false;
+					}
 				}
 				else
 				{
@@ -393,6 +428,13 @@ public partial class MainWindow : Gtk.Window
 		return (!cancel_pending);
 	}
 	
+	/// <summary>
+	/// Launching dcraw to process the raw file, loads the result into memory stream
+	/// </summary>
+	/// <returns>
+	/// A stream to read the decoded PPM data from. 
+	/// Should be closed by user.
+	/// </returns>
 	private System.IO.Stream ImportRaw(string filename, ProgressMessageReporter callback)
 	{
 		if (callback != null)
@@ -431,6 +473,8 @@ public partial class MainWindow : Gtk.Window
 				}
 				while (Application.EventsPending()) Application.RunIteration();
 
+				prc.Close();
+				
 				ms.Seek(0, System.IO.SeekOrigin.Begin);
 				return ms;
 			}
@@ -495,6 +539,7 @@ public partial class MainWindow : Gtk.Window
 				else
 				{
 					LoadStream(strm, ImportRawAndLoadingReporter, downscale_by);
+					strm.Close();
 				}
 				TheUIState = curstate;
 			}
@@ -527,6 +572,17 @@ public partial class MainWindow : Gtk.Window
 		abb.Run();
 		abb.Destroy();
 	}
+	
+	protected virtual void OnUpdateDuringProcessingActionChanged (object o, Gtk.ChangedArgs args)
+	{
+	}
+	
+	protected virtual void OnUpdateDuringProcessingActionToggled (object sender, System.EventArgs e)
+	{
+		ppmviewwidget1.InstantUpdate = this.UpdateDuringProcessingAction.Active;
+	}
+	
+	
 	
 	
 	

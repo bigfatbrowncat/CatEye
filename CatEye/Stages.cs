@@ -45,8 +45,8 @@ namespace CatEye
 					for (int i = _StageQueue.Count - 1; i >= 0; i--)
 					{
 						_Holders[_StageQueue[i]].View = (_StageQueue[i] == value);
-						if (_FrozenAt == _StageQueue[i]) 
-							_FrozenPanel.View = (_StageQueue[i] == value);
+						/*if (_FrozenAt == _StageQueue[i]) 
+							_FrozenPanel.View = (_StageQueue[i] == value);*/
 					}
 					_ViewedOperation = value;
 					OnViewedOperationChanged();
@@ -97,7 +97,7 @@ namespace CatEye
 							((Gtk.Box.BoxChild)_StageVBox[_FrozenPanel]).Fill = true;
 							((Gtk.Box.BoxChild)_StageVBox[_FrozenPanel]).Expand = false;
 							
-							_FrozenPanel.View = _Holders[_StageQueue[i]].View;
+							/*_FrozenPanel.View = _Holders[_StageQueue[i]].View;*/
 							_FrozenPanel.Show();
 						}
 						else
@@ -180,10 +180,10 @@ namespace CatEye
 		{
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
+				if (_StageQueue[j] == ViewedOperation)
+					break;
 				if (_Holders[_StageQueue[j]].Active)
 					_StageQueue[j].OnDo(hdp);
-				if (_Holders[_StageQueue[j]].View)
-					break;
 			}
 		}
 
@@ -201,11 +201,11 @@ namespace CatEye
 					bool frozen_line_found = false;
 					for (int j = 0; j < _StageQueue.Count; j++)
 					{
+						if (_StageQueue[j] == ViewedOperation)
+							break;
 						if (frozen_line_found && _Holders[_StageQueue[j]].Active)
 							_StageQueue[j].OnDo(hdp);
 						if (_StageQueue[j] == _FrozenAt) frozen_line_found = true;
-						if (_Holders[_StageQueue[j]].View)
-							break;
 					}
 				}
 			}
@@ -257,6 +257,7 @@ namespace CatEye
 			OnAddedToStage(operation);
 		}
 
+		/*
 		void Handle_FrozenPanelViewButtonClicked (object sender, EventArgs e)
 		{
 			StageOperation sop = _FrozenAt;
@@ -270,6 +271,7 @@ namespace CatEye
 				ViewedOperation = null;
 			}
 		}
+		*/
 
 		void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
 		{
@@ -332,8 +334,8 @@ namespace CatEye
 			_FrozenPanel.UnfreezeButtonClicked  += delegate {
 				FrozenAt = null;
 			};
-			_FrozenPanel.ViewButtonClicked += 
-				Handle_FrozenPanelViewButtonClicked;
+			/*_FrozenPanel.ViewButtonClicked += 
+				Handle_FrozenPanelViewButtonClicked;*/
 		}
 	}
 }

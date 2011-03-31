@@ -23,6 +23,10 @@ public partial class MainWindow
 
 	private global::Gtk.Action StageAction;
 
+	private global::Gtk.Action ViewAction;
+
+	private global::Gtk.ToggleAction UpdateDuringProcessingAction;
+
 	private global::Gtk.VBox vbox2;
 
 	private global::Gtk.MenuBar main_menubar;
@@ -83,6 +87,13 @@ public partial class MainWindow
 		this.StageAction = new global::Gtk.Action ("StageAction", global::Mono.Unix.Catalog.GetString ("Stage"), null, null);
 		this.StageAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Stage");
 		w1.Add (this.StageAction, null);
+		this.ViewAction = new global::Gtk.Action ("ViewAction", global::Mono.Unix.Catalog.GetString ("View"), null, null);
+		this.ViewAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("View");
+		w1.Add (this.ViewAction, null);
+		this.UpdateDuringProcessingAction = new global::Gtk.ToggleAction ("UpdateDuringProcessingAction", global::Mono.Unix.Catalog.GetString ("Update during processing"), null, null);
+		this.UpdateDuringProcessingAction.Active = true;
+		this.UpdateDuringProcessingAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Update during processing");
+		w1.Add (this.UpdateDuringProcessingAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -93,7 +104,7 @@ public partial class MainWindow
 		this.vbox2 = new global::Gtk.VBox ();
 		this.vbox2.Name = "vbox2";
 		// Container child vbox2.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadAction' action='loadAction'/><menuitem name='saveAsAction' action='saveAsAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadAction' action='loadAction'/><menuitem name='saveAsAction' action='saveAsAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='UpdateDuringProcessingAction' action='UpdateDuringProcessingAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.main_menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/main_menubar")));
 		this.main_menubar.Name = "main_menubar";
 		this.vbox2.Add (this.main_menubar);
@@ -154,7 +165,7 @@ public partial class MainWindow
 		w9.Spacing = 2;
 		// Container child GtkHBox.Gtk.Container+ContainerChild
 		global::Gtk.Image w10 = new global::Gtk.Image ();
-		w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-cancel", global::Gtk.IconSize.SmallToolbar);
+		w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-cancel", global::Gtk.IconSize.Menu);
 		w9.Add (w10);
 		// Container child GtkHBox.Gtk.Container+ContainerChild
 		global::Gtk.Label w12 = new global::Gtk.Label ();
@@ -193,6 +204,7 @@ public partial class MainWindow
 		this.ppmviewwidget1 = new global::CatEye.DoublePixmapViewWidget ();
 		this.ppmviewwidget1.Events = ((global::Gdk.EventMask)(256));
 		this.ppmviewwidget1.Name = "ppmviewwidget1";
+		this.ppmviewwidget1.InstantUpdate = false;
 		w19.Add (this.ppmviewwidget1);
 		this.scrolledwindow3.Add (w19);
 		this.vbox3.Add (this.scrolledwindow3);
@@ -219,6 +231,7 @@ public partial class MainWindow
 		this.saveAsAction.Activated += new global::System.EventHandler (this.OnSaveAsActionActivated);
 		this.loadAction.Activated += new global::System.EventHandler (this.OnImportFromDCRawActionActivated);
 		this.aboutAction.Activated += new global::System.EventHandler (this.OnAboutActionActivated);
+		this.UpdateDuringProcessingAction.Toggled += new global::System.EventHandler (this.OnUpdateDuringProcessingActionToggled);
 		this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 	}
 }

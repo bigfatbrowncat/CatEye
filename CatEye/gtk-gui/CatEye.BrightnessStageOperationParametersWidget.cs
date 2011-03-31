@@ -18,14 +18,13 @@ namespace CatEye
 			this.Name = "CatEye.BrightnessStageOperationParametersWidget";
 			// Container child CatEye.BrightnessStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(1)), ((uint)(2)), true);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
 			this.brightness_entry = new global::Gtk.Entry ();
 			this.brightness_entry.CanFocus = true;
 			this.brightness_entry.Name = "brightness_entry";
-			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("0.8");
+			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.brightness_entry.IsEditable = true;
 			this.brightness_entry.WidthChars = 6;
 			this.brightness_entry.InvisibleChar = '●';

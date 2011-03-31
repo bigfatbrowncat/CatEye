@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>CatEye</RootNamespace>
     <AssemblyName>CatEye</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
     <Description>Raw images developing tool</Description>
     <ApplicationIcon>res\cateye.ico</ApplicationIcon>
@@ -145,6 +145,9 @@
     <Compile Include="BrightnessStageOperation.cs" />
     <Compile Include="BrightnessStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.BrightnessStageOperationParametersWidget.cs" />
+    <Compile Include="CropStageOperation.cs" />
+    <Compile Include="CropStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.CropStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

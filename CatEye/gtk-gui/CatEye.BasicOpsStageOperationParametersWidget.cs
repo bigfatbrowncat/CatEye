@@ -34,14 +34,13 @@ namespace CatEye
 			this.Name = "CatEye.BasicOpsStageOperationParametersWidget";
 			// Container child CatEye.BasicOpsStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(5)), ((uint)(2)), true);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
 			this.blue_entry = new global::Gtk.Entry ();
 			this.blue_entry.CanFocus = true;
 			this.blue_entry.Name = "blue_entry";
-			this.blue_entry.Text = global::Mono.Unix.Catalog.GetString ("0.8");
+			this.blue_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.blue_entry.IsEditable = true;
 			this.blue_entry.WidthChars = 6;
 			this.blue_entry.InvisibleChar = '●';
@@ -56,7 +55,7 @@ namespace CatEye
 			this.brightness_entry = new global::Gtk.Entry ();
 			this.brightness_entry.CanFocus = true;
 			this.brightness_entry.Name = "brightness_entry";
-			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("0.8");
+			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.brightness_entry.IsEditable = true;
 			this.brightness_entry.WidthChars = 6;
 			this.brightness_entry.InvisibleChar = '●';
@@ -69,7 +68,7 @@ namespace CatEye
 			this.green_entry = new global::Gtk.Entry ();
 			this.green_entry.CanFocus = true;
 			this.green_entry.Name = "green_entry";
-			this.green_entry.Text = global::Mono.Unix.Catalog.GetString ("1.05");
+			this.green_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.green_entry.IsEditable = true;
 			this.green_entry.WidthChars = 6;
 			this.green_entry.InvisibleChar = '●';
@@ -137,7 +136,7 @@ namespace CatEye
 			this.red_entry = new global::Gtk.Entry ();
 			this.red_entry.CanFocus = true;
 			this.red_entry.Name = "red_entry";
-			this.red_entry.Text = global::Mono.Unix.Catalog.GetString ("1.3");
+			this.red_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.red_entry.IsEditable = true;
 			this.red_entry.WidthChars = 6;
 			this.red_entry.InvisibleChar = '●';
@@ -152,7 +151,7 @@ namespace CatEye
 			this.saturation_entry = new global::Gtk.Entry ();
 			this.saturation_entry.CanFocus = true;
 			this.saturation_entry.Name = "saturation_entry";
-			this.saturation_entry.Text = global::Mono.Unix.Catalog.GetString ("0.9");
+			this.saturation_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.saturation_entry.IsEditable = true;
 			this.saturation_entry.WidthChars = 6;
 			this.saturation_entry.InvisibleChar = '●';

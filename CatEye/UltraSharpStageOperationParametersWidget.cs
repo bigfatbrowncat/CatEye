@@ -7,7 +7,7 @@ namespace CatEye
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private double mPower = 0.3, mRadius = 0.1, mDelta0 = 0.01;
-		private int mPoints = 200;
+		private int mPoints = 100;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		public UltraSharpStageOperationParametersWidget ()
@@ -90,6 +90,7 @@ namespace CatEye
 		
 		protected virtual void OnRadiusHscaleMoveSlider (object o, Gtk.MoveSliderArgs args)
 		{
+			Console.Write("!");
 			mRadius = radius_hscale.Value;
 			OnUserModified();
 		}

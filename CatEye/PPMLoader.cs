@@ -241,7 +241,7 @@ namespace CatEye
 				
 				for (int i = 0; i < header.Width; i++)
 				{
-					if (callback != null)
+					if (callback != null && (i % 100 == 0))
 					{
 						if (!callback((double)i / header.Width)) 
 							return null;

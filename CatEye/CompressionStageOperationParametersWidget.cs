@@ -6,7 +6,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CompressionStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mPower = 0.7, mBloha = 0.1;
+		private double mPower = 0.7, mBloha = 0.01;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		public CompressionStageOperationParametersWidget ()

@@ -1,6 +1,7 @@
 
 using System;
 using Gdk;
+using Gtk;
 
 namespace CatEye
 {
@@ -10,6 +11,7 @@ namespace CatEye
 	{
 		public enum ScaleType { None, Divide, Multiply };
 
+		private bool _InstantUpdate = false;
 		private DoublePixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
@@ -20,8 +22,14 @@ namespace CatEye
 			set 
 			{ 
 				_HDR = value; 
-				UpdatePicture();
+				if (_InstantUpdate) UpdatePicture();
 			}
+		}
+		
+		public bool InstantUpdate
+		{
+			get {  return _InstantUpdate; }
+			set { _InstantUpdate = value; }
 		}
 		
 		public TimeSpan UpdateTimeSpan { get { return _UpdateTimeSpan; } }
@@ -41,7 +49,10 @@ namespace CatEye
 					
 				_RenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.width, _HDR.height);
 		
-				_HDR.DrawToPixbuf(_RenderedPicture);
+				_HDR.DrawToPixbuf(_RenderedPicture, delegate {
+					while (Application.EventsPending()) Application.RunIteration();
+					return true;
+				});
 			}
 			_UpdateTimeSpan = DateTime.Now - update_start;
 			QueueResizeNoRedraw();

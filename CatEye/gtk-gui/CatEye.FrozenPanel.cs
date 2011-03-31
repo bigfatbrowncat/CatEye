@@ -6,7 +6,7 @@ namespace CatEye
 	{
 		private global::Gtk.HBox hbox1;
 
-		private global::Gtk.ToggleButton view_togglebutton;
+		private global::Gtk.Label label1;
 
 		private global::Gtk.Button unfreeze_button;
 
@@ -21,14 +21,13 @@ namespace CatEye
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.view_togglebutton = new global::Gtk.ToggleButton ();
-			this.view_togglebutton.CanFocus = true;
-			this.view_togglebutton.Name = "view_togglebutton";
-			this.view_togglebutton.UseUnderline = true;
-			this.view_togglebutton.Active = true;
-			this.view_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("View");
-			this.hbox1.Add (this.view_togglebutton);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.view_togglebutton]));
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.Xalign = 0f;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Frozen here</b>");
+			this.label1.UseMarkup = true;
+			this.hbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
 			w1.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.unfreeze_button = new global::Gtk.Button ();
@@ -44,7 +43,6 @@ namespace CatEye
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.view_togglebutton.Released += new global::System.EventHandler (this.OnViewTogglebuttonReleased);
 			this.unfreeze_button.Clicked += new global::System.EventHandler (this.OnUnfreezeButtonClicked);
 		}
 	}

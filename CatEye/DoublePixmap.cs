@@ -3,6 +3,10 @@ using System;
 
 namespace CatEye
 {
+	/// <summary>
+	/// Used to report prograss to caller. If caller returns false,
+	/// the callee should interrupt the process
+	/// </summary>
 	public delegate bool ProgressReporter(double progress);
 	public class UserCancelException : Exception
 	{
@@ -10,6 +14,8 @@ namespace CatEye
 	
 	public class DoublePixmap
 	{
+		private const int REPORT_EVERY_NTH_LINE = 150;
+		
 		double[,] r_chan, g_chan, b_chan;
 		
 		public int width, height;
@@ -35,7 +41,7 @@ namespace CatEye
 			
 		}
 		
-		public static DoublePixmap FromPPM(PPMLoader ppm)
+		public static DoublePixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
 		{
 			// Applying inverse hdr function: x = -N * ln[ (N - y) / N ]
 			DoublePixmap res = new DoublePixmap();
@@ -48,23 +54,36 @@ namespace CatEye
 			res.b_chan = new double[res.width, res.height];
 
 			for (int i = 0; i < res.width; i++)
-			for (int j = 0; j < res.height; j++)
 			{
-				res.r_chan[i, j] = ppm.RChannel[i, j]; //- N * Math.Log(((double)N - (double)ppm.RChannel[i, j]) / N);
-				res.g_chan[i, j] = ppm.GChannel[i, j]; //- N * Math.Log(((double)N - (double)ppm.GChannel[i, j]) / N);
-				res.b_chan[i, j] = ppm.BChannel[i, j]; //- N * Math.Log(((double)N - (double)ppm.BChannel[i, j]) / N);
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
+				{
+					if (!callback((double)i / res.width / 2)) 
+						return null;
+				}
+				for (int j = 0; j < res.height; j++)
+				{
+					res.r_chan[i, j] = ppm.RChannel[i, j];
+					res.g_chan[i, j] = ppm.GChannel[i, j];
+					res.b_chan[i, j] = ppm.BChannel[i, j];
+				}
 			}
 			
 			// Scaling res to 0..1
 			double Max = res.CalcMaxLight();
 			for (int i = 0; i < res.width; i++)
-			for (int j = 0; j < res.height; j++)
 			{
-				res.r_chan[i, j] /= Max;
-				res.g_chan[i, j] /= Max;
-				res.b_chan[i, j] /= Max;
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
+				{
+					if (!callback(0.5 + (double)i / res.width / 2)) 
+						return null;
+				}
+				for (int j = 0; j < res.height; j++)
+				{
+					res.r_chan[i, j] /= Max;
+					res.g_chan[i, j] /= Max;
+					res.b_chan[i, j] /= Max;
+				}
 			}
-			
 			return res;
 		}
 
@@ -83,7 +102,7 @@ namespace CatEye
 
 			for (int i = 0; i < width / k; i++)
 			{
-				if (callback != null)
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
 					if (!callback((double)i / (width / k)))
 					{
@@ -119,7 +138,52 @@ namespace CatEye
 			width /= k;
 			height /= k;
 		}
-				
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="left">
+		/// Left from 0 to 1
+		/// </param>
+		/// <param name="top">
+		/// Top from 0 to 1
+		/// </param>
+		/// <param name="right">
+		/// Right from 0 to 1 must be greater than left
+		/// </param>
+		/// <param name="bottom">
+		/// Bottom from 0 to 1 must be greater than top
+		/// </param>
+		/// <param name="callback">
+		/// A <see cref="ProgressReporter"/>, which will be used to report the progress.
+		/// </param>
+		public void Crop(double left, double top, double right, double bottom, ProgressReporter callback)
+		{
+			int i1 = Math.Max(0, (int)(width * left)), 
+				i2 = Math.Min(width - 1, (int)(width * right)), 
+				j1 = Math.Max(0, (int)(height * top)), 
+				j2 = Math.Min(height - 1, (int)(height * bottom));
+			
+			double[,] newr = new double[i2 - i1 + 1, j2 - j1 + 1];
+			double[,] newg = new double[i2 - i1 + 1, j2 - j1 + 1];
+			double[,] newb = new double[i2 - i1 + 1, j2 - j1 + 1];
+			
+			for (int i = i1; i <= i2; i++)
+			{
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
+					callback((double)(i - i1) / (i2 - i1 + 1));
+				for (int j = j1; j <= j2; j++)
+				{
+					newr[i - i1, j - j1] = r_chan[i, j];
+					newg[i - i1, j - j1] = g_chan[i, j];
+					newb[i - i1, j - j1] = b_chan[i, j];
+				}
+			}
+			
+			r_chan = newr; g_chan = newg; b_chan = newb;
+			width = i2 - i1 + 1;
+			height = j2 - j1 + 1;
+		}
 		
 		public void ScaleLight(double Amplitude)
 		{
@@ -267,7 +331,6 @@ namespace CatEye
 		public void SharpenLight(double radius_part, double power, double delta_0, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
 			double[,] light = new double[width, height];
-			double Max = CalcMaxLight();
 			unsafe {
 	
 				// Сalculating light
@@ -403,7 +466,13 @@ namespace CatEye
 			}
 		}
 		
-		public unsafe void DrawToPixbuf(Gdk.Pixbuf buf)
+		/// <summary>
+		/// Draws image into selected pixbuf
+		/// </summary>
+		/// <param name="callback">
+		/// A <see cref="ProgressReporter"/> to report drawing progress.
+		/// </param>
+		public unsafe void DrawToPixbuf(Gdk.Pixbuf buf, ProgressReporter callback)
 		{
 			double N = 1;	// This is the norm. It should be equal to the
 							// value which means the lightest point of 
@@ -432,6 +501,12 @@ namespace CatEye
 				{
 					break;
 				}
+				
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / this.height)) return;
+				}
+				
 				byte *cur_pixel = cur_row;
 				for (int i = 0; i < w; i++)
 				{

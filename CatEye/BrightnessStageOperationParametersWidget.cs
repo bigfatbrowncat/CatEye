@@ -6,7 +6,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class BrightnessStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mBrightness = 0.9;
+		private double mBrightness = 1;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		public double Brightness

@@ -30,7 +30,6 @@ namespace CatEye
 			this.Name = "CatEye.UltraSharpStageOperationParametersWidget";
 			// Container child CatEye.UltraSharpStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), true);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
@@ -91,7 +90,7 @@ namespace CatEye
 			this.points_entry = new global::Gtk.Entry ();
 			this.points_entry.CanFocus = true;
 			this.points_entry.Name = "points_entry";
-			this.points_entry.Text = global::Mono.Unix.Catalog.GetString ("200");
+			this.points_entry.Text = global::Mono.Unix.Catalog.GetString ("100");
 			this.points_entry.IsEditable = true;
 			this.points_entry.WidthChars = 6;
 			this.points_entry.InvisibleChar = '●';
