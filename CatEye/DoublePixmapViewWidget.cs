@@ -7,7 +7,7 @@ namespace CatEye
 {
 
 	[System.ComponentModel.ToolboxItem(true)]
-	public class DoublePixmapViewWidget : Gtk.Bin
+	public class DoublePixmapViewWidget : DrawingArea
 	{
 		public enum ScaleType { None, Divide, Multiply };
 
@@ -15,6 +15,12 @@ namespace CatEye
 		private DoublePixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
+		
+		private Rectangle _CurrentImagePosition = new Rectangle(0, 0, 1, 1);
+		public Rectangle CurrentImagePosition
+		{
+			get { return _CurrentImagePosition; }
+		}
 		
 		public DoublePixmap HDR
 		{
@@ -74,6 +80,7 @@ namespace CatEye
 				if (h > _RenderedPicture.Height)
 					dsty = (h - _RenderedPicture.Height) / 2;
 				
+				_CurrentImagePosition = new Rectangle(dstx, dsty, _RenderedPicture.Width, _RenderedPicture.Height);
 				
 				GdkWindow.DrawPixbuf(new Gdk.GC(GdkWindow), _RenderedPicture, 
 				                     0, 0, dstx, dsty, 
@@ -101,5 +108,10 @@ namespace CatEye
 			base.Dispose ();
 		}
 
+		
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			return base.OnButtonReleaseEvent(evnt);
+		}
 	}
 }

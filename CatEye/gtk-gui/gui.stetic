@@ -225,7 +225,8 @@
                             <child>
                               <widget class="CatEye.DoublePixmapViewWidget" id="ppmviewwidget1">
                                 <property name="MemberName" />
-                                <property name="Events">ButtonPressMask</property>
+                                <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
+                                <property name="ExtensionEvents">All</property>
                                 <property name="ShowScrollbars">True</property>
                                 <property name="InstantUpdate">False</property>
                               </widget>

@@ -127,8 +127,74 @@ public partial class MainWindow : Gtk.Window
 			LaunchUpdateTimer();
 		};
 		
+		// Adding events for stage operation view redrawing
+		ppmviewwidget1.Events |= 
+								Gdk.EventMask.PointerMotionMask |
+								Gdk.EventMask.ButtonMotionMask |
+								Gdk.EventMask.ButtonPressMask |
+								Gdk.EventMask.ButtonReleaseMask |
+								Gdk.EventMask.Button1MotionMask |
+								Gdk.EventMask.ExposureMask;
+		
+		ppmviewwidget1.ExposeEvent += DrawCurrentlyViewedStageOperationAdditions;
+		ppmviewwidget1.ButtonPressEvent += ImageMouseButtonPressed;
+		ppmviewwidget1.ButtonReleaseEvent += ImageMouseButtonReleased;
+		ppmviewwidget1.MotionNotifyEvent += HandleImageMouseMotion;
+
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
+	}
+
+	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
+	{
+		if (stages.ViewedOperation != null)
+		{
+			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
+			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+
+			if (stages.ViewedOperation.ParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
+			{
+				ppmviewwidget1.QueueDraw();
+			}
+		}
+	}
+
+	[GLib.ConnectBefore]
+	void ImageMouseButtonReleased (object o, ButtonReleaseEventArgs args)
+	{
+		if (stages.ViewedOperation != null)
+		{
+			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
+			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+
+			if (stages.ViewedOperation.ParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
+			{
+				ppmviewwidget1.QueueDraw();
+			}
+		}
+	}
+	
+	void HandleImageMouseMotion (object o, MotionNotifyEventArgs args)
+	{
+		if (stages.ViewedOperation != null)
+		{
+			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
+			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+
+			if (stages.ViewedOperation.ParametersWidget.ReportMousePosition(dx, dy))
+			{
+				ppmviewwidget1.QueueDraw();
+			}
+		}
+	}
+
+	void DrawCurrentlyViewedStageOperationAdditions (object o, ExposeEventArgs args)
+	{
+		if (stages.ViewedOperation != null)
+		{
+			stages.ViewedOperation.ParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
+			                                                       ppmviewwidget1.CurrentImagePosition);
+		}
 	}
 
 	protected void LaunchUpdateTimer()
@@ -581,10 +647,5 @@ public partial class MainWindow : Gtk.Window
 	{
 		ppmviewwidget1.InstantUpdate = this.UpdateDuringProcessingAction.Active;
 	}
-	
-	
-	
-	
-	
 	
 }

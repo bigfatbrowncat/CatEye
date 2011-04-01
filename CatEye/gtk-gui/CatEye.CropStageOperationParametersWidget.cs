@@ -26,6 +26,7 @@ namespace CatEye
 			this.Name = "CatEye.CropStageOperationParametersWidget";
 			// Container child CatEye.CropStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(3)), true);
+			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild

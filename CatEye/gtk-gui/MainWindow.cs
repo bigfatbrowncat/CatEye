@@ -202,7 +202,8 @@ public partial class MainWindow
 		w19.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport.Gtk.Container+ContainerChild
 		this.ppmviewwidget1 = new global::CatEye.DoublePixmapViewWidget ();
-		this.ppmviewwidget1.Events = ((global::Gdk.EventMask)(256));
+		this.ppmviewwidget1.Events = ((global::Gdk.EventMask)(1022));
+		this.ppmviewwidget1.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 		this.ppmviewwidget1.Name = "ppmviewwidget1";
 		this.ppmviewwidget1.InstantUpdate = false;
 		w19.Add (this.ppmviewwidget1);

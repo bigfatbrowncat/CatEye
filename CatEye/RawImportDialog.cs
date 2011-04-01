@@ -8,6 +8,20 @@ namespace CatEye
 
 	public partial class RawImportDialog : Gtk.Dialog
 	{
+		string [] raw_extensions = {
+				".arw",
+				".crw",
+				".cr2",
+				".dng",
+				".mrw",
+				".nef",
+				".orf",
+				".pef",
+				".raw",
+				".raf",
+				".rw2",
+		};		
+		
 		private string _Filename = null;
 		private int _PreScale = 1;
 		private bool file_is_good = false;

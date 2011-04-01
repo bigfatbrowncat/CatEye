@@ -85,12 +85,11 @@ namespace CatEye
 		
 		protected virtual void OnRadiusHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
-			
+			// TODO: Use this!
 		}
 		
 		protected virtual void OnRadiusHscaleMoveSlider (object o, Gtk.MoveSliderArgs args)
 		{
-			Console.Write("!");
 			mRadius = radius_hscale.Value;
 			OnUserModified();
 		}

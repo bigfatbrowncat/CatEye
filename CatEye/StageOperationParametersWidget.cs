@@ -27,5 +27,40 @@ namespace CatEye
 		public StageOperationParametersWidget ()
 		{
 		}
+		
+		/// <summary>
+		/// Handles mouse position changed. 
+		/// Base method should not be called when overridden.
+		/// </summary>
+		/// <returns>
+		/// Should return "true" if it's needed to update picture.
+		/// </returns>
+		public virtual bool ReportMousePosition(double x, double y)	
+		{ 
+			return false;
+		}
+		
+		/// <summary>
+		/// Handles mouse button state changed.
+		/// Base method should not be called when overridden.
+		/// </summary>
+		/// <returns>
+		/// Should return "true" if it's needed to update picture.
+		/// </returns>
+		public virtual bool ReportMouseButton(double x, double y, uint button_id, bool is_down) 
+		{
+			return false;
+		}
+		
+		/// <summary>
+		/// Adds modifications to picture.
+		/// </summary>
+		/// <param name="gc">
+		/// A <see cref="Gdk.GC"/>
+		/// </param>
+		/// <param name="target">
+		/// A <see cref="Gdk.Drawable"/>
+		/// </param>
+		public virtual void DrawToDrawable(Gdk.Drawable target, Gdk.Rectangle image_position) { }
 	}
 }
