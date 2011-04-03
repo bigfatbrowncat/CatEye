@@ -5,8 +5,38 @@ using CatEye;
 
 public partial class MainWindow : Gtk.Window
 {
+	private static string APP_NAME = "CatEye 0.3";
+
 	protected enum UIState { Processing, Loading, Free };
 	private UIState _TheUIState = UIState.Free;
+	private string _FileName = null;
+	private int _PreScale = 0;
+	
+	private void UpdateTitle()
+	{
+		Title = _FileName + " [prescaled by " + _PreScale + "] — " + APP_NAME;
+	}
+	
+	protected string FileName
+	{
+		get { return _FileName; }
+		set 
+		{
+			_FileName = value;
+			UpdateTitle();
+		}
+	}
+	
+	protected int PreScale
+	{
+		get { return _PreScale; }
+		set 
+		{
+			_PreScale = value;
+			UpdateTitle();
+		}
+	}
+	
 	protected UIState TheUIState 
 	{ 
 		get { return _TheUIState; } 
@@ -19,19 +49,20 @@ public partial class MainWindow : Gtk.Window
 				{
 					loadAction.Sensitive = true;
 					saveAsAction.Sensitive = true;
-					cancel_button.Sensitive = false;
+					cancel_button.Visible = false;
 				}
 				else if (value == MainWindow.UIState.Loading)
 				{
 					loadAction.Sensitive = false;
 					saveAsAction.Sensitive = false;
+					cancel_button.Visible = true;
 					cancel_button.Sensitive = true;
 				}
 				else if (value == MainWindow.UIState.Processing)
 				{
 					loadAction.Sensitive = true;
-					saveAsAction.Sensitive = true;
-					cancel_button.Sensitive = true;
+					saveAsAction.Sensitive = false;
+					cancel_button.Visible = false;
 				}
 			}
 		}
@@ -322,6 +353,7 @@ public partial class MainWindow : Gtk.Window
 	private void ClearHDR()
 	{
 		ppmviewwidget1.HDR = null;
+		ppmviewwidget1.UpdatePicture();
 		hdr = null;
 		frozen = null;
 		GC.Collect();		// For freeing memory from unused hdr_src
@@ -516,6 +548,7 @@ public partial class MainWindow : Gtk.Window
 				int readed = 0;
 				int readed_all = 0;
 				System.IO.MemoryStream ms = new System.IO.MemoryStream();
+				byte[] buf = new byte[1024 * 4];
 				do
 				{
 					cnt++;
@@ -526,7 +559,6 @@ public partial class MainWindow : Gtk.Window
 							if (!callback(0, "Reading data: " + (readed_all / (1024 * 1024)) + " M")) return null;
 						}
 					}
-					byte[] buf = new byte[1024 * 4];
 					readed = prc.StandardOutput.BaseStream.Read(buf, 0, buf.Length);
 					ms.Write(buf, 0, readed);
 					readed_all += readed;
@@ -538,7 +570,9 @@ public partial class MainWindow : Gtk.Window
 					if (!callback(0, "Data reading complete.")) return null;
 				}
 				while (Application.EventsPending()) Application.RunIteration();
-
+				
+				prc.StandardOutput.Dispose();
+				prc.WaitForExit(-1);	// R.I.P.
 				prc.Close();
 				
 				ms.Seek(0, System.IO.SeekOrigin.Begin);
@@ -566,6 +600,8 @@ public partial class MainWindow : Gtk.Window
 		return null;
 	}
 	
+	
+	
 	protected void LoadRawImageActionPicked()
 	{
 		if (TheUIState == MainWindow.UIState.Loading)
@@ -579,23 +615,23 @@ public partial class MainWindow : Gtk.Window
 		}
 		else
 		{
-			string filename = null;
-	
-			int downscale_by = 1;
 			RawImportDialog rid = new RawImportDialog();
 			
+			if (FileName != null) rid.Filename = FileName;
+			if (PreScale != 0) rid.PreScale = PreScale;
+				
 			if (rid.Run() == (int)Gtk.ResponseType.Accept)
 			{
-				filename = rid.Filename;
-				downscale_by = rid.PreScale;
+				FileName = rid.Filename;
+				PreScale = rid.PreScale;
 			}
 			rid.Destroy();
 			
-			if (filename != null)
+			if (FileName != null)
 			{
 				UIState curstate = TheUIState;
 				TheUIState = MainWindow.UIState.Loading;
-				System.IO.Stream strm = ImportRaw(filename, ImportRawAndLoadingReporter);
+				System.IO.Stream strm = ImportRaw(FileName, ImportRawAndLoadingReporter);
 				if (strm == null)
 				{
 					cancel_pending = false;
@@ -604,8 +640,9 @@ public partial class MainWindow : Gtk.Window
 				}
 				else
 				{
-					LoadStream(strm, ImportRawAndLoadingReporter, downscale_by);
+					LoadStream(strm, ImportRawAndLoadingReporter, PreScale);
 					strm.Close();
+					strm.Dispose();
 				}
 				TheUIState = curstate;
 			}

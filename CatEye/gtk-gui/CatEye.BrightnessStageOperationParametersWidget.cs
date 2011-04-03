@@ -5,9 +5,7 @@ namespace CatEye
 	public partial class BrightnessStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry brightness_entry;
-
 		private global::Gtk.Label label2;
 
 		protected virtual void Build ()
@@ -30,17 +28,17 @@ namespace CatEye
 			this.brightness_entry.WidthChars = 6;
 			this.brightness_entry.InvisibleChar = '●';
 			this.table1.Add (this.brightness_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.brightness_entry]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.brightness_entry]));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 1f;
+			this.label2.Xalign = 1F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Brightness:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);

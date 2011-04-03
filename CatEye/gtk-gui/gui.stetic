@@ -1015,14 +1015,22 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ComboBox" id="prescale_combobox">
+                  <widget class="Gtk.HScale" id="prescale_hscale">
                     <property name="MemberName" />
-                    <property name="IsTextCombo">True</property>
-                    <property name="Items" translatable="yes" />
+                    <property name="CanFocus">True</property>
+                    <property name="Lower">1</property>
+                    <property name="Upper">10</property>
+                    <property name="PageIncrement">1</property>
+                    <property name="PageSize">1</property>
+                    <property name="StepIncrement">1</property>
+                    <property name="Value">1</property>
+                    <property name="DrawValue">True</property>
+                    <property name="Digits">0</property>
+                    <property name="ValuePos">Right</property>
                   </widget>
                   <packing>
                     <property name="Position">4</property>
-                    <property name="AutoSize">False</property>
+                    <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
                   </packing>

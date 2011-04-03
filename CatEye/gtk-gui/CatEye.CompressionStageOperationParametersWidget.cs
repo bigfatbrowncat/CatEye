@@ -5,13 +5,9 @@ namespace CatEye
 	public partial class CompressionStageOperationParametersWidget
 	{
 		private global::Gtk.Table table2;
-
 		private global::Gtk.Entry bloha_entry;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.Entry power_entry;
 
 		protected virtual void Build ()
@@ -34,7 +30,7 @@ namespace CatEye
 			this.bloha_entry.WidthChars = 6;
 			this.bloha_entry.InvisibleChar = '●';
 			this.table2.Add (this.bloha_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table2[this.bloha_entry]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table2 [this.bloha_entry]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(1));
@@ -43,18 +39,18 @@ namespace CatEye
 			// Container child table2.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 1f;
+			this.label3.Xalign = 1F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Power:");
 			this.table2.Add (this.label3);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2[this.label3]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 1f;
+			this.label6.Xalign = 1F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Bloha:");
 			this.table2.Add (this.label6);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table2[this.label6]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table2 [this.label6]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -67,7 +63,7 @@ namespace CatEye
 			this.power_entry.WidthChars = 6;
 			this.power_entry.InvisibleChar = '●';
 			this.table2.Add (this.power_entry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2[this.power_entry]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2 [this.power_entry]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));

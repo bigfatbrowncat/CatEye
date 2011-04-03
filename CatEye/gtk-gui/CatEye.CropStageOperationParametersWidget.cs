@@ -5,17 +5,11 @@ namespace CatEye
 	public partial class CropStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry bottom_entry;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Entry left_entry;
-
 		private global::Gtk.Entry right_entry;
-
 		private global::Gtk.Entry top_entry;
 
 		protected virtual void Build ()
@@ -38,7 +32,7 @@ namespace CatEye
 			this.bottom_entry.WidthChars = 6;
 			this.bottom_entry.InvisibleChar = '●';
 			this.table1.Add (this.bottom_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.bottom_entry]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.bottom_entry]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(2));
@@ -47,18 +41,18 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Left - right:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 1f;
+			this.label8.Xalign = 1F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Top - bottom:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -71,7 +65,7 @@ namespace CatEye
 			this.left_entry.WidthChars = 6;
 			this.left_entry.InvisibleChar = '●';
 			this.table1.Add (this.left_entry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.left_entry]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.left_entry]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -84,7 +78,7 @@ namespace CatEye
 			this.right_entry.WidthChars = 6;
 			this.right_entry.InvisibleChar = '●';
 			this.table1.Add (this.right_entry);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.right_entry]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.right_entry]));
 			w5.LeftAttach = ((uint)(2));
 			w5.RightAttach = ((uint)(3));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -97,7 +91,7 @@ namespace CatEye
 			this.top_entry.WidthChars = 6;
 			this.top_entry.InvisibleChar = '●';
 			this.table1.Add (this.top_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.top_entry]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.top_entry]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.LeftAttach = ((uint)(1));

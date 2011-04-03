@@ -1,6 +1,7 @@
 using System;
 using Gtk;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace CatEye
 {
@@ -22,18 +23,42 @@ namespace CatEye
 				".rw2",
 		};		
 		
-		private string _Filename = null;
-		private int _PreScale = 1;
 		private bool file_is_good = false;
 		
-		public string Filename { get { return _Filename; } }
-		public int PreScale { get { return _PreScale; } }
+		public string Filename 
+		{ 
+			get 
+			{ 
+				return filechooserwidget.Filename;
+			}
+			set
+			{
+				filechooserwidget.SetFilename(value);
+			}
+		}
+		public void SetFolder(string folder)
+		{
+			filechooserwidget.SetCurrentFolder(folder);
+		}
+		
+		public int PreScale 
+		{ 
+			get 
+			{
+				return (int)prescale_hscale.Value;
+			}
+			set
+			{
+				prescale_hscale.Value = value;
+			}
+		}
 		
 		public RawImportDialog ()
 		{
 			this.Build ();
 
 			// Adding prescale list
+			/*
 			Gtk.ListStore ls = new Gtk.ListStore(typeof(string), typeof(int));
 			ls.AppendValues("No downscaling", 1);
 			ls.AppendValues("Divide by 2", 2);
@@ -52,6 +77,21 @@ namespace CatEye
 			ls.GetIterFirst(out ti);
 			ls.IterNext(ref ti);
 			pres_cb.SetActiveIter(ti);
+			*/
+			
+			// Filter
+			FileFilter ff = new FileFilter();
+			List<string> exts = new List<string>(raw_extensions);
+			
+			ff.AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+				return exts.Contains(System.IO.Path.GetExtension(ffi.Filename.ToLower()));
+				
+			});
+			ff.Name = "RAW image";
+	
+			filechooserwidget.AddFilter(ff);
+			
+			
 		}
 	
 		protected virtual void OnFilechooserwidgetSelectionChanged (object sender, System.EventArgs e)
@@ -101,11 +141,14 @@ namespace CatEye
 							    
 							res = prc.StandardOutput.ReadLine();
 						}
+						prc.WaitForExit(-1);	// R.I.P.
+						prc.Close();
+						
 						identification_label.Markup = mu;
 						open_button.Sensitive = true;
 						file_is_good = true;
 						
-						GLib.Timeout.Add(200, new GLib.TimeoutHandler(delegate {
+						GLib.Timeout.Add(100, new GLib.TimeoutHandler(delegate {
 
 							Gdk.Pixmap pm = new Gdk.Pixmap(thumb_image.GdkWindow, size + margins, size + margins, -1);
 							Gdk.GC gc = new Gdk.GC(thumb_image.GdkWindow);
@@ -119,9 +162,9 @@ namespace CatEye
 								int readed = 0;
 								int readed_all = 0;
 								ms = new System.IO.MemoryStream();
+								byte[] buf = new byte[1024 * 4];
 								do
 								{
-									byte[] buf = new byte[1024 * 4];
 									readed = prc2.StandardOutput.BaseStream.Read(buf, 0, buf.Length);
 									ms.Write(buf, 0, readed);
 									readed_all += readed;
@@ -129,9 +172,12 @@ namespace CatEye
 								while (readed > 0);
 					
 								while (Application.EventsPending()) Application.RunIteration();
-				
+
+								prc2.WaitForExit(-1);	// R.I.P.
+								prc2.Close();
 								ms.Seek(0, System.IO.SeekOrigin.Begin);
 							}
+							prc2.Dispose();
 							
 							Gdk.Pixbuf pb = null;
 							try
@@ -141,6 +187,8 @@ namespace CatEye
 							catch (GLib.GException)
 							{
 							}
+							
+							ms.Close();
 							
 							if (pb != null)
 							{
@@ -172,16 +220,20 @@ namespace CatEye
 				{
 					identification_label.Text = "Can not start DCRaw";
 				}
+				prc.Dispose();
+				
 			}
 
 		}
 		protected virtual void OnResponse (object o, Gtk.ResponseArgs args)
 		{
+			/*
 			TreeIter ti;
 			prescale_combobox.GetActiveIter(out ti);
 			_PreScale = (int)(((ListStore)prescale_combobox.Model).GetValue(ti, 1));
 			
 			_Filename = filechooserwidget.Filename;
+			*/
 		}
 		
 		protected virtual void OnClose (object sender, System.EventArgs e)

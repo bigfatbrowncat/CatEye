@@ -4,53 +4,29 @@
 public partial class MainWindow
 {
 	private global::Gtk.UIManager UIManager;
-
 	private global::Gtk.RadioAction ScaledRangeAction;
-
 	private global::Gtk.Action FileAction;
-
 	private global::Gtk.Action CloseAction;
-
 	private global::Gtk.Action quitAction;
-
 	private global::Gtk.Action saveAsAction;
-
 	private global::Gtk.Action loadAction;
-
 	private global::Gtk.Action HelpAction;
-
 	private global::Gtk.Action aboutAction;
-
 	private global::Gtk.Action StageAction;
-
 	private global::Gtk.Action ViewAction;
-
 	private global::Gtk.ToggleAction UpdateDuringProcessingAction;
-
 	private global::Gtk.VBox vbox2;
-
 	private global::Gtk.MenuBar main_menubar;
-
 	private global::Gtk.VBox vbox1;
-
 	private global::Gtk.HBox main_hbox;
-
 	private global::Gtk.VBox left_vbox;
-
 	private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
 	private global::Gtk.VBox stage_vbox;
-
 	private global::Gtk.HBox status_bar_hbox;
-
 	private global::Gtk.ProgressBar progressbar;
-
 	private global::Gtk.Button cancel_button;
-
 	private global::Gtk.VBox vbox3;
-
 	private global::Gtk.ScrolledWindow scrolledwindow3;
-
 	private global::CatEye.DoublePixmapViewWidget ppmviewwidget1;
 
 	protected virtual void Build ()
@@ -108,7 +84,7 @@ public partial class MainWindow
 		this.main_menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/main_menubar")));
 		this.main_menubar.Name = "main_menubar";
 		this.vbox2.Add (this.main_menubar);
-		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.main_menubar]));
+		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.main_menubar]));
 		w2.Position = 0;
 		w2.Expand = false;
 		w2.Fill = false;
@@ -140,7 +116,7 @@ public partial class MainWindow
 		w3.Add (this.stage_vbox);
 		this.GtkScrolledWindow1.Add (w3);
 		this.left_vbox.Add (this.GtkScrolledWindow1);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.left_vbox[this.GtkScrolledWindow1]));
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.left_vbox [this.GtkScrolledWindow1]));
 		w6.Position = 0;
 		// Container child left_vbox.Gtk.Box+BoxChild
 		this.status_bar_hbox = new global::Gtk.HBox ();
@@ -150,7 +126,7 @@ public partial class MainWindow
 		this.progressbar = new global::Gtk.ProgressBar ();
 		this.progressbar.Name = "progressbar";
 		this.status_bar_hbox.Add (this.progressbar);
-		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.status_bar_hbox[this.progressbar]));
+		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.status_bar_hbox [this.progressbar]));
 		w7.Position = 0;
 		// Container child status_bar_hbox.Gtk.Box+BoxChild
 		this.cancel_button = new global::Gtk.Button ();
@@ -159,7 +135,7 @@ public partial class MainWindow
 		this.cancel_button.Name = "cancel_button";
 		this.cancel_button.UseUnderline = true;
 		// Container child cancel_button.Gtk.Container+ContainerChild
-		global::Gtk.Alignment w8 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+		global::Gtk.Alignment w8 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 		// Container child GtkAlignment.Gtk.Container+ContainerChild
 		global::Gtk.HBox w9 = new global::Gtk.HBox ();
 		w9.Spacing = 2;
@@ -175,17 +151,17 @@ public partial class MainWindow
 		w8.Add (w9);
 		this.cancel_button.Add (w8);
 		this.status_bar_hbox.Add (this.cancel_button);
-		global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.status_bar_hbox[this.cancel_button]));
+		global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.status_bar_hbox [this.cancel_button]));
 		w16.Position = 1;
 		w16.Expand = false;
 		w16.Fill = false;
 		this.left_vbox.Add (this.status_bar_hbox);
-		global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.left_vbox[this.status_bar_hbox]));
+		global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.left_vbox [this.status_bar_hbox]));
 		w17.Position = 1;
 		w17.Expand = false;
 		w17.Fill = false;
 		this.main_hbox.Add (this.left_vbox);
-		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.main_hbox[this.left_vbox]));
+		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.main_hbox [this.left_vbox]));
 		w18.Position = 0;
 		w18.Expand = false;
 		// Container child main_hbox.Gtk.Box+BoxChild
@@ -209,16 +185,16 @@ public partial class MainWindow
 		w19.Add (this.ppmviewwidget1);
 		this.scrolledwindow3.Add (w19);
 		this.vbox3.Add (this.scrolledwindow3);
-		global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow3]));
+		global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow3]));
 		w22.Position = 0;
 		this.main_hbox.Add (this.vbox3);
-		global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.main_hbox[this.vbox3]));
+		global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.main_hbox [this.vbox3]));
 		w23.Position = 1;
 		this.vbox1.Add (this.main_hbox);
-		global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.main_hbox]));
+		global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.main_hbox]));
 		w24.Position = 0;
 		this.vbox2.Add (this.vbox1);
-		global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vbox1]));
+		global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
 		w25.Position = 1;
 		this.Add (this.vbox2);
 		if ((this.Child != null)) {
