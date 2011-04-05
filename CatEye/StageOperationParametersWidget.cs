@@ -52,6 +52,10 @@ namespace CatEye
 			return false;
 		}
 		
+		public virtual void ReportImageChanged(int image_width, int image_height)
+		{
+		}
+		
 		/// <summary>
 		/// Adds modifications to picture.
 		/// </summary>

@@ -226,6 +226,14 @@ namespace CatEye
 			}
 		}
 		
+		public void ReportImageChanged(int image_width, int image_height)
+		{
+			for (int i = 0; i < _StageQueue.Count; i++)
+			{
+				_StageQueue[i].ParametersWidget.ReportImageChanged(image_width, image_height);
+			}
+		}
+		
 		public void AddStageOperation(StageOperation operation)
 		{
 			_StageQueue.Add(operation);

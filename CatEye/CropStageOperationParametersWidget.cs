@@ -6,14 +6,32 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CropStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mLeft = 0, mRight = 1, mTop = 0, mBottom = 1;
+		private double mLeft = 0, mRight = 1, mTop = 0, mBottom = 1, mAspectRatio = 3.0/2;
+		private double sel_left, sel_top, sel_right, sel_bottom;
+		private bool mLockAspectRatio = true;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
+		private int image_width, image_height;
 
 		public CropStageOperationParametersWidget ()
 		{
 			this.Build ();
+			
+			Gtk.ListStore ls = new Gtk.ListStore(typeof(string), typeof(double));
+			ls.AppendValues("1.5 - Photo album (3:2)", 3.0/2);
+			ls.AppendValues("0.667 - Photo portrait (2:3)", 2.0/3);
+			ls.AppendValues("1.333 - Screen album (4:3)", 4.0/3);
+			ls.AppendValues("0.75 - Screen portrait (3:4)", 3.0/4);
+			ls.AppendValues("Don't preserve", 0);
+			aspect_comboboxentry.Model = ls;
+			
+			Gtk.TreeIter ti;
+			ls.GetIterFirst(out ti);
+			
+			aspect_comboboxentry.SetActiveIter(ti);
 		}
 
+		
+		
 		public double Left
 		{
 			get { return mLeft; }
@@ -74,7 +92,7 @@ namespace CatEye
 			}
 		}
 
-		public void SetCrop(double left, double right, double top, double bottom)
+		public void SetCrop(double left, double top, double right, double bottom)
 		{
 			if (left >= 0 && left <= right && right <= 1 &&
 			    top >= 0 && top <= bottom && bottom <= 1)
@@ -139,6 +157,49 @@ namespace CatEye
 				}
 			}
 		}
+		private void CheckAspect(ref double left, ref double top, ref double right, ref double bottom, double real_aspect)
+		{
+
+			if (mLockAspectRatio)
+			{
+				if (y_cur >= y_down && x_cur >= x_down)
+				{
+					bottom = top + (right - left) / real_aspect;
+					if (bottom > 1)
+					{
+						bottom = 1;
+						right = left + (bottom - top) * real_aspect;
+					}
+				} 
+				else if (y_cur < y_down && x_cur >= x_down)
+				{
+					top = bottom - (right - left) / real_aspect;
+					if (top < 0)
+					{
+						top = 0;
+						right = left + (bottom - top) * real_aspect;
+					}
+				}
+				else if (y_cur >= y_down && x_cur < x_down)
+				{
+					bottom = top + (right - left) / real_aspect;
+					if (bottom > 1)
+					{
+						bottom = 1;
+						left = right - (bottom - top) * real_aspect;
+					}
+				} 
+				else if (y_cur < y_down && x_cur < x_down)
+				{
+					top = bottom - (right - left) / real_aspect;
+					if (top < 0)
+					{
+						top = 0;
+						left = right - (bottom - top) * real_aspect;
+					}
+				}
+			}
+		}
 		
 		public override void DrawToDrawable (Gdk.Drawable target, Gdk.Rectangle image_position)
 		{
@@ -160,15 +221,35 @@ namespace CatEye
 			if (_mouse_is_down)
 			{
 				
-				double left = Math.Min(x_down, x_cur);
-				double top = Math.Min(y_down, y_cur);
-				double right = Math.Max(x_down, x_cur);
-				double bottom = Math.Max(y_down, y_cur);
+				double x_cur2 = x_cur, y_cur2 = y_cur;
+/*				
+				if (mLockAspectRatio)
+				{
+					// Applying aspect ratio
+					if (mAspectRatio > 1)
+					{
+						y_cur2 = y_down + Math.Sign(y_cur - y_down + 1e-10) * Math.Abs(x_cur - x_down) / mAspectRatio;
+					}
+					else
+					{
+						x_cur2 = x_down + Math.Sign(x_cur - x_down + 1e-10) * Math.Abs(y_cur - y_down) * mAspectRatio;
+					}
+				}
+*/
+				
+				double left = Math.Min(x_down, x_cur2);
+				double top = Math.Min(y_down, y_cur2);
+				double right = Math.Max(x_down, x_cur2);
+				double bottom = Math.Max(y_down, y_cur2);
+	
+				double real_aspect = mAspectRatio * image_height / image_width;
 				
 				if (CutEdges(ref left, ref top, ref right, ref bottom))
 				{
-
-
+					CheckAspect(ref left, ref top, ref right, ref bottom, real_aspect);
+					
+					sel_left = left; sel_top = top; sel_right = right; sel_bottom = bottom;
+					
 					int ti1 = (int)(image_position.Left + left * image_position.Width);
 					int ti2 = (int)(image_position.Left + right * image_position.Width);
 					int tj1 = (int)(image_position.Top + top * image_position.Height);
@@ -212,6 +293,15 @@ namespace CatEye
 			return update_crop;
 		}
 		
+		public override void ReportImageChanged (int image_width, int image_height)
+		{
+			this.image_width = image_width;
+			this.image_height = image_height;
+
+			double real_aspect = mAspectRatio * image_height / image_width;
+			CheckAspect(ref mLeft, ref mTop, ref mRight, ref mBottom, real_aspect);
+		}
+		
 		public override bool ReportMouseButton (double x, double y, uint button_id, bool is_down)
 		{
 			if (button_id == 1)	// Left button
@@ -228,17 +318,7 @@ namespace CatEye
 					_mouse_is_down = false;
 					x_cur = x; y_cur = y;
 					
-					double left = Math.Min(x_down, x_cur);
-					double top = Math.Min(y_down, y_cur);
-					double right = Math.Max(x_down, x_cur);
-					double bottom = Math.Max(y_down, y_cur);
-					
-					bool update_crop = true;
-					
-					// Cutting edges
-
-					if (CutEdges(ref left, ref top, ref right, ref bottom))
-						SetCrop(left, right, top, bottom);
+					SetCrop(sel_left, sel_top, sel_right, sel_bottom);
 				}
 				return true;
 			}
@@ -253,6 +333,39 @@ namespace CatEye
 				return true;
 			}
 			return false;
+		}
+
+		protected void OnAspectComboboxentryChanged (object sender, System.EventArgs e)
+		{
+			Gtk.TreeIter ti;
+			Gtk.ListStore ls = (Gtk.ListStore)aspect_comboboxentry.Model;
+			aspect_comboboxentry.GetActiveIter(out ti);
+			
+			object val = ls.GetValue(ti, 1);
+			double res = 0;
+			if (val == null)
+			{
+				if (double.TryParse(aspect_comboboxentry.ActiveText, NumberStyles.Float, nfi, out res))
+				{
+					
+				}
+				
+			}
+			else
+			{
+				res = (double)val;
+			}
+			
+			if (res > 0)
+			{
+				mAspectRatio = res;
+				mLockAspectRatio = true;
+			}
+			else
+				mLockAspectRatio = false;
+			
+			double real_aspect = mAspectRatio * image_height / image_width;
+			CheckAspect(ref mLeft, ref mTop, ref mRight, ref mBottom, real_aspect);
 		}
 	}
 }

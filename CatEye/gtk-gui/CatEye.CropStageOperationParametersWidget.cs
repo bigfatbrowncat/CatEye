@@ -5,17 +5,13 @@ namespace CatEye
 	public partial class CropStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
+		private global::Gtk.ComboBoxEntry aspect_comboboxentry;
 		private global::Gtk.Entry bottom_entry;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Label label8;
-
+		private global::Gtk.Label label9;
 		private global::Gtk.Entry left_entry;
-
 		private global::Gtk.Entry right_entry;
-
 		private global::Gtk.Entry top_entry;
 
 		protected virtual void Build ()
@@ -25,10 +21,20 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.CropStageOperationParametersWidget";
 			// Container child CatEye.CropStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(3)), true);
-			this.table1.Name = "table1";
+			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), true);
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
+			// Container child table1.Gtk.Table+TableChild
+			this.aspect_comboboxentry = global::Gtk.ComboBoxEntry.NewText ();
+			this.aspect_comboboxentry.Name = "aspect_comboboxentry";
+			this.table1.Add (this.aspect_comboboxentry);
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.aspect_comboboxentry]));
+			w1.TopAttach = ((uint)(2));
+			w1.BottomAttach = ((uint)(3));
+			w1.LeftAttach = ((uint)(1));
+			w1.RightAttach = ((uint)(3));
+			w1.XOptions = ((global::Gtk.AttachOptions)(4));
+			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.bottom_entry = new global::Gtk.Entry ();
 			this.bottom_entry.CanFocus = true;
@@ -38,30 +44,42 @@ namespace CatEye
 			this.bottom_entry.WidthChars = 6;
 			this.bottom_entry.InvisibleChar = '●';
 			this.table1.Add (this.bottom_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.bottom_entry]));
-			w1.TopAttach = ((uint)(1));
-			w1.BottomAttach = ((uint)(2));
-			w1.LeftAttach = ((uint)(2));
-			w1.RightAttach = ((uint)(3));
-			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.bottom_entry]));
+			w2.TopAttach = ((uint)(1));
+			w2.BottomAttach = ((uint)(2));
+			w2.LeftAttach = ((uint)(2));
+			w2.RightAttach = ((uint)(3));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Left - right:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 1f;
+			this.label8.Xalign = 1F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Top - bottom:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
-			w3.TopAttach = ((uint)(1));
-			w3.BottomAttach = ((uint)(2));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
+			w4.TopAttach = ((uint)(1));
+			w4.BottomAttach = ((uint)(2));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label9 = new global::Gtk.Label ();
+			this.label9.Name = "label9";
+			this.label9.Xalign = 1F;
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Aspect ratio:");
+			this.table1.Add (this.label9);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
+			w5.TopAttach = ((uint)(2));
+			w5.BottomAttach = ((uint)(3));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.left_entry = new global::Gtk.Entry ();
 			this.left_entry.CanFocus = true;
@@ -71,10 +89,10 @@ namespace CatEye
 			this.left_entry.WidthChars = 6;
 			this.left_entry.InvisibleChar = '●';
 			this.table1.Add (this.left_entry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.left_entry]));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.left_entry]));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.right_entry = new global::Gtk.Entry ();
 			this.right_entry.CanFocus = true;
@@ -84,10 +102,11 @@ namespace CatEye
 			this.right_entry.WidthChars = 6;
 			this.right_entry.InvisibleChar = '●';
 			this.table1.Add (this.right_entry);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.right_entry]));
-			w5.LeftAttach = ((uint)(2));
-			w5.RightAttach = ((uint)(3));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.right_entry]));
+			w7.LeftAttach = ((uint)(2));
+			w7.RightAttach = ((uint)(3));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.top_entry = new global::Gtk.Entry ();
 			this.top_entry.CanFocus = true;
@@ -97,13 +116,13 @@ namespace CatEye
 			this.top_entry.WidthChars = 6;
 			this.top_entry.InvisibleChar = '●';
 			this.table1.Add (this.top_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.top_entry]));
-			w6.TopAttach = ((uint)(1));
-			w6.BottomAttach = ((uint)(2));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.top_entry]));
+			w8.TopAttach = ((uint)(1));
+			w8.BottomAttach = ((uint)(2));
+			w8.LeftAttach = ((uint)(1));
+			w8.RightAttach = ((uint)(2));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -113,6 +132,7 @@ namespace CatEye
 			this.right_entry.Changed += new global::System.EventHandler (this.OnRightEntryChanged);
 			this.left_entry.Changed += new global::System.EventHandler (this.OnLeftEntryChanged);
 			this.bottom_entry.Changed += new global::System.EventHandler (this.OnBottomEntryChanged);
+			this.aspect_comboboxentry.Changed += new global::System.EventHandler (this.OnAspectComboboxentryChanged);
 		}
 	}
 }

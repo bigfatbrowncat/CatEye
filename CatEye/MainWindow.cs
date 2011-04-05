@@ -373,6 +373,7 @@ public partial class MainWindow : Gtk.Window
 			}
 		}
 		TheUIState = MainWindow.UIState.Free;
+		stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
 		LaunchUpdateTimer();
 	}
 	
