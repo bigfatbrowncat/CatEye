@@ -5,21 +5,13 @@ namespace CatEye
 	public partial class StageOperationTitleWidget
 	{
 		private global::Gtk.HBox hbox;
-
 		private global::Gtk.CheckButton title_checkbutton;
-
 		private global::Gtk.Label title_label;
-
 		private global::Gtk.ToggleButton view_togglebutton;
-
 		private global::Gtk.ToggleButton freeze_togglebutton;
-
 		private global::Gtk.Button up_button;
-
 		private global::Gtk.Arrow arrow5;
-
 		private global::Gtk.Button down_button;
-
 		private global::Gtk.Arrow arrow6;
 
 		protected virtual void Build ()
@@ -47,7 +39,7 @@ namespace CatEye
 			this.title_label.SingleLineMode = true;
 			this.title_checkbutton.Add (this.title_label);
 			this.hbox.Add (this.title_checkbutton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox[this.title_checkbutton]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox [this.title_checkbutton]));
 			w2.Position = 0;
 			w2.Padding = ((uint)(2));
 			// Container child hbox.Gtk.Box+BoxChild
@@ -58,7 +50,7 @@ namespace CatEye
 			this.view_togglebutton.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.view_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("View");
 			this.hbox.Add (this.view_togglebutton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox[this.view_togglebutton]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox [this.view_togglebutton]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -70,7 +62,7 @@ namespace CatEye
 			this.freeze_togglebutton.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.freeze_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("Freeze");
 			this.hbox.Add (this.freeze_togglebutton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox[this.freeze_togglebutton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox [this.freeze_togglebutton]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -86,7 +78,7 @@ namespace CatEye
 			this.up_button.Add (this.arrow5);
 			this.up_button.Label = null;
 			this.hbox.Add (this.up_button);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox[this.up_button]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox [this.up_button]));
 			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -102,7 +94,7 @@ namespace CatEye
 			this.down_button.Add (this.arrow6);
 			this.down_button.Label = null;
 			this.hbox.Add (this.down_button);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox[this.down_button]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox [this.down_button]));
 			w8.Position = 4;
 			w8.Expand = false;
 			w8.Fill = false;

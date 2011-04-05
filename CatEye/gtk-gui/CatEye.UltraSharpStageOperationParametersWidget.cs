@@ -5,21 +5,13 @@ namespace CatEye
 	public partial class UltraSharpStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry delta_0_entry;
-
 		private global::Gtk.Label label12;
-
 		private global::Gtk.Label label14;
-
 		private global::Gtk.Label label15;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Entry points_entry;
-
 		private global::Gtk.Entry power_entry;
-
 		private global::Gtk.HScale radius_hscale;
 
 		protected virtual void Build ()
@@ -42,7 +34,7 @@ namespace CatEye
 			this.delta_0_entry.WidthChars = 6;
 			this.delta_0_entry.InvisibleChar = '●';
 			this.table1.Add (this.delta_0_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.delta_0_entry]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.delta_0_entry]));
 			w1.TopAttach = ((uint)(2));
 			w1.BottomAttach = ((uint)(3));
 			w1.LeftAttach = ((uint)(1));
@@ -51,30 +43,30 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
-			this.label12.Xalign = 1f;
+			this.label12.Xalign = 1F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Radius (part):");
 			this.table1.Add (this.label12);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label12]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label14 = new global::Gtk.Label ();
 			this.label14.Name = "label14";
-			this.label14.Xalign = 1f;
+			this.label14.Xalign = 1F;
 			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Delta_0:");
 			this.table1.Add (this.label14);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label14]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label14]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label15 = new global::Gtk.Label ();
 			this.label15.Name = "label15";
-			this.label15.Xalign = 1f;
+			this.label15.Xalign = 1F;
 			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Measuring points:");
 			this.table1.Add (this.label15);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label15]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label15]));
 			w4.TopAttach = ((uint)(3));
 			w4.BottomAttach = ((uint)(4));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -82,10 +74,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Power:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.points_entry = new global::Gtk.Entry ();
@@ -96,7 +88,7 @@ namespace CatEye
 			this.points_entry.WidthChars = 6;
 			this.points_entry.InvisibleChar = '●';
 			this.table1.Add (this.points_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.points_entry]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.points_entry]));
 			w6.TopAttach = ((uint)(3));
 			w6.BottomAttach = ((uint)(4));
 			w6.LeftAttach = ((uint)(1));
@@ -112,7 +104,7 @@ namespace CatEye
 			this.power_entry.WidthChars = 6;
 			this.power_entry.InvisibleChar = '●';
 			this.table1.Add (this.power_entry);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.power_entry]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_entry]));
 			w7.LeftAttach = ((uint)(1));
 			w7.RightAttach = ((uint)(2));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -128,7 +120,7 @@ namespace CatEye
 			this.radius_hscale.Digits = 2;
 			this.radius_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.radius_hscale);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.radius_hscale]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_hscale]));
 			w8.TopAttach = ((uint)(1));
 			w8.BottomAttach = ((uint)(2));
 			w8.LeftAttach = ((uint)(1));

@@ -5,25 +5,15 @@ namespace CatEye
 	public partial class BasicOpsStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry blue_entry;
-
 		private global::Gtk.Entry brightness_entry;
-
 		private global::Gtk.Entry green_entry;
-
 		private global::Gtk.Label label10;
-
 		private global::Gtk.Label label11;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.Entry red_entry;
-
 		private global::Gtk.Entry saturation_entry;
 
 		protected virtual void Build ()
@@ -46,7 +36,7 @@ namespace CatEye
 			this.blue_entry.WidthChars = 6;
 			this.blue_entry.InvisibleChar = '●';
 			this.table1.Add (this.blue_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.blue_entry]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.blue_entry]));
 			w1.TopAttach = ((uint)(4));
 			w1.BottomAttach = ((uint)(5));
 			w1.LeftAttach = ((uint)(1));
@@ -61,7 +51,7 @@ namespace CatEye
 			this.brightness_entry.WidthChars = 6;
 			this.brightness_entry.InvisibleChar = '●';
 			this.table1.Add (this.brightness_entry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.brightness_entry]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.brightness_entry]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -74,7 +64,7 @@ namespace CatEye
 			this.green_entry.WidthChars = 6;
 			this.green_entry.InvisibleChar = '●';
 			this.table1.Add (this.green_entry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.green_entry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.green_entry]));
 			w3.TopAttach = ((uint)(3));
 			w3.BottomAttach = ((uint)(4));
 			w3.LeftAttach = ((uint)(1));
@@ -83,10 +73,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
-			this.label10.Xalign = 1f;
+			this.label10.Xalign = 1F;
 			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Green:");
 			this.table1.Add (this.label10);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label10]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label10]));
 			w4.TopAttach = ((uint)(3));
 			w4.BottomAttach = ((uint)(4));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -94,10 +84,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
-			this.label11.Xalign = 1f;
+			this.label11.Xalign = 1F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Blue:");
 			this.table1.Add (this.label11);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label11]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label11]));
 			w5.TopAttach = ((uint)(4));
 			w5.BottomAttach = ((uint)(5));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -105,19 +95,19 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 1f;
+			this.label2.Xalign = 1F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Brightness:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 1f;
+			this.label8.Xalign = 1F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Saturation:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -125,10 +115,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 1f;
+			this.label9.Xalign = 1F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Red:");
 			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
 			w8.TopAttach = ((uint)(2));
 			w8.BottomAttach = ((uint)(3));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -142,7 +132,7 @@ namespace CatEye
 			this.red_entry.WidthChars = 6;
 			this.red_entry.InvisibleChar = '●';
 			this.table1.Add (this.red_entry);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.red_entry]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.red_entry]));
 			w9.TopAttach = ((uint)(2));
 			w9.BottomAttach = ((uint)(3));
 			w9.LeftAttach = ((uint)(1));
@@ -157,7 +147,7 @@ namespace CatEye
 			this.saturation_entry.WidthChars = 6;
 			this.saturation_entry.InvisibleChar = '●';
 			this.table1.Add (this.saturation_entry);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.saturation_entry]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_entry]));
 			w10.TopAttach = ((uint)(1));
 			w10.BottomAttach = ((uint)(2));
 			w10.LeftAttach = ((uint)(1));
