@@ -3,12 +3,12 @@ using System.Globalization;
 
 namespace CatEye
 {
-	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.ToolboxItem(true), StageOperationID("BasicOpsStageOperation")]
 	public partial class BasicOpsStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
-		public BasicOpsStageOperationParametersWidget (BasicOpsStageOperationParameters parameters) :
+		public BasicOpsStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
 			this.Build ();

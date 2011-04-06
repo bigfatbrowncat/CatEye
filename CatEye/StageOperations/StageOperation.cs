@@ -37,6 +37,7 @@ namespace CatEye
 		}
 	}
 	
+	[StageOperationID("StageOperation")]
 	public class StageOperation
 	{
 		private StageOperationParameters mParameters;

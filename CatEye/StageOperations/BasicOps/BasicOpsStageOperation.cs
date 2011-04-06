@@ -2,10 +2,10 @@ using System;
 
 namespace CatEye
 {
-	[StageOperationDescription("Basic operations")]
+	[StageOperationDescription("Basic operations"), StageOperationID("BasicOpsStageOperation")]
 	public class BasicOpsStageOperation : StageOperation
 	{
-		public BasicOpsStageOperation (BasicOpsStageOperationParameters parameters)
+		public BasicOpsStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}

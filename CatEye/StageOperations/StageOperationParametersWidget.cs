@@ -6,10 +6,10 @@ namespace CatEye
 	{
 		public IncorrectValueException() : base("Incorrect value") {}
 	}
-
+	
+	[StageOperationID("StageOperation")]
 	public class StageOperationParametersWidget : Gtk.Bin
 	{
-		private bool mModifiedByUser = true;
 		private StageOperationParameters mParameters;
 		private bool mParametersAreChangingByMe = false;
 		

@@ -13,6 +13,7 @@ namespace CatEye
 		private global::Gtk.Arrow arrow5;
 		private global::Gtk.Button down_button;
 		private global::Gtk.Arrow arrow6;
+		private global::Gtk.Button remove_button;
 
 		protected virtual void Build ()
 		{
@@ -98,6 +99,31 @@ namespace CatEye
 			w8.Position = 4;
 			w8.Expand = false;
 			w8.Fill = false;
+			// Container child hbox.Gtk.Box+BoxChild
+			this.remove_button = new global::Gtk.Button ();
+			this.remove_button.CanFocus = true;
+			this.remove_button.Name = "remove_button";
+			this.remove_button.UseUnderline = true;
+			this.remove_button.Relief = ((global::Gtk.ReliefStyle)(2));
+			// Container child remove_button.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w10 = new global::Gtk.HBox ();
+			w10.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w11 = new global::Gtk.Image ();
+			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-close", global::Gtk.IconSize.Menu);
+			w10.Add (w11);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w13 = new global::Gtk.Label ();
+			w10.Add (w13);
+			w9.Add (w10);
+			this.remove_button.Add (w9);
+			this.hbox.Add (this.remove_button);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox [this.remove_button]));
+			w17.Position = 5;
+			w17.Expand = false;
+			w17.Fill = false;
 			this.Add (this.hbox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -108,6 +134,7 @@ namespace CatEye
 			this.freeze_togglebutton.Toggled += new global::System.EventHandler (this.OnFreezeTogglebuttonToggled);
 			this.up_button.Clicked += new global::System.EventHandler (this.OnUpButtonClicked);
 			this.down_button.Clicked += new global::System.EventHandler (this.OnDownButtonClicked);
+			this.remove_button.Clicked += new global::System.EventHandler (this.OnRemoveButtonClicked);
 		}
 	}
 }

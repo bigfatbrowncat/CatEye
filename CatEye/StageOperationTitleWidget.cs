@@ -77,6 +77,7 @@ namespace CatEye
 		public event EventHandler<EventArgs> TitleCheckButtonClicked;
 		public event EventHandler<EventArgs> ViewButtonClicked;
 		public event EventHandler<EventArgs> FreezeButtonClicked;
+		public event EventHandler<EventArgs> RemoveButtonClicked;
 
 		public StageOperationTitleWidget ()
 		{
@@ -119,14 +120,10 @@ namespace CatEye
 			}
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		protected void OnRemoveButtonClicked (object sender, System.EventArgs e)
+		{
+			if (RemoveButtonClicked != null)
+				RemoveButtonClicked(sender, EventArgs.Empty);
+		}
 	}
 }

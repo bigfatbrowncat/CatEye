@@ -2,10 +2,10 @@ using System;
 
 namespace CatEye
 {
-	[StageOperationDescription("Brightness")]
+	[StageOperationDescription("Brightness"), StageOperationID("BrightnessStageOperation")]
 	public class BrightnessStageOperation : StageOperation
 	{
-		public BrightnessStageOperation (BrightnessStageOperationParameters parameters)
+		public BrightnessStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}

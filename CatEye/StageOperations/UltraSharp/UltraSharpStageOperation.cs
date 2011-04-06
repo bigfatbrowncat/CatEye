@@ -2,10 +2,10 @@ using System;
 
 namespace CatEye
 {
-	[StageOperationDescription("Ultra sharp")]
+	[StageOperationDescription("Ultra sharp"), StageOperationID("UltraSharpStageOperation")]
 	public class UltraSharpStageOperation : StageOperation
 	{
-		public UltraSharpStageOperation (UltraSharpStageOperationParameters parameters)
+		public UltraSharpStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}

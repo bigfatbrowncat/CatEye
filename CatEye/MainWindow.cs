@@ -1,4 +1,5 @@
 using System;
+using System.Xml;
 using System.Collections.Generic;
 using Gtk;
 using CatEye;
@@ -47,21 +48,27 @@ public partial class MainWindow : Gtk.Window
 				_TheUIState = value;
 				if (value == MainWindow.UIState.Free)
 				{
-					loadAction.Sensitive = true;
-					saveAsAction.Sensitive = true;
+					loadRawAction.Sensitive = true;
+					loadStageAction.Sensitive = true;
+					saveStageAsAction.Sensitive = true;
+					saveImageAsAction.Sensitive = true;
 					cancel_button.Visible = false;
 				}
 				else if (value == MainWindow.UIState.Loading)
 				{
-					loadAction.Sensitive = false;
-					saveAsAction.Sensitive = false;
+					loadRawAction.Sensitive = false;
+					loadStageAction.Sensitive = false;
+					saveStageAsAction.Sensitive = false;
+					saveImageAsAction.Sensitive = false;
 					cancel_button.Visible = true;
 					cancel_button.Sensitive = true;
 				}
 				else if (value == MainWindow.UIState.Processing)
 				{
-					loadAction.Sensitive = true;
-					saveAsAction.Sensitive = false;
+					loadRawAction.Sensitive = true;
+					loadStageAction.Sensitive = true;
+					saveStageAsAction.Sensitive = true;
+					saveImageAsAction.Sensitive = false;
 					cancel_button.Visible = false;
 				}
 			}
@@ -75,27 +82,31 @@ public partial class MainWindow : Gtk.Window
 	DoublePixmap frozen = null;
 	Stages stages;
 	
-	// Stage operations
-	StageOperation crop_stage_op;
-	StageOperation compression_stage_op;
-	StageOperation brightness_stage_op;
-	StageOperation ultra_sharp_stage_op;
-	StageOperation basic_ops_stage_op;
+	Type[] _StageOperationTypes = new Type[]
+	{
+		typeof(CropStageOperation),
+		typeof(CompressionStageOperation),
+		typeof(BrightnessStageOperation),
+		typeof(UltraSharpStageOperation),
+		typeof(BasicOpsStageOperation)
+	};
+	Type[] _StageOperationParametersTypes = new Type[]
+	{
+		typeof(CropStageOperationParameters),
+		typeof(CompressionStageOperationParameters),
+		typeof(BrightnessStageOperationParameters),
+		typeof(UltraSharpStageOperationParameters),
+		typeof(BasicOpsStageOperationParameters)
+	};
+	Type[] _StageOperationParametersWidgetTypes = new Type[]
+	{
+		typeof(CropStageOperationParametersWidget),
+		typeof(CompressionStageOperationParametersWidget),
+		typeof(BrightnessStageOperationParametersWidget),
+		typeof(UltraSharpStageOperationParametersWidget),
+		typeof(BasicOpsStageOperationParametersWidget)
+	};
 	
-	// Stage operation parameters
-	CropStageOperationParameters crop_stage_op_param;
-	CompressionStageOperationParameters compression_stage_op_param;
-	BrightnessStageOperationParameters brightness_stage_op_param;
-	UltraSharpStageOperationParameters ultra_sharp_stage_op_param;
-	BasicOpsStageOperationParameters basic_ops_stage_op_param;
-	
-	// Stage operation parameters widgets
-	CropStageOperationParametersWidget crop_stage_op_widget;
-	CompressionStageOperationParametersWidget compression_stage_op_widget;
-	BrightnessStageOperationParametersWidget brightness_stage_op_widget;
-	UltraSharpStageOperationParametersWidget ultra_sharp_stage_op_widget;
-	BasicOpsStageOperationParametersWidget basic_ops_stage_op_widget;
-
 	bool update_timer_launched = false;
 	bool cancel_pending = false;
 	
@@ -116,57 +127,28 @@ public partial class MainWindow : Gtk.Window
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
 
-		// Adding brightness
-		brightness_stage_op_param = new BrightnessStageOperationParameters();
-		brightness_stage_op = new BrightnessStageOperation(brightness_stage_op_param);
-		brightness_stage_op.ReportProgress += HandleProgress;
-		brightness_stage_op_widget = new BrightnessStageOperationParametersWidget(brightness_stage_op_param);
-		brightness_stage_op_widget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.AddStageOperation(brightness_stage_op, brightness_stage_op_widget);
-
-		// Adding crop
-		crop_stage_op_param = new CropStageOperationParameters();
-		crop_stage_op = new CropStageOperation(crop_stage_op_param);
-		crop_stage_op.ReportProgress += HandleProgress;
-		crop_stage_op_widget = new CropStageOperationParametersWidget(crop_stage_op_param);
-		crop_stage_op_widget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.AddStageOperation(crop_stage_op, crop_stage_op_widget);
-
-		// Adding compression
-		compression_stage_op_param = new CompressionStageOperationParameters();
-		compression_stage_op = new CompressionStageOperation(compression_stage_op_param);
-		compression_stage_op.ReportProgress += HandleProgress;
-		compression_stage_op_widget = new CompressionStageOperationParametersWidget(compression_stage_op_param);
-		compression_stage_op_widget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.AddStageOperation(compression_stage_op, compression_stage_op_widget);
+		// Preparing stage operation adding store
+		ListStore ls = new ListStore(typeof(string), typeof(int));
+		for (int i = 0; i < _StageOperationTypes.Length; i++)
+		{
+			string desc;
+			object[] descs = _StageOperationTypes[i].GetCustomAttributes(
+				typeof(StageOperationDescriptionAttribute), true);
+			if (descs.Length == 0)
+				desc = _StageOperationTypes[i].Name;
+			else
+				desc = ((StageOperationDescriptionAttribute)descs[0]).Name;
 		
-		// Adding ultra sharp
-		ultra_sharp_stage_op_param = new UltraSharpStageOperationParameters();
-		ultra_sharp_stage_op = new UltraSharpStageOperation(ultra_sharp_stage_op_param);
-		ultra_sharp_stage_op.ReportProgress += HandleProgress;
-		ultra_sharp_stage_op_widget = new UltraSharpStageOperationParametersWidget(ultra_sharp_stage_op_param);
-		ultra_sharp_stage_op_widget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.AddStageOperation(ultra_sharp_stage_op, ultra_sharp_stage_op_widget);
+			ls.AppendValues(desc, i);
+		}
 		
-		// Adding basic ops
-		basic_ops_stage_op_param = new BasicOpsStageOperationParameters();
-		basic_ops_stage_op = new BasicOpsStageOperation(basic_ops_stage_op_param);
-		basic_ops_stage_op.ReportProgress += HandleProgress;
-		basic_ops_stage_op_widget = new BasicOpsStageOperationParametersWidget(basic_ops_stage_op_param);
-		basic_ops_stage_op_widget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.AddStageOperation(basic_ops_stage_op, basic_ops_stage_op_widget);
-		
+		stageOperationToAdd_combobox.Model = ls;
+		Gtk.TreeIter ti;
+		ls.GetIterFirst(out ti);
+		stageOperationToAdd_combobox.SetActiveIter(ti);
 	
+		// Setting stages events
+		
 		stages.OperationActivityChanged += delegate {
 			LaunchUpdateTimer();
 		};
@@ -204,6 +186,7 @@ public partial class MainWindow : Gtk.Window
 
 		// Arranging boxes
 		ArrangeStageOperationBoxes();
+		
 	}
 
 	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
@@ -716,4 +699,115 @@ public partial class MainWindow : Gtk.Window
 		ppmviewwidget1.InstantUpdate = this.UpdateDuringProcessingAction.Active;
 	}
 	
+	protected void OnSaveStageAsActionActivated (object sender, System.EventArgs e)
+	{
+		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Save stage description", 
+		                                                      this, 
+		                                                      FileChooserAction.Save,
+		                                                      "Cancel", ResponseType.Cancel,
+		                                                      "Save", ResponseType.Accept);
+		
+		FileFilter[] ffs = new FileFilter[1];
+		ffs[0] = new FileFilter();
+		ffs[0].AddPattern("*.cestage");
+		ffs[0].Name = "CatEye Stage file";
+
+		fcd.AddFilter(ffs[0]);
+		
+		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
+		{
+			string fn = fcd.Filename;
+			if (System.IO.Path.GetExtension(fn).ToLower() != ".cestage")
+				fn += ".cestage";
+			
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.AppendChild(xdoc.CreateXmlDeclaration("1.0", null, null));
+			xdoc.AppendChild(stages.SerializeToXML(xdoc));
+			xdoc.Save(fn);
+		}
+		fcd.Destroy();
+	}
+	
+	protected void OnLoadStageActionActivated (object sender, System.EventArgs e)
+	{
+		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Load stage description", 
+		                                                      this, 
+		                                                      FileChooserAction.Open,
+		                                                      "Cancel", ResponseType.Cancel,
+		                                                      "Open", ResponseType.Accept);
+		
+		FileFilter[] ffs = new FileFilter[1];
+		ffs[0] = new FileFilter();
+		ffs[0].AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+			return System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".cestage";
+		});
+		ffs[0].Name = "CatEye Stage file";
+
+		fcd.AddFilter(ffs[0]);
+		
+		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
+		{
+			string fn = fcd.Filename;
+			GLib.Timeout.Add(100, delegate {
+				if (TheUIState == MainWindow.UIState.Processing)
+				{
+					cancel_pending = true;
+					return true;
+				}
+				else
+				{
+					fcd.Hide();
+					XmlDocument xdoc = new XmlDocument();
+					xdoc.Load(fn);
+					try
+					{
+						stages.DeserializeFromXML(xdoc.ChildNodes[1], 
+							_StageOperationTypes,
+							_StageOperationParametersTypes, 
+							_StageOperationParametersWidgetTypes);
+						
+						// Assigning our handlers
+						for (int i = 0; i < stages.StageQueue.Length; i++)
+						{
+							stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
+								LaunchUpdateTimer();
+							};
+							stages.StageQueue[i].ReportProgress += HandleProgress;
+						}
+					}
+					catch (Exception ex)
+					{
+						Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+						                                             MessageType.Error, ButtonsType.Ok, 
+						                                             ex.Message);
+						md.Title = "Stage file loading error";
+						md.Run();
+						md.Destroy();
+#if DEBUG
+						throw ex;
+#endif
+					}
+					return false;
+				}
+			});
+			
+		}
+		fcd.Destroy();
+	}
+	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
+	{
+		Gtk.TreeIter ti;
+		stageOperationToAdd_combobox.GetActiveIter(out ti);
+		int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
+		StageOperation so = stages.CreateAndAddNewStageOperation(
+			_StageOperationTypes[index],
+			_StageOperationParametersTypes[index],
+			_StageOperationParametersWidgetTypes[index]);
+		
+		stages.Holders[so].OperationParametersWidget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		so.ReportProgress += HandleProgress;
+		
+	}
 }

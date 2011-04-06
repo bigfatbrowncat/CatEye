@@ -37,7 +37,7 @@
         <property name="StockId">gtk-quit</property>
         <signal name="Activated" handler="OnQuitActionActivated" />
       </action>
-      <action id="saveAsAction">
+      <action id="saveImageAsAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Control&gt;s</property>
         <property name="Label" translatable="yes">Save image as...</property>
@@ -45,7 +45,7 @@
         <property name="StockId">gtk-save-as</property>
         <signal name="Activated" handler="OnSaveAsActionActivated" />
       </action>
-      <action id="loadAction">
+      <action id="loadRawAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Control&gt;o</property>
         <property name="Label" translatable="yes">Load raw image...</property>
@@ -83,6 +83,33 @@
         <property name="Active">True</property>
         <signal name="Toggled" handler="OnUpdateDuringProcessingActionToggled" />
       </action>
+      <action id="loadStageAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Control&gt;o</property>
+        <property name="Label" translatable="yes">Load stage...</property>
+        <property name="ShortLabel" translatable="yes">Load stage...</property>
+        <property name="StockId">gtk-open</property>
+        <signal name="Activated" handler="OnLoadStageActionActivated" />
+      </action>
+      <action id="saveStageAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Control&gt;s</property>
+        <property name="Label" translatable="yes">Save stage as...</property>
+        <property name="ShortLabel" translatable="yes">Save stage as...</property>
+        <property name="StockId">gtk-save-as</property>
+      </action>
+      <action id="saveStageAsAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Save stage as...</property>
+        <property name="ShortLabel" translatable="yes">Save stage as...</property>
+        <property name="StockId">gtk-save-as</property>
+        <signal name="Activated" handler="OnSaveStageAsActionActivated" />
+      </action>
+      <action id="qweAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">qwe</property>
+        <property name="ShortLabel" translatable="yes">qwe</property>
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye 0.3</property>
@@ -97,8 +124,11 @@
             <property name="MemberName" />
             <node name="main_menubar" type="Menubar">
               <node type="Menu" action="FileAction">
-                <node type="Menuitem" action="loadAction" />
-                <node type="Menuitem" action="saveAsAction" />
+                <node type="Menuitem" action="loadStageAction" />
+                <node type="Menuitem" action="saveStageAsAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="loadRawAction" />
+                <node type="Menuitem" action="saveImageAsAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="quitAction" />
               </node>
@@ -131,6 +161,46 @@
                     <property name="Spacing">5</property>
                     <property name="BorderWidth">3</property>
                     <child>
+                      <widget class="Gtk.HBox" id="hbox1">
+                        <property name="MemberName" />
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.ComboBox" id="stageOperationToAdd_combobox">
+                            <property name="MemberName" />
+                            <property name="IsTextCombo">True</property>
+                            <property name="Items" translatable="yes" />
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Button" id="addStageOperation_button">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextAndIcon</property>
+                            <property name="Icon">stock:gtk-add Menu</property>
+                            <property name="Label" translatable="yes">_Add</property>
+                            <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnAddStageOperationButtonClicked" />
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
                         <property name="MemberName" />
                         <property name="HscrollbarPolicy">Never</property>
@@ -159,7 +229,7 @@
                         </child>
                       </widget>
                       <packing>
-                        <property name="Position">0</property>
+                        <property name="Position">1</property>
                         <property name="AutoSize">False</property>
                       </packing>
                     </child>
@@ -196,7 +266,7 @@
                         </child>
                       </widget>
                       <packing>
-                        <property name="Position">1</property>
+                        <property name="Position">2</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
@@ -365,6 +435,24 @@
           </widget>
           <packing>
             <property name="Position">4</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="remove_button">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">stock:gtk-close Menu</property>
+            <property name="Label" />
+            <property name="UseUnderline">True</property>
+            <property name="Relief">None</property>
+            <signal name="Clicked" handler="OnRemoveButtonClicked" />
+          </widget>
+          <packing>
+            <property name="Position">5</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

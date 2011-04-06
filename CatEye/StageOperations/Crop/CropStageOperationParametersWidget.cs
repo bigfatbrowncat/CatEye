@@ -2,14 +2,14 @@ using System;
 using System.Globalization;
 namespace CatEye
 {
-	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.ToolboxItem(true), StageOperationID("CropStageOperation")]
 	public partial class CropStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private double sel_left, sel_top, sel_right, sel_bottom;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		private int image_width, image_height;
 		
-		public CropStageOperationParametersWidget (CropStageOperationParameters parameters):
+		public CropStageOperationParametersWidget (StageOperationParameters parameters):
 			base(parameters)
 		{
 			this.Build ();

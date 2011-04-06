@@ -2,10 +2,10 @@ using System;
 
 namespace CatEye
 {
-	[StageOperationDescription("Compression")]
+	[StageOperationDescription("Compression"), StageOperationID("CompressionStageOperation")]
 	public class CompressionStageOperation : StageOperation
 	{
-		public CompressionStageOperation (CompressionStageOperationParameters parameters)
+		public CompressionStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}

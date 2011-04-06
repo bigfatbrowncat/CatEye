@@ -15,6 +15,7 @@ namespace CatEye
 		public event EventHandler<EventArgs> DownTitleButtonClicked;
 		public event EventHandler<EventArgs> ViewButtonClicked;
 		public event EventHandler<EventArgs> FreezeButtonClicked;
+		public event EventHandler<EventArgs> RemoveButtonClicked;
 		
 		public bool Active
 		{
@@ -90,6 +91,12 @@ namespace CatEye
 				FreezeButtonClicked(this, EventArgs.Empty);
 		}
 
+		protected virtual void OnRemoveButtonClicked (object sender, System.EventArgs e)
+		{
+			if (RemoveButtonClicked != null)
+				RemoveButtonClicked(this, EventArgs.Empty);
+		}
+
 		public StageOperationHolderWidget (StageOperationParametersWidget operationParametersWidget)
 		{
 			this.Build ();
@@ -114,6 +121,9 @@ namespace CatEye
 			};
 			_TitleWidget.FreezeButtonClicked += delegate {
 				OnFreezeButtonClicked(this, EventArgs.Empty);
+			};
+			_TitleWidget.RemoveButtonClicked += delegate {
+				OnRemoveButtonClicked(this, EventArgs.Empty);
 			};
 			
 			operationParametersWidget.Show();
