@@ -1,19 +1,20 @@
 using System;
+
 namespace CatEye
 {
 	[StageOperationDescription("Crop")]
 	public class CropStageOperation : StageOperation
 	{
-		public CropStageOperation (CropStageOperationParametersWidget parametersWidget)
-			: base (parametersWidget)
+		public CropStageOperation (CropStageOperationParameters parameters)
+			: base (parameters)
 		{
 		}
 		
 		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			CropStageOperationParametersWidget pw = (CropStageOperationParametersWidget)ParametersWidget;
+			CropStageOperationParameters pm = (CropStageOperationParameters)Parameters;
 			
-			hdp.Crop(pw.Left, pw.Top, pw.Right, pw.Bottom, 
+			hdp.Crop(pm.Left, pm.Top, pm.Right, pm.Bottom, 
 			         delegate (double progress) {
 				return OnReportProgress(progress);
 			});

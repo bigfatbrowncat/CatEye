@@ -134,10 +134,9 @@ namespace CatEye
 			}
 			this.Hide ();
 			this.radius_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnRadiusHscaleChangeValue);
-			this.radius_hscale.MoveSlider += new global::Gtk.MoveSliderHandler (this.OnRadiusHscaleMoveSlider);
 			this.power_entry.Changed += new global::System.EventHandler (this.OnPowerEntryChanged);
 			this.points_entry.Changed += new global::System.EventHandler (this.OnPointsEntryChanged);
-			this.delta_0_entry.Changed += new global::System.EventHandler (this.OnLimitEntryChanged);
+			this.delta_0_entry.Changed += new global::System.EventHandler (this.OnDelta0EntryChanged);
 		}
 	}
 }

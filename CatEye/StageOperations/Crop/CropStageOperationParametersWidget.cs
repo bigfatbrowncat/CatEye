@@ -2,17 +2,15 @@ using System;
 using System.Globalization;
 namespace CatEye
 {
-	
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CropStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private double mLeft = 0, mRight = 1, mTop = 0, mBottom = 1, mAspectRatio = 3.0/2;
 		private double sel_left, sel_top, sel_right, sel_bottom;
-		private bool mLockAspectRatio = true;
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		private int image_width, image_height;
-
-		public CropStageOperationParametersWidget ()
+		
+		public CropStageOperationParametersWidget (CropStageOperationParameters parameters):
+			base(parameters)
 		{
 			this.Build ();
 			
@@ -30,91 +28,20 @@ namespace CatEye
 			aspect_comboboxentry.SetActiveIter(ti);
 		}
 
-		
-		
-		public double Left
-		{
-			get { return mLeft; }
-			set 
-			{
-				if (value >= 0 && value <= 1 && value <= mRight)
-				{
-					mLeft = value;
-					left_entry.Text = value.ToString();
-				}
-				else
-					throw new IncorrectValueException();
-			}
-		}
-
-		public double Right
-		{
-			get { return mRight; }
-			set 
-			{
-				if (value >= 0 && value <= 1 && value >= mLeft)
-				{
-					mRight = value;
-					right_entry.Text = value.ToString();
-				}
-				else
-					throw new IncorrectValueException();
-			}
-		}
-
-		public double Top
-		{
-			get { return mTop; }
-			set 
-			{
-				if (value >= 0 && value <= 1 && value <= mBottom)
-				{
-					mTop = value;
-					top_entry.Text = value.ToString();
-				}
-				else
-					throw new IncorrectValueException();
-			}
-		}
-		
-		public double Bottom
-		{
-			get { return mBottom; }
-			set 
-			{
-				if (value >= 0 && value <= 1 && value >= mTop)
-				{
-					mBottom = value;
-					bottom_entry.Text = value.ToString();
-				}
-				else
-					throw new IncorrectValueException();
-			}
-		}
-
-		public void SetCrop(double left, double top, double right, double bottom)
-		{
-			if (left >= 0 && left <= right && right <= 1 &&
-			    top >= 0 && top <= bottom && bottom <= 1)
-			{
-				mLeft = left; mRight = right; mTop = top; mBottom = bottom;
-				
-				left_entry.Text = mLeft.ToString();
-				right_entry.Text = mRight.ToString();
-				top_entry.Text = mTop.ToString();
-				bottom_entry.Text = mBottom.ToString();
-			}
-		}
-		
 		protected virtual void OnLeftEntryChanged (object sender, System.EventArgs e)
 		{
 			double res;
 			if (double.TryParse(left_entry.Text, NumberStyles.Float, nfi, out res))
 			{
-				if (res >= 0 && res <= 1 && mRight >= res)
+				try
 				{
-					mLeft = res;
+					StartChangingParameters();
+					((CropStageOperationParameters)Parameters).Left = res;
+					EndChangingParameters();
 					OnUserModified();
+				}
+				catch (IncorrectValueException)
+				{
 				}
 			}
 		}
@@ -124,10 +51,15 @@ namespace CatEye
 			double res;
 			if (double.TryParse(right_entry.Text, NumberStyles.Float, nfi, out res))
 			{
-				if (res >= 0 && res <= 1 && mLeft <= res)
+				try
 				{
-					mRight = res;
+					StartChangingParameters();
+					((CropStageOperationParameters)Parameters).Right = res;
+					EndChangingParameters();
 					OnUserModified();
+				}
+				catch (IncorrectValueException)
+				{
 				}
 			}
 		}
@@ -137,10 +69,15 @@ namespace CatEye
 			double res;
 			if (double.TryParse(top_entry.Text, NumberStyles.Float, nfi, out res))
 			{
-				if (res >= 0 && res <= 1 && mBottom >= res)
+				try
 				{
-					mTop = res;
+					StartChangingParameters();
+					((CropStageOperationParameters)Parameters).Top = res;
+					EndChangingParameters();
 					OnUserModified();
+				}
+				catch (IncorrectValueException)
+				{
 				}
 			}
 		}
@@ -150,17 +87,63 @@ namespace CatEye
 			double res;
 			if (double.TryParse(bottom_entry.Text, NumberStyles.Float, nfi, out res))
 			{
-				if (res >= 0 && res <= 1 && mTop <= res)
+				try
 				{
-					mBottom = res;
+					((CropStageOperationParameters)Parameters).Bottom = res;
 					OnUserModified();
+				}
+				catch (IncorrectValueException)
+				{
 				}
 			}
 		}
+		
+		protected override void HandleParametersChangedNotByUI ()
+		{
+			left_entry.Text = ((CropStageOperationParameters)Parameters).Left.ToString("0.000");
+			top_entry.Text = ((CropStageOperationParameters)Parameters).Top.ToString("0.000");
+			right_entry.Text = ((CropStageOperationParameters)Parameters).Right.ToString("0.000");
+			bottom_entry.Text = ((CropStageOperationParameters)Parameters).Bottom.ToString("0.000");
+
+			double ar = ((CropStageOperationParameters)Parameters).AspectRatio;
+			if (((CropStageOperationParameters)Parameters).LockAspectRatio)
+			{
+				Gtk.ListStore ls = (Gtk.ListStore)aspect_comboboxentry.Model;
+				Gtk.TreeIter ti;
+				ls.GetIterFirst(out ti);
+				while (ls.IterIsValid(ti) && 
+					Math.Abs((double)ls.GetValue(ti, 1) - ar) > 0.0011)
+				{
+					ls.IterNext(ref ti);
+				}
+				
+				if (ls.IterIsValid(ti))
+					aspect_comboboxentry.SetActiveIter(ti);
+				else
+				{
+					aspect_comboboxentry.Entry.Text = ((CropStageOperationParameters)Parameters).AspectRatio.ToString("0.000");
+				}
+			}
+			else
+			{
+				Gtk.ListStore ls = (Gtk.ListStore)aspect_comboboxentry.Model;
+				Gtk.TreeIter ti;
+				ls.GetIterFirst(out ti);
+				while (ls.IterIsValid(ti) && (double)ls.GetValue(ti, 1) > 0)
+				{
+					ls.IterNext(ref ti);
+				}
+				if (ls.IterIsValid(ti))
+				{
+					
+				}
+			}
+		}
+		
 		private void CheckAspect(ref double left, ref double top, ref double right, ref double bottom, double real_aspect)
 		{
 
-			if (mLockAspectRatio)
+			if (((CropStageOperationParameters)Parameters).LockAspectRatio)
 			{
 				if (y_cur >= y_down && x_cur >= x_down)
 				{
@@ -207,10 +190,10 @@ namespace CatEye
 			
 			// Drawing currently selected
 			Gdk.GC gc = new Gdk.GC(target);
-			int i1 = (int)(image_position.Left + mLeft * image_position.Width);
-			int i2 = (int)(image_position.Left + mRight * image_position.Width);
-			int j1 = (int)(image_position.Top + mTop * image_position.Height);
-			int j2 = (int)(image_position.Top + mBottom * image_position.Height);
+			int i1 = (int)(image_position.Left + ((CropStageOperationParameters)Parameters).Left * image_position.Width);
+			int i2 = (int)(image_position.Left + ((CropStageOperationParameters)Parameters).Right * image_position.Width);
+			int j1 = (int)(image_position.Top + ((CropStageOperationParameters)Parameters).Top * image_position.Height);
+			int j2 = (int)(image_position.Top + ((CropStageOperationParameters)Parameters).Bottom * image_position.Height);
 			
 			gc.Function = Gdk.Function.Invert;
 			gc.SetLineAttributes(1, Gdk.LineStyle.Solid, Gdk.CapStyle.Butt, Gdk.JoinStyle.Bevel);
@@ -220,29 +203,12 @@ namespace CatEye
 			
 			if (_mouse_is_down)
 			{
-				
-				double x_cur2 = x_cur, y_cur2 = y_cur;
-/*				
-				if (mLockAspectRatio)
-				{
-					// Applying aspect ratio
-					if (mAspectRatio > 1)
-					{
-						y_cur2 = y_down + Math.Sign(y_cur - y_down + 1e-10) * Math.Abs(x_cur - x_down) / mAspectRatio;
-					}
-					else
-					{
-						x_cur2 = x_down + Math.Sign(x_cur - x_down + 1e-10) * Math.Abs(y_cur - y_down) * mAspectRatio;
-					}
-				}
-*/
-				
-				double left = Math.Min(x_down, x_cur2);
-				double top = Math.Min(y_down, y_cur2);
-				double right = Math.Max(x_down, x_cur2);
-				double bottom = Math.Max(y_down, y_cur2);
+				double left = Math.Min(x_down, x_cur);
+				double top = Math.Min(y_down, y_cur);
+				double right = Math.Max(x_down, x_cur);
+				double bottom = Math.Max(y_down, y_cur);
 	
-				double real_aspect = mAspectRatio * image_height / image_width;
+				double real_aspect = ((CropStageOperationParameters)Parameters).AspectRatio * image_height / image_width;
 				
 				if (CutEdges(ref left, ref top, ref right, ref bottom))
 				{
@@ -298,8 +264,19 @@ namespace CatEye
 			this.image_width = image_width;
 			this.image_height = image_height;
 
-			double real_aspect = mAspectRatio * image_height / image_width;
-			CheckAspect(ref mLeft, ref mTop, ref mRight, ref mBottom, real_aspect);
+			CheckAspect();
+		}
+		
+		private void CheckAspect()
+		{
+			double real_aspect = ((CropStageOperationParameters)Parameters).AspectRatio * image_height / image_width;
+
+			double l = ((CropStageOperationParameters)Parameters).Left, 
+				   t = ((CropStageOperationParameters)Parameters).Top, 
+				   r = ((CropStageOperationParameters)Parameters).Right,
+				   b = ((CropStageOperationParameters)Parameters).Bottom;
+			CheckAspect(ref l, ref t, ref r, ref b, real_aspect);
+			((CropStageOperationParameters)Parameters).SetCrop(l, t, r, b);
 		}
 		
 		public override bool ReportMouseButton (double x, double y, uint button_id, bool is_down)
@@ -317,8 +294,7 @@ namespace CatEye
 				{
 					_mouse_is_down = false;
 					x_cur = x; y_cur = y;
-					
-					SetCrop(sel_left, sel_top, sel_right, sel_bottom);
+					((CropStageOperationParameters)Parameters).SetCrop(sel_left, sel_top, sel_right, sel_bottom);
 				}
 				return true;
 			}
@@ -358,14 +334,19 @@ namespace CatEye
 			
 			if (res > 0)
 			{
-				mAspectRatio = res;
-				mLockAspectRatio = true;
+				StartChangingParameters();
+				((CropStageOperationParameters)Parameters).AspectRatio = res;
+				((CropStageOperationParameters)Parameters).LockAspectRatio = true;
+				EndChangingParameters();
 			}
 			else
-				mLockAspectRatio = false;
+			{
+				StartChangingParameters();
+				((CropStageOperationParameters)Parameters).LockAspectRatio = false;
+				EndChangingParameters();
+			}
 			
-			double real_aspect = mAspectRatio * image_height / image_width;
-			CheckAspect(ref mLeft, ref mTop, ref mRight, ref mBottom, real_aspect);
+			CheckAspect();
 		}
 	}
 }

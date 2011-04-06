@@ -4,9 +4,11 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class StageOperationHolderWidget : Gtk.Bin
 	{
-		private StageOperation _Operation;
-		public StageOperation Operation { get { return _Operation; } }
-		//public StageOperationTitleWidget TitleWidget { get { return _TitleWidget; } }
+		private StageOperationParametersWidget _OperationParametersWidget;
+		public StageOperationParametersWidget OperationParametersWidget 
+		{
+			get { return _OperationParametersWidget; } 
+		}
 		
 		public event EventHandler<EventArgs> StageActiveButtonClicked;
 		public event EventHandler<EventArgs> UpTitleButtonClicked;
@@ -26,8 +28,8 @@ namespace CatEye
 		
 		protected void ActiveUpdated()
 		{
-			if (_Operation != null)
-				_Operation.ParametersWidget.Sensitive = Active;
+			if (_OperationParametersWidget != null)
+				_OperationParametersWidget.Sensitive = Active;
 		}
 		
 		public string Title
@@ -88,15 +90,15 @@ namespace CatEye
 				FreezeButtonClicked(this, EventArgs.Empty);
 		}
 
-		public StageOperationHolderWidget (StageOperation operation)
+		public StageOperationHolderWidget (StageOperationParametersWidget operationParametersWidget)
 		{
 			this.Build ();
 			
-			_Operation = operation;
-			vbox.Add(operation.ParametersWidget);
-			((Gtk.Box.BoxChild)vbox[operation.ParametersWidget]).Position = 1;
-			((Gtk.Box.BoxChild)vbox[operation.ParametersWidget]).Fill = false;
-			((Gtk.Box.BoxChild)vbox[operation.ParametersWidget]).Expand = false;
+			_OperationParametersWidget = operationParametersWidget;
+			vbox.Add(operationParametersWidget);
+			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Position = 1;
+			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Fill = false;
+			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Expand = false;
 			
 			_TitleWidget.UpButtonClicked += delegate {
 				OnUpTitleButtonClicked(this, EventArgs.Empty);
@@ -114,7 +116,7 @@ namespace CatEye
 				OnFreezeButtonClicked(this, EventArgs.Empty);
 			};
 			
-			operation.ParametersWidget.Show();
+			operationParametersWidget.Show();
 		}
 	}
 }

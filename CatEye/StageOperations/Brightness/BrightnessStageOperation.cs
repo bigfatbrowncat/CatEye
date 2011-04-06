@@ -1,20 +1,21 @@
 using System;
+
 namespace CatEye
 {
 	[StageOperationDescription("Brightness")]
 	public class BrightnessStageOperation : StageOperation
 	{
-		public BrightnessStageOperation (BrightnessStageOperationParametersWidget parametersWidget)
-			: base (parametersWidget)
+		public BrightnessStageOperation (BrightnessStageOperationParameters parameters)
+			: base (parameters)
 		{
 		}
 
 		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			BrightnessStageOperationParametersWidget pw = (BrightnessStageOperationParametersWidget)ParametersWidget;
+			BrightnessStageOperationParameters pm = (BrightnessStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Setting brightness...");
-			hdp.ScaleLight(pw.Brightness);
+			hdp.ScaleLight(pm.Brightness);
 			
 			base.OnDo (hdp);
 		}

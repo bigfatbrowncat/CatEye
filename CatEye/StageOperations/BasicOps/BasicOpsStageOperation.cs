@@ -5,25 +5,25 @@ namespace CatEye
 	[StageOperationDescription("Basic operations")]
 	public class BasicOpsStageOperation : StageOperation
 	{
-		public BasicOpsStageOperation (BasicOpsStageOperationParametersWidget parametersWidget)
-			: base (parametersWidget)
+		public BasicOpsStageOperation (BasicOpsStageOperationParameters parameters)
+			: base (parameters)
 		{
 		}
 		
 		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			BasicOpsStageOperationParametersWidget pw = (BasicOpsStageOperationParametersWidget)ParametersWidget;
+			BasicOpsStageOperationParameters pm = (BasicOpsStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: scaling channels...");
-			hdp.ApplyChannelsScale(pw.RedPart, pw.GreenPart, pw.BluePart);
+			hdp.ApplyChannelsScale(pm.RedPart, pm.GreenPart, pm.BluePart);
 			if (!OnReportProgress(0.33)) throw new UserCancelException();
 				
 			Console.WriteLine("Basic operations: applying saturation...");
-			hdp.ApplySaturation(pw.Saturation);
+			hdp.ApplySaturation(pm.Saturation);
 			if (!OnReportProgress(0.66)) throw new UserCancelException();
 				
 			Console.WriteLine("Basic operations: scaling light...");
-			hdp.ScaleLight(pw.Brightness);
+			hdp.ScaleLight(pm.Brightness);
 			if (!OnReportProgress(0.99)) throw new UserCancelException();
 			
 			base.OnDo (hdp);

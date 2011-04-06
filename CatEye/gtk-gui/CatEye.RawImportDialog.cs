@@ -89,7 +89,7 @@ namespace CatEye
 			this.prescale_hscale.CanFocus = true;
 			this.prescale_hscale.Name = "prescale_hscale";
 			this.prescale_hscale.Adjustment.Lower = 1;
-			this.prescale_hscale.Adjustment.Upper = 10;
+			this.prescale_hscale.Adjustment.Upper = 11;
 			this.prescale_hscale.Adjustment.PageIncrement = 1;
 			this.prescale_hscale.Adjustment.PageSize = 1;
 			this.prescale_hscale.Adjustment.StepIncrement = 1;

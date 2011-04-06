@@ -35,6 +35,14 @@ namespace CatEye
 		private StageOperation _ViewedOperation = null;
 		private StageOperation _FrozenAt = null;
 		
+		public ReadOnlyDictionary<StageOperation, StageOperationHolderWidget> Holders
+		{
+			get
+			{ 
+				return new ReadOnlyDictionary<StageOperation, StageOperationHolderWidget>(_Holders);
+			}
+		}
+		
 		public StageOperation ViewedOperation
 		{
 			get { return _ViewedOperation; }
@@ -45,8 +53,6 @@ namespace CatEye
 					for (int i = _StageQueue.Count - 1; i >= 0; i--)
 					{
 						_Holders[_StageQueue[i]].View = (_StageQueue[i] == value);
-						/*if (_FrozenAt == _StageQueue[i]) 
-							_FrozenPanel.View = (_StageQueue[i] == value);*/
 					}
 					_ViewedOperation = value;
 					OnViewedOperationChanged();
@@ -85,8 +91,11 @@ namespace CatEye
 							if (viewedfound)
 							{
 								// If viewed wss before the frozen line, 
-								// changing viewed to frozen
-								ViewedOperation = _StageQueue[i];
+								// changing viewed to the first after frozen  
+								if (_StageQueue.Count > i + 1)
+									ViewedOperation = _StageQueue[i + 1];
+								else
+									ViewedOperation = null;
 							}
 							_Holders[_StageQueue[i]].Freeze = true;
 							
@@ -228,18 +237,18 @@ namespace CatEye
 		
 		public void ReportImageChanged(int image_width, int image_height)
 		{
-			for (int i = 0; i < _StageQueue.Count; i++)
+			foreach (StageOperation sop in _StageQueue)
 			{
-				_StageQueue[i].ParametersWidget.ReportImageChanged(image_width, image_height);
+				_Holders[sop].OperationParametersWidget.ReportImageChanged(image_width, image_height);
 			}
 		}
 		
-		public void AddStageOperation(StageOperation operation)
+		public void AddStageOperation(StageOperation operation, StageOperationParametersWidget parametersWidget)
 		{
 			_StageQueue.Add(operation);
 			
 			// Creating stage operation holder
-			StageOperationHolderWidget sohw = new StageOperationHolderWidget(operation);
+			StageOperationHolderWidget sohw = new StageOperationHolderWidget(parametersWidget);
 
 			// Getting stage operation name from attribute
 			object[] attrs = operation.GetType().GetCustomAttributes(typeof(StageOperationDescriptionAttribute), true);
@@ -264,32 +273,25 @@ namespace CatEye
 			ArrangeVBoxes();
 			OnAddedToStage(operation);
 		}
-
-		/*
-		void Handle_FrozenPanelViewButtonClicked (object sender, EventArgs e)
+		
+		private StageOperation StageOperationByHolder(StageOperationHolderWidget hw)
 		{
-			StageOperation sop = _FrozenAt;
-			
-			if (_FrozenPanel.View)
+			foreach (StageOperation sop in _Holders.Keys)
 			{
-				ViewedOperation = sop;
+				if (_Holders[sop] == hw) return sop;
 			}
-			else
-			{
-				ViewedOperation = null;
-			}
+			return null;
 		}
-		*/
-
+		
 		void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
 		{
-			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			StageOperation sop = StageOperationByHolder(sender as StageOperationHolderWidget);
 			FrozenAt = sop;
 		}
 
 		void HandleSohwViewButtonClicked (object sender, EventArgs e)
 		{
-			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			StageOperation sop = StageOperationByHolder(sender as StageOperationHolderWidget);
 			
 			if (_Holders[sop].View)
 			{
@@ -308,7 +310,7 @@ namespace CatEye
 
 		void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
 		{
-			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			StageOperation sop = StageOperationByHolder(sender as StageOperationHolderWidget);
 
 			int index = _StageQueue.IndexOf(sop);
 			if (index < _StageQueue.Count - 1)
@@ -322,7 +324,7 @@ namespace CatEye
 
 		void HandleSohwUpTitleButtonClicked (object sender, EventArgs e)
 		{
-			StageOperation sop = (sender as StageOperationHolderWidget).Operation;
+			StageOperation sop = StageOperationByHolder(sender as StageOperationHolderWidget);
 
 			int index = _StageQueue.IndexOf(sop);
 			if (index > 0)

@@ -5,17 +5,17 @@ namespace CatEye
 	[StageOperationDescription("Compression")]
 	public class CompressionStageOperation : StageOperation
 	{
-		public CompressionStageOperation (CompressionStageOperationParametersWidget parametersWidget)
-			: base (parametersWidget)
+		public CompressionStageOperation (CompressionStageOperationParameters parameters)
+			: base (parameters)
 		{
 		}
 		
 		protected internal override void OnDo (DoublePixmap hdp)
 		{
-			CompressionStageOperationParametersWidget pw = (CompressionStageOperationParametersWidget)ParametersWidget;
+			CompressionStageOperationParameters pm = (CompressionStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Compressing...");
-			hdp.CompressLight(pw.Power, pw.Bloha);			
+			hdp.CompressLight(pm.Power, pm.Bloha);			
 			
 			base.OnDo (hdp);
 		}

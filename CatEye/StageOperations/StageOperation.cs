@@ -39,16 +39,26 @@ namespace CatEye
 	
 	public class StageOperation
 	{
-		private StageOperationParametersWidget mParametersWidget;
+		private StageOperationParameters mParameters;
 
 		public event EventHandler<DoStageOperationEventArgs> Do;
 		public event EventHandler<ReportStageOperationProgressEventArgs> ReportProgress;
 		
-		public StageOperationParametersWidget ParametersWidget { get { return mParametersWidget; } }
+		public StageOperationParameters Parameters 
+		{ 
+			get { return mParameters; } 
+		}
 		
-		protected StageOperation(StageOperationParametersWidget parametersWidget)
+		protected StageOperation(StageOperationParameters parameters)
 		{
-			mParametersWidget = parametersWidget;
+			mParameters = parameters;
+			mParameters.Changed += delegate {
+				OnParametersChanged();
+			};
+		}
+		
+		protected virtual void OnParametersChanged()
+		{
 		}
 		
 		protected virtual bool OnReportProgress(double progress)

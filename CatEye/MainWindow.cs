@@ -74,13 +74,28 @@ public partial class MainWindow : Gtk.Window
 	DoublePixmap hdr = null;
 	DoublePixmap frozen = null;
 	Stages stages;
-
+	
+	// Stage operations
 	StageOperation crop_stage_op;
 	StageOperation compression_stage_op;
+	StageOperation brightness_stage_op;
 	StageOperation ultra_sharp_stage_op;
 	StageOperation basic_ops_stage_op;
-	StageOperation brightness_stage_op;
 	
+	// Stage operation parameters
+	CropStageOperationParameters crop_stage_op_param;
+	CompressionStageOperationParameters compression_stage_op_param;
+	BrightnessStageOperationParameters brightness_stage_op_param;
+	UltraSharpStageOperationParameters ultra_sharp_stage_op_param;
+	BasicOpsStageOperationParameters basic_ops_stage_op_param;
+	
+	// Stage operation parameters widgets
+	CropStageOperationParametersWidget crop_stage_op_widget;
+	CompressionStageOperationParametersWidget compression_stage_op_widget;
+	BrightnessStageOperationParametersWidget brightness_stage_op_widget;
+	UltraSharpStageOperationParametersWidget ultra_sharp_stage_op_widget;
+	BasicOpsStageOperationParametersWidget basic_ops_stage_op_widget;
+
 	bool update_timer_launched = false;
 	bool cancel_pending = false;
 	
@@ -101,42 +116,57 @@ public partial class MainWindow : Gtk.Window
 		// Creating stage operations and stages
 		stages = new Stages(stage_vbox);
 
-		crop_stage_op = new CropStageOperation(new CropStageOperationParametersWidget());
-		stages.AddStageOperation(crop_stage_op);
-		crop_stage_op.ReportProgress += HandleProgress;
-		crop_stage_op.ParametersWidget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		
-		brightness_stage_op = new BrightnessStageOperation(new BrightnessStageOperationParametersWidget());
-		stages.AddStageOperation(brightness_stage_op);
+		// Adding brightness
+		brightness_stage_op_param = new BrightnessStageOperationParameters();
+		brightness_stage_op = new BrightnessStageOperation(brightness_stage_op_param);
 		brightness_stage_op.ReportProgress += HandleProgress;
-		brightness_stage_op.ParametersWidget.UserModified += delegate {
+		brightness_stage_op_widget = new BrightnessStageOperationParametersWidget(brightness_stage_op_param);
+		brightness_stage_op_widget.UserModified += delegate {
 			LaunchUpdateTimer();
 		};
-		
-		compression_stage_op = new CompressionStageOperation(new CompressionStageOperationParametersWidget());
-		stages.AddStageOperation(compression_stage_op);
-		compression_stage_op.ReportProgress += HandleProgress;
-		compression_stage_op.ParametersWidget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		
-		ultra_sharp_stage_op = new UltraSharpStageOperation(new UltraSharpStageOperationParametersWidget());
-		stages.AddStageOperation(ultra_sharp_stage_op);
-		ultra_sharp_stage_op.ReportProgress += HandleProgress;
-		ultra_sharp_stage_op.ParametersWidget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
+		stages.AddStageOperation(brightness_stage_op, brightness_stage_op_widget);
 
-		basic_ops_stage_op = new BasicOpsStageOperation(new BasicOpsStageOperationParametersWidget());
-		stages.AddStageOperation(basic_ops_stage_op);
-		basic_ops_stage_op.ReportProgress += HandleProgress;
-		basic_ops_stage_op.ParametersWidget.UserModified += delegate {
+		// Adding crop
+		crop_stage_op_param = new CropStageOperationParameters();
+		crop_stage_op = new CropStageOperation(crop_stage_op_param);
+		crop_stage_op.ReportProgress += HandleProgress;
+		crop_stage_op_widget = new CropStageOperationParametersWidget(crop_stage_op_param);
+		crop_stage_op_widget.UserModified += delegate {
 			LaunchUpdateTimer();
 		};
+		stages.AddStageOperation(crop_stage_op, crop_stage_op_widget);
+
+		// Adding compression
+		compression_stage_op_param = new CompressionStageOperationParameters();
+		compression_stage_op = new CompressionStageOperation(compression_stage_op_param);
+		compression_stage_op.ReportProgress += HandleProgress;
+		compression_stage_op_widget = new CompressionStageOperationParametersWidget(compression_stage_op_param);
+		compression_stage_op_widget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		stages.AddStageOperation(compression_stage_op, compression_stage_op_widget);
 		
+		// Adding ultra sharp
+		ultra_sharp_stage_op_param = new UltraSharpStageOperationParameters();
+		ultra_sharp_stage_op = new UltraSharpStageOperation(ultra_sharp_stage_op_param);
+		ultra_sharp_stage_op.ReportProgress += HandleProgress;
+		ultra_sharp_stage_op_widget = new UltraSharpStageOperationParametersWidget(ultra_sharp_stage_op_param);
+		ultra_sharp_stage_op_widget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		stages.AddStageOperation(ultra_sharp_stage_op, ultra_sharp_stage_op_widget);
 		
+		// Adding basic ops
+		basic_ops_stage_op_param = new BasicOpsStageOperationParameters();
+		basic_ops_stage_op = new BasicOpsStageOperation(basic_ops_stage_op_param);
+		basic_ops_stage_op.ReportProgress += HandleProgress;
+		basic_ops_stage_op_widget = new BasicOpsStageOperationParametersWidget(basic_ops_stage_op_param);
+		basic_ops_stage_op_widget.UserModified += delegate {
+			LaunchUpdateTimer();
+		};
+		stages.AddStageOperation(basic_ops_stage_op, basic_ops_stage_op_widget);
+		
+	
 		stages.OperationActivityChanged += delegate {
 			LaunchUpdateTimer();
 		};
@@ -183,7 +213,7 @@ public partial class MainWindow : Gtk.Window
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.ViewedOperation.ParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
+			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -198,7 +228,7 @@ public partial class MainWindow : Gtk.Window
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.ViewedOperation.ParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
+			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -212,7 +242,7 @@ public partial class MainWindow : Gtk.Window
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.ViewedOperation.ParametersWidget.ReportMousePosition(dx, dy))
+			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMousePosition(dx, dy))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -223,7 +253,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (stages.ViewedOperation != null)
 		{
-			stages.ViewedOperation.ParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
+			stages.Holders[stages.ViewedOperation].OperationParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
 			                                                       ppmviewwidget1.CurrentImagePosition);
 		}
 	}
