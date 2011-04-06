@@ -146,7 +146,22 @@ public partial class MainWindow : Gtk.Window
 		Gtk.TreeIter ti;
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
-	
+
+		// Loading default stage
+		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
+		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
+		if (System.IO.File.Exists(defaultstage))
+			LoadStage(defaultstage);
+		else
+		{
+			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+			                                             MessageType.Warning, ButtonsType.Ok, 
+			                                             "Can not find default.cestage");
+			md.Title = "Warning";
+			md.Run();
+			md.Destroy();
+		}
+		
 		// Setting stages events
 		
 		stages.OperationActivityChanged += delegate {
@@ -728,6 +743,40 @@ public partial class MainWindow : Gtk.Window
 		fcd.Destroy();
 	}
 	
+	public void LoadStage(string filename)
+	{
+		XmlDocument xdoc = new XmlDocument();
+		xdoc.Load(filename);
+		try
+		{
+			stages.DeserializeFromXML(xdoc.ChildNodes[1], 
+				_StageOperationTypes,
+				_StageOperationParametersTypes, 
+				_StageOperationParametersWidgetTypes);
+			
+			// Assigning our handlers
+			for (int i = 0; i < stages.StageQueue.Length; i++)
+			{
+				stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
+					LaunchUpdateTimer();
+				};
+				stages.StageQueue[i].ReportProgress += HandleProgress;
+			}
+		}
+		catch (Exception ex)
+		{
+			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+			                                             MessageType.Error, ButtonsType.Ok, 
+			                                             ex.Message);
+			md.Title = "Stage file loading error";
+			md.Run();
+			md.Destroy();
+#if DEBUG
+			throw ex;
+#endif
+		}
+	}		
+	
 	protected void OnLoadStageActionActivated (object sender, System.EventArgs e)
 	{
 		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Load stage description", 
@@ -757,36 +806,7 @@ public partial class MainWindow : Gtk.Window
 				else
 				{
 					fcd.Hide();
-					XmlDocument xdoc = new XmlDocument();
-					xdoc.Load(fn);
-					try
-					{
-						stages.DeserializeFromXML(xdoc.ChildNodes[1], 
-							_StageOperationTypes,
-							_StageOperationParametersTypes, 
-							_StageOperationParametersWidgetTypes);
-						
-						// Assigning our handlers
-						for (int i = 0; i < stages.StageQueue.Length; i++)
-						{
-							stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
-								LaunchUpdateTimer();
-							};
-							stages.StageQueue[i].ReportProgress += HandleProgress;
-						}
-					}
-					catch (Exception ex)
-					{
-						Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
-						                                             MessageType.Error, ButtonsType.Ok, 
-						                                             ex.Message);
-						md.Title = "Stage file loading error";
-						md.Run();
-						md.Destroy();
-#if DEBUG
-						throw ex;
-#endif
-					}
+					LoadStage(fn);
 					return false;
 				}
 			});
