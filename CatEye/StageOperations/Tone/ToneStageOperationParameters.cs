@@ -4,30 +4,12 @@ using System.Globalization;
 
 namespace CatEye
 {
-	[StageOperationID("BasicOpsStageOperation")]
-	public class BasicOpsStageOperationParameters : StageOperationParameters
+	[StageOperationID("ToneStageOperation")]
+	public class ToneStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mBrightness = 1, mSaturation = 1, mRedPart = 1, mGreenPart = 1, mBluePart = 1;
+		private double mRedPart = 1, mGreenPart = 1, mBluePart = 1;
 		
-		public double Brightness
-		{
-			get { return mBrightness; }
-			set 
-			{
-				mBrightness = value;
-				OnChanged();
-			}
-		}
-		public double Saturation
-		{
-			get { return mSaturation; }
-			set
-			{
-				mSaturation = value;
-				OnChanged();
-			}
-		}
 		public double RedPart
 		{
 			get { return mRedPart; }
@@ -56,15 +38,13 @@ namespace CatEye
 			}
 		}
 		
-		public BasicOpsStageOperationParameters ()
+		public ToneStageOperationParameters ()
 		{
 		}
 		
 		public override System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Brightness")).Value = mBrightness.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Saturation")).Value = mSaturation.ToString();
 			xn.Attributes.Append(xdoc.CreateAttribute("RedPart")).Value = mRedPart.ToString();
 			xn.Attributes.Append(xdoc.CreateAttribute("GreenPart")).Value = mGreenPart.ToString();
 			xn.Attributes.Append(xdoc.CreateAttribute("BluePart")).Value = mBluePart.ToString();
@@ -75,24 +55,6 @@ namespace CatEye
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			if (node.Attributes["Brightness"] != null)
-			{
-				if (double.TryParse(node.Attributes["Brightness"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mBrightness = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse Brightness value");
-			}
-			if (node.Attributes["Saturation"] != null)
-			{
-				if (double.TryParse(node.Attributes["Saturation"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mSaturation = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse Saturation value");
-			}
 			if (node.Attributes["RedPart"] != null)
 			{
 				if (double.TryParse(node.Attributes["RedPart"].Value, NumberStyles.Float, nfi, out res))

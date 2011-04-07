@@ -88,7 +88,8 @@ public partial class MainWindow : Gtk.Window
 		typeof(CompressionStageOperation),
 		typeof(BrightnessStageOperation),
 		typeof(UltraSharpStageOperation),
-		typeof(BasicOpsStageOperation)
+		typeof(SaturationStageOperation),
+		typeof(ToneStageOperation),
 	};
 	Type[] _StageOperationParametersTypes = new Type[]
 	{
@@ -96,7 +97,8 @@ public partial class MainWindow : Gtk.Window
 		typeof(CompressionStageOperationParameters),
 		typeof(BrightnessStageOperationParameters),
 		typeof(UltraSharpStageOperationParameters),
-		typeof(BasicOpsStageOperationParameters)
+		typeof(SaturationStageOperationParameters),
+		typeof(ToneStageOperationParameters),
 	};
 	Type[] _StageOperationParametersWidgetTypes = new Type[]
 	{
@@ -104,7 +106,8 @@ public partial class MainWindow : Gtk.Window
 		typeof(CompressionStageOperationParametersWidget),
 		typeof(BrightnessStageOperationParametersWidget),
 		typeof(UltraSharpStageOperationParametersWidget),
-		typeof(BasicOpsStageOperationParametersWidget)
+		typeof(SaturationStageOperationParametersWidget),
+		typeof(ToneStageOperationParametersWidget),
 	};
 	
 	bool update_timer_launched = false;

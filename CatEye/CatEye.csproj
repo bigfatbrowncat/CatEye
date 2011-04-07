@@ -139,21 +139,28 @@
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParameters.cs" />
     <Compile Include="gtk-gui\CatEye.BrightnessStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\BasicOps\BasicOpsStageOperation.cs" />
-    <Compile Include="StageOperations\BasicOps\BasicOpsStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\StageOperationParameters.cs" />
     <Compile Include="StageOperations\StageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\StageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
-    <Compile Include="gtk-gui\CatEye.BasicOpsStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UltraSharpStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\BasicOps\BasicOpsStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperation.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.SaturationStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="dcraw.c" />
+    <None Include="default.cestage">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="StageOperations\" />
@@ -161,6 +168,7 @@
     <Folder Include="StageOperations\Compression\" />
     <Folder Include="StageOperations\Brightness\" />
     <Folder Include="StageOperations\UltraSharp\" />
-    <Folder Include="StageOperations\BasicOps\" />
+    <Folder Include="StageOperations\Tone\" />
+    <Folder Include="StageOperations\Saturation\" />
   </ItemGroup>
 </Project>
