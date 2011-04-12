@@ -1,5 +1,5 @@
-
 using System;
+using CatEye.Core;
 
 namespace CatEye
 {
@@ -74,7 +74,7 @@ namespace CatEye
 				return true;
 		}
 		
-		protected internal virtual void OnDo(DoublePixmap hdp)
+		public virtual void OnDo(DoublePixmap hdp)
 		{
 			if (Do != null)
 				Do(this, new DoStageOperationEventArgs(hdp));

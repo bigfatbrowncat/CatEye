@@ -1,78 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug-MinGW</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>CatEye</RootNamespace>
     <AssemblyName>CatEye</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
     <Description>Raw images developing tool</Description>
     <ApplicationIcon>res\cateye.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug-MinGW</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" pauseExternalConsole="true" />
-        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${TargetDir}" pauseExternalConsole="true" />
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-MinGW|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release-MinGW</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" pauseExternalConsole="true" />
-        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${TargetDir}" pauseExternalConsole="true" />
-      </CustomCommands>
-    </CustomCommands>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Unix|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug-Unix</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" pauseExternalConsole="true" />
-        <Command type="AfterClean" command="rm -f dcraw" workingdir="${TargetDir}" pauseExternalConsole="true" />
-      </CustomCommands>
-    </CustomCommands>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Unix|x86' ">
-    <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release-Unix</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" pauseExternalConsole="true" />
-        <Command type="AfterClean" command="rm -f dcraw" workingdir="${TargetDir}" pauseExternalConsole="true" />
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -111,54 +63,34 @@
     <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="PPMLoader.cs" />
     <Compile Include="StageOperationTitleWidget.cs" />
     <Compile Include="DoublePixmapViewWidget.cs" />
-    <Compile Include="DoublePixmap.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationTitleWidget.cs" />
     <Compile Include="StageOperationHolderWidget.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationHolderWidget.cs" />
     <Compile Include="RawImportDialog.cs" />
     <Compile Include="gtk-gui\CatEye.RawImportDialog.cs" />
-    <Compile Include="DCRawConnection.cs" />
     <Compile Include="FrozenPanel.cs" />
     <Compile Include="gtk-gui\CatEye.FrozenPanel.cs" />
     <Compile Include="AboutBox.cs" />
     <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
     <Compile Include="gtk-gui\CatEye.CropStageOperationParametersWidget.cs" />
-    <Compile Include="ReadOnlyDictionary.cs" />
-    <Compile Include="StageOperations\Crop\CropStageOperation.cs" />
-    <Compile Include="StageOperations\Crop\CropStageOperationParameters.cs" />
     <Compile Include="StageOperations\Crop\CropStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Compression\CompressionStageOperation.cs" />
     <Compile Include="StageOperations\Compression\CompressionStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Compression\CompressionStageOperationParameters.cs" />
     <Compile Include="gtk-gui\CatEye.CompressionStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Brightness\BrightnessStageOperation.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Brightness\BrightnessStageOperationParameters.cs" />
     <Compile Include="gtk-gui\CatEye.BrightnessStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\StageOperationParameters.cs" />
     <Compile Include="StageOperations\StageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\StageOperation.cs" />
-    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
     <Compile Include="gtk-gui\CatEye.UltraSharpStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
-    <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
-    <Compile Include="StageOperations\Saturation\SaturationStageOperation.cs" />
-    <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Tone\ToneStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.SaturationStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
-    <Compile Include="Stage.cs" />
     <Compile Include="ExtendedStage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="dcraw.c" />
     <None Include="default.cestage">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -171,5 +103,11 @@
     <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\Saturation\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
+      <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
+      <Name>CatEye.Core</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

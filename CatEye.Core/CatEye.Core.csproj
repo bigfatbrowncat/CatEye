@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug-MinGW</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CatEye.Core</RootNamespace>
+    <AssemblyName>CatEye.Core</AssemblyName>
+    <ReleaseVersion>0.2</ReleaseVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug-MinGW</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
+        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-MinGW|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Release-MinGW</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
+        <Command type="AfterClean" command="cmd /c &quot;del dcraw.exe&quot;" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Unix|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug-Unix</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
+        <Command type="AfterClean" command="rm -f dcraw" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Unix|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Release-Unix</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
+        <Command type="AfterClean" command="rm -f dcraw" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Stage.cs" />
+    <Compile Include="PPMLoader.cs" />
+    <Compile Include="DCRawConnection.cs" />
+    <Compile Include="ReadOnlyDictionary.cs" />
+    <Compile Include="DoublePixmap.cs" />
+    <Compile Include="StageOperations\StageOperation.cs" />
+    <Compile Include="StageOperations\StageOperationParameters.cs" />
+    <Compile Include="StageOperations\Brightness\BrightnessStageOperation.cs" />
+    <Compile Include="StageOperations\Brightness\BrightnessStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Compression\CompressionStageOperation.cs" />
+    <Compile Include="StageOperations\Compression\CompressionStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Crop\CropStageOperation.cs" />
+    <Compile Include="StageOperations\Crop\CropStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperation.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
+    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
+    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="dcraw.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="StageOperations\" />
+    <Folder Include="StageOperations\Brightness\" />
+    <Folder Include="StageOperations\Compression\" />
+    <Folder Include="StageOperations\Crop\" />
+    <Folder Include="StageOperations\Saturation\" />
+    <Folder Include="StageOperations\Tone\" />
+    <Folder Include="StageOperations\UltraSharp\" />
+  </ItemGroup>
+</Project>

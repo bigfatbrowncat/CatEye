@@ -1,7 +1,7 @@
 
 using System;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	/// <summary>
 	/// Used to report prograss to caller. If caller returns false,

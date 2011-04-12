@@ -1,7 +1,7 @@
-
 using System;
 using Gdk;
 using Gtk;
+using CatEye.Core;
 
 namespace CatEye
 {

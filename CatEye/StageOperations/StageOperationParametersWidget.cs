@@ -2,11 +2,7 @@ using System;
 
 namespace CatEye
 {
-	public class IncorrectValueException : Exception
-	{
-		public IncorrectValueException() : base("Incorrect value") {}
-	}
-	
+
 	[StageOperationID("StageOperation")]
 	public class StageOperationParametersWidget : Gtk.Bin
 	{

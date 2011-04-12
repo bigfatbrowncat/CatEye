@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using CatEye.Core;
+
 namespace CatEye
 {
 	[System.ComponentModel.ToolboxItem(true), StageOperationID("CropStageOperation")]

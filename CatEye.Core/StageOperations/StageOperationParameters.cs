@@ -3,6 +3,10 @@ using System.Xml;
 
 namespace CatEye
 {
+	public class IncorrectValueException : Exception
+	{
+		public IncorrectValueException() : base("Incorrect value") {}
+	}
 	public class MissingStageOperationIDException : Exception
 	{
 		public MissingStageOperationIDException(string message) : base(message) {}

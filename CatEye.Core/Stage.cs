@@ -2,7 +2,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	public class OperationRemovedFromStageEventArgs : EventArgs
 	{

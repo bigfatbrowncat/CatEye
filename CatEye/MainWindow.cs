@@ -3,6 +3,7 @@ using System.Xml;
 using System.Collections.Generic;
 using Gtk;
 using CatEye;
+using CatEye.Core;
 
 public partial class MainWindow : Gtk.Window
 {

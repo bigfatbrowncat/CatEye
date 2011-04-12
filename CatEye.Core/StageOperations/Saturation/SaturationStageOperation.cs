@@ -1,6 +1,6 @@
 using System;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	[StageOperationDescription("Saturation"), StageOperationID("SaturationStageOperation")]
 	public class SaturationStageOperation : StageOperation
@@ -10,7 +10,7 @@ namespace CatEye
 		{
 		}
 		
-		protected internal override void OnDo (DoublePixmap hdp)
+		public override void OnDo (DoublePixmap hdp)
 		{
 			SaturationStageOperationParameters pm = (SaturationStageOperationParameters)Parameters;
 			

@@ -1,3 +1,4 @@
 *.userprefs
 *.pidb
 CatEye/bin
+CatEye.Core/bin

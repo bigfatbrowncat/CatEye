@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using CatEye.Core;
 
 namespace CatEye
 {

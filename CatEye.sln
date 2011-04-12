@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatEye", "CatEye\CatEye.csproj", "{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatEye.Core", "CatEye.Core\CatEye.Core.csproj", "{43B10E8A-1BE4-4638-93EB-DB150E3241A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-MinGW|x86 = Debug-MinGW|x86
@@ -11,17 +13,24 @@ Global
 		Release-Unix|x86 = Release-Unix|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.ActiveCfg = Debug-MinGW|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.Build.0 = Debug-MinGW|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-Unix|x86.ActiveCfg = Debug-Unix|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-Unix|x86.Build.0 = Debug-Unix|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-MinGW|x86.ActiveCfg = Release-MinGW|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-MinGW|x86.Build.0 = Release-MinGW|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-Unix|x86.ActiveCfg = Release-Unix|x86
-		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-Unix|x86.Build.0 = Release-Unix|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.ActiveCfg = Debug-MinGW|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.Build.0 = Debug-MinGW|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-Unix|x86.ActiveCfg = Debug-Unix|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-Unix|x86.Build.0 = Debug-Unix|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-MinGW|x86.ActiveCfg = Release-MinGW|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-MinGW|x86.Build.0 = Release-MinGW|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-Unix|x86.ActiveCfg = Release-Unix|x86
+		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-Unix|x86.Build.0 = Release-Unix|x86
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.ActiveCfg = Debug|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.Build.0 = Debug|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-Unix|x86.ActiveCfg = Debug|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-Unix|x86.Build.0 = Debug|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-MinGW|x86.ActiveCfg = Release|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-MinGW|x86.Build.0 = Release|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-Unix|x86.ActiveCfg = Release|Any CPU
+		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-Unix|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		version = 0.2
 		StartupItem = CatEye\CatEye.csproj
 		Policies = $0
 		$0.VersionControlPolicy = $1
@@ -31,11 +40,12 @@ Global
 		$2.scope = text/x-csrc
 		$0.StandardHeader = $3
 		$3.Text = 
-		$3.inheritsSet = MITX11License
+		$3.IncludeInNewFiles = True
 		$0.ChangeLogPolicy = $4
 		$4.UpdateMode = None
 		$4.MessageStyle = $5
 		$5.LineAlign = 0
 		$4.inheritsSet = Mono
+		version = 0.2
 	EndGlobalSection
 EndGlobal

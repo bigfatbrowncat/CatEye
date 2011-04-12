@@ -2,7 +2,7 @@ using System;
 using System.Xml;
 using System.Globalization;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	[StageOperationID("BrightnessStageOperation")]
 	public class BrightnessStageOperationParameters : StageOperationParameters

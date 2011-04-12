@@ -1,7 +1,7 @@
 
 using System;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	public static class DCRawConnection
 	{

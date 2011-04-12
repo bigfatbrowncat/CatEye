@@ -1,6 +1,6 @@
 using System;
 
-namespace CatEye
+namespace CatEye.Core
 {
 	[StageOperationDescription("Tone"), StageOperationID("ToneStageOperation")]
 	public class ToneStageOperation : StageOperation
@@ -10,7 +10,7 @@ namespace CatEye
 		{
 		}
 		
-		protected internal override void OnDo (DoublePixmap hdp)
+		public override void OnDo (DoublePixmap hdp)
 		{
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			

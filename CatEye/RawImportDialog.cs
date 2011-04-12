@@ -2,6 +2,7 @@ using System;
 using Gtk;
 using System.Diagnostics;
 using System.Collections.Generic;
+using CatEye.Core;
 
 namespace CatEye
 {
