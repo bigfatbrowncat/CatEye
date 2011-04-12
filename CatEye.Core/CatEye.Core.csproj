@@ -15,7 +15,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug-MinGW</OutputPath>
+    <OutputPath>..\bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-MinGW|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release-MinGW</OutputPath>
+    <OutputPath>..\bin\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -43,7 +43,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Unix|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug-Unix</OutputPath>
+    <OutputPath>..\bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -57,7 +57,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Unix|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release-Unix</OutputPath>
+    <OutputPath>..\bin\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -97,9 +97,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="dcraw.c" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="StageOperations\" />
     <Folder Include="StageOperations\Brightness\" />
     <Folder Include="StageOperations\Compression\" />
@@ -107,5 +104,8 @@
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\UltraSharp\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dcraw.c" />
   </ItemGroup>
 </Project>
