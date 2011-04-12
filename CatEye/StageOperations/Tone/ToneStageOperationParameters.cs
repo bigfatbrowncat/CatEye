@@ -34,7 +34,9 @@ namespace CatEye
 			set
 			{
 				mBluePart = value;
+				Console.WriteLine(mBluePart);
 				OnChanged();
+				
 			}
 		}
 		

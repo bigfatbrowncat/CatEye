@@ -80,7 +80,7 @@ public partial class MainWindow : Gtk.Window
 	PPMLoader ppl = null;
 	DoublePixmap hdr = null;
 	DoublePixmap frozen = null;
-	Stages stages;
+	ExtendedStage stages;
 	
 	Type[] _StageOperationTypes = new Type[]
 	{
@@ -90,24 +90,6 @@ public partial class MainWindow : Gtk.Window
 		typeof(UltraSharpStageOperation),
 		typeof(SaturationStageOperation),
 		typeof(ToneStageOperation),
-	};
-	Type[] _StageOperationParametersTypes = new Type[]
-	{
-		typeof(CropStageOperationParameters),
-		typeof(CompressionStageOperationParameters),
-		typeof(BrightnessStageOperationParameters),
-		typeof(UltraSharpStageOperationParameters),
-		typeof(SaturationStageOperationParameters),
-		typeof(ToneStageOperationParameters),
-	};
-	Type[] _StageOperationParametersWidgetTypes = new Type[]
-	{
-		typeof(CropStageOperationParametersWidget),
-		typeof(CompressionStageOperationParametersWidget),
-		typeof(BrightnessStageOperationParametersWidget),
-		typeof(UltraSharpStageOperationParametersWidget),
-		typeof(SaturationStageOperationParametersWidget),
-		typeof(ToneStageOperationParametersWidget),
 	};
 	
 	bool update_timer_launched = false;
@@ -128,7 +110,7 @@ public partial class MainWindow : Gtk.Window
 		Build ();
 
 		// Creating stage operations and stages
-		stages = new Stages(stage_vbox);
+		stages = new ExtendedStage(stage_vbox);
 
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
@@ -149,12 +131,15 @@ public partial class MainWindow : Gtk.Window
 		Gtk.TreeIter ti;
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
-
+		
+		Console.WriteLine("stage loading");
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
 		if (System.IO.File.Exists(defaultstage))
+		{
 			LoadStage(defaultstage);
+		}
 		else
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
@@ -752,15 +737,14 @@ public partial class MainWindow : Gtk.Window
 		xdoc.Load(filename);
 		try
 		{
-			stages.DeserializeFromXML(xdoc.ChildNodes[1], 
-				_StageOperationTypes,
-				_StageOperationParametersTypes, 
-				_StageOperationParametersWidgetTypes);
+			stages.DeserializeFromXML(xdoc.ChildNodes[1], _StageOperationTypes);
 			
 			// Assigning our handlers
 			for (int i = 0; i < stages.StageQueue.Length; i++)
 			{
+				Console.WriteLine("setting updater-delegate");
 				stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
+					Console.WriteLine("updater-delegate");
 					LaunchUpdateTimer();
 				};
 				stages.StageQueue[i].ReportProgress += HandleProgress;
@@ -822,10 +806,7 @@ public partial class MainWindow : Gtk.Window
 		Gtk.TreeIter ti;
 		stageOperationToAdd_combobox.GetActiveIter(out ti);
 		int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-		StageOperation so = stages.CreateAndAddNewStageOperation(
-			_StageOperationTypes[index],
-			_StageOperationParametersTypes[index],
-			_StageOperationParametersWidgetTypes[index]);
+		StageOperation so = stages.CreateAndAddNewStageOperation(_StageOperationTypes[index]);
 		
 		stages.Holders[so].OperationParametersWidget.UserModified += delegate {
 			LaunchUpdateTimer();

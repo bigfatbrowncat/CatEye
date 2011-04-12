@@ -112,7 +112,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="PPMLoader.cs" />
-    <Compile Include="Stages.cs" />
     <Compile Include="StageOperationTitleWidget.cs" />
     <Compile Include="DoublePixmapViewWidget.cs" />
     <Compile Include="DoublePixmap.cs" />
@@ -154,6 +153,8 @@
     <Compile Include="StageOperations\Tone\ToneStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.SaturationStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
+    <Compile Include="Stage.cs" />
+    <Compile Include="ExtendedStage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

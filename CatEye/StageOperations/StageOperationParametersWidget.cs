@@ -38,6 +38,7 @@ namespace CatEye
 				if (!mParametersAreChangingByMe) 
 					HandleParametersChangedNotByUI();
 			};
+			
 		}
 		
 		/// <summary>
