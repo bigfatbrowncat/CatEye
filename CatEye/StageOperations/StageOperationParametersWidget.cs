@@ -31,8 +31,9 @@ namespace CatEye
 		{
 			mParameters = parameters;
 			mParameters.Changed += delegate {
-				if (!mParametersAreChangingByMe) 
+				if (!mParametersAreChangingByMe)
 					HandleParametersChangedNotByUI();
+				Sensitive = mParameters.Active;
 			};
 			
 		}

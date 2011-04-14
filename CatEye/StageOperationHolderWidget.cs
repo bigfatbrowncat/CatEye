@@ -17,22 +17,6 @@ namespace CatEye
 		public event EventHandler<EventArgs> FreezeButtonClicked;
 		public event EventHandler<EventArgs> RemoveButtonClicked;
 		
-		public bool Active
-		{
-			get { return _TitleWidget.Active; }
-			set 
-			{ 
-				_TitleWidget.Active = value; 
-				ActiveUpdated();
-			}
-		}
-		
-		protected void ActiveUpdated()
-		{
-			if (_OperationParametersWidget != null)
-				_OperationParametersWidget.Sensitive = Active;
-		}
-		
 		public string Title
 		{
 			get { return _TitleWidget.Title; }
@@ -68,7 +52,6 @@ namespace CatEye
 		
 		protected virtual void OnStageActiveButtonClicked (object sender, System.EventArgs e)
 		{
-			ActiveUpdated();
 			if (StageActiveButtonClicked != null)
 				StageActiveButtonClicked(this, EventArgs.Empty);
 		}
@@ -107,6 +90,18 @@ namespace CatEye
 			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Fill = false;
 			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Expand = false;
 			
+			_TitleWidget.Active = _OperationParametersWidget.Parameters.Active;
+			
+			// Active
+			_OperationParametersWidget.Parameters.Changed += delegate {
+				_TitleWidget.Active = _OperationParametersWidget.Parameters.Active;
+			};
+			
+			_TitleWidget.TitleCheckButtonClicked += delegate {
+				_OperationParametersWidget.Parameters.Active = _TitleWidget.Active;
+			};
+			
+
 			_TitleWidget.UpButtonClicked += delegate {
 				OnUpTitleButtonClicked(this, EventArgs.Empty);
 			};

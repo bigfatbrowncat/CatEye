@@ -30,8 +30,20 @@ namespace CatEye
 	[StageOperationID("StageOperation")]
 	public class StageOperationParameters
 	{
+		private bool mActive;
+		
 		public event EventHandler<EventArgs> Changed;
 		
+		public bool Active
+		{
+			get { return mActive; }
+			set
+			{
+				mActive = value;
+				OnChanged();
+			}
+		}
+
 		protected string GetStageOperationID()
 		{
 			object[] attrs = GetType().GetCustomAttributes(typeof(StageOperationIDAttribute), true);
@@ -65,7 +77,8 @@ namespace CatEye
 			}
 			
 			res.Attributes.Append(xdoc.CreateAttribute("ID")).Value = ID;
-				
+			res.Attributes.Append(xdoc.CreateAttribute("Active")).Value = mActive.ToString();
+			
 			return res;
 		}
 		
@@ -89,6 +102,20 @@ namespace CatEye
 				throw new IncorrectNodeException("Node ID (" + node.Attributes["ID"].Value +
 					") is inequal to the ID of the object being loaded (" + ID + ")");
 			}
+
+			if (node.Attributes["Active"] != null)
+			{
+				bool bres;
+				if (bool.TryParse(node.Attributes["Active"].Value, out bres))
+				{
+					Active = bres;
+				}
+				else
+				{
+					throw new IncorrectNodeException("Incorrect Active value");
+				}
+			}
+				
 		}
 		
 		protected virtual void OnChanged()

@@ -133,7 +133,6 @@ public partial class MainWindow : Gtk.Window
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
 		
-		Console.WriteLine("stage loading");
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
@@ -551,7 +550,7 @@ public partial class MainWindow : Gtk.Window
 	/// A stream to read the decoded PPM data from. 
 	/// Should be closed by user.
 	/// </returns>
-	private System.IO.Stream ImportRaw(string filename, ProgressMessageReporter callback)
+	private System.IO.MemoryStream ImportRaw(string filename, ProgressMessageReporter callback)
 	{
 		if (callback != null)
 			if (!callback(0, "Waiting for dcraw...")) return null;
@@ -637,19 +636,22 @@ public partial class MainWindow : Gtk.Window
 			
 			if (FileName != null) rid.Filename = FileName;
 			if (PreScale != 0) rid.PreScale = PreScale;
-				
+			
+			bool ok = false;
+			
 			if (rid.Run() == (int)Gtk.ResponseType.Accept)
 			{
+				ok = true;
 				FileName = rid.Filename;
 				PreScale = rid.PreScale;
 			}
 			rid.Destroy();
 			
-			if (FileName != null)
+			if (ok)
 			{
 				UIState curstate = TheUIState;
 				TheUIState = MainWindow.UIState.Loading;
-				System.IO.Stream strm = ImportRaw(FileName, ImportRawAndLoadingReporter);
+				System.IO.MemoryStream strm = ImportRaw(FileName, ImportRawAndLoadingReporter);
 				if (strm == null)
 				{
 					cancel_pending = false;
@@ -743,9 +745,7 @@ public partial class MainWindow : Gtk.Window
 			// Assigning our handlers
 			for (int i = 0; i < stages.StageQueue.Length; i++)
 			{
-				Console.WriteLine("setting updater-delegate");
 				stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
-					Console.WriteLine("updater-delegate");
 					LaunchUpdateTimer();
 				};
 				stages.StageQueue[i].ReportProgress += HandleProgress;

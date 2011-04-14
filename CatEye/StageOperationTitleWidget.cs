@@ -32,8 +32,12 @@ namespace CatEye
 		
 		public bool Active
 		{
-			get { return title_checkbutton.Active; }
-			set { title_checkbutton.Active = value; }
+			get { 
+				return title_checkbutton.Active; 
+			}
+			set { 
+				title_checkbutton.Active = value; 
+			}
 		}
 		
 		public bool View

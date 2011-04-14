@@ -147,7 +147,7 @@ namespace CatEye
 				// Do all operations
 				for (int j = 0; j < _StageQueue.Count; j++)
 				{
-					if (_Holders[_StageQueue[j]].Active)
+					if (_StageQueue[j].Parameters.Active)
 						_StageQueue[j].OnDo(hdp);
 					
 					if (_StageQueue[j] == _FrozenAt)
@@ -175,7 +175,7 @@ namespace CatEye
 					{
 						if (_StageQueue[j] == ViewedOperation)
 							break;
-						if (_Holders[_StageQueue[j]].Active)
+						if (_StageQueue[j].Parameters.Active)
 							_StageQueue[j].OnDo(hdp);
 					}
 				}
@@ -186,7 +186,7 @@ namespace CatEye
 					{
 						if (_StageQueue[j] == ViewedOperation)
 							break;
-						if (frozen_line_found && _Holders[_StageQueue[j]].Active)
+						if (frozen_line_found && _StageQueue[j].Parameters.Active)
 							_StageQueue[j].OnDo(hdp);
 						if (_StageQueue[j] == _FrozenAt) frozen_line_found = true;
 					}
@@ -247,14 +247,9 @@ namespace CatEye
 		
 		protected override void OnAddedToStage (StageOperation operation)
 		{
-			Console.WriteLine("OnAddedToStage");
-/*			
-			StageOperationParameters pars = (StageOperationParameters)(
-				paramType.GetConstructor(new Type[] { }).Invoke(new object[] { })
-			);
-*/
 			Type paramType = FindTypeForStageOperation(mStageOperationParametersTypes, operation.GetType());
 			Type paramWidgetType = FindTypeForStageOperation(mStageOperationParametersWidgetTypes, operation.GetType());
+			Console.WriteLine("Creating widget for " + paramWidgetType.Name);
 			StageOperationParametersWidget pwid = (StageOperationParametersWidget)(
 				paramWidgetType.GetConstructor(new Type[] { paramType }).Invoke(new object[] { operation.Parameters })
 			);
@@ -277,7 +272,7 @@ namespace CatEye
 			_Holders.Add(operation, sohw);
 			sohw.Show();
 			
-			sohw.Active = false;	// Setting to update UI sensitiveness
+			//sohw.Active = false;	// Setting to update UI sensitiveness
 			
 			_StageVBox.Add(sohw);
 			((Gtk.Box.BoxChild)_StageVBox[sohw]).Fill = false;
@@ -377,14 +372,6 @@ namespace CatEye
 		
 		protected override void OnStageOperationDeserialized(StageOperation so, StageOperationParameters sop)
 		{
-			Console.WriteLine("OnStageOperationDeserialized");
-			
-			Type sopwt = FindTypeForStageOperation(mStageOperationParametersWidgetTypes, so.GetType());
-			if (sopwt == null)
-				throw new IncorrectNodeValueException("Can't find StageOperationParametersWidgetsType type for type " + so.GetType().Name);
-			StageOperationParametersWidget sopw = (StageOperationParametersWidget)sopwt.GetConstructor(
-					new Type[] { typeof(StageOperationParameters) }
-				).Invoke(new object[] { sop });
 		}		
 	}
 }

@@ -139,7 +139,6 @@ namespace CatEye.Core
 			
 			for (int i = 0; i < xn.ChildNodes.Count; i++)
 			{
-				Console.WriteLine("des 2: " + i.ToString());
 				XmlNode ch = xn.ChildNodes[i];
 				if (ch.Name == "StageOperationParameters")
 				{
@@ -165,36 +164,7 @@ namespace CatEye.Core
 					// Deserializing stage operation parameters
 					sop.DeserializeFromXML(ch);
 
-					/*
-					Type sot = FindTypeWithStageOperationIDEqualTo(StageOperationTypes, ch.Attributes["ID"].Value);
-					if (sot == null)
-						throw new IncorrectNodeValueException("Can't find StageOperation type for the ID (" + ch.Attributes["ID"].Value + ")");
-					Type sopt = FindTypeWithStageOperationIDEqualTo(StageOperationParametersTypes, ch.Attributes["ID"].Value);
-					if (sopt == null)
-						throw new IncorrectNodeValueException("Can't find StageOperationParameters type for the ID (" + ch.Attributes["ID"].Value + ")");
-					Type sopwt = FindTypeWithStageOperationIDEqualTo(StageOperationParametersWidgetsTypes, ch.Attributes["ID"].Value);
-					if (sopwt == null)
-						throw new IncorrectNodeValueException("Can't find StageOperationParametersWidgetsType type for the ID (" + ch.Attributes["ID"].Value + ")");
-					
-					// Constructing so-sop-sopw structure
-					StageOperationParameters sop = (StageOperationParameters)sopt.GetConstructor(
-							new Type[] {}
-						).Invoke(new object[] {});
-					
-					StageOperation so = (StageOperation)sot.GetConstructor(
-							new Type[] { typeof(StageOperationParameters) }
-						).Invoke(new object[] { sop });
-					StageOperationParametersWidget sopw = (StageOperationParametersWidget)sopwt.GetConstructor(
-							new Type[] { typeof(StageOperationParameters) }
-						).Invoke(new object[] { sop });
-
-					// Deserializing stage operation parameters
-					sop.DeserializeFromXML(ch);
-					*/
-					
-					
 					sos.Add(so);
-
 					
 					OnStageOperationDeserialized(so, sop);
 					
@@ -218,15 +188,6 @@ namespace CatEye.Core
 			for (int i = 0; i < sos.Count; i++)
 			{
 				AddStageOperation(sos[i]);
-				
-				// Setting "Active"
-				// TODO: Return Active back
-				/*
-				if (actives.ContainsKey(sos[i]))
-					_Holders[sos[i]].Active = actives[sos[i]];
-				else
-					_Holders[sos[i]].Active = true;
-				*/
 			}
 			
 		}

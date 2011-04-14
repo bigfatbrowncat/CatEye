@@ -53,6 +53,7 @@
         <Command type="AfterClean" command="rm -f dcraw" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Unix|x86' ">
     <DebugType>none</DebugType>

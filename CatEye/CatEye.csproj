@@ -19,6 +19,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
