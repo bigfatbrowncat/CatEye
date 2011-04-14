@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Stages>
-  <StageOperationParameters ID="BrightnessStageOperation" Brightness="1" Active="True" />
-  <StageOperationParameters ID="CropStageOperation" Left="0" Right="1" Top="0" Bottom="1" AspectRatio="1.5" LockAspectRatio="True" Active="False" />
-  <StageOperationParameters ID="CompressionStageOperation" Power="0.5" Bloha="0.01" Active="True" />
-  <StageOperationParameters ID="UltraSharpStageOperation" Power="0.15" Radius="0.1" Delta0="0.01" Points="100" Active="True" />
-  <StageOperationParameters ID="ToneStageOperation" RedPart="1" GreenPart="1" BluePart="1" Active="False" />
-  <StageOperationParameters ID="SaturationStageOperation" Saturation="1" Active="False" />
-  <StageOperationParameters ID="BrightnessStageOperation" Brightness="1" Active="False" />
+  <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" />
+  <StageOperationParameters ID="CropStageOperation" Active="False" Left="0" Right="1" Top="0" Bottom="1" AspectRatio="1.5" LockAspectRatio="True" />
+  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.4" Bloha="0.01" />
+  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Power="0.4" Radius="0.1" Delta0="0.01" Points="100" />
+  <StageOperationParameters ID="ToneStageOperation" Active="False" RedPart="1" GreenPart="1" BluePart="1" />
+  <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
+  <StageOperationParameters ID="BrightnessStageOperation" Active="False" Brightness="1" />
 </Stages>

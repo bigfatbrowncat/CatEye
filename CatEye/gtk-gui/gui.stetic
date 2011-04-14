@@ -884,7 +884,7 @@
           <widget class="Gtk.Entry" id="bloha_entry">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Text" translatable="yes">0.01</property>
+            <property name="Text" translatable="yes">0</property>
             <property name="IsEditable">True</property>
             <property name="WidthChars">6</property>
             <property name="InvisibleChar">●</property>
@@ -945,7 +945,7 @@
           <widget class="Gtk.Entry" id="power_entry">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Text" translatable="yes">0.7</property>
+            <property name="Text" translatable="yes">0</property>
             <property name="IsEditable">True</property>
             <property name="WidthChars">6</property>
             <property name="InvisibleChar">●</property>

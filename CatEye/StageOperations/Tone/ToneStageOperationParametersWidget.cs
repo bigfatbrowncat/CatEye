@@ -7,8 +7,6 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true), StageOperationID("ToneStageOperation")]
 	public partial class ToneStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-
 		public ToneStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
@@ -18,7 +16,7 @@ namespace CatEye
 		protected virtual void OnSaturationEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(this.red_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(red_entry.Text, out res))
 			{
 				try
 				{
@@ -31,7 +29,7 @@ namespace CatEye
 				{
 				}
 			}
-			if (double.TryParse(green_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(green_entry.Text, out res))
 			{
 				try
 				{
@@ -44,7 +42,7 @@ namespace CatEye
 				{
 				}
 			}
-			if (double.TryParse(blue_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(blue_entry.Text, out res))
 			{
 				try
 				{

@@ -113,12 +113,12 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Left")).Value = Left.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Right")).Value = Right.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Top")).Value = Top.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Bottom")).Value = Bottom.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("AspectRatio")).Value = AspectRatio.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("LockAspectRatio")).Value = LockAspectRatio.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("Left")).Value = Left.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Right")).Value = Right.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Top")).Value = Top.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Bottom")).Value = Bottom.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("AspectRatio")).Value = AspectRatio.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("LockAspectRatio")).Value = LockAspectRatio.ToString(nfi);
 			return xn;
 		}
 

@@ -28,12 +28,14 @@ namespace CatEye
 			ls.GetIterFirst(out ti);
 			
 			aspect_comboboxentry.SetActiveIter(ti);
+
+			HandleParametersChangedNotByUI();
 		}
 
 		protected virtual void OnLeftEntryChanged (object sender, System.EventArgs e)
 		{
 			double res;
-			if (double.TryParse(left_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(left_entry.Text, out res))
 			{
 				try
 				{
@@ -51,7 +53,7 @@ namespace CatEye
 		protected virtual void OnRightEntryChanged (object sender, System.EventArgs e)
 		{
 			double res;
-			if (double.TryParse(right_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(right_entry.Text, out res))
 			{
 				try
 				{
@@ -69,7 +71,7 @@ namespace CatEye
 		protected virtual void OnTopEntryChanged (object sender, System.EventArgs e)
 		{
 			double res;
-			if (double.TryParse(top_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(top_entry.Text, out res))
 			{
 				try
 				{
@@ -87,7 +89,7 @@ namespace CatEye
 		protected virtual void OnBottomEntryChanged (object sender, System.EventArgs e)
 		{
 			double res;
-			if (double.TryParse(bottom_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(bottom_entry.Text, out res))
 			{
 				try
 				{

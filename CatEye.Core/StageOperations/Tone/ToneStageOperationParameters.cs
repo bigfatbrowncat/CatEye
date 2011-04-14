@@ -46,9 +46,9 @@ namespace CatEye.Core
 		public override System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("RedPart")).Value = mRedPart.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("GreenPart")).Value = mGreenPart.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("BluePart")).Value = mBluePart.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("RedPart")).Value = mRedPart.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("GreenPart")).Value = mGreenPart.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("BluePart")).Value = mBluePart.ToString(nfi);
 			return xn;
 		}
 		

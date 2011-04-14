@@ -7,18 +7,17 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true), StageOperationID("UltraSharpStageOperation")]
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-
 		public UltraSharpStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
 			this.Build ();
+			HandleParametersChangedNotByUI();
 		}
 		
 		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(power_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(power_entry.Text, out res))
 			{
 				try
 				{
@@ -36,7 +35,7 @@ namespace CatEye
 		protected virtual void OnPointsEntryChanged (object sender, System.EventArgs e)
 		{
 			int res = 0;
-			if (int.TryParse(points_entry.Text, NumberStyles.Float, nfi, out res))
+			if (int.TryParse(points_entry.Text, out res))
 			{
 				try
 				{
@@ -69,7 +68,7 @@ namespace CatEye
 		protected void OnDelta0EntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(delta_0_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(delta_0_entry.Text, out res))
 			{
 				try
 				{

@@ -7,18 +7,17 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true), StageOperationID("SaturationStageOperation")]
 	public partial class SaturationStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-
 		public SaturationStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
 			this.Build ();
+			HandleParametersChangedNotByUI();
 		}
 		
 		protected virtual void OnSaturationEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(saturation_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(saturation_entry.Text, out res))
 			{
 				try
 				{

@@ -35,7 +35,6 @@ namespace CatEye
 					HandleParametersChangedNotByUI();
 				Sensitive = mParameters.Active;
 			};
-			
 		}
 		
 		/// <summary>

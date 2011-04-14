@@ -104,7 +104,6 @@ namespace CatEye.Core
 			for (int i = 0; i < _StageQueue.Count; i++)
 			{
 				XmlNode ch = _StageQueue[i].Parameters.SerializeToXML(xdoc);
-				// TODO: return Active back | ch.Attributes.Append(xdoc.CreateAttribute("Active")).Value = _Holders[_StageQueue[i]].Active.ToString();
 				xn.AppendChild(ch);
 			}
 			return xn;

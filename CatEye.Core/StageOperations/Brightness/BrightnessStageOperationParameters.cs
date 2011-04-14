@@ -27,7 +27,7 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Brightness")).Value = Brightness.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("Brightness")).Value = Brightness.ToString(nfi);
 			return xn;
 		}
 

@@ -27,7 +27,7 @@ namespace CatEye.Core
 		public override System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Saturation")).Value = mSaturation.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("Saturation")).Value = mSaturation.ToString(nfi);
 			return xn;
 		}
 		

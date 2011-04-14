@@ -32,8 +32,8 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Bloha")).Value = mBloha.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Bloha")).Value = mBloha.ToString(nfi);
 			return xn;
 		}
 

@@ -25,7 +25,7 @@ namespace CatEye
 			this.bloha_entry = new global::Gtk.Entry ();
 			this.bloha_entry.CanFocus = true;
 			this.bloha_entry.Name = "bloha_entry";
-			this.bloha_entry.Text = global::Mono.Unix.Catalog.GetString ("0.01");
+			this.bloha_entry.Text = global::Mono.Unix.Catalog.GetString ("0");
 			this.bloha_entry.IsEditable = true;
 			this.bloha_entry.WidthChars = 6;
 			this.bloha_entry.InvisibleChar = '●';
@@ -58,7 +58,7 @@ namespace CatEye
 			this.power_entry = new global::Gtk.Entry ();
 			this.power_entry.CanFocus = true;
 			this.power_entry.Name = "power_entry";
-			this.power_entry.Text = global::Mono.Unix.Catalog.GetString ("0.7");
+			this.power_entry.Text = global::Mono.Unix.Catalog.GetString ("0");
 			this.power_entry.IsEditable = true;
 			this.power_entry.WidthChars = 6;
 			this.power_entry.InvisibleChar = '●';

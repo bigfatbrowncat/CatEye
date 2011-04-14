@@ -7,18 +7,17 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true), StageOperationID("CompressionStageOperation")]
 	public partial class CompressionStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-
 		public CompressionStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
 			this.Build ();
+			HandleParametersChangedNotByUI();
 		}
 
 		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(power_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(power_entry.Text, out res))
 			{
 				try
 				{
@@ -36,7 +35,7 @@ namespace CatEye
 		protected virtual void OnBlohaEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
-			if (double.TryParse(bloha_entry.Text, NumberStyles.Float, nfi, out res))
+			if (double.TryParse(bloha_entry.Text, out res))
 			{
 				try
 				{
