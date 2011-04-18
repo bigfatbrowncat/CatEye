@@ -5,8 +5,9 @@ namespace CatEye
 	public partial class SaturationStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-		private global::Gtk.Label label8;
 		private global::Gtk.Entry saturation_entry;
+		private global::Gtk.HScale saturation_hscale;
+		private global::CatEye.SaturationSelectorWidget saturationselectorwidget;
 
 		protected virtual void Build ()
 		{
@@ -15,38 +16,59 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.SaturationStageOperationParametersWidget";
 			// Container child CatEye.SaturationStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(1)), ((uint)(2)), true);
+			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
 			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
+			this.table1.RowSpacing = ((uint)(2));
 			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.Xalign = 1F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Saturation:");
-			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
-			w1.XOptions = ((global::Gtk.AttachOptions)(4));
-			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.saturation_entry = new global::Gtk.Entry ();
 			this.saturation_entry.CanFocus = true;
 			this.saturation_entry.Name = "saturation_entry";
 			this.saturation_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.saturation_entry.IsEditable = true;
-			this.saturation_entry.WidthChars = 6;
-			this.saturation_entry.InvisibleChar = '●';
+			this.saturation_entry.WidthChars = 4;
+			this.saturation_entry.MaxLength = 4;
 			this.table1.Add (this.saturation_entry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_entry]));
-			w2.LeftAttach = ((uint)(1));
-			w2.RightAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_entry]));
+			w1.TopAttach = ((uint)(1));
+			w1.BottomAttach = ((uint)(2));
+			w1.LeftAttach = ((uint)(1));
+			w1.RightAttach = ((uint)(2));
+			w1.XOptions = ((global::Gtk.AttachOptions)(0));
+			w1.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table1.Gtk.Table+TableChild
+			this.saturation_hscale = new global::Gtk.HScale (null);
+			this.saturation_hscale.CanFocus = true;
+			this.saturation_hscale.Name = "saturation_hscale";
+			this.saturation_hscale.Adjustment.Upper = 2;
+			this.saturation_hscale.Adjustment.PageIncrement = 0.1;
+			this.saturation_hscale.Adjustment.PageSize = 0.01;
+			this.saturation_hscale.Adjustment.StepIncrement = 0.01;
+			this.saturation_hscale.Adjustment.Value = 1;
+			this.saturation_hscale.DrawValue = false;
+			this.saturation_hscale.Digits = 2;
+			this.saturation_hscale.ValuePos = ((global::Gtk.PositionType)(3));
+			this.table1.Add (this.saturation_hscale);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_hscale]));
+			w2.TopAttach = ((uint)(1));
+			w2.BottomAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.saturationselectorwidget = new global::CatEye.SaturationSelectorWidget ();
+			this.saturationselectorwidget.HeightRequest = 15;
+			this.saturationselectorwidget.Name = "saturationselectorwidget";
+			this.saturationselectorwidget.MaxValue = 0;
+			this.table1.Add (this.saturationselectorwidget);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturationselectorwidget]));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.saturation_hscale.ValueChanged += new global::System.EventHandler (this.OnSaturationHscaleValueChanged);
 			this.saturation_entry.Changed += new global::System.EventHandler (this.OnSaturationEntryChanged);
+			this.saturation_entry.FocusOutEvent += new global::Gtk.FocusOutEventHandler (this.OnSaturationEntryFocusOutEvent);
 		}
 	}
 }
