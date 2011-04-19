@@ -109,7 +109,7 @@ namespace CatEye
 				slider_state = Gtk.StateType.Insensitive;
 			}
 			
-			Gtk.Style.PaintSlider(this.Style, GdkWindow, slider_state, Gtk.ShadowType.None,
+			Gtk.Style.PaintSlider(this.Style, GdkWindow, slider_state, Gtk.ShadowType.Out,
 				new Gdk.Rectangle(x + slider_pos - mSliderLength / 2, y + mTopSliderMargin, mSliderLength, h - mTopSliderMargin - mBottomSliderMargin), this, "hscale", 
 				                  x + slider_pos - mSliderLength / 2, y + mTopSliderMargin, mSliderLength, h - mTopSliderMargin - mBottomSliderMargin, 
 				Gtk.Orientation.Horizontal);
