@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -1176,8 +1176,9 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.HScale" id="logbrightness_hscale">
+              <widget class="CatEye.BrightnessSelectorWidget" id="logbrightness_hscale">
                 <property name="MemberName" />
+                <property name="HeightRequest">5</property>
                 <property name="CanFocus">True</property>
                 <property name="Upper">1</property>
                 <property name="PageIncrement">0.1</property>
@@ -1209,7 +1210,6 @@
             </child>
           </widget>
           <packing>
-            <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
@@ -1268,24 +1268,6 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="label2">
-            <property name="MemberName" />
-            <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Brightness:</property>
-          </widget>
-          <packing>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.Label" id="label3">
             <property name="MemberName" />
             <property name="Xalign">1</property>
@@ -1314,13 +1296,9 @@
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">2</property>
         <property name="NColumns">2</property>
         <property name="RowSpacing">2</property>
         <property name="ColumnSpacing">6</property>
-        <child>
-          <placeholder />
-        </child>
         <child>
           <widget class="Gtk.Entry" id="saturation_entry">
             <property name="MemberName" />
@@ -1333,8 +1311,6 @@
             <signal name="FocusOutEvent" handler="OnSaturationEntryFocusOutEvent" />
           </widget>
           <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
@@ -1349,37 +1325,16 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.HScale" id="saturation_hscale">
+          <widget class="CatEye.SaturationSelectorWidget" id="saturation_hscale">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
             <property name="Upper">2</property>
             <property name="PageIncrement">0.1</property>
-            <property name="PageSize">0.01</property>
             <property name="StepIncrement">0.01</property>
             <property name="Value">1</property>
             <property name="DrawValue">False</property>
-            <property name="Digits">2</property>
-            <property name="ValuePos">Bottom</property>
+            <property name="Digits">0</property>
+            <property name="ValuePos">Top</property>
             <signal name="ValueChanged" handler="OnSaturationHscaleValueChanged" />
-          </widget>
-          <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
-            <property name="AutoSize">False</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="CatEye.SaturationSelectorWidget" id="saturationselectorwidget">
-            <property name="MemberName" />
-            <property name="HeightRequest">15</property>
-            <property name="MaxValue">0</property>
           </widget>
           <packing>
             <property name="AutoSize">False</property>

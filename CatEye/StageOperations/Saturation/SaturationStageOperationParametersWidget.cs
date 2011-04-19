@@ -18,7 +18,6 @@ namespace CatEye
 				mMaxValue = value;
 				saturation_hscale.Adjustment.Upper = value;
 				saturation_entry.Text = ((SaturationStageOperationParameters)Parameters).Saturation.ToString("0.00");
-				saturationselectorwidget.MaxValue = value;
 			}
 		}
 		

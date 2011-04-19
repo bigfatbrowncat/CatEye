@@ -90,6 +90,7 @@
     <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
     <Compile Include="ExtendedStage.cs" />
     <Compile Include="SaturationSelectorWidget.cs" />
+    <Compile Include="BrightnessSelectorWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

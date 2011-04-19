@@ -3,7 +3,7 @@ using System;
 namespace CatEye
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public class SaturationSelectorWidget : Gtk.HScale
+	public class BrightnessSelectorWidget : Gtk.HScale
 	{
 		private int mLeftMargin = 4, mRightMargin = 4, 
 					mTopMargin = 7, mBottomMargin = 7,
@@ -13,7 +13,7 @@ namespace CatEye
 		
 		private int mSliderLength = 24;
 		
-		public SaturationSelectorWidget(Gtk.Adjustment adj) : base(adj) {}
+		public BrightnessSelectorWidget(Gtk.Adjustment adj) : base(adj) {}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
@@ -69,11 +69,9 @@ namespace CatEye
 				{
 					double yy = (double)j / (ymax - ymin);
 					
-					double r = (xx) * (255 * (1 - yy)) + (1 - xx) * 192;
-					double g = (xx) * (128) +            (1 - xx) * 192;
-					double b = (xx) * (255 * yy) +       (1 - xx) * 192;
+					double br = xx * 255;
 					
-					gc.RgbFgColor = new Gdk.Color((byte)r, (byte)g, (byte)b);
+					gc.RgbFgColor = new Gdk.Color((byte)br, (byte)br, (byte)br);
 					GdkWindow.DrawPoint(gc, x + i + xmin, y + j + ymin);
 				}
 			}
@@ -86,7 +84,7 @@ namespace CatEye
 				(Adjustment.Value - Adjustment.Lower) / (this.Adjustment.Upper - Adjustment.Lower));
 			
 			Gtk.StateType slider_state = Gtk.StateType.Normal;
-			
+
 			// Testing if sensitive
 			Gtk.Widget wdg = this;
 			bool sens = true;

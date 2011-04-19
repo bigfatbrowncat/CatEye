@@ -6,12 +6,11 @@ namespace CatEye
 	{
 		private global::Gtk.Table table1;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.HScale logbrightness_hscale;
+		private global::CatEye.BrightnessSelectorWidget logbrightness_hscale;
 		private global::Gtk.Entry brightness_entry;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label median_label;
 		private global::Gtk.ToggleButton normalize_togglebutton;
-		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
 
 		protected virtual void Build ()
@@ -30,7 +29,8 @@ namespace CatEye
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.logbrightness_hscale = new global::Gtk.HScale (null);
+			this.logbrightness_hscale = new global::CatEye.BrightnessSelectorWidget (null);
+			this.logbrightness_hscale.HeightRequest = 5;
 			this.logbrightness_hscale.CanFocus = true;
 			this.logbrightness_hscale.Name = "logbrightness_hscale";
 			this.logbrightness_hscale.Adjustment.Upper = 1;
@@ -55,7 +55,6 @@ namespace CatEye
 			w2.Expand = false;
 			this.table1.Add (this.hbox1);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
-			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -88,25 +87,16 @@ namespace CatEye
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.label2 = new global::Gtk.Label ();
-			this.label2.Name = "label2";
-			this.label2.Xalign = 1F;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Brightness:");
-			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 1F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Median:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w8.TopAttach = ((uint)(1));
-			w8.BottomAttach = ((uint)(2));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
+			w7.TopAttach = ((uint)(1));
+			w7.BottomAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
