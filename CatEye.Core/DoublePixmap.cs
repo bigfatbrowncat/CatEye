@@ -57,7 +57,7 @@ namespace CatEye.Core
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback((double)i / res.width / 2)) 
+					if (!callback((double)i / res.width / 3)) 
 						return null;
 				}
 				for (int j = 0; j < res.height; j++)
@@ -74,7 +74,7 @@ namespace CatEye.Core
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback(0.5 + (double)i / res.width / 2)) 
+					if (!callback(0.333 + (double)i / res.width / 3)) 
 						return null;
 				}
 				for (int j = 0; j < res.height; j++)
@@ -84,6 +84,25 @@ namespace CatEye.Core
 					res.b_chan[i, j] /= Max;
 				}
 			}
+			
+			// Applying inverse limiter
+			double N = 1.0001;		// Norm
+			
+			for (int i = 0; i < res.width; i++)
+			{
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
+				{
+					if (!callback(0.666 + (double)i / res.width / 3)) 
+						return null;
+				}
+				for (int j = 0; j < res.height; j++)
+				{
+					res.r_chan[i, j] = N * Math.Log(1 / (1 - res.r_chan[i, j] / N));
+					res.g_chan[i, j] = N * Math.Log(1 / (1 - res.g_chan[i, j] / N));
+					res.b_chan[i, j] = N * Math.Log(1 / (1 - res.b_chan[i, j] / N));
+				}
+			}
+			
 			return res;
 		}
 
