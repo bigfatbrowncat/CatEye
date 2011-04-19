@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -1314,21 +1314,60 @@
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
+        <property name="NRows">2</property>
         <property name="NColumns">2</property>
-        <property name="Homogeneous">True</property>
-        <property name="RowSpacing">6</property>
+        <property name="RowSpacing">2</property>
         <property name="ColumnSpacing">6</property>
         <child>
-          <widget class="Gtk.Label" id="label8">
+          <placeholder />
+        </child>
+        <child>
+          <widget class="Gtk.Entry" id="saturation_entry">
             <property name="MemberName" />
-            <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Saturation:</property>
+            <property name="CanFocus">True</property>
+            <property name="Text" translatable="yes">1</property>
+            <property name="IsEditable">True</property>
+            <property name="WidthChars">4</property>
+            <property name="MaxLength">4</property>
+            <signal name="Changed" handler="OnSaturationEntryChanged" />
+            <signal name="FocusOutEvent" handler="OnSaturationEntryFocusOutEvent" />
           </widget>
           <packing>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">False</property>
+            <property name="XOptions">0</property>
+            <property name="YOptions">0</property>
             <property name="XExpand">False</property>
+            <property name="XFill">False</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">False</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HScale" id="saturation_hscale">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Upper">2</property>
+            <property name="PageIncrement">0.1</property>
+            <property name="PageSize">0.01</property>
+            <property name="StepIncrement">0.01</property>
+            <property name="Value">1</property>
+            <property name="DrawValue">False</property>
+            <property name="Digits">2</property>
+            <property name="ValuePos">Bottom</property>
+            <signal name="ValueChanged" handler="OnSaturationHscaleValueChanged" />
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="AutoSize">False</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -1337,19 +1376,13 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Entry" id="saturation_entry">
+          <widget class="CatEye.SaturationSelectorWidget" id="saturationselectorwidget">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Text" translatable="yes">1</property>
-            <property name="IsEditable">True</property>
-            <property name="WidthChars">6</property>
-            <property name="InvisibleChar">●</property>
-            <signal name="Changed" handler="OnSaturationEntryChanged" />
+            <property name="HeightRequest">15</property>
+            <property name="MaxValue">0</property>
           </widget>
           <packing>
-            <property name="LeftAttach">1</property>
-            <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">True</property>
             <property name="XFill">True</property>
