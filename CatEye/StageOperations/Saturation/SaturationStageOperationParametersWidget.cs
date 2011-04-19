@@ -72,6 +72,7 @@ namespace CatEye
 				((SaturationStageOperationParameters)Parameters).Saturation = saturation_hscale.Value;
 				saturation_entry.Text =  saturation_hscale.Value.ToString("0.00");
 				EndChangingParameters();
+				OnUserModified();
 				mChangingValue = false;
 			}
 		}
