@@ -7,7 +7,7 @@ using CatEye.Core;
 
 public partial class MainWindow : Gtk.Window
 {
-	private static string APP_NAME = "CatEye 0.3";
+	private static string APP_NAME = "CatEye";
 
 	protected enum UIState { Processing, Loading, Free };
 	private UIState _TheUIState = UIState.Free;
@@ -16,7 +16,7 @@ public partial class MainWindow : Gtk.Window
 	
 	private void UpdateTitle()
 	{
-		Title = _FileName + " [prescaled by " + _PreScale + "] — " + APP_NAME;
+		Title = System.IO.Path.GetFileName(_FileName) + " [prescaled by " + _PreScale + "] — " + APP_NAME;
 	}
 	
 	protected string FileName

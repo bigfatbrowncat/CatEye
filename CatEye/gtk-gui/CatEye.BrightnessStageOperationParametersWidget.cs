@@ -5,8 +5,14 @@ namespace CatEye
 	public partial class BrightnessStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.HScale logbrightness_hscale;
 		private global::Gtk.Entry brightness_entry;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.Label median_label;
+		private global::Gtk.ToggleButton normalize_togglebutton;
 		private global::Gtk.Label label2;
+		private global::Gtk.Label label3;
 
 		protected virtual void Build ()
 		{
@@ -15,37 +21,99 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.BrightnessStageOperationParametersWidget";
 			// Container child CatEye.BrightnessStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(1)), ((uint)(2)), true);
+			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), true);
 			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
+			this.table1.RowSpacing = ((uint)(2));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.logbrightness_hscale = new global::Gtk.HScale (null);
+			this.logbrightness_hscale.CanFocus = true;
+			this.logbrightness_hscale.Name = "logbrightness_hscale";
+			this.logbrightness_hscale.Adjustment.Upper = 1;
+			this.logbrightness_hscale.Adjustment.PageIncrement = 0.1;
+			this.logbrightness_hscale.Adjustment.StepIncrement = 0.1;
+			this.logbrightness_hscale.DrawValue = false;
+			this.logbrightness_hscale.Digits = 0;
+			this.logbrightness_hscale.ValuePos = ((global::Gtk.PositionType)(2));
+			this.hbox1.Add (this.logbrightness_hscale);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.logbrightness_hscale]));
+			w1.Position = 0;
+			// Container child hbox1.Gtk.Box+BoxChild
 			this.brightness_entry = new global::Gtk.Entry ();
 			this.brightness_entry.CanFocus = true;
 			this.brightness_entry.Name = "brightness_entry";
 			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
 			this.brightness_entry.IsEditable = true;
-			this.brightness_entry.WidthChars = 6;
-			this.brightness_entry.InvisibleChar = '●';
-			this.table1.Add (this.brightness_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.brightness_entry]));
-			w1.LeftAttach = ((uint)(1));
-			w1.RightAttach = ((uint)(2));
-			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.brightness_entry.WidthChars = 4;
+			this.hbox1.Add (this.brightness_entry);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.brightness_entry]));
+			w2.Position = 1;
+			w2.Expand = false;
+			this.table1.Add (this.hbox1);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.median_label = new global::Gtk.Label ();
+			this.median_label.Name = "median_label";
+			this.median_label.LabelProp = global::Mono.Unix.Catalog.GetString ("0,5");
+			this.median_label.UseMarkup = true;
+			this.hbox2.Add (this.median_label);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.median_label]));
+			w4.Position = 0;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.normalize_togglebutton = new global::Gtk.ToggleButton ();
+			this.normalize_togglebutton.CanFocus = true;
+			this.normalize_togglebutton.Name = "normalize_togglebutton";
+			this.normalize_togglebutton.UseUnderline = true;
+			this.normalize_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("Normalize");
+			this.hbox2.Add (this.normalize_togglebutton);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.normalize_togglebutton]));
+			w5.Position = 1;
+			this.table1.Add (this.hbox2);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox2]));
+			w6.TopAttach = ((uint)(1));
+			w6.BottomAttach = ((uint)(2));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 1F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Brightness:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.Xalign = 1F;
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Median:");
+			this.table1.Add (this.label3);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
+			w8.TopAttach = ((uint)(1));
+			w8.BottomAttach = ((uint)(2));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.normalize_togglebutton.Clicked += new global::System.EventHandler (this.OnNormalizeTogglebuttonClicked);
+			this.logbrightness_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnLogbrightnessHscaleChangeValue);
 			this.brightness_entry.Changed += new global::System.EventHandler (this.OnBrightnessEntryChanged);
 		}
 	}

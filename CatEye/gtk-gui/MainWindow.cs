@@ -262,6 +262,7 @@ public partial class MainWindow
 		}
 		this.DefaultWidth = 879;
 		this.DefaultHeight = 500;
+		this.cancel_button.Hide ();
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.quitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);

@@ -115,7 +115,7 @@ namespace CatEye
 					throw new IncorrectNodeException("Incorrect Active value");
 				}
 			}
-				
+			OnChanged();
 		}
 		
 		protected virtual void OnChanged()

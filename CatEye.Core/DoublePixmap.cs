@@ -185,9 +185,42 @@ namespace CatEye.Core
 			height = j2 - j1 + 1;
 		}
 		
-		public void ScaleLight(double Amplitude)
+		public void AmplitudeMultiply(double Amplitude)
 		{
 			double local_mid = 0;
+			double[,] light = new double[width, height];
+			
+			for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+			{
+				r_chan[i, j] *= Amplitude;
+				g_chan[i, j] *= Amplitude;
+				b_chan[i, j] *= Amplitude;
+			}
+		}
+
+		public double AmplitudeFindMedian()
+		{
+			double local_mid = 0;
+			double[,] light = new double[width, height];
+			
+			// Searching median
+			for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+			{
+				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+				                               g_chan[i, j] * g_chan[i, j] +
+				                               b_chan[i, j] * b_chan[i, j]);
+				
+				local_mid += light[i, j];
+			}
+			local_mid /= (double)width * height;
+			
+			return local_mid;
+		}
+
+		public double AmplitudeFindBlackPoint()
+		{
 			double[,] light = new double[width, height];
 			
 			// Searching minimum
@@ -204,31 +237,10 @@ namespace CatEye.Core
 				if (local_min > light[i, j]) local_min = light[i, j];
 			}
 
-			// Scaling black
-			DeltaAmplitude(-local_min);
-
-			// Searching median
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
-				                               g_chan[i, j] * g_chan[i, j] +
-				                               b_chan[i, j] * b_chan[i, j]);
-				
-				local_mid += light[i, j];
-			}
-			local_mid /= (double)width * height;
-			
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				r_chan[i, j] *= Amplitude / local_mid;
-				g_chan[i, j] *= Amplitude / local_mid;
-				b_chan[i, j] *= Amplitude / local_mid;
-			}
+			return local_min;
 		}
 		
-		public void DeltaAmplitude(double delta)
+		public void AmplitudeAdd(double delta)
 		{
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)

@@ -249,6 +249,7 @@
                         <child>
                           <widget class="Gtk.Button" id="cancel_button">
                             <property name="MemberName" />
+                            <property name="Visible">False</property>
                             <property name="Sensitive">False</property>
                             <property name="CanFocus">True</property>
                             <property name="Type">TextAndIcon</property>
@@ -1159,32 +1160,106 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.BrightnessStageOperationParametersWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="CatEye.BrightnessStageOperationParametersWidget" design-size="366 107">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
+        <property name="NRows">2</property>
         <property name="NColumns">2</property>
         <property name="Homogeneous">True</property>
-        <property name="RowSpacing">6</property>
+        <property name="RowSpacing">2</property>
         <property name="ColumnSpacing">6</property>
         <child>
-          <widget class="Gtk.Entry" id="brightness_entry">
+          <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Text" translatable="yes">1</property>
-            <property name="IsEditable">True</property>
-            <property name="WidthChars">6</property>
-            <property name="InvisibleChar">●</property>
-            <signal name="Changed" handler="OnBrightnessEntryChanged" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.HScale" id="logbrightness_hscale">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Upper">1</property>
+                <property name="PageIncrement">0.1</property>
+                <property name="StepIncrement">0.1</property>
+                <property name="DrawValue">False</property>
+                <property name="Digits">0</property>
+                <property name="ValuePos">Top</property>
+                <signal name="ChangeValue" handler="OnLogbrightnessHscaleChangeValue" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Entry" id="brightness_entry">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Text" translatable="yes">1</property>
+                <property name="IsEditable">True</property>
+                <property name="WidthChars">4</property>
+                <signal name="Changed" handler="OnBrightnessEntryChanged" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">True</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hbox2">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="median_label">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">0,5</property>
+                <property name="UseMarkup">True</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ToggleButton" id="normalize_togglebutton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">Normalize</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnNormalizeTogglebuttonClicked" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -1199,6 +1274,26 @@
             <property name="LabelProp" translatable="yes">Brightness:</property>
           </widget>
           <packing>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label3">
+            <property name="MemberName" />
+            <property name="Xalign">1</property>
+            <property name="LabelProp" translatable="yes">Median:</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
             <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
@@ -1350,7 +1445,7 @@
           <packing>
             <property name="TopAttach">3</property>
             <property name="BottomAttach">4</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">False</property>
@@ -1393,10 +1488,9 @@
             <property name="BottomAttach">4</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
+            <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -1446,10 +1540,9 @@
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="XPadding">2</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
+            <property name="AutoSize">False</property>
             <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
+            <property name="XExpand">True</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
