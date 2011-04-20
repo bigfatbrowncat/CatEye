@@ -48,6 +48,7 @@ namespace CatEye
 
 		public event EventHandler<EventArgs> ViewedOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
+		public event EventHandler<EventArgs> OperationDefrozen;
 
 		public ReadOnlyDictionary<StageOperation, StageOperationHolderWidget> Holders
 		{
@@ -86,6 +87,7 @@ namespace CatEye
 						_Holders[_StageQueue[i]].FrozenButtonsState = false;
 					}
 					_FrozenPanel.Hide();
+					OnOperationDefrozen();
 				}
 				else
 				{
@@ -126,8 +128,8 @@ namespace CatEye
 							_Holders[_StageQueue[i]].FrozenButtonsState = true;
 						}
 					}
+					OnOperationFrozen();
 				}
-				OnOperationFrozen();
 			}
 		}
 		
@@ -243,6 +245,12 @@ namespace CatEye
 		{
 			if (OperationFrozen != null)
 				OperationFrozen(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnOperationDefrozen()
+		{
+			if (OperationDefrozen != null)
+				OperationDefrozen(this, EventArgs.Empty);
 		}
 		
 		protected override void OnAddedToStage (StageOperation operation)
