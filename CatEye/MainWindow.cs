@@ -172,6 +172,10 @@ public partial class MainWindow : Gtk.Window
 		};
 		stages.OperationFrozen += delegate {
 			LaunchUpdateTimer();
+			stageOperationAdding_hbox.Sensitive = false;
+		};
+		stages.OperationDefrozen += delegate {
+			stageOperationAdding_hbox.Sensitive = true;
 		};
 		
 		// Adding events for stage operation view redrawing
@@ -805,15 +809,17 @@ public partial class MainWindow : Gtk.Window
 	}
 	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
 	{
-		Gtk.TreeIter ti;
-		stageOperationToAdd_combobox.GetActiveIter(out ti);
-		int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-		StageOperation so = stages.CreateAndAddNewStageOperation(_StageOperationTypes[index]);
-		
-		stages.Holders[so].OperationParametersWidget.UserModified += delegate {
-			LaunchUpdateTimer();
-		};
-		so.ReportProgress += HandleProgress;
-		
+		if (stages.FrozenAt == null)
+		{
+			Gtk.TreeIter ti;
+			stageOperationToAdd_combobox.GetActiveIter(out ti);
+			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
+			StageOperation so = stages.CreateAndAddNewStageOperation(_StageOperationTypes[index]);
+			
+			stages.Holders[so].OperationParametersWidget.UserModified += delegate {
+				LaunchUpdateTimer();
+			};
+			so.ReportProgress += HandleProgress;
+		}
 	}
 }

@@ -24,7 +24,7 @@ public partial class MainWindow
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.HBox main_hbox;
 	private global::Gtk.VBox left_vbox;
-	private global::Gtk.HBox hbox1;
+	private global::Gtk.HBox stageOperationAdding_hbox;
 	private global::Gtk.ComboBox stageOperationToAdd_combobox;
 	private global::Gtk.Button addStageOperation_button;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow1;
@@ -121,16 +121,16 @@ public partial class MainWindow
 		this.left_vbox.Spacing = 5;
 		this.left_vbox.BorderWidth = ((uint)(3));
 		// Container child left_vbox.Gtk.Box+BoxChild
-		this.hbox1 = new global::Gtk.HBox ();
-		this.hbox1.Name = "hbox1";
-		this.hbox1.Spacing = 6;
-		// Container child hbox1.Gtk.Box+BoxChild
+		this.stageOperationAdding_hbox = new global::Gtk.HBox ();
+		this.stageOperationAdding_hbox.Name = "stageOperationAdding_hbox";
+		this.stageOperationAdding_hbox.Spacing = 6;
+		// Container child stageOperationAdding_hbox.Gtk.Box+BoxChild
 		this.stageOperationToAdd_combobox = global::Gtk.ComboBox.NewText ();
 		this.stageOperationToAdd_combobox.Name = "stageOperationToAdd_combobox";
-		this.hbox1.Add (this.stageOperationToAdd_combobox);
-		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.stageOperationToAdd_combobox]));
+		this.stageOperationAdding_hbox.Add (this.stageOperationToAdd_combobox);
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.stageOperationAdding_hbox [this.stageOperationToAdd_combobox]));
 		w3.Position = 0;
-		// Container child hbox1.Gtk.Box+BoxChild
+		// Container child stageOperationAdding_hbox.Gtk.Box+BoxChild
 		this.addStageOperation_button = new global::Gtk.Button ();
 		this.addStageOperation_button.CanFocus = true;
 		this.addStageOperation_button.Name = "addStageOperation_button";
@@ -151,13 +151,13 @@ public partial class MainWindow
 		w5.Add (w8);
 		w4.Add (w5);
 		this.addStageOperation_button.Add (w4);
-		this.hbox1.Add (this.addStageOperation_button);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.addStageOperation_button]));
+		this.stageOperationAdding_hbox.Add (this.addStageOperation_button);
+		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.stageOperationAdding_hbox [this.addStageOperation_button]));
 		w12.Position = 1;
 		w12.Expand = false;
 		w12.Fill = false;
-		this.left_vbox.Add (this.hbox1);
-		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.left_vbox [this.hbox1]));
+		this.left_vbox.Add (this.stageOperationAdding_hbox);
+		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.left_vbox [this.stageOperationAdding_hbox]));
 		w13.Position = 0;
 		w13.Expand = false;
 		w13.Fill = false;

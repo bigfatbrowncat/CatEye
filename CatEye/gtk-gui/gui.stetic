@@ -161,7 +161,7 @@
                     <property name="Spacing">5</property>
                     <property name="BorderWidth">3</property>
                     <child>
-                      <widget class="Gtk.HBox" id="hbox1">
+                      <widget class="Gtk.HBox" id="stageOperationAdding_hbox">
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
