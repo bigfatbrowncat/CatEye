@@ -104,6 +104,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		left_vbox.CheckResize();
 		stage_vbox.CheckResize();
+		GtkScrolledWindow1.CheckResize();
 	}
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)

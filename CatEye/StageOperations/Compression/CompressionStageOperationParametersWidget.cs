@@ -11,7 +11,7 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			HandleParametersChangedNotByUI();
+			//HandleParametersChangedNotByUI();
 		}
 
 		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)

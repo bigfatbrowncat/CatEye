@@ -148,5 +148,12 @@ namespace CatEye
 		public virtual void DrawToDrawable(Gdk.Drawable target, Gdk.Rectangle image_position) 
 		{
 		}
+		
+		protected override void OnShown ()
+		{
+			base.OnShown();
+			// Update values before shown
+			HandleParametersChangedNotByUI();
+		}
 	}
 }

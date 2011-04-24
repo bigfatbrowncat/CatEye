@@ -11,9 +11,17 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
+			//HandleParametersChangedNotByUI();
 		}
 		
-		protected virtual void OnSaturationEntryChanged (object sender, System.EventArgs e)
+		protected override void HandleParametersChangedNotByUI ()
+		{
+			red_entry.Text = ((ToneStageOperationParameters)Parameters).RedPart.ToString();
+			green_entry.Text = ((ToneStageOperationParameters)Parameters).GreenPart.ToString();
+			blue_entry.Text = ((ToneStageOperationParameters)Parameters).BluePart.ToString();
+		}
+
+		protected void OnRedEntryChanged (object sender, System.EventArgs e)
 		{
 			double res = 0;
 			if (double.TryParse(red_entry.Text, out res))
@@ -29,6 +37,11 @@ namespace CatEye
 				{
 				}
 			}
+		}
+
+		protected void OnGreenEntryChanged (object sender, System.EventArgs e)
+		{
+			double res = 0;
 			if (double.TryParse(green_entry.Text, out res))
 			{
 				try
@@ -42,6 +55,11 @@ namespace CatEye
 				{
 				}
 			}
+		}
+
+		protected void OnBlueEntryChanged (object sender, System.EventArgs e)
+		{
+			double res = 0;
 			if (double.TryParse(blue_entry.Text, out res))
 			{
 				try
@@ -55,13 +73,6 @@ namespace CatEye
 				{
 				}
 			}
-		}
-		
-		protected override void HandleParametersChangedNotByUI ()
-		{
-			red_entry.Text = ((ToneStageOperationParameters)Parameters).RedPart .ToString();
-			green_entry.Text = ((ToneStageOperationParameters)Parameters).GreenPart.ToString();
-			blue_entry.Text = ((ToneStageOperationParameters)Parameters).BluePart.ToString();
 		}
 	}
 }

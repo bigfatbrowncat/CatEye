@@ -97,9 +97,9 @@ namespace CatEye.Core
 				}
 				for (int j = 0; j < res.height; j++)
 				{
-					res.r_chan[i, j] = N * Math.Log(1 / (1 - res.r_chan[i, j] / N));
-					res.g_chan[i, j] = N * Math.Log(1 / (1 - res.g_chan[i, j] / N));
-					res.b_chan[i, j] = N * Math.Log(1 / (1 - res.b_chan[i, j] / N));
+					res.r_chan[i, j] = N * Math.Log(1.0 / (1 - res.r_chan[i, j] / N));
+					res.g_chan[i, j] = N * Math.Log(1.0 / (1 - res.g_chan[i, j] / N));
+					res.b_chan[i, j] = N * Math.Log(1.0 / (1 - res.b_chan[i, j] / N));
 				}
 			}
 			
@@ -524,6 +524,8 @@ namespace CatEye.Core
 				if (g > max) max = g;
 				if (b > max) max = b;
 			}
+			
+			if (max > 1) max = 1;	// Don't scale value that's greater than 1
 			
 			byte *cur_row = (byte *)buf.Pixels;
 			for (int j = 0; j < h; j++)

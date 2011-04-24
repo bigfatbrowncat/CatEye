@@ -25,7 +25,7 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			HandleParametersChangedNotByUI();
+			//HandleParametersChangedNotByUI();
 			MaxValue = 3;
 			
 		}
@@ -69,7 +69,7 @@ namespace CatEye
 				mChangingValue = true;
 				StartChangingParameters();
 				((SaturationStageOperationParameters)Parameters).Saturation = saturation_hscale.Value;
-				saturation_entry.Text =  saturation_hscale.Value.ToString("0.00");
+				saturation_entry.Text = saturation_hscale.Value.ToString("0.00");
 				EndChangingParameters();
 				OnUserModified();
 				mChangingValue = false;

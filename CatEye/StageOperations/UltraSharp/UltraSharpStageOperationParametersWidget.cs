@@ -11,7 +11,7 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			HandleParametersChangedNotByUI();
+			//HandleParametersChangedNotByUI();
 		}
 		
 		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
@@ -53,16 +53,7 @@ namespace CatEye
 		
 		protected virtual void OnRadiusHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
-			try
-			{
-				StartChangingParameters();
-				((UltraSharpStageOperationParameters)Parameters).Power = radius_hscale.Value;
-				EndChangingParameters();
-				OnUserModified();
-			}
-			catch (IncorrectValueException)
-			{
-			}
+
 		}
 		
 		protected void OnDelta0EntryChanged (object sender, System.EventArgs e)
@@ -89,6 +80,20 @@ namespace CatEye
 			points_entry.Text = ((UltraSharpStageOperationParameters)Parameters).Points.ToString();
 			delta_0_entry.Text = ((UltraSharpStageOperationParameters)Parameters).Delta0.ToString();
 			radius_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
+		}
+
+		protected void OnRadiusHscaleValueChanged (object sender, System.EventArgs e)
+		{
+			try
+			{
+				StartChangingParameters();
+				((UltraSharpStageOperationParameters)Parameters).Radius = radius_hscale.Value;
+				EndChangingParameters();
+				OnUserModified();
+			}
+			catch (IncorrectValueException)
+			{
+			}
 		}
 	}
 }

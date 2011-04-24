@@ -112,11 +112,11 @@ namespace CatEye
 			this.radius_hscale.CanFocus = true;
 			this.radius_hscale.Name = "radius_hscale";
 			this.radius_hscale.Adjustment.Upper = 0.5;
-			this.radius_hscale.Adjustment.PageIncrement = 0.1;
-			this.radius_hscale.Adjustment.StepIncrement = 0.1;
+			this.radius_hscale.Adjustment.PageIncrement = 0.01;
+			this.radius_hscale.Adjustment.StepIncrement = 0.01;
 			this.radius_hscale.Adjustment.Value = 0.1;
 			this.radius_hscale.DrawValue = true;
-			this.radius_hscale.Digits = 2;
+			this.radius_hscale.Digits = 3;
 			this.radius_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.radius_hscale);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_hscale]));
@@ -132,6 +132,7 @@ namespace CatEye
 			}
 			this.Hide ();
 			this.radius_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnRadiusHscaleChangeValue);
+			this.radius_hscale.ValueChanged += new global::System.EventHandler (this.OnRadiusHscaleValueChanged);
 			this.power_entry.Changed += new global::System.EventHandler (this.OnPowerEntryChanged);
 			this.points_entry.Changed += new global::System.EventHandler (this.OnPointsEntryChanged);
 			this.delta_0_entry.Changed += new global::System.EventHandler (this.OnDelta0EntryChanged);

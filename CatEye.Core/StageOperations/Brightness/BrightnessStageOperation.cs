@@ -17,8 +17,12 @@ namespace CatEye.Core
 			
 			Console.WriteLine("Calculating current median...");
 			pm.Median = hdp.AmplitudeFindMedian();
-
+			
+			Console.WriteLine("Эту фигню я пишу здесь для вида :))");
+			Console.WriteLine("Еще одна");
+			
 			Console.WriteLine("Setting brightness...");
+			hdp.AmplitudeAdd(-hdp.AmplitudeFindBlackPoint());
 			if (pm.Normalize)
 			{
 				hdp.AmplitudeMultiply(pm.Brightness * 0.5 / pm.Median);

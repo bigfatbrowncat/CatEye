@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -1290,7 +1290,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.SaturationStageOperationParametersWidget" design-size="260 319">
+  <widget class="Gtk.Bin" id="CatEye.SaturationStageOperationParametersWidget" design-size="417 319">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1514,13 +1514,14 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Upper">0.5</property>
-            <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.1</property>
+            <property name="PageIncrement">0.01</property>
+            <property name="StepIncrement">0.01</property>
             <property name="Value">0.1</property>
             <property name="DrawValue">True</property>
-            <property name="Digits">2</property>
+            <property name="Digits">3</property>
             <property name="ValuePos">Right</property>
             <signal name="ChangeValue" handler="OnRadiusHscaleChangeValue" />
+            <signal name="ValueChanged" handler="OnRadiusHscaleValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -1560,7 +1561,7 @@
             <property name="IsEditable">True</property>
             <property name="WidthChars">6</property>
             <property name="InvisibleChar">●</property>
-            <signal name="Changed" handler="OnSaturationEntryChanged" />
+            <signal name="Changed" handler="OnBlueEntryChanged" />
           </widget>
           <packing>
             <property name="TopAttach">2</property>
@@ -1585,7 +1586,7 @@
             <property name="IsEditable">True</property>
             <property name="WidthChars">6</property>
             <property name="InvisibleChar">●</property>
-            <signal name="Changed" handler="OnSaturationEntryChanged" />
+            <signal name="Changed" handler="OnGreenEntryChanged" />
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -1668,7 +1669,7 @@
             <property name="IsEditable">True</property>
             <property name="WidthChars">6</property>
             <property name="InvisibleChar">●</property>
-            <signal name="Changed" handler="OnSaturationEntryChanged" />
+            <signal name="Changed" handler="OnRedEntryChanged" />
           </widget>
           <packing>
             <property name="LeftAttach">1</property>

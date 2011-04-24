@@ -102,9 +102,9 @@ namespace CatEye
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.red_entry.Changed += new global::System.EventHandler (this.OnSaturationEntryChanged);
-			this.green_entry.Changed += new global::System.EventHandler (this.OnSaturationEntryChanged);
-			this.blue_entry.Changed += new global::System.EventHandler (this.OnSaturationEntryChanged);
+			this.red_entry.Changed += new global::System.EventHandler (this.OnRedEntryChanged);
+			this.green_entry.Changed += new global::System.EventHandler (this.OnGreenEntryChanged);
+			this.blue_entry.Changed += new global::System.EventHandler (this.OnBlueEntryChanged);
 		}
 	}
 }

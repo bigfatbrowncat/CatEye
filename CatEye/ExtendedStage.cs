@@ -16,6 +16,8 @@ namespace CatEye
 			typeof(ToneStageOperationParametersWidget),
 		};
 		
+		
+		
 		protected Type FindTypeForStageOperation(Type[] types, Type stageOperationType)
 		{
 			object[] attrs = stageOperationType.GetCustomAttributes(typeof(StageOperationIDAttribute), true);
@@ -48,7 +50,7 @@ namespace CatEye
 
 		public event EventHandler<EventArgs> ViewedOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
-
+		
 		public ReadOnlyDictionary<StageOperation, StageOperationHolderWidget> Holders
 		{
 			get { return new ReadOnlyDictionary<StageOperation, StageOperationHolderWidget>(_Holders); }

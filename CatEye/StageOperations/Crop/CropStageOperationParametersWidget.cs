@@ -29,7 +29,7 @@ namespace CatEye
 			
 			aspect_comboboxentry.SetActiveIter(ti);
 
-			HandleParametersChangedNotByUI();
+			//HandleParametersChangedNotByUI();
 		}
 
 		protected virtual void OnLeftEntryChanged (object sender, System.EventArgs e)
