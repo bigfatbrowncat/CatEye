@@ -745,6 +745,7 @@ public partial class MainWindow : Gtk.Window
 		xdoc.Load(filename);
 		try
 		{
+			stages.FrozenAt = null;
 			stages.DeserializeFromXML(xdoc.ChildNodes[1], _StageOperationTypes);
 			
 			// Assigning our handlers
