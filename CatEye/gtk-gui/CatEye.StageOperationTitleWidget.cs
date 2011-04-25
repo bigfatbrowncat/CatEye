@@ -7,12 +7,10 @@ namespace CatEye
 		private global::Gtk.HBox hbox;
 		private global::Gtk.CheckButton title_checkbutton;
 		private global::Gtk.Label title_label;
-		private global::Gtk.ToggleButton view_togglebutton;
+		private global::Gtk.ToggleButton edit_togglebutton;
 		private global::Gtk.ToggleButton freeze_togglebutton;
 		private global::Gtk.Button up_button;
-		private global::Gtk.Arrow arrow5;
 		private global::Gtk.Button down_button;
-		private global::Gtk.Arrow arrow6;
 		private global::Gtk.Button remove_button;
 
 		protected virtual void Build ()
@@ -44,14 +42,13 @@ namespace CatEye
 			w2.Position = 0;
 			w2.Padding = ((uint)(2));
 			// Container child hbox.Gtk.Box+BoxChild
-			this.view_togglebutton = new global::Gtk.ToggleButton ();
-			this.view_togglebutton.CanFocus = true;
-			this.view_togglebutton.Name = "view_togglebutton";
-			this.view_togglebutton.UseUnderline = true;
-			this.view_togglebutton.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.view_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("View");
-			this.hbox.Add (this.view_togglebutton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox [this.view_togglebutton]));
+			this.edit_togglebutton = new global::Gtk.ToggleButton ();
+			this.edit_togglebutton.CanFocus = true;
+			this.edit_togglebutton.Name = "edit_togglebutton";
+			this.edit_togglebutton.Relief = ((global::Gtk.ReliefStyle)(2));
+			this.edit_togglebutton.Label = null;
+			this.hbox.Add (this.edit_togglebutton);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox [this.edit_togglebutton]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -59,9 +56,8 @@ namespace CatEye
 			this.freeze_togglebutton = new global::Gtk.ToggleButton ();
 			this.freeze_togglebutton.CanFocus = true;
 			this.freeze_togglebutton.Name = "freeze_togglebutton";
-			this.freeze_togglebutton.UseUnderline = true;
 			this.freeze_togglebutton.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.freeze_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("Freeze");
+			this.freeze_togglebutton.Label = null;
 			this.hbox.Add (this.freeze_togglebutton);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox [this.freeze_togglebutton]));
 			w4.Position = 2;
@@ -69,72 +65,59 @@ namespace CatEye
 			w4.Fill = false;
 			// Container child hbox.Gtk.Box+BoxChild
 			this.up_button = new global::Gtk.Button ();
-			this.up_button.WidthRequest = 23;
 			this.up_button.CanFocus = true;
 			this.up_button.Name = "up_button";
 			this.up_button.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child up_button.Gtk.Container+ContainerChild
-			this.arrow5 = new global::Gtk.Arrow (((global::Gtk.ArrowType)(0)), ((global::Gtk.ShadowType)(0)));
-			this.arrow5.Name = "arrow5";
-			this.up_button.Add (this.arrow5);
 			this.up_button.Label = null;
 			this.hbox.Add (this.up_button);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox [this.up_button]));
-			w6.Position = 3;
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox [this.up_button]));
+			w5.Position = 3;
+			w5.Expand = false;
+			w5.Fill = false;
 			// Container child hbox.Gtk.Box+BoxChild
 			this.down_button = new global::Gtk.Button ();
-			this.down_button.WidthRequest = 23;
 			this.down_button.CanFocus = true;
 			this.down_button.Name = "down_button";
 			this.down_button.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child down_button.Gtk.Container+ContainerChild
-			this.arrow6 = new global::Gtk.Arrow (((global::Gtk.ArrowType)(1)), ((global::Gtk.ShadowType)(0)));
-			this.arrow6.Name = "arrow6";
-			this.down_button.Add (this.arrow6);
 			this.down_button.Label = null;
 			this.hbox.Add (this.down_button);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox [this.down_button]));
-			w8.Position = 4;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox [this.down_button]));
+			w6.Position = 4;
+			w6.Expand = false;
+			w6.Fill = false;
 			// Container child hbox.Gtk.Box+BoxChild
 			this.remove_button = new global::Gtk.Button ();
 			this.remove_button.CanFocus = true;
 			this.remove_button.Name = "remove_button";
-			this.remove_button.UseUnderline = true;
 			this.remove_button.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child remove_button.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w10 = new global::Gtk.HBox ();
-			w10.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-close", global::Gtk.IconSize.Menu);
-			w10.Add (w11);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w13 = new global::Gtk.Label ();
-			w10.Add (w13);
-			w9.Add (w10);
-			this.remove_button.Add (w9);
+			this.remove_button.Label = null;
 			this.hbox.Add (this.remove_button);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox [this.remove_button]));
-			w17.Position = 5;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox [this.remove_button]));
+			w7.Position = 5;
+			w7.Expand = false;
+			w7.Fill = false;
 			this.Add (this.hbox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.Shown += new global::System.EventHandler (this.OnShown);
 			this.title_checkbutton.Toggled += new global::System.EventHandler (this.OnTitleCheckbuttonToggled);
-			this.view_togglebutton.Toggled += new global::System.EventHandler (this.OnViewTogglebuttonToggled);
+			this.edit_togglebutton.Toggled += new global::System.EventHandler (this.OnViewTogglebuttonToggled);
+			this.edit_togglebutton.StateChanged += new global::Gtk.StateChangedHandler (this.OnEditTogglebuttonStateChanged);
+			this.edit_togglebutton.StyleSet += new global::Gtk.StyleSetHandler (this.OnEditTogglebuttonStyleSet);
 			this.freeze_togglebutton.Toggled += new global::System.EventHandler (this.OnFreezeTogglebuttonToggled);
+			this.freeze_togglebutton.StateChanged += new global::Gtk.StateChangedHandler (this.OnFreezeTogglebuttonStateChanged);
+			this.freeze_togglebutton.StyleSet += new global::Gtk.StyleSetHandler (this.OnFreezeTogglebuttonStyleSet);
 			this.up_button.Clicked += new global::System.EventHandler (this.OnUpButtonClicked);
+			this.up_button.StateChanged += new global::Gtk.StateChangedHandler (this.OnUpButtonStateChanged);
+			this.up_button.StyleSet += new global::Gtk.StyleSetHandler (this.OnUpButtonStyleSet);
 			this.down_button.Clicked += new global::System.EventHandler (this.OnDownButtonClicked);
+			this.down_button.StateChanged += new global::Gtk.StateChangedHandler (this.OnDownButtonStateChanged);
+			this.down_button.StyleSet += new global::Gtk.StyleSetHandler (this.OnDownButtonStyleSet);
 			this.remove_button.Clicked += new global::System.EventHandler (this.OnRemoveButtonClicked);
+			this.remove_button.StateChanged += new global::Gtk.StateChangedHandler (this.OnRemoveButtonStateChanged);
+			this.remove_button.StyleSet += new global::Gtk.StyleSetHandler (this.OnRemoveButtonStyleSet);
 		}
 	}
 }

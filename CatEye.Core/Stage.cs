@@ -70,8 +70,7 @@ namespace CatEye.Core
 		{
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
-				// TODO: take the Active back  if (_Holders[_StageQueue[j]].Active)
-					_StageQueue[j].OnDo(hdp);
+				_StageQueue[j].OnDo(hdp);
 			}
 		}
 

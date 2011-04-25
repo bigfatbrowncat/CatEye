@@ -199,12 +199,12 @@ public partial class MainWindow : Gtk.Window
 
 	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
 	{
-		if (stages.ViewedOperation != null)
+		if (stages.EditingOperation != null)
 		{
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
+			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -214,12 +214,12 @@ public partial class MainWindow : Gtk.Window
 	[GLib.ConnectBefore]
 	void ImageMouseButtonReleased (object o, ButtonReleaseEventArgs args)
 	{
-		if (stages.ViewedOperation != null)
+		if (stages.EditingOperation != null)
 		{
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
+			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -228,12 +228,12 @@ public partial class MainWindow : Gtk.Window
 	
 	void HandleImageMouseMotion (object o, MotionNotifyEventArgs args)
 	{
-		if (stages.ViewedOperation != null)
+		if (stages.EditingOperation != null)
 		{
 			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
 			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
 
-			if (stages.Holders[stages.ViewedOperation].OperationParametersWidget.ReportMousePosition(dx, dy))
+			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMousePosition(dx, dy))
 			{
 				ppmviewwidget1.QueueDraw();
 			}
@@ -242,9 +242,9 @@ public partial class MainWindow : Gtk.Window
 
 	void DrawCurrentlyViewedStageOperationAdditions (object o, ExposeEventArgs args)
 	{
-		if (stages.ViewedOperation != null)
+		if (stages.EditingOperation != null)
 		{
-			stages.Holders[stages.ViewedOperation].OperationParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
+			stages.Holders[stages.EditingOperation].OperationParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
 			                                                       ppmviewwidget1.CurrentImagePosition);
 		}
 	}

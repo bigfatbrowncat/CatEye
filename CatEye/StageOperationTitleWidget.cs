@@ -37,16 +37,17 @@ namespace CatEye
 			}
 			set { 
 				title_checkbutton.Active = value; 
+				UpdateButtonsSensitivity();
 			}
 		}
 		
 		public bool View
 		{
-			get { return view_togglebutton.Active; }
+			get { return edit_togglebutton.Active; }
 			set 
 			{
 				_ViewToggledFromCode = true;
-				view_togglebutton.Active = value; 
+				edit_togglebutton.Active = value; 
 				_ViewToggledFromCode = false;
 			}
 		}
@@ -70,10 +71,16 @@ namespace CatEye
 			set
 			{
 				_FrozenButtonsState = value;
-				freeze_togglebutton.Sensitive = !value;
-				up_button.Sensitive = !value;
-				down_button.Sensitive = !value;
+				UpdateButtonsSensitivity();
 			}
+		}
+		
+		protected virtual void UpdateButtonsSensitivity()
+		{
+			freeze_togglebutton.Sensitive = !_FrozenButtonsState && title_checkbutton.Active;
+			up_button.Sensitive = !_FrozenButtonsState;
+			down_button.Sensitive = !_FrozenButtonsState;
+			edit_togglebutton.Sensitive = title_checkbutton.Active;
 		}
 		
 		public event EventHandler<EventArgs> UpButtonClicked;
@@ -128,6 +135,109 @@ namespace CatEye
 		{
 			if (RemoveButtonClicked != null)
 				RemoveButtonClicked(sender, EventArgs.Empty);
+		}
+
+		protected void OnDownIconImageExposeEvent (object o, Gtk.ExposeEventArgs args)
+		{
+		}
+		
+		unsafe void UpdateImageOn(Gtk.Button btn, string res)
+		{
+			Gdk.Color new_clr = btn.Style.Foreground(btn.State);
+			
+			Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource(res);
+			int h = buf.Height;
+			int w = buf.Width;
+			int stride = buf.Rowstride;
+			
+			int chan = buf.NChannels;
+			
+			byte *cur_row = (byte *)buf.Pixels;
+			for (int j = 0; j < h; j++)
+			{
+				byte *cur_pixel = cur_row;
+				for (int i = 0; i < w; i++)
+				{
+					byte r = (byte)new_clr.Red;
+					byte g = (byte)new_clr.Green;
+					byte b = (byte)new_clr.Blue;
+					byte a = cur_pixel[3];
+					
+					cur_pixel[0] = r;
+					cur_pixel[1] = g;
+					cur_pixel[2] = b;
+					cur_pixel[3] = a;
+					
+					cur_pixel += chan;
+				}
+				cur_row += stride;
+			}
+			
+			if (btn.Child != null)
+			{
+				Gtk.Widget wg = btn.Child;
+				btn.Remove(wg);
+				wg.Dispose();
+			}
+
+			Gtk.Image img = new Gtk.Image(buf);
+			btn.BorderWidth = 0;
+			btn.Add(img);
+			img.Show();
+		}
+		
+		protected void OnShown (object sender, System.EventArgs e)
+		{
+		}
+
+		protected void OnEditTogglebuttonStateChanged (object o, Gtk.StateChangedArgs args)
+		{
+			UpdateImageOn(edit_togglebutton, "CatEye.res.pen.png");
+		}
+
+		protected void OnEditTogglebuttonStyleSet (object o, Gtk.StyleSetArgs args)
+		{
+			UpdateImageOn(edit_togglebutton, "CatEye.res.pen.png");
+		}
+
+		protected void OnFreezeTogglebuttonStateChanged (object o, Gtk.StateChangedArgs args)
+		{
+			UpdateImageOn(freeze_togglebutton, "CatEye.res.snowflake.png");
+		}
+
+		protected void OnFreezeTogglebuttonStyleSet (object o, Gtk.StyleSetArgs args)
+		{
+			UpdateImageOn(freeze_togglebutton, "CatEye.res.snowflake.png");
+		}
+
+		protected void OnUpButtonStyleSet (object o, Gtk.StyleSetArgs args)
+		{
+			UpdateImageOn(up_button, "CatEye.res.up.png");
+		}
+
+		protected void OnUpButtonStateChanged (object o, Gtk.StateChangedArgs args)
+		{
+			UpdateImageOn(up_button, "CatEye.res.up.png");
+		}
+
+		protected void OnDownButtonStyleSet (object o, Gtk.StyleSetArgs args)
+		{
+			UpdateImageOn(down_button, "CatEye.res.down.png");
+		}
+
+		protected void OnDownButtonStateChanged (object o, Gtk.StateChangedArgs args)
+		{
+			UpdateImageOn(down_button, "CatEye.res.down.png");
+		}
+
+		protected void OnRemoveButtonStyleSet (object o, Gtk.StyleSetArgs args)
+		{
+			UpdateImageOn(remove_button, "CatEye.res.remove.png");
+		}
+
+		protected void OnRemoveButtonStateChanged (object o, Gtk.StateChangedArgs args)
+		{
+			UpdateImageOn(remove_button, "CatEye.res.remove.png");
 		}
 	}
 }

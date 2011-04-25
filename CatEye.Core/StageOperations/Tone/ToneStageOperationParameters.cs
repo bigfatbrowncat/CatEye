@@ -78,7 +78,6 @@ namespace CatEye.Core
 			{
 				if (double.TryParse(node.Attributes["BluePart"].Value, NumberStyles.Float, nfi, out res))
 				{
-					Console.Write("blue=" + res);
 					mBluePart = res;
 				}
 				else

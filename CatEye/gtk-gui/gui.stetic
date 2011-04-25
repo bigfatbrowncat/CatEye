@@ -8,6 +8,18 @@
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
+  <icon-factory>
+    <icon-set id="Edit">
+      <source>
+        <property name="Image">resource:CatEye.res.pen.png</property>
+      </source>
+    </icon-set>
+    <icon-set id="Freeze">
+      <source>
+        <property name="Image">resource:CatEye.res.snowflake.png</property>
+      </source>
+    </icon-set>
+  </icon-factory>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
       <action id="ScaledRangeAction">
@@ -331,9 +343,10 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.StageOperationTitleWidget" design-size="328 32">
+  <widget class="Gtk.Bin" id="CatEye.StageOperationTitleWidget" design-size="328 28">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <signal name="Shown" handler="OnShown" />
     <child>
       <widget class="Gtk.HBox" id="hbox">
         <property name="MemberName" />
@@ -362,18 +375,21 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.ToggleButton" id="view_togglebutton">
+          <widget class="Gtk.ToggleButton" id="edit_togglebutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">View</property>
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <signal name="Toggled" handler="OnViewTogglebuttonToggled" />
+            <signal name="StateChanged" handler="OnEditTogglebuttonStateChanged" />
+            <signal name="StyleSet" handler="OnEditTogglebuttonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -382,11 +398,14 @@
           <widget class="Gtk.ToggleButton" id="freeze_togglebutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">Freeze</property>
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <signal name="Toggled" handler="OnFreezeTogglebuttonToggled" />
+            <signal name="StateChanged" handler="OnFreezeTogglebuttonStateChanged" />
+            <signal name="StyleSet" handler="OnFreezeTogglebuttonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
           </widget>
           <packing>
             <property name="Position">2</property>
@@ -398,22 +417,19 @@
         <child>
           <widget class="Gtk.Button" id="up_button">
             <property name="MemberName" />
-            <property name="WidthRequest">23</property>
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnUpButtonClicked" />
+            <signal name="StateChanged" handler="OnUpButtonStateChanged" />
+            <signal name="StyleSet" handler="OnUpButtonStyleSet" />
             <child>
-              <widget class="Gtk.Arrow" id="arrow5">
-                <property name="MemberName" />
-                <property name="ArrowType">Up</property>
-                <property name="ShadowType">None</property>
-              </widget>
+              <placeholder />
             </child>
           </widget>
           <packing>
             <property name="Position">3</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -421,22 +437,19 @@
         <child>
           <widget class="Gtk.Button" id="down_button">
             <property name="MemberName" />
-            <property name="WidthRequest">23</property>
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnDownButtonClicked" />
+            <signal name="StateChanged" handler="OnDownButtonStateChanged" />
+            <signal name="StyleSet" handler="OnDownButtonStyleSet" />
             <child>
-              <widget class="Gtk.Arrow" id="arrow6">
-                <property name="MemberName" />
-                <property name="ArrowType">Down</property>
-                <property name="ShadowType">None</property>
-              </widget>
+              <placeholder />
             </child>
           </widget>
           <packing>
             <property name="Position">4</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -445,16 +458,18 @@
           <widget class="Gtk.Button" id="remove_button">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-close Menu</property>
-            <property name="Label" />
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnRemoveButtonClicked" />
+            <signal name="StateChanged" handler="OnRemoveButtonStateChanged" />
+            <signal name="StyleSet" handler="OnRemoveButtonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
           </widget>
           <packing>
             <property name="Position">5</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

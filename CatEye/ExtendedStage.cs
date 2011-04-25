@@ -40,7 +40,7 @@ namespace CatEye
 			return FindTypeWithStageOperationIDEqualTo(mStageOperationParametersTypes, id);
 		}
 		
-		private StageOperation _ViewedOperation = null;
+		private StageOperation _EditingOperation = null;
 		private StageOperation _FrozenAt = null;
 		private FrozenPanel _FrozenPanel;
 		private Gtk.VBox _StageVBox;
@@ -56,19 +56,19 @@ namespace CatEye
 			get { return new ReadOnlyDictionary<StageOperation, StageOperationHolderWidget>(_Holders); }
 		}
 
-		public StageOperation ViewedOperation
+		public StageOperation EditingOperation
 		{
-			get { return _ViewedOperation; }
+			get { return _EditingOperation; }
 			set
 			{
-				if (value != _ViewedOperation)
+				if (value != _EditingOperation)
 				{
 					for (int i = _StageQueue.Count - 1; i >= 0; i--)
 					{
 						_Holders[_StageQueue[i]].View = (_StageQueue[i] == value);
 					}
-					_ViewedOperation = value;
-					OnViewedOperationChanged();
+					_EditingOperation = value;
+					OnEditingOperationChanged();
 				}
 			}
 		}
@@ -97,7 +97,7 @@ namespace CatEye
 					for (int i = 0; i < _StageQueue.Count; i++)
 					{
 						_Holders[_StageQueue[i]].Sensitive = frozenfound;
-						if (_ViewedOperation == _StageQueue[i]) viewedfound = true;
+						if (_EditingOperation == _StageQueue[i]) viewedfound = true;
 						
 						if (_StageQueue[i] == value) 
 						{
@@ -107,9 +107,9 @@ namespace CatEye
 								// If viewed wss before the frozen line, 
 								// changing viewed to the first after frozen  
 								if (_StageQueue.Count > i + 1)
-									ViewedOperation = _StageQueue[i + 1];
+									EditingOperation = _StageQueue[i + 1];
 								else
-									ViewedOperation = null;
+									EditingOperation = null;
 							}
 							_Holders[_StageQueue[i]].Freeze = true;
 							
@@ -176,7 +176,7 @@ namespace CatEye
 					// Do all operations
 					for (int j = 0; j < _StageQueue.Count; j++)
 					{
-						if (_StageQueue[j] == ViewedOperation)
+						if (_StageQueue[j] == EditingOperation)
 							break;
 						if (_StageQueue[j].Parameters.Active)
 							_StageQueue[j].OnDo(hdp);
@@ -187,7 +187,7 @@ namespace CatEye
 					bool frozen_line_found = false;
 					for (int j = 0; j < _StageQueue.Count; j++)
 					{
-						if (_StageQueue[j] == ViewedOperation)
+						if (_StageQueue[j] == EditingOperation)
 							break;
 						if (frozen_line_found && _StageQueue[j].Parameters.Active)
 							_StageQueue[j].OnDo(hdp);
@@ -237,7 +237,7 @@ namespace CatEye
 			};
 		}
 
-		protected virtual void OnViewedOperationChanged()
+		protected virtual void OnEditingOperationChanged()
 		{
 			if (ViewedOperationChanged != null)
 				ViewedOperationChanged(this, EventArgs.Empty);
@@ -329,11 +329,11 @@ namespace CatEye
 			
 			if (_Holders[sop].View)
 			{
-				ViewedOperation = sop;
+				EditingOperation = sop;
 			}
 			else
 			{
-				ViewedOperation = null;
+				EditingOperation = null;
 			}
 		}
 		

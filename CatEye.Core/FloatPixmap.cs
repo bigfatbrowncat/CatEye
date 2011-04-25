@@ -356,7 +356,7 @@ namespace CatEye.Core
 					
 					ppd(u, v);
 				}
-			}			
+			}
 		}
 		
 		public void SharpenLight(double radius_part, double power, double delta_0, ISharpeningSamplingMethod ssm, ProgressReporter callback)
