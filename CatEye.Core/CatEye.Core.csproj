@@ -80,7 +80,6 @@
     <Compile Include="PPMLoader.cs" />
     <Compile Include="DCRawConnection.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
-    <Compile Include="DoublePixmap.cs" />
     <Compile Include="StageOperations\StageOperation.cs" />
     <Compile Include="StageOperations\StageOperationParameters.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperation.cs" />
@@ -95,6 +94,7 @@
     <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
+    <Compile Include="FloatPixmap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

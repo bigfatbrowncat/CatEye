@@ -10,7 +10,7 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (DoublePixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			

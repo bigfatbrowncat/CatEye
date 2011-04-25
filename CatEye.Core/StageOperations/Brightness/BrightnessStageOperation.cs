@@ -10,17 +10,14 @@ namespace CatEye.Core
 		{
 		}
 
-		public override void OnDo (DoublePixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			BrightnessStageOperationParameters pm = (BrightnessStageOperationParameters)Parameters;
 			
 			
 			Console.WriteLine("Calculating current median...");
 			pm.Median = hdp.AmplitudeFindMedian();
-			
-			Console.WriteLine("Эту фигню я пишу здесь для вида :))");
-			Console.WriteLine("Еще одна");
-			
+
 			Console.WriteLine("Setting brightness...");
 			hdp.AmplitudeAdd(-hdp.AmplitudeFindBlackPoint());
 			if (pm.Normalize)

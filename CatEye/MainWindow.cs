@@ -79,8 +79,8 @@ public partial class MainWindow : Gtk.Window
 	public delegate bool ProgressMessageReporter(double progress, string status);
 
 	PPMLoader ppl = null;
-	DoublePixmap hdr = null;
-	DoublePixmap frozen = null;
+	FloatPixmap hdr = null;
+	FloatPixmap frozen = null;
 	ExtendedStage stages;
 	
 	Type[] _StageOperationTypes = new Type[]
@@ -446,7 +446,7 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				DoublePixmap frozen_tmp = DoublePixmap.FromPPM(ppl, delegate (double progress) {
+				FloatPixmap frozen_tmp = FloatPixmap.FromPPM(ppl, delegate (double progress) {
 					return ImportRawAndLoadingReporter(progress, "Loading source image...");
 					
 				});
@@ -503,12 +503,12 @@ public partial class MainWindow : Gtk.Window
 			{
 				if (frozen == null)
 				{
-					hdr = DoublePixmap.FromPPM(ppl, delegate (double progress) {
+					hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
 						return ImportRawAndLoadingReporter(progress, "Loading source image...");
 					});
 				}
 				else
-					hdr = new DoublePixmap(frozen);
+					hdr = new FloatPixmap(frozen);
 				
 				ppmviewwidget1.HDR = hdr;
 				

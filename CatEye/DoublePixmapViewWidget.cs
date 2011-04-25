@@ -12,7 +12,7 @@ namespace CatEye
 		public enum ScaleType { None, Divide, Multiply };
 
 		private bool _InstantUpdate = false;
-		private DoublePixmap _HDR;
+		private FloatPixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
 		
@@ -22,7 +22,7 @@ namespace CatEye
 			get { return _CurrentImagePosition; }
 		}
 		
-		public DoublePixmap HDR
+		public FloatPixmap HDR
 		{
 			get { return _HDR; }
 			set 

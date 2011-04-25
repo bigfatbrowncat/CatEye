@@ -12,24 +12,24 @@ namespace CatEye.Core
 	{
 	}
 	
-	public class DoublePixmap
+	public class FloatPixmap
 	{
 		private const int REPORT_EVERY_NTH_LINE = 150;
 		
-		double[,] r_chan, g_chan, b_chan;
+		float[,] r_chan, g_chan, b_chan;
 		
 		public int width, height;
 		
-		private DoublePixmap ()
+		private FloatPixmap ()
 		{
 			
 		}
-		public DoublePixmap (DoublePixmap src)
+		public FloatPixmap (FloatPixmap src)
 		{
 			width = src.width; height = src.height;
-			r_chan = new double[width, height];
-			g_chan = new double[width, height];
-			b_chan = new double[width, height];
+			r_chan = new float[width, height];
+			g_chan = new float[width, height];
+			b_chan = new float[width, height];
 			
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
@@ -41,17 +41,17 @@ namespace CatEye.Core
 			
 		}
 		
-		public static DoublePixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
+		public static FloatPixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
 		{
 			// Applying inverse hdr function: x = -N * ln[ (N - y) / N ]
-			DoublePixmap res = new DoublePixmap();
+			FloatPixmap res = new FloatPixmap();
 			
 			res.width = ppm.Header.Width;
 			res.height = ppm.Header.Height;
 			
-			res.r_chan = new double[res.width, res.height];
-			res.g_chan = new double[res.width, res.height];
-			res.b_chan = new double[res.width, res.height];
+			res.r_chan = new float[res.width, res.height];
+			res.g_chan = new float[res.width, res.height];
+			res.b_chan = new float[res.width, res.height];
 
 			for (int i = 0; i < res.width; i++)
 			{
@@ -79,9 +79,9 @@ namespace CatEye.Core
 				}
 				for (int j = 0; j < res.height; j++)
 				{
-					res.r_chan[i, j] /= Max;
-					res.g_chan[i, j] /= Max;
-					res.b_chan[i, j] /= Max;
+					res.r_chan[i, j] /= (float)Max;
+					res.g_chan[i, j] /= (float)Max;
+					res.b_chan[i, j] /= (float)Max;
 				}
 			}
 			
@@ -97,9 +97,9 @@ namespace CatEye.Core
 				}
 				for (int j = 0; j < res.height; j++)
 				{
-					res.r_chan[i, j] = N * Math.Log(1.0 / (1 - res.r_chan[i, j] / N));
-					res.g_chan[i, j] = N * Math.Log(1.0 / (1 - res.g_chan[i, j] / N));
-					res.b_chan[i, j] = N * Math.Log(1.0 / (1 - res.b_chan[i, j] / N));
+					res.r_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.r_chan[i, j] / N)));
+					res.g_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.g_chan[i, j] / N)));
+					res.b_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.b_chan[i, j] / N)));
 				}
 			}
 			
@@ -115,9 +115,9 @@ namespace CatEye.Core
 		
 		public void Downscale(int k, ProgressReporter callback)
 		{
-			double[,] new_r = new double[width / k, height / k];
-			double[,] new_g = new double[width / k, height / k];
-			double[,] new_b = new double[width / k, height / k];
+			float[,] new_r = new float[width / k, height / k];
+			float[,] new_g = new float[width / k, height / k];
+			float[,] new_b = new float[width / k, height / k];
 
 			for (int i = 0; i < width / k; i++)
 			{
@@ -145,9 +145,9 @@ namespace CatEye.Core
 					g /= (k * k);
 					b /= (k * k);
 					
-					new_r[i, j] = r;
-					new_g[i, j] = g;
-					new_b[i, j] = b;
+					new_r[i, j] = (float)r;
+					new_g[i, j] = (float)g;
+					new_b[i, j] = (float)b;
 				}
 				
 			}
@@ -183,9 +183,9 @@ namespace CatEye.Core
 				j1 = Math.Max(0, (int)(height * top)), 
 				j2 = Math.Min(height - 1, (int)(height * bottom));
 			
-			double[,] newr = new double[i2 - i1 + 1, j2 - j1 + 1];
-			double[,] newg = new double[i2 - i1 + 1, j2 - j1 + 1];
-			double[,] newb = new double[i2 - i1 + 1, j2 - j1 + 1];
+			float[,] newr = new float[i2 - i1 + 1, j2 - j1 + 1];
+			float[,] newg = new float[i2 - i1 + 1, j2 - j1 + 1];
+			float[,] newb = new float[i2 - i1 + 1, j2 - j1 + 1];
 			
 			for (int i = i1; i <= i2; i++)
 			{
@@ -212,9 +212,9 @@ namespace CatEye.Core
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				r_chan[i, j] *= Amplitude;
-				g_chan[i, j] *= Amplitude;
-				b_chan[i, j] *= Amplitude;
+				r_chan[i, j] *= (float)Amplitude;
+				g_chan[i, j] *= (float)Amplitude;
+				b_chan[i, j] *= (float)Amplitude;
 			}
 		}
 
@@ -271,9 +271,9 @@ namespace CatEye.Core
 				// Adding "power" to color amplitude
 				if (amp + delta > 0)
 				{
-					r_chan[i, j] *= (amp + delta) / amp;
-					g_chan[i, j] *= (amp + delta) / amp;
-					b_chan[i, j] *= (amp + delta) / amp;
+					r_chan[i, j] *= (float)((amp + delta) / amp);
+					g_chan[i, j] *= (float)((amp + delta) / amp);
+					b_chan[i, j] *= (float)((amp + delta) / amp);
 				}
 				else
 				{
@@ -309,9 +309,9 @@ namespace CatEye.Core
 				                         g_chan[i, j] * g_chan[i, j] +
 				                         b_chan[i, j] * b_chan[i, j]);
 				
-				r_chan[i, j] = r_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
-				g_chan[i, j] = g_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
-				b_chan[i, j] = b_chan[i, j] * Math.Pow(1.0 / (light + bloha), power);
+				r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
+				g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
+				b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
 
 			}
 			
@@ -326,7 +326,7 @@ namespace CatEye.Core
 		
 		public class StraightSharpeningSamplingMethod : ISharpeningSamplingMethod
 		{
-			public void DoSampling (DoublePixmap.PointProcessingDelegate ppd, int radius)
+			public void DoSampling (FloatPixmap.PointProcessingDelegate ppd, int radius)
 			{
 				// Go thru all the square
 				for (int u = - radius; u <= radius; u++)
@@ -347,7 +347,7 @@ namespace CatEye.Core
 				SamplesCount = samplesCount;
 				this.rnd = rnd;
 			}
-			public void DoSampling (DoublePixmap.PointProcessingDelegate ppd, int radius)
+			public void DoSampling (FloatPixmap.PointProcessingDelegate ppd, int radius)
 			{
 				for (int k = 0; k < SamplesCount; k++)
 				{
@@ -427,9 +427,9 @@ namespace CatEye.Core
 							else
 								kcomp = Math.Pow(scale_matrix[i_back, j] / scale_matrix_adds[i_back, j] + 1, power);
 							
-							r_chan[i_back, j] = r_chan[i_back, j] * kcomp;
-							g_chan[i_back, j] = g_chan[i_back, j] * kcomp;
-							b_chan[i_back, j] = b_chan[i_back, j] * kcomp;
+							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
+							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
+							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
 			
 							//if (r_chan[i_back, j] > 0.99999) r_chan[i_back, j] = 0.99999;
 							//if (g_chan[i_back, j] > 0.99999) g_chan[i_back, j] = 0.99999;
@@ -446,9 +446,9 @@ namespace CatEye.Core
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				r_chan[i, j] *= r_scale;
-				g_chan[i, j] *= g_scale;
-				b_chan[i, j] *= b_scale;
+				r_chan[i, j] *= (float)r_scale;
+				g_chan[i, j] *= (float)g_scale;
+				b_chan[i, j] *= (float)b_scale;
 			}
 				
 		}
@@ -462,21 +462,9 @@ namespace CatEye.Core
 				double mu_new = mu * Math.Cos(RBtoG_angle) - g_chan[i, j] * Math.Sin(RBtoG_angle);
 				double g_new = g_chan[i, j] * Math.Cos(RBtoG_angle) + mu * Math.Sin(RBtoG_angle);
 				
-				r_chan[i, j] *= mu_new / mu;
-				b_chan[i, j] *= mu_new / mu;
-				g_chan[i, j] = g_new;
-			}
-		}
-		
-		public void ApplyBtoRAngle(double BtoR_angle)
-		{
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				double r_new = b_chan[i, j] * Math.Sin(BtoR_angle) + r_chan[i, j] * Math.Cos(BtoR_angle);
-				double b_new = b_chan[i, j] * Math.Cos(BtoR_angle) - r_chan[i, j] * Math.Sin(BtoR_angle);
-				r_chan[i, j] = r_new;
-				b_chan[i, j] = b_new;
+				r_chan[i, j] *= (float)(mu_new / mu);
+				b_chan[i, j] *= (float)(mu_new / mu);
+				g_chan[i, j] = (float)g_new;
 			}
 		}
 			
@@ -491,9 +479,9 @@ namespace CatEye.Core
 				double val = Math.Sqrt(light_sqr / 3);
 				
 				// Normalizing image
-				r_chan[i, j] = r_chan[i, j] * satur_factor + val * (1 - satur_factor);
-				g_chan[i, j] = g_chan[i, j] * satur_factor + val * (1 - satur_factor);
-				b_chan[i, j] = b_chan[i, j] * satur_factor + val * (1 - satur_factor);
+				r_chan[i, j] = (float)(r_chan[i, j] * satur_factor + val * (1 - satur_factor));
+				g_chan[i, j] = (float)(g_chan[i, j] * satur_factor + val * (1 - satur_factor));
+				b_chan[i, j] = (float)(b_chan[i, j] * satur_factor + val * (1 - satur_factor));
 			}
 		}
 		

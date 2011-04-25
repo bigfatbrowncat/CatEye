@@ -66,7 +66,7 @@ namespace CatEye.Core
 				OperationActivityChanged(this, EventArgs.Empty);
 		}
 		
-		public void ApplyAllOperations(DoublePixmap hdp)
+		public void ApplyAllOperations(FloatPixmap hdp)
 		{
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{

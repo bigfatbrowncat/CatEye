@@ -10,13 +10,13 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (DoublePixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			UltraSharpStageOperationParameters pm = (UltraSharpStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Ultra sharpening...");
 			hdp.SharpenLight(pm.Radius, pm.Power, pm.Delta0,
-					         new DoublePixmap.MonteCarloSharpeningSamplingMethod(pm.Points, new Random()), 
+					         new FloatPixmap.MonteCarloSharpeningSamplingMethod(pm.Points, new Random()), 
 			                 delegate (double progress) {
 				return OnReportProgress(progress);
 			});

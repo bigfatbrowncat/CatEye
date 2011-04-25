@@ -142,7 +142,7 @@ namespace CatEye
 			}
 		}
 		
-		public bool ApplyOperationsBeforeFrozenLine(DoublePixmap hdp)
+		public bool ApplyOperationsBeforeFrozenLine(FloatPixmap hdp)
 		{
 			if (_FrozenAt == null) return true;	// If not frozen, do nothing
 			try
@@ -167,7 +167,7 @@ namespace CatEye
 			return true;
 		}
 		
-		public bool ApplyOperationsAfterFrozenLine(DoublePixmap hdp)
+		public bool ApplyOperationsAfterFrozenLine(FloatPixmap hdp)
 		{
 			try
 			{
