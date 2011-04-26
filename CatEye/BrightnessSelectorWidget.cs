@@ -57,8 +57,8 @@ namespace CatEye
 			
 			// Painting gradient
 			Gdk.GC gc = new Gdk.GC(GdkWindow);
-			int xmin = mLeftMargin + 2;
-			int xmax = w - mRightMargin - 2;
+			int xmin = mLeftMargin + 3;
+			int xmax = w - mRightMargin - 3;
 			int ymin = mTopMargin + 2;
 			int ymax = h - mBottomMargin - 2;
 			

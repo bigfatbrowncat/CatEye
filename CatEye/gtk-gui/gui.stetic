@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="Edit">
@@ -170,8 +170,8 @@
                 <child>
                   <widget class="Gtk.VBox" id="left_vbox">
                     <property name="MemberName" />
-                    <property name="Spacing">5</property>
-                    <property name="BorderWidth">3</property>
+                    <property name="Spacing">4</property>
+                    <property name="BorderWidth">4</property>
                     <child>
                       <widget class="Gtk.HBox" id="stageOperationAdding_hbox">
                         <property name="MemberName" />
@@ -224,8 +224,9 @@
                               <widget class="Gtk.VBox" id="stage_vbox">
                                 <property name="MemberName" />
                                 <property name="ShowScrollbars">True</property>
-                                <property name="Spacing">6</property>
-                                <property name="BorderWidth">3</property>
+                                <property name="Spacing">3</property>
+                                <property name="BorderWidth">6</property>
+                                <signal name="ExposeEvent" handler="OnStageVboxExposeEvent" />
                                 <child>
                                   <placeholder />
                                 </child>
@@ -352,7 +353,7 @@
         <property name="MemberName" />
         <child>
           <widget class="Gtk.CheckButton" id="title_checkbutton">
-            <property name="MemberName" />
+            <property name="MemberName">title_checkbutton</property>
             <property name="CanFocus">True</property>
             <property name="Label" translatable="yes">checkbutton2</property>
             <property name="DrawIndicator">True</property>
@@ -371,7 +372,6 @@
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">False</property>
-            <property name="Padding">2</property>
           </packing>
         </child>
         <child>
@@ -483,7 +483,8 @@
     <child>
       <widget class="Gtk.VBox" id="vbox">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="Spacing">4</property>
+        <property name="BorderWidth">7</property>
         <child>
           <widget class="CatEye.StageOperationTitleWidget" id="_TitleWidget">
             <property name="MemberName">_TitleWidget</property>
@@ -679,7 +680,20 @@
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="Spacing">2</property>
+        <child>
+          <widget class="Gtk.Image" id="image319">
+            <property name="MemberName" />
+            <property name="Pixbuf">resource:CatEye.res.snowflake.png</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+            <property name="Padding">2</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
@@ -688,7 +702,7 @@
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">0</property>
+            <property name="Position">1</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>
@@ -702,7 +716,7 @@
             <signal name="Clicked" handler="OnUnfreezeButtonClicked" />
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>

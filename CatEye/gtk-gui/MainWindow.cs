@@ -118,8 +118,8 @@ public partial class MainWindow
 		// Container child main_hbox.Gtk.Box+BoxChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";
-		this.left_vbox.Spacing = 5;
-		this.left_vbox.BorderWidth = ((uint)(3));
+		this.left_vbox.Spacing = 4;
+		this.left_vbox.BorderWidth = ((uint)(4));
 		// Container child left_vbox.Gtk.Box+BoxChild
 		this.stageOperationAdding_hbox = new global::Gtk.HBox ();
 		this.stageOperationAdding_hbox.Name = "stageOperationAdding_hbox";
@@ -171,8 +171,8 @@ public partial class MainWindow
 		// Container child GtkViewport2.Gtk.Container+ContainerChild
 		this.stage_vbox = new global::Gtk.VBox ();
 		this.stage_vbox.Name = "stage_vbox";
-		this.stage_vbox.Spacing = 6;
-		this.stage_vbox.BorderWidth = ((uint)(3));
+		this.stage_vbox.Spacing = 3;
+		this.stage_vbox.BorderWidth = ((uint)(6));
 		w14.Add (this.stage_vbox);
 		this.GtkScrolledWindow1.Add (w14);
 		this.left_vbox.Add (this.GtkScrolledWindow1);
@@ -273,6 +273,7 @@ public partial class MainWindow
 		this.loadStageAction.Activated += new global::System.EventHandler (this.OnLoadStageActionActivated);
 		this.saveStageAsAction.Activated += new global::System.EventHandler (this.OnSaveStageAsActionActivated);
 		this.addStageOperation_button.Clicked += new global::System.EventHandler (this.OnAddStageOperationButtonClicked);
+		this.stage_vbox.ExposeEvent += new global::Gtk.ExposeEventHandler (this.OnStageVboxExposeEvent);
 		this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 	}
 }

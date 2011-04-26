@@ -5,6 +5,8 @@ namespace CatEye
 	public partial class StageOperationHolderWidget : Gtk.Bin
 	{
 		private StageOperationParametersWidget _OperationParametersWidget;
+		private Gtk.StateType _AdditionalState = Gtk.StateType.Normal;
+		
 		public StageOperationParametersWidget OperationParametersWidget 
 		{
 			get { return _OperationParametersWidget; } 
@@ -122,6 +124,55 @@ namespace CatEye
 			};
 			
 			operationParametersWidget.Show();
+
+			
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			int l, t, w, h;
+			w = Allocation.Width; h = Allocation.Height;
+			l = Allocation.Left; t = Allocation.Top;
+			
+			Gdk.GC gc = new Gdk.GC(GdkWindow);
+			// outer box
+			/*Gtk.Style.PaintBox(this.Style, GdkWindow, Gtk.StateType.Normal, 
+				Gtk.ShadowType.In, new Gdk.Rectangle(l + 1, t + 1, w - 2, h - 2), this, null,
+				l + 1, t + 1, w - 2, h - 2);
+			*/
+			
+			Gdk.Color mid = Style.Mid(Gtk.StateType.Normal);
+			Gdk.Color dark = new Gdk.Color((byte)(mid.Red / 256 / 1.5), 
+										   (byte)(mid.Green / 256 / 1.5), 
+										   (byte)(mid.Blue / 256 / 1.5));
+			
+			Gdk.Color[] shadow_colors = new Gdk.Color[2];
+			for (int i = 0; i < shadow_colors.Length; i++)
+			{
+				
+				shadow_colors[i] = new Gdk.Color(
+					(byte)(((dark.Red / 256) * i + (mid.Red / 256) * (shadow_colors.Length - i)) / shadow_colors.Length),
+					(byte)(((dark.Green / 256) * i + (mid.Green / 256) * (shadow_colors.Length - i)) / shadow_colors.Length),
+					(byte)(((dark.Blue / 256) * i + (mid.Blue / 256) * (shadow_colors.Length - i)) / shadow_colors.Length)
+				);
+				gc.RgbFgColor = shadow_colors[i]; 
+				GdkWindow.DrawRectangle(gc, false, new Gdk.Rectangle(l + i, t + i, w - 2*i, h - 2*i));
+			}
+			
+			int m = shadow_colors.Length;
+			gc.RgbFgColor = this.Style.Background(Gtk.StateType.Normal);
+			GdkWindow.DrawRectangle(gc, true, new Gdk.Rectangle(l + m, t + m, w - 2*m, h - 2*m));
+/*			
+			Gtk.Style.PaintShadowGap(this.Style, GdkWindow, Gtk.StateType.Normal, 
+				Gtk.ShadowType.In, new Gdk.Rectangle(l + 4, t + 4, w - 8, h - 8), this, null,
+				l + 4, t + 4, w - 8, h - 8, Gtk.PositionType.Bottom, 2, 4);
+*/			
+			// inner box
+			//Gtk.Style.PaintBox(this.Style, GdkWindow, Gtk.StateType.Normal, 
+			//	Gtk.ShadowType.None, new Gdk.Rectangle(l + 3, t + 3, w - 6, h - 6), this, null,
+			//	l + 3, t + 3, w - 6, h - 6);
+			
+			return base.OnExposeEvent(evnt);
 		}
 	}
 }

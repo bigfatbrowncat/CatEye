@@ -143,7 +143,7 @@ namespace CatEye
 		
 		unsafe void UpdateImageOn(Gtk.Button btn, string res)
 		{
-			Gdk.Color new_clr = btn.Style.Foreground(btn.State);
+			Gdk.Color new_clr = btn.Style.Text(btn.State);
 			
 			Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource(res);
 			int h = buf.Height;

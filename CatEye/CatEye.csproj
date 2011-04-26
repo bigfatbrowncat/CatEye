@@ -73,7 +73,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="StageOperationTitleWidget.cs" />
-    <Compile Include="DoublePixmapViewWidget.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationTitleWidget.cs" />
     <Compile Include="StageOperationHolderWidget.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationHolderWidget.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="ExtendedStage.cs" />
     <Compile Include="SaturationSelectorWidget.cs" />
     <Compile Include="BrightnessSelectorWidget.cs" />
+    <Compile Include="FloatPixmapViewWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

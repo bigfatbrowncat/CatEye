@@ -16,7 +16,8 @@ namespace CatEye
 			// Container child CatEye.StageOperationHolderWidget.Gtk.Container+ContainerChild
 			this.vbox = new global::Gtk.VBox ();
 			this.vbox.Name = "vbox";
-			this.vbox.Spacing = 6;
+			this.vbox.Spacing = 4;
+			this.vbox.BorderWidth = ((uint)(7));
 			// Container child vbox.Gtk.Box+BoxChild
 			this._TitleWidget = new global::CatEye.StageOperationTitleWidget ();
 			this._TitleWidget.Events = ((global::Gdk.EventMask)(256));

@@ -40,7 +40,6 @@ namespace CatEye
 			this.hbox.Add (this.title_checkbutton);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox [this.title_checkbutton]));
 			w2.Position = 0;
-			w2.Padding = ((uint)(2));
 			// Container child hbox.Gtk.Box+BoxChild
 			this.edit_togglebutton = new global::Gtk.ToggleButton ();
 			this.edit_togglebutton.CanFocus = true;

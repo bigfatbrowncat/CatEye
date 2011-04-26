@@ -823,4 +823,16 @@ public partial class MainWindow : Gtk.Window
 			so.ReportProgress += HandleProgress;
 		}
 	}
+
+	[GLib.ConnectBefore()]
+	protected void OnStageVboxExposeEvent (object o, Gtk.ExposeEventArgs args)
+	{
+		int l, t, w, h;
+		w = stage_vbox.Allocation.Width; h = stage_vbox.Allocation.Height;
+		l = stage_vbox.Allocation.Left; t = stage_vbox.Allocation.Top;
+
+		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Active, 
+			Gtk.ShadowType.In, new Gdk.Rectangle(l + 1, t + 1, w - 2, h - 2), this, null,
+		l + 1, t + 1, w - 2, h - 2);
+	}
 }
