@@ -8,7 +8,7 @@ namespace CatEye.Core
 	public class UltraSharpStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 0.3, mRadius = 0.1, mDelta0 = 0.01;
+		private double mPower = 0.3, mRadius = 0.1, mBase = 2;
 		private int mPoints = 100;
 		
 		public double Power
@@ -30,12 +30,12 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-		public double Delta0
+		public double Base
 		{
-			get { return mDelta0; }
+			get { return mBase; }
 			set 
 			{
-				mDelta0 = value;
+				mBase = value;
 				OnChanged();
 			}
 		}
@@ -54,7 +54,7 @@ namespace CatEye.Core
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Delta0")).Value = mDelta0.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Base")).Value = mBase.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Points")).Value = mPoints.ToString(nfi);
 			return xn;
 		}
@@ -82,11 +82,11 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Radius value");
 			}
-			if (node.Attributes["Delta0"] != null)
+			if (node.Attributes["Base"] != null)
 			{
-				if (double.TryParse(node.Attributes["Delta0"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Base"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mDelta0 = res;
+					mBase = res;
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse Delta0 value");

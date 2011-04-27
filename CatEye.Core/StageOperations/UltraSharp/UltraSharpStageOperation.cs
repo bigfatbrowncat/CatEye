@@ -15,7 +15,11 @@ namespace CatEye.Core
 			UltraSharpStageOperationParameters pm = (UltraSharpStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Ultra sharpening...");
-			hdp.SharpenLight(pm.Radius, pm.Power, pm.Delta0,
+			
+			// Making delta0 from base
+			double delta0 = Math.Pow(10, -pm.Base);
+			
+			hdp.SharpenLight(pm.Radius, pm.Power, delta0,
 					         new FloatPixmap.MonteCarloSharpeningSamplingMethod(pm.Points, new Random()), 
 			                 delegate (double progress) {
 				return OnReportProgress(progress);

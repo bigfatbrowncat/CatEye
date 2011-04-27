@@ -11,89 +11,125 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			//HandleParametersChangedNotByUI();
 		}
 		
-		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 0;
-			if (double.TryParse(power_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((UltraSharpStageOperationParameters)Parameters).Power = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-		}
+		private bool _PowerIsChanging = false;
+		private bool _RadiusIsChanging = false;
+		private bool _BaseIsChanging = false;
 		
-		protected virtual void OnPointsEntryChanged (object sender, System.EventArgs e)
-		{
-			int res = 0;
-			if (int.TryParse(points_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((UltraSharpStageOperationParameters)Parameters).Points = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-
-		}
+		protected enum PowerChanger { HScale, SpinButton }
+		protected enum RadiusChanger { HScale, SpinButton }
+		protected enum BaseChanger { HScale, SpinButton }
 		
-		protected virtual void OnRadiusHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		protected void ChangePower(double new_value, PowerChanger changer)
 		{
-
-		}
-		
-		protected void OnDelta0EntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 0;
-			if (double.TryParse(delta_0_entry.Text, out res))
+			if (!_PowerIsChanging)
 			{
-				try
-				{
-					StartChangingParameters();
-					((UltraSharpStageOperationParameters)Parameters).Delta0 = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-
-		}
-		protected override void HandleParametersChangedNotByUI ()
-		{
-			power_entry.Text = ((UltraSharpStageOperationParameters)Parameters).Power.ToString();
-			points_entry.Text = ((UltraSharpStageOperationParameters)Parameters).Points.ToString();
-			delta_0_entry.Text = ((UltraSharpStageOperationParameters)Parameters).Delta0.ToString();
-			radius_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
-		}
-
-		protected void OnRadiusHscaleValueChanged (object sender, System.EventArgs e)
-		{
-			try
-			{
+				_PowerIsChanging = true;
 				StartChangingParameters();
-				((UltraSharpStageOperationParameters)Parameters).Radius = radius_hscale.Value;
+				
+				// Setting all editors to the value
+				if (changer != PowerChanger.HScale)
+					power_hscale.Value = new_value;
+				
+				if (changer != PowerChanger.SpinButton)
+					power_spinbutton.Value = new_value;
+				
+				((UltraSharpStageOperationParameters)Parameters).Power = new_value;
 				EndChangingParameters();
 				OnUserModified();
+				_PowerIsChanging = false;
 			}
-			catch (IncorrectValueException)
+		}
+
+		protected void ChangeRadius(double new_value, RadiusChanger changer)
+		{
+			if (!_RadiusIsChanging)
 			{
+				_RadiusIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != RadiusChanger.HScale)
+					radius_hscale.Value = new_value;
+				
+				if (changer != RadiusChanger.SpinButton)
+					radius_spinbutton.Value = new_value;
+				
+				((UltraSharpStageOperationParameters)Parameters).Radius = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_RadiusIsChanging = false;
 			}
+		}
+		
+		protected void ChangeBase(double new_value, BaseChanger changer)
+		{
+			if (!_BaseIsChanging)
+			{
+				_BaseIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != BaseChanger.HScale)
+					base_hscale.Value = new_value;
+				
+				if (changer != BaseChanger.SpinButton)
+					base_spinbutton.Value = new_value;
+				
+				((UltraSharpStageOperationParameters)Parameters).Base = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_BaseIsChanging = false;
+			}
+		}		
+		
+		protected override void HandleParametersChangedNotByUI ()
+		{
+			_PowerIsChanging = true;
+			power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+			power_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+			_PowerIsChanging = false;
+
+			_RadiusIsChanging = true;
+			radius_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
+			radius_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
+			_RadiusIsChanging = false;
+			
+			_BaseIsChanging = true;
+			base_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Base;
+			base_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Base;
+			_BaseIsChanging = false;
+		}
+
+		protected void OnPowerHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangePower(power_hscale.Value, PowerChanger.HScale);
+		}
+
+		protected void OnPowerSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangePower(power_spinbutton.Value, PowerChanger.SpinButton);
+		}
+
+		protected void OnRadiusHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangeRadius(radius_hscale.Value, RadiusChanger.HScale);
+		}
+
+		protected void OnRadiusSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeRadius(radius_spinbutton.Value, RadiusChanger.SpinButton);
+		}
+
+		protected void OnBaseHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangeBase(base_hscale.Value, BaseChanger.HScale);
+		}
+
+		protected void OnBaseSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeBase(base_spinbutton.Value, BaseChanger.SpinButton);
 		}
 	}
 }

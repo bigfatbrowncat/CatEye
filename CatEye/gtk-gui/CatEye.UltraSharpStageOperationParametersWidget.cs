@@ -5,14 +5,15 @@ namespace CatEye
 	public partial class UltraSharpStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-		private global::Gtk.Entry delta_0_entry;
+		private global::Gtk.HScale base_hscale;
+		private global::Gtk.SpinButton base_spinbutton;
 		private global::Gtk.Label label12;
 		private global::Gtk.Label label14;
-		private global::Gtk.Label label15;
 		private global::Gtk.Label label7;
-		private global::Gtk.Entry points_entry;
-		private global::Gtk.Entry power_entry;
+		private global::Gtk.HScale power_hscale;
+		private global::Gtk.SpinButton power_spinbutton;
 		private global::Gtk.HScale radius_hscale;
+		private global::Gtk.SpinButton radius_spinbutton;
 
 		protected virtual void Build ()
 		{
@@ -21,54 +22,69 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.UltraSharpStageOperationParametersWidget";
 			// Container child CatEye.UltraSharpStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), true);
+			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
+			this.table1.BorderWidth = ((uint)(2));
 			// Container child table1.Gtk.Table+TableChild
-			this.delta_0_entry = new global::Gtk.Entry ();
-			this.delta_0_entry.CanFocus = true;
-			this.delta_0_entry.Name = "delta_0_entry";
-			this.delta_0_entry.Text = global::Mono.Unix.Catalog.GetString ("0.01");
-			this.delta_0_entry.IsEditable = true;
-			this.delta_0_entry.WidthChars = 6;
-			this.delta_0_entry.InvisibleChar = '●';
-			this.table1.Add (this.delta_0_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.delta_0_entry]));
+			this.base_hscale = new global::Gtk.HScale (null);
+			this.base_hscale.CanFocus = true;
+			this.base_hscale.Name = "base_hscale";
+			this.base_hscale.Adjustment.Lower = 0.5;
+			this.base_hscale.Adjustment.Upper = 4;
+			this.base_hscale.Adjustment.PageIncrement = 0.01;
+			this.base_hscale.Adjustment.StepIncrement = 0.01;
+			this.base_hscale.Adjustment.Value = 0.5;
+			this.base_hscale.DrawValue = false;
+			this.base_hscale.Digits = 3;
+			this.base_hscale.ValuePos = ((global::Gtk.PositionType)(1));
+			this.table1.Add (this.base_hscale);
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.base_hscale]));
 			w1.TopAttach = ((uint)(2));
 			w1.BottomAttach = ((uint)(3));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
+			this.base_spinbutton = new global::Gtk.SpinButton (0.5, 4, 0.1);
+			this.base_spinbutton.CanFocus = true;
+			this.base_spinbutton.Name = "base_spinbutton";
+			this.base_spinbutton.Adjustment.PageIncrement = 10;
+			this.base_spinbutton.ClimbRate = 1;
+			this.base_spinbutton.Digits = ((uint)(2));
+			this.base_spinbutton.Numeric = true;
+			this.base_spinbutton.Value = 0.5;
+			this.table1.Add (this.base_spinbutton);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.base_spinbutton]));
+			w2.TopAttach = ((uint)(2));
+			w2.BottomAttach = ((uint)(3));
+			w2.LeftAttach = ((uint)(2));
+			w2.RightAttach = ((uint)(3));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xalign = 1F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Radius (part):");
 			this.table1.Add (this.label12);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
-			w2.TopAttach = ((uint)(1));
-			w2.BottomAttach = ((uint)(2));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
+			w3.XPadding = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label14 = new global::Gtk.Label ();
 			this.label14.Name = "label14";
 			this.label14.Xalign = 1F;
-			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Delta_0:");
+			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Base:");
 			this.table1.Add (this.label14);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label14]));
-			w3.TopAttach = ((uint)(2));
-			w3.BottomAttach = ((uint)(3));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label15 = new global::Gtk.Label ();
-			this.label15.Name = "label15";
-			this.label15.Xalign = 1F;
-			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Measuring points:");
-			this.table1.Add (this.label15);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label15]));
-			w4.TopAttach = ((uint)(3));
-			w4.BottomAttach = ((uint)(4));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label14]));
+			w4.TopAttach = ((uint)(2));
+			w4.BottomAttach = ((uint)(3));
+			w4.XPadding = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -78,44 +94,51 @@ namespace CatEye
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Power:");
 			this.table1.Add (this.label7);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
+			w5.XPadding = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.points_entry = new global::Gtk.Entry ();
-			this.points_entry.CanFocus = true;
-			this.points_entry.Name = "points_entry";
-			this.points_entry.Text = global::Mono.Unix.Catalog.GetString ("100");
-			this.points_entry.IsEditable = true;
-			this.points_entry.WidthChars = 6;
-			this.points_entry.InvisibleChar = '●';
-			this.table1.Add (this.points_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.points_entry]));
-			w6.TopAttach = ((uint)(3));
-			w6.BottomAttach = ((uint)(4));
+			this.power_hscale = new global::Gtk.HScale (null);
+			this.power_hscale.CanFocus = true;
+			this.power_hscale.Name = "power_hscale";
+			this.power_hscale.Adjustment.Lower = 0.001;
+			this.power_hscale.Adjustment.Upper = 2;
+			this.power_hscale.Adjustment.PageIncrement = 10;
+			this.power_hscale.Adjustment.StepIncrement = 0.001;
+			this.power_hscale.Adjustment.Value = 0.001;
+			this.power_hscale.DrawValue = false;
+			this.power_hscale.Digits = 3;
+			this.power_hscale.ValuePos = ((global::Gtk.PositionType)(1));
+			this.table1.Add (this.power_hscale);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_hscale]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.power_entry = new global::Gtk.Entry ();
-			this.power_entry.CanFocus = true;
-			this.power_entry.Name = "power_entry";
-			this.power_entry.Text = global::Mono.Unix.Catalog.GetString ("0.3");
-			this.power_entry.IsEditable = true;
-			this.power_entry.WidthChars = 6;
-			this.power_entry.InvisibleChar = '●';
-			this.table1.Add (this.power_entry);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_entry]));
-			w7.LeftAttach = ((uint)(1));
-			w7.RightAttach = ((uint)(2));
+			this.power_spinbutton = new global::Gtk.SpinButton (0.001, 2, 0.01);
+			this.power_spinbutton.CanFocus = true;
+			this.power_spinbutton.Name = "power_spinbutton";
+			this.power_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.power_spinbutton.ClimbRate = 0.01;
+			this.power_spinbutton.Digits = ((uint)(3));
+			this.power_spinbutton.Numeric = true;
+			this.power_spinbutton.Value = 0.001;
+			this.table1.Add (this.power_spinbutton);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_spinbutton]));
+			w7.LeftAttach = ((uint)(2));
+			w7.RightAttach = ((uint)(3));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.radius_hscale = new global::Gtk.HScale (null);
 			this.radius_hscale.CanFocus = true;
 			this.radius_hscale.Name = "radius_hscale";
-			this.radius_hscale.Adjustment.Upper = 0.5;
+			this.radius_hscale.Adjustment.Lower = 0.001;
+			this.radius_hscale.Adjustment.Upper = 1;
 			this.radius_hscale.Adjustment.PageIncrement = 0.01;
-			this.radius_hscale.Adjustment.StepIncrement = 0.01;
-			this.radius_hscale.Adjustment.Value = 0.1;
-			this.radius_hscale.DrawValue = true;
+			this.radius_hscale.Adjustment.StepIncrement = 0.001;
+			this.radius_hscale.Adjustment.Value = 0.001;
+			this.radius_hscale.DrawValue = false;
 			this.radius_hscale.Digits = 3;
 			this.radius_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.radius_hscale);
@@ -124,18 +147,35 @@ namespace CatEye
 			w8.BottomAttach = ((uint)(2));
 			w8.LeftAttach = ((uint)(1));
 			w8.RightAttach = ((uint)(2));
-			w8.XPadding = ((uint)(2));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.radius_spinbutton = new global::Gtk.SpinButton (0.001, 1, 0.01);
+			this.radius_spinbutton.CanFocus = true;
+			this.radius_spinbutton.Name = "radius_spinbutton";
+			this.radius_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.radius_spinbutton.ClimbRate = 1;
+			this.radius_spinbutton.Digits = ((uint)(3));
+			this.radius_spinbutton.Numeric = true;
+			this.radius_spinbutton.Value = 0.001;
+			this.table1.Add (this.radius_spinbutton);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_spinbutton]));
+			w9.TopAttach = ((uint)(1));
+			w9.BottomAttach = ((uint)(2));
+			w9.LeftAttach = ((uint)(2));
+			w9.RightAttach = ((uint)(3));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.radius_spinbutton.ValueChanged += new global::System.EventHandler (this.OnRadiusSpinbuttonValueChanged);
 			this.radius_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnRadiusHscaleChangeValue);
-			this.radius_hscale.ValueChanged += new global::System.EventHandler (this.OnRadiusHscaleValueChanged);
-			this.power_entry.Changed += new global::System.EventHandler (this.OnPowerEntryChanged);
-			this.points_entry.Changed += new global::System.EventHandler (this.OnPointsEntryChanged);
-			this.delta_0_entry.Changed += new global::System.EventHandler (this.OnDelta0EntryChanged);
+			this.power_spinbutton.ValueChanged += new global::System.EventHandler (this.OnPowerSpinbuttonValueChanged);
+			this.power_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnPowerHscaleChangeValue);
+			this.base_spinbutton.ValueChanged += new global::System.EventHandler (this.OnBaseSpinbuttonValueChanged);
+			this.base_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnBaseHscaleChangeValue);
 		}
 	}
 }
