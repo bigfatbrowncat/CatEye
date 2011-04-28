@@ -359,7 +359,7 @@ namespace CatEye.Core
 			}
 		}
 		
-		public void SharpenLight(double radius_part, double power, double delta_0, ISharpeningSamplingMethod ssm, ProgressReporter callback)
+		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
 			double[,] light = new double[width, height];
 			unsafe {
@@ -406,7 +406,21 @@ namespace CatEye.Core
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									double f = Math.Log(Math.Abs(delta / delta_0) + 1) * Math.Sign(delta);
+									
+									//double f = Math.Log(Math.Abs(delta / delta_0) + 1) * Math.Sign(delta);
+									double f;
+									if (delta > 0)
+									{
+										f = Math.Log(Math.Abs(delta) + 1);
+										// Limiting f
+										f = limit_up * (1 - Math.Exp(-f / limit_up));
+									}
+									else
+									{										
+										f = Math.Log(Math.Abs(delta) + 1);
+										// Limiting f
+										f = -limit_down * (1 - Math.Exp(-f / limit_down));
+									}
 									
 									double scale = f * falloff;
 									//double limited_scale = Math.Abs(scale) < delta_limit ? scale : delta_limit * Math.Sign(scale);

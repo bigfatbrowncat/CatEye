@@ -15,11 +15,13 @@ namespace CatEye
 		
 		private bool _PowerIsChanging = false;
 		private bool _RadiusIsChanging = false;
-		private bool _BaseIsChanging = false;
+		private bool _LimitUpIsChanging = false;
+		private bool _LimitDownIsChanging = false;
 		
 		protected enum PowerChanger { HScale, SpinButton }
 		protected enum RadiusChanger { HScale, SpinButton }
-		protected enum BaseChanger { HScale, SpinButton }
+		protected enum LimitUpChanger { HScale, SpinButton }
+		protected enum LimitDownChanger { HScale, SpinButton }
 		
 		protected void ChangePower(double new_value, PowerChanger changer)
 		{
@@ -30,7 +32,7 @@ namespace CatEye
 				
 				// Setting all editors to the value
 				if (changer != PowerChanger.HScale)
-					power_hscale.Value = new_value;
+					power_hscale.Value = Math.Sqrt(new_value);
 				
 				if (changer != PowerChanger.SpinButton)
 					power_spinbutton.Value = new_value;
@@ -63,31 +65,52 @@ namespace CatEye
 			}
 		}
 		
-		protected void ChangeBase(double new_value, BaseChanger changer)
+		protected void ChangeLimitUp(double new_value, LimitUpChanger changer)
 		{
-			if (!_BaseIsChanging)
+			if (!_LimitUpIsChanging)
 			{
-				_BaseIsChanging = true;
+				_LimitUpIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != BaseChanger.HScale)
-					base_hscale.Value = new_value;
+				if (changer != LimitUpChanger.HScale)
+					limitup_hscale.Value = new_value;
 				
-				if (changer != BaseChanger.SpinButton)
-					base_spinbutton.Value = new_value;
+				if (changer != LimitUpChanger.SpinButton)
+					limitup_spinbutton.Value = new_value;
 				
-				((UltraSharpStageOperationParameters)Parameters).Base = new_value;
+				((UltraSharpStageOperationParameters)Parameters).LimitUp = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_BaseIsChanging = false;
+				_LimitUpIsChanging = false;
+			}
+		}		
+
+		protected void ChangeLimitDown(double new_value, LimitDownChanger changer)
+		{
+			if (!_LimitDownIsChanging)
+			{
+				_LimitDownIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != LimitDownChanger.HScale)
+					limitdown_hscale.Value = new_value;
+				
+				if (changer != LimitDownChanger.SpinButton)
+					limitdown_spinbutton.Value = new_value;
+				
+				((UltraSharpStageOperationParameters)Parameters).LimitDown = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_LimitDownIsChanging = false;
 			}
 		}		
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			_PowerIsChanging = true;
-			power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+			power_hscale.Value = Math.Sqrt(((UltraSharpStageOperationParameters)Parameters).Power);
 			power_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
 			_PowerIsChanging = false;
 
@@ -96,15 +119,20 @@ namespace CatEye
 			radius_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
 			_RadiusIsChanging = false;
 			
-			_BaseIsChanging = true;
-			base_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Base;
-			base_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Base;
-			_BaseIsChanging = false;
+			_LimitUpIsChanging = true;
+			limitup_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).LimitUp;
+			limitup_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).LimitUp;
+			_LimitUpIsChanging = false;
+
+			_LimitDownIsChanging = true;
+			limitdown_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).LimitDown;
+			limitdown_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).LimitDown;
+			_LimitDownIsChanging = false;
 		}
 
 		protected void OnPowerHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
-			ChangePower(power_hscale.Value, PowerChanger.HScale);
+			ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
 		}
 
 		protected void OnPowerSpinbuttonValueChanged (object sender, System.EventArgs e)
@@ -122,14 +150,24 @@ namespace CatEye
 			ChangeRadius(radius_spinbutton.Value, RadiusChanger.SpinButton);
 		}
 
-		protected void OnBaseHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		protected void OnLimitupHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
-			ChangeBase(base_hscale.Value, BaseChanger.HScale);
+			ChangeLimitUp(limitup_hscale.Value, LimitUpChanger.HScale);
 		}
 
-		protected void OnBaseSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnLimitupSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeBase(base_spinbutton.Value, BaseChanger.SpinButton);
+			ChangeLimitUp(limitup_spinbutton.Value, LimitUpChanger.SpinButton);
+		}
+
+		protected void OnLimitdownHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangeLimitDown(limitdown_hscale.Value, LimitDownChanger.HScale);
+		}
+
+		protected void OnLimitdownSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeLimitDown(limitdown_spinbutton.Value, LimitDownChanger.SpinButton);
 		}
 	}
 }

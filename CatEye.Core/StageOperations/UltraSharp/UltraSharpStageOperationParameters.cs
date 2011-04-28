@@ -8,8 +8,7 @@ namespace CatEye.Core
 	public class UltraSharpStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 0.3, mRadius = 0.1, mBase = 2;
-		private int mPoints = 100;
+		private double mPower = 10, mRadius = 0.1, mLimitUp = 0.1, mLimitDown = 1;
 		
 		public double Power
 		{
@@ -30,32 +29,32 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-		public double Base
+		public double LimitUp
 		{
-			get { return mBase; }
+			get { return mLimitUp; }
 			set 
 			{
-				mBase = value;
+				mLimitUp = value;
 				OnChanged();
 			}
 		}
-		public int Points
+		public double LimitDown
 		{
-			get { return mPoints; }
+			get { return mLimitDown; }
 			set 
 			{
-				mPoints = value;
+				mLimitDown = value;
 				OnChanged();
 			}
 		}
-		
+
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Base")).Value = mBase.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Points")).Value = mPoints.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("LimitUp")).Value = mLimitUp.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("LimitDown")).Value = mLimitDown.ToString(nfi);
 			return xn;
 		}
 
@@ -82,23 +81,23 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Radius value");
 			}
-			if (node.Attributes["Base"] != null)
+			if (node.Attributes["LimitUp"] != null)
 			{
-				if (double.TryParse(node.Attributes["Base"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["LimitUp"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mBase = res;
+					mLimitUp = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Delta0 value");
+					throw new IncorrectNodeValueException("Can't parse LimitUp value");
 			}
-			if (node.Attributes["Points"] != null)
+			if (node.Attributes["LimitDown"] != null)
 			{
-				if (int.TryParse(node.Attributes["Points"].Value, out ires))
+				if (double.TryParse(node.Attributes["LimitDown"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mPoints = ires;
+					mLimitDown = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Points value");
+					throw new IncorrectNodeValueException("Can't parse LimitDown value");
 			}
 			OnChanged();
 		}

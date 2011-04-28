@@ -17,11 +17,15 @@ namespace CatEye.Core
 			Console.WriteLine("Ultra sharpening...");
 			
 			// Making delta0 from base
-			double delta0 = Math.Pow(10, -pm.Base);
+			//double delta0 = Math.Pow(10, -pm.Base);
 			
-			hdp.SharpenLight(pm.Radius, pm.Power, delta0,
-					         new FloatPixmap.MonteCarloSharpeningSamplingMethod(pm.Points, new Random()), 
-			                 delegate (double progress) {
+			// TODO: There should be some quality configuration which should calculate
+			// points number value
+			int points = 200; 
+
+			FloatPixmap.ISharpeningSamplingMethod sampler = new FloatPixmap.MonteCarloSharpeningSamplingMethod(points, new Random());
+			
+			hdp.SharpenLight(pm.Radius, pm.Power, pm.LimitUp, pm.LimitDown, sampler, delegate (double progress) {
 				return OnReportProgress(progress);
 			});
 			
