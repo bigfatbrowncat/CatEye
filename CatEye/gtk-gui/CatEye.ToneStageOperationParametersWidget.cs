@@ -4,13 +4,12 @@ namespace CatEye
 {
 	public partial class ToneStageOperationParametersWidget
 	{
-		private global::Gtk.Table table1;
-		private global::Gtk.Entry blue_entry;
-		private global::Gtk.Entry green_entry;
-		private global::Gtk.Label label10;
-		private global::Gtk.Label label8;
-		private global::Gtk.Label label9;
-		private global::Gtk.Entry red_entry;
+		private global::Gtk.HBox hbox1;
+		private global::CatEye.ToneSelectorWidget toneselectorwidget1;
+		private global::Gtk.VBox vbox2;
+		private global::Gtk.Label r_label;
+		private global::Gtk.Label g_label;
+		private global::Gtk.Label b_label;
 
 		protected virtual void Build ()
 		{
@@ -19,92 +18,57 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.ToneStageOperationParametersWidget";
 			// Container child CatEye.ToneStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), true);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
-			this.blue_entry = new global::Gtk.Entry ();
-			this.blue_entry.CanFocus = true;
-			this.blue_entry.Name = "blue_entry";
-			this.blue_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.blue_entry.IsEditable = true;
-			this.blue_entry.WidthChars = 6;
-			this.blue_entry.InvisibleChar = '●';
-			this.table1.Add (this.blue_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.blue_entry]));
-			w1.TopAttach = ((uint)(2));
-			w1.BottomAttach = ((uint)(3));
-			w1.LeftAttach = ((uint)(1));
-			w1.RightAttach = ((uint)(2));
-			w1.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.green_entry = new global::Gtk.Entry ();
-			this.green_entry.CanFocus = true;
-			this.green_entry.Name = "green_entry";
-			this.green_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.green_entry.IsEditable = true;
-			this.green_entry.WidthChars = 6;
-			this.green_entry.InvisibleChar = '●';
-			this.table1.Add (this.green_entry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.green_entry]));
-			w2.TopAttach = ((uint)(1));
-			w2.BottomAttach = ((uint)(2));
-			w2.LeftAttach = ((uint)(1));
-			w2.RightAttach = ((uint)(2));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label10 = new global::Gtk.Label ();
-			this.label10.Name = "label10";
-			this.label10.Xalign = 1F;
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Blue:");
-			this.table1.Add (this.label10);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label10]));
-			w3.TopAttach = ((uint)(2));
-			w3.BottomAttach = ((uint)(3));
-			w3.XOptions = ((global::Gtk.AttachOptions)(4));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.Xalign = 1F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Red:");
-			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label9 = new global::Gtk.Label ();
-			this.label9.Name = "label9";
-			this.label9.Xalign = 1F;
-			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Green:");
-			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.red_entry = new global::Gtk.Entry ();
-			this.red_entry.CanFocus = true;
-			this.red_entry.Name = "red_entry";
-			this.red_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.red_entry.IsEditable = true;
-			this.red_entry.WidthChars = 6;
-			this.red_entry.InvisibleChar = '●';
-			this.table1.Add (this.red_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.red_entry]));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.Add (this.table1);
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.toneselectorwidget1 = new global::CatEye.ToneSelectorWidget ();
+			this.toneselectorwidget1.Events = ((global::Gdk.EventMask)(790));
+			this.toneselectorwidget1.Name = "toneselectorwidget1";
+			this.hbox1.Add (this.toneselectorwidget1);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.toneselectorwidget1]));
+			w1.Position = 0;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.r_label = new global::Gtk.Label ();
+			this.r_label.Name = "r_label";
+			this.r_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label1");
+			this.vbox2.Add (this.r_label);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.r_label]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.g_label = new global::Gtk.Label ();
+			this.g_label.Name = "g_label";
+			this.g_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label2");
+			this.vbox2.Add (this.g_label);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.g_label]));
+			w3.Position = 1;
+			w3.Expand = false;
+			w3.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.b_label = new global::Gtk.Label ();
+			this.b_label.Name = "b_label";
+			this.b_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label3");
+			this.vbox2.Add (this.b_label);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.b_label]));
+			w4.Position = 2;
+			w4.Expand = false;
+			w4.Fill = false;
+			this.hbox1.Add (this.vbox2);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
+			w5.Position = 1;
+			w5.Expand = false;
+			w5.Fill = false;
+			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.red_entry.Changed += new global::System.EventHandler (this.OnRedEntryChanged);
-			this.green_entry.Changed += new global::System.EventHandler (this.OnGreenEntryChanged);
-			this.blue_entry.Changed += new global::System.EventHandler (this.OnBlueEntryChanged);
 		}
 	}
 }

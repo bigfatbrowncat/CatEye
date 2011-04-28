@@ -99,6 +99,7 @@
     <Compile Include="SaturationSelectorWidget.cs" />
     <Compile Include="BrightnessSelectorWidget.cs" />
     <Compile Include="FloatPixmapViewWidget.cs" />
+    <Compile Include="ToneSelectorWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

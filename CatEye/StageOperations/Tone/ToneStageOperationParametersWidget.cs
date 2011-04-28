@@ -11,68 +11,33 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			//HandleParametersChangedNotByUI();
+			toneselectorwidget1.ToneSelected += OnToneselectorwidget1ToneSelected;
+			toneselectorwidget1.SelectedToneChanged += OnToneselectorwidget1SelectedToneChanged;
 		}
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			red_entry.Text = ((ToneStageOperationParameters)Parameters).RedPart.ToString();
-			green_entry.Text = ((ToneStageOperationParameters)Parameters).GreenPart.ToString();
-			blue_entry.Text = ((ToneStageOperationParameters)Parameters).BluePart.ToString();
+			
+			Tone tn = new Tone(((ToneStageOperationParameters)Parameters).RedPart,
+							   ((ToneStageOperationParameters)Parameters).GreenPart,
+							   ((ToneStageOperationParameters)Parameters).BluePart);
+			toneselectorwidget1.SelectedTone = new Tone(1, 1, 1);
 		}
 
-		protected void OnRedEntryChanged (object sender, System.EventArgs e)
+		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
 		{
-			double res = 0;
-			if (double.TryParse(red_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((ToneStageOperationParameters)Parameters).RedPart = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
+			r_label.Text = toneselectorwidget1.SelectedTone.R.ToString("0.00");
+			g_label.Text = toneselectorwidget1.SelectedTone.G.ToString("0.00");
+			b_label.Text = toneselectorwidget1.SelectedTone.B.ToString("0.00");
 		}
 
-		protected void OnGreenEntryChanged (object sender, System.EventArgs e)
+		protected void OnToneselectorwidget1ToneSelected (object sender, System.EventArgs e)
 		{
-			double res = 0;
-			if (double.TryParse(green_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((ToneStageOperationParameters)Parameters).GreenPart = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-		}
-
-		protected void OnBlueEntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 0;
-			if (double.TryParse(blue_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((ToneStageOperationParameters)Parameters).BluePart = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
+			StartChangingParameters();
+			((ToneStageOperationParameters)Parameters).RedPart = toneselectorwidget1.SelectedTone.R;
+			((ToneStageOperationParameters)Parameters).GreenPart = toneselectorwidget1.SelectedTone.G;
+			((ToneStageOperationParameters)Parameters).BluePart = toneselectorwidget1.SelectedTone.B;
+			EndChangingParameters();
 		}
 	}
 }
