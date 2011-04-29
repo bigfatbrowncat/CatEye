@@ -10,6 +10,7 @@ namespace CatEye
 		private global::Gtk.Label r_label;
 		private global::Gtk.Label g_label;
 		private global::Gtk.Label b_label;
+		private global::Gtk.VScale alpha_vscale;
 
 		protected virtual void Build ()
 		{
@@ -21,10 +22,12 @@ namespace CatEye
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
+			this.hbox1.BorderWidth = ((uint)(2));
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.toneselectorwidget1 = new global::CatEye.ToneSelectorWidget ();
 			this.toneselectorwidget1.Events = ((global::Gdk.EventMask)(790));
 			this.toneselectorwidget1.Name = "toneselectorwidget1";
+			this.toneselectorwidget1.Alpha = 0;
 			this.hbox1.Add (this.toneselectorwidget1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.toneselectorwidget1]));
 			w1.Position = 0;
@@ -35,7 +38,9 @@ namespace CatEye
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.r_label = new global::Gtk.Label ();
 			this.r_label.Name = "r_label";
+			this.r_label.Xalign = 1F;
 			this.r_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label1");
+			this.r_label.UseMarkup = true;
 			this.vbox2.Add (this.r_label);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.r_label]));
 			w2.Position = 0;
@@ -44,7 +49,9 @@ namespace CatEye
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.g_label = new global::Gtk.Label ();
 			this.g_label.Name = "g_label";
+			this.g_label.Xalign = 1F;
 			this.g_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label2");
+			this.g_label.UseMarkup = true;
 			this.vbox2.Add (this.g_label);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.g_label]));
 			w3.Position = 1;
@@ -53,22 +60,41 @@ namespace CatEye
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.b_label = new global::Gtk.Label ();
 			this.b_label.Name = "b_label";
+			this.b_label.Xalign = 1F;
 			this.b_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label3");
+			this.b_label.UseMarkup = true;
 			this.vbox2.Add (this.b_label);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.b_label]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.alpha_vscale = new global::Gtk.VScale (null);
+			this.alpha_vscale.CanFocus = true;
+			this.alpha_vscale.Name = "alpha_vscale";
+			this.alpha_vscale.Adjustment.Lower = 0.2;
+			this.alpha_vscale.Adjustment.Upper = 2;
+			this.alpha_vscale.Adjustment.PageIncrement = 10;
+			this.alpha_vscale.Adjustment.StepIncrement = 1;
+			this.alpha_vscale.Adjustment.Value = 0.5;
+			this.alpha_vscale.DrawValue = false;
+			this.alpha_vscale.Digits = 0;
+			this.alpha_vscale.ValuePos = ((global::Gtk.PositionType)(2));
+			this.vbox2.Add (this.alpha_vscale);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alpha_vscale]));
+			w5.Position = 3;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
+			w6.Position = 1;
+			w6.Expand = false;
+			w6.Fill = false;
+			w6.Padding = ((uint)(2));
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.alpha_vscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnAlphaVscaleChangeValue);
 		}
 	}
 }

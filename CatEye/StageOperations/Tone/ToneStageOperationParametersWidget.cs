@@ -13,6 +13,7 @@ namespace CatEye
 			this.Build ();
 			toneselectorwidget1.ToneSelected += OnToneselectorwidget1ToneSelected;
 			toneselectorwidget1.SelectedToneChanged += OnToneselectorwidget1SelectedToneChanged;
+			toneselectorwidget1.Alpha = 0.5;
 		}
 		
 		protected override void HandleParametersChangedNotByUI ()
@@ -21,14 +22,14 @@ namespace CatEye
 			Tone tn = new Tone(((ToneStageOperationParameters)Parameters).RedPart,
 							   ((ToneStageOperationParameters)Parameters).GreenPart,
 							   ((ToneStageOperationParameters)Parameters).BluePart);
-			toneselectorwidget1.SelectedTone = new Tone(1, 1, 1);
+			toneselectorwidget1.SelectedTone = tn;
 		}
 
 		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
 		{
-			r_label.Text = toneselectorwidget1.SelectedTone.R.ToString("0.00");
-			g_label.Text = toneselectorwidget1.SelectedTone.G.ToString("0.00");
-			b_label.Text = toneselectorwidget1.SelectedTone.B.ToString("0.00");
+			r_label.Markup = "Red: <b>" + toneselectorwidget1.SelectedTone.R.ToString("0.00") + "</b>";
+			g_label.Markup = "Green: <b>" + toneselectorwidget1.SelectedTone.G.ToString("0.00") + "</b>";
+			b_label.Markup = "Blue: <b>" + toneselectorwidget1.SelectedTone.B.ToString("0.00") + "</b>";
 		}
 
 		protected void OnToneselectorwidget1ToneSelected (object sender, System.EventArgs e)
@@ -38,6 +39,12 @@ namespace CatEye
 			((ToneStageOperationParameters)Parameters).GreenPart = toneselectorwidget1.SelectedTone.G;
 			((ToneStageOperationParameters)Parameters).BluePart = toneselectorwidget1.SelectedTone.B;
 			EndChangingParameters();
+			OnUserModified();
+		}
+
+		protected void OnAlphaVscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			toneselectorwidget1.Alpha = alpha_vscale.Value;
 		}
 	}
 }

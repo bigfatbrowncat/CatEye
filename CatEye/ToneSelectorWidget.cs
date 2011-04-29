@@ -6,10 +6,20 @@ namespace CatEye
 	public class ToneSelectorWidget : Gtk.DrawingArea
 	{
 		int margin = 5;
+		double mAlpha = 0.5;
 		bool mouse_down = false;
 		
 		private Tone mSelectedTone;
-		
+
+		public double Alpha {
+			get {
+				return this.mAlpha;
+			}
+			set {
+				mAlpha = value;
+				QueueDraw();
+			}
+		}		
 		/// <summary>
 		/// Occurs when a tone selected by user.
 		/// </summary>
@@ -54,22 +64,31 @@ namespace CatEye
 		/// </param>
 		public Tone XY_to_Tone(double x, double y)
 		{
-			double r = Math.Sqrt(x);
-			double b = Math.Sqrt(1 - x);
-			double g = Math.Pow(1.6 * y, 2);
+			// This is a norm coefficient which is needed to
+			// place the gray point into the center in any mAlpha value
+			double p = Math.Pow(0.5, mAlpha) / Math.Tan(Math.PI / 4);
+
+			double r = Math.Pow(x, mAlpha);
+			double b = Math.Pow(1 - x, mAlpha);
+			double g = p * Math.Pow(Math.Tan(y * (Math.PI / 2 - 0.0001)), mAlpha);  //Math.Pow(1.6 * y, 2);
 			
 			return new Tone(r, g, b);
 		}
 		
 		public double Tone_to_X(Tone t)
 		{
-			double sqrn = 1.0 / (t.B * t.B + t.R * t.R);
-			return t.R * t.R * sqrn;
+			double pown = 1.0 / (Math.Pow(t.B, 1.0 / mAlpha) + Math.Pow(t.R, 1.0 / mAlpha));
+			return Math.Pow(t.R, 1.0 / mAlpha) * pown;
 		}
 		public double Tone_to_Y(Tone t)
 		{
-			double n = 1.0 / Math.Sqrt(t.B * t.B + t.R * t.R);
-			return Math.Sqrt(t.G * n) / 1.6;
+			// This is a norm coefficient which is needed to
+			// place the gray point into the center in any mAlpha value
+			double p = Math.Pow(0.5 / Math.Tan(Math.PI / 4), mAlpha);
+
+			double pown = 1.0 / (Math.Pow(t.B, 1.0 / mAlpha) + Math.Pow(t.R, 1.0 / mAlpha));
+			double n = Math.Pow(pown, mAlpha);
+			return Math.Atan(Math.Pow(t.G * n / p, 1.0 / mAlpha)) / (Math.PI / 2 - 0.0001);
 		}
 		
 		unsafe void DrawColors(Gdk.Pixbuf buf)
@@ -89,9 +108,9 @@ namespace CatEye
 					
 					Tone res = XY_to_Tone((double)i / w, (double)j / h);
 					
-					cur_pixel[0] = (byte)(res.R * 255);
-					cur_pixel[1] = (byte)(res.G * 255);
-					cur_pixel[2] = (byte)(res.B * 255);
+					cur_pixel[0] = (byte)(res.R / Math.Sqrt(3) * 255);
+					cur_pixel[1] = (byte)(res.G / Math.Sqrt(3) * 255);
+					cur_pixel[2] = (byte)(res.B / Math.Sqrt(3) * 255);
 					cur_pixel[3] = 255;
 					
 					cur_pixel += chan;
@@ -106,35 +125,40 @@ namespace CatEye
 			
 			int W = Allocation.Width, H = Allocation.Height;
 			int X = Allocation.Left, Y = Allocation.Top;
-			
-			// Creating PixBuf to draw a color matrix
-			Gdk.Pixbuf pb = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, W - margin * 2, H - margin * 2);
-			
-			// Drawing color matrix to back pixbuf
-			DrawColors(pb);
-			
-			// Drawing frame to widget
-			Gtk.Style.PaintBox(this.Style, GdkWindow, Gtk.StateType.Normal, Gtk.ShadowType.In, 
-				new Gdk.Rectangle(0, 0, W, H),
-				this, null, margin - 2, margin - 2, W - margin * 2 + 4, H - margin * 2 + 4);
-
-			// Creating Graphics Context
-			Gdk.GC gc = new Gdk.GC(GdkWindow);
-			
-			// Drawing color matrix backbuffer
-			GdkWindow.DrawPixbuf(gc, pb, 0, 0, margin, margin, pb.Width, pb.Height, Gdk.RgbDither.Normal, 0, 0);
-			
-			int sel_x = (int)(Tone_to_X(mSelectedTone) * pb.Width) + margin;
-			int sel_y = (int)(Tone_to_Y(mSelectedTone) * pb.Height) + margin;
-			//Console.WriteLine(Tone_to_X(mSelectedTone) +", " + Tone_to_Y(mSelectedTone));
-			
-			gc.SetLineAttributes(2, Gdk.LineStyle.Solid, Gdk.CapStyle.Round,Gdk.JoinStyle.Round);
-			GdkWindow.DrawRectangle(gc, false,
-				new Gdk.Rectangle(sel_x - 3, sel_y - 3, 6, 6));
-			
-			gc.Dispose();
-			pb.Dispose();
-			
+			Gdk.Pixbuf pb = null;
+			Gdk.GC gc = null;
+			try
+			{
+				// Creating PixBuf to draw a color matrix
+				pb = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, W - margin * 2, H - margin * 2);
+				
+				// Drawing color matrix to back pixbuf
+				DrawColors(pb);
+				
+				// Drawing frame to widget
+				Gtk.Style.PaintBox(this.Style, GdkWindow, Gtk.StateType.Normal, Gtk.ShadowType.In, 
+					new Gdk.Rectangle(0, 0, W, H),
+					this, null, margin - 2, margin - 2, W - margin * 2 + 4, H - margin * 2 + 4);
+	
+				// Creating Graphics Context
+				gc = new Gdk.GC(GdkWindow);
+				
+				// Drawing color matrix backbuffer
+				GdkWindow.DrawPixbuf(gc, pb, 0, 0, margin, margin, pb.Width, pb.Height, Gdk.RgbDither.Normal, 0, 0);
+				
+				int sel_x = (int)(Tone_to_X(mSelectedTone) * pb.Width) + margin;
+				int sel_y = (int)(Tone_to_Y(mSelectedTone) * pb.Height) + margin;
+				//Console.WriteLine(Tone_to_X(mSelectedTone) +", " + Tone_to_Y(mSelectedTone));
+				
+				gc.SetLineAttributes(2, Gdk.LineStyle.Solid, Gdk.CapStyle.Round,Gdk.JoinStyle.Round);
+				GdkWindow.DrawRectangle(gc, false,
+					new Gdk.Rectangle(sel_x - 3, sel_y - 3, 6, 6));
+			}
+			finally
+			{
+				if (gc != null) gc.Dispose();
+				if (pb != null) pb.Dispose();
+			}
 			return true;
 		}
 
@@ -196,7 +220,7 @@ namespace CatEye
 		public double R, G, B;
 		public Tone (double r, double g, double b)
 		{
-			double norm = Math.Sqrt(r*r + g*g + b*b);
+			double norm = Math.Sqrt((r*r + g*g + b*b) / 3);
 			R = r / norm; G = g / norm; B = b / norm;
 		}
 	}
