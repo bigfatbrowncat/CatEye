@@ -2,9 +2,11 @@
 <Stages>
   <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" Normalize="True" />
   <StageOperationParameters ID="CropStageOperation" Active="False" Left="0" Right="1" Top="0" Bottom="1" AspectRatio="1.5" LockAspectRatio="True" />
-  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.4" Bloha="0.01" />
-  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Power="10" Radius="0.1" LimitUp="0.1" LimitDown="1" />
-  <StageOperationParameters ID="ToneStageOperation" Active="False" RedPart="1" GreenPart="1" BluePart="1" />
+  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.4" DarkPreserving="0.01" />
+  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Power="10" Radius="0.1" LimitUp="0.1" LimitDown="1" SharpType="sharp" />
+  <StageOperationParameters ID="ToneStageOperation" Active="True">
+    <Tone R="1.00094476412756" G="0.999987548333831" B="0.999066805745698" />
+  </StageOperationParameters>
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
   <StageOperationParameters ID="BrightnessStageOperation" Active="False" Brightness="1" Normalize="False" />
 </Stages>

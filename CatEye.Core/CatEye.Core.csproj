@@ -95,6 +95,7 @@
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
     <Compile Include="FloatPixmap.cs" />
+    <Compile Include="Tone.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

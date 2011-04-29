@@ -7,35 +7,15 @@ namespace CatEye.Core
 	[StageOperationID("ToneStageOperation")]
 	public class ToneStageOperationParameters : StageOperationParameters
 	{
-		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mRedPart = 1, mGreenPart = 1, mBluePart = 1;
+		private Tone mTone = new Tone(1, 1, 1);
 		
-		public double RedPart
+		public Tone Tone
 		{
-			get { return mRedPart; }
+			get { return mTone; }
 			set
 			{
-				mRedPart = value;
+				mTone = value;
 				OnChanged();
-			}
-		}
-		public double GreenPart
-		{
-			get { return mGreenPart; }
-			set
-			{
-				mGreenPart = value;
-				OnChanged();
-			}
-		}
-		public double BluePart
-		{
-			get { return mBluePart; }
-			set
-			{
-				mBluePart = value;
-				OnChanged();
-				
 			}
 		}
 		
@@ -46,43 +26,18 @@ namespace CatEye.Core
 		public override System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("RedPart")).Value = mRedPart.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("GreenPart")).Value = mGreenPart.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("BluePart")).Value = mBluePart.ToString(nfi);
+			xn.AppendChild(mTone.SerializeToXML(xdoc));
 			return xn;
 		}
 		
 		public override void DeserializeFromXML (XmlNode node)
 		{
 			base.DeserializeFromXML (node);
-			double res = 0;
-			if (node.Attributes["RedPart"] != null)
+			foreach (XmlNode xn in node.ChildNodes)
 			{
-				if (double.TryParse(node.Attributes["RedPart"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mRedPart = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse RedPart value");
+				if (xn.Name == "Tone") mTone.DeserializeFromXML(xn);
 			}
-			if (node.Attributes["GreenPart"] != null)
-			{
-				if (double.TryParse(node.Attributes["GreenPart"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mGreenPart = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse GreenPart value");
-			}
-			if (node.Attributes["BluePart"] != null)
-			{
-				if (double.TryParse(node.Attributes["BluePart"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mBluePart = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse BluePart value");
-			}
+			
 			OnChanged();
 		}
 	}

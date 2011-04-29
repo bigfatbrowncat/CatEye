@@ -39,7 +39,7 @@ namespace CatEye
 			this.r_label = new global::Gtk.Label ();
 			this.r_label.Name = "r_label";
 			this.r_label.Xalign = 1F;
-			this.r_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label1");
+			this.r_label.LabelProp = global::Mono.Unix.Catalog.GetString ("R: 0");
 			this.r_label.UseMarkup = true;
 			this.vbox2.Add (this.r_label);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.r_label]));
@@ -50,7 +50,7 @@ namespace CatEye
 			this.g_label = new global::Gtk.Label ();
 			this.g_label.Name = "g_label";
 			this.g_label.Xalign = 1F;
-			this.g_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label2");
+			this.g_label.LabelProp = global::Mono.Unix.Catalog.GetString ("G: 0");
 			this.g_label.UseMarkup = true;
 			this.vbox2.Add (this.g_label);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.g_label]));
@@ -61,7 +61,7 @@ namespace CatEye
 			this.b_label = new global::Gtk.Label ();
 			this.b_label.Name = "b_label";
 			this.b_label.Xalign = 1F;
-			this.b_label.LabelProp = global::Mono.Unix.Catalog.GetString ("label3");
+			this.b_label.LabelProp = global::Mono.Unix.Catalog.GetString ("B: 0");
 			this.b_label.UseMarkup = true;
 			this.vbox2.Add (this.b_label);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.b_label]));

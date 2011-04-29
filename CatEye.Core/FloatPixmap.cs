@@ -454,17 +454,34 @@ namespace CatEye.Core
 			}
 			
 		}
-
-		public void ApplyChannelsScale(double r_scale, double g_scale, double b_scale)
+		
+		public void ApplyTone(Tone tone)
 		{
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				r_chan[i, j] *= (float)r_scale;
-				g_chan[i, j] *= (float)g_scale;
-				b_chan[i, j] *= (float)b_scale;
-			}
+				// calculating current norm
+				double light_before = Math.Sqrt(
+							  r_chan[i, j] * r_chan[i, j] + 
+							  g_chan[i, j] * g_chan[i, j] + 
+							  b_chan[i, j] * b_chan[i, j]);
 				
+				r_chan[i, j] *= (float)tone.R;
+				g_chan[i, j] *= (float)tone.G;
+				b_chan[i, j] *= (float)tone.B;
+				
+				// calculating norm after
+				double light_after = Math.Sqrt(
+							  r_chan[i, j] * r_chan[i, j] + 
+							  g_chan[i, j] * g_chan[i, j] + 
+							  b_chan[i, j] * b_chan[i, j]) + 0.00001;
+				
+				// Normalizing
+				r_chan[i, j] *= (float)(light_before / light_after);
+				g_chan[i, j] *= (float)(light_before / light_after);
+				b_chan[i, j] *= (float)(light_before / light_after);
+				
+			}
 		}
 		
 		public void ApplyGreenAngle(double RBtoG_angle)

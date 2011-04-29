@@ -1,4 +1,5 @@
 using System;
+using CatEye.Core;
 
 namespace CatEye
 {
@@ -185,8 +186,8 @@ namespace CatEye
 			if (x > 1) x = 1;
 			if (y > 1) y = 1;
 			
-			OnToneSelected();
 			SelectedTone = XY_to_Tone(x, y);
+			OnToneSelected();
 				
 			QueueDraw();
 		}
@@ -214,15 +215,6 @@ namespace CatEye
 		}
 		
 	}
-	
-	public class Tone
-	{
-		public double R, G, B;
-		public Tone (double r, double g, double b)
-		{
-			double norm = Math.Sqrt((r*r + g*g + b*b) / 3);
-			R = r / norm; G = g / norm; B = b / norm;
-		}
-	}
+
 }
 
