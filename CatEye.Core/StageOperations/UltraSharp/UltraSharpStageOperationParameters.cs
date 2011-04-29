@@ -7,8 +7,11 @@ namespace CatEye.Core
 	[StageOperationID("UltraSharpStageOperation")]
 	public class UltraSharpStageOperationParameters : StageOperationParameters
 	{
+		public enum SharpType { Sharp, Soft }
+		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		private double mPower = 10, mRadius = 0.1, mLimitUp = 0.1, mLimitDown = 1;
+		private SharpType mType = SharpType.Sharp;
 		
 		public double Power
 		{
@@ -47,7 +50,17 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-
+		
+		public SharpType Type
+		{
+			get { return mType; }
+			set 
+			{
+				mType = value;
+				OnChanged();
+			}
+		}
+		
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
@@ -55,6 +68,14 @@ namespace CatEye.Core
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("LimitUp")).Value = mLimitUp.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("LimitDown")).Value = mLimitDown.ToString(nfi);
+			string st = "";
+			if (mType == SharpType.Sharp)
+				st = "sharp";
+			else
+				st = "soft";
+			
+			xn.Attributes.Append(xdoc.CreateAttribute("SharpType")).Value = st;
+			
 			return xn;
 		}
 
@@ -95,6 +116,20 @@ namespace CatEye.Core
 				if (double.TryParse(node.Attributes["LimitDown"].Value, NumberStyles.Float, nfi, out res))
 				{
 					mLimitDown = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse LimitDown value");
+			}
+			if (node.Attributes["SharpType"] != null)
+			{
+				
+				if (node.Attributes["SharpType"].Value == "sharp")
+				{
+					mType = SharpType.Sharp;
+				}
+				else if (node.Attributes["SharpType"].Value == "soft")
+				{
+					mType = SharpType.Soft;
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse LimitDown value");

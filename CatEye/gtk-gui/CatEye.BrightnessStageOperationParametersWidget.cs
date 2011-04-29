@@ -24,6 +24,7 @@ namespace CatEye
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(2));
 			this.table1.ColumnSpacing = ((uint)(6));
+			this.table1.BorderWidth = ((uint)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";

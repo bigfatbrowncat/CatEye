@@ -299,7 +299,7 @@ namespace CatEye.Core
 			return Max;
 		}
 		
-		public void CompressLight(double power, double bloha)
+		public void CompressLight(double power, double dark_preserving)
 		{
 	
 			for (int i = 0; i < width; i++)
@@ -309,9 +309,9 @@ namespace CatEye.Core
 				                         g_chan[i, j] * g_chan[i, j] +
 				                         b_chan[i, j] * b_chan[i, j]);
 				
-				r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
-				g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
-				b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + bloha), power));
+				r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+				g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+				b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
 
 			}
 			

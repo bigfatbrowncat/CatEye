@@ -32,7 +32,16 @@ namespace CatEye
 				
 				// Setting all editors to the value
 				if (changer != PowerChanger.HScale)
-					power_hscale.Value = Math.Sqrt(new_value);
+				{
+					if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
+					{
+						power_hscale.Value = Math.Sqrt(new_value);
+					}
+					else
+					{
+						power_hscale.Value = new_value;
+					}
+				}
 				
 				if (changer != PowerChanger.SpinButton)
 					power_spinbutton.Value = new_value;
@@ -109,8 +118,21 @@ namespace CatEye
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
+			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
+				sharp_radiobutton.Active = true;
+			else
+				soft_radiobutton.Active = true;
+			
 			_PowerIsChanging = true;
-			power_hscale.Value = Math.Sqrt(((UltraSharpStageOperationParameters)Parameters).Power);
+			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
+			{				
+				power_hscale.Value = Math.Sqrt(((UltraSharpStageOperationParameters)Parameters).Power);
+			}
+			else
+			{				
+				power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+			}
+				
 			power_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
 			_PowerIsChanging = false;
 
@@ -132,7 +154,10 @@ namespace CatEye
 
 		protected void OnPowerHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
-			ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
+			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
+				ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
+			else
+				ChangePower(power_hscale.Value, PowerChanger.HScale);
 		}
 
 		protected void OnPowerSpinbuttonValueChanged (object sender, System.EventArgs e)
@@ -168,6 +193,22 @@ namespace CatEye
 		protected void OnLimitdownSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
 			ChangeLimitDown(limitdown_spinbutton.Value, LimitDownChanger.SpinButton);
+		}
+
+		protected void OnSharpSoftToggled (object sender, System.EventArgs e)
+		{
+			if (sharp_radiobutton.Active)
+			{
+				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Sharp;
+				power_spinbutton.Adjustment.Upper = 100;
+				ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
+			}
+			else
+			{
+				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Soft;
+				power_spinbutton.Adjustment.Upper = 10;
+				ChangePower(power_hscale.Value, PowerChanger.HScale);
+			}
 		}
 	}
 }

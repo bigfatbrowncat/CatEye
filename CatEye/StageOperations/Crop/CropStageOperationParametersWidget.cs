@@ -21,7 +21,7 @@ namespace CatEye
 			ls.AppendValues("0.667 - Photo portrait (2:3)", 2.0/3);
 			ls.AppendValues("1.333 - Screen album (4:3)", 4.0/3);
 			ls.AppendValues("0.75 - Screen portrait (3:4)", 3.0/4);
-			ls.AppendValues("Don't preserve", 0);
+			ls.AppendValues("Free", 0);
 			aspect_comboboxentry.Model = ls;
 			
 			Gtk.TreeIter ti;
@@ -31,83 +31,45 @@ namespace CatEye
 
 			//HandleParametersChangedNotByUI();
 		}
+		
+		protected void OnLeftSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			StartChangingParameters();
+			((CropStageOperationParameters)Parameters).Left = left_spinbutton.Value;
+			EndChangingParameters();
+			OnUserModified();
+		}
 
-		protected virtual void OnLeftEntryChanged (object sender, System.EventArgs e)
+		protected void OnRightSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			double res;
-			if (double.TryParse(left_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((CropStageOperationParameters)Parameters).Left = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
+			StartChangingParameters();
+			((CropStageOperationParameters)Parameters).Right = right_spinbutton.Value;
+			EndChangingParameters();
+			OnUserModified();
 		}
-		
-		protected virtual void OnRightEntryChanged (object sender, System.EventArgs e)
+
+		protected void OnTopSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			double res;
-			if (double.TryParse(right_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((CropStageOperationParameters)Parameters).Right = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
+			StartChangingParameters();
+			((CropStageOperationParameters)Parameters).Top = top_spinbutton.Value;
+			EndChangingParameters();
+			OnUserModified();
 		}
-		
-		protected virtual void OnTopEntryChanged (object sender, System.EventArgs e)
+
+		protected void OnBottomSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			double res;
-			if (double.TryParse(top_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((CropStageOperationParameters)Parameters).Top = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-		}
-		
-		protected virtual void OnBottomEntryChanged (object sender, System.EventArgs e)
-		{
-			double res;
-			if (double.TryParse(bottom_entry.Text, out res))
-			{
-				try
-				{
-					((CropStageOperationParameters)Parameters).Bottom = res;
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-		}
+			StartChangingParameters();
+			((CropStageOperationParameters)Parameters).Bottom = bottom_spinbutton.Value;
+			EndChangingParameters();
+			OnUserModified();
+		}		
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			left_entry.Text = ((CropStageOperationParameters)Parameters).Left.ToString("0.000");
-			top_entry.Text = ((CropStageOperationParameters)Parameters).Top.ToString("0.000");
-			right_entry.Text = ((CropStageOperationParameters)Parameters).Right.ToString("0.000");
-			bottom_entry.Text = ((CropStageOperationParameters)Parameters).Bottom.ToString("0.000");
+			left_spinbutton.Value = ((CropStageOperationParameters)Parameters).Left;
+			top_spinbutton.Value = ((CropStageOperationParameters)Parameters).Top;
+			right_spinbutton.Value = ((CropStageOperationParameters)Parameters).Right;
+			bottom_spinbutton.Value = ((CropStageOperationParameters)Parameters).Bottom;
 
 			double ar = ((CropStageOperationParameters)Parameters).AspectRatio;
 			if (((CropStageOperationParameters)Parameters).LockAspectRatio)
@@ -352,6 +314,8 @@ namespace CatEye
 			
 			CheckAspect();
 		}
+
+
 	}
 }
 

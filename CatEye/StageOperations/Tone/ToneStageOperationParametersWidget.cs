@@ -27,9 +27,9 @@ namespace CatEye
 
 		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
 		{
-			r_label.Markup = "Red: <b>" + toneselectorwidget1.SelectedTone.R.ToString("0.00") + "</b>";
-			g_label.Markup = "Green: <b>" + toneselectorwidget1.SelectedTone.G.ToString("0.00") + "</b>";
-			b_label.Markup = "Blue: <b>" + toneselectorwidget1.SelectedTone.B.ToString("0.00") + "</b>";
+			r_label.Markup = "R: <b>" + toneselectorwidget1.SelectedTone.R.ToString("0.00") + "</b>";
+			g_label.Markup = "G: <b>" + toneselectorwidget1.SelectedTone.G.ToString("0.00") + "</b>";
+			b_label.Markup = "B: <b>" + toneselectorwidget1.SelectedTone.B.ToString("0.00") + "</b>";
 		}
 
 		protected void OnToneselectorwidget1ToneSelected (object sender, System.EventArgs e)

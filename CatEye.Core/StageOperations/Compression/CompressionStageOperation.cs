@@ -15,7 +15,7 @@ namespace CatEye.Core
 			CompressionStageOperationParameters pm = (CompressionStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Compressing...");
-			hdp.CompressLight(pm.Power, pm.Bloha);			
+			hdp.CompressLight(pm.Power, pm.DarkPreserving);			
 			
 			base.OnDo (hdp);
 		}

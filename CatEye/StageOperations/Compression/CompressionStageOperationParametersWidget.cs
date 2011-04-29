@@ -11,50 +11,90 @@ namespace CatEye
 			base(parameters)
 		{
 			this.Build ();
-			//HandleParametersChangedNotByUI();
 		}
 
-		protected virtual void OnPowerEntryChanged (object sender, System.EventArgs e)
+		private bool _PowerIsChanging = false;
+		private bool _DarkPreservingIsChanging = false;
+		
+		protected enum PowerChanger { HScale, SpinButton }
+		protected enum DarkPreservingChanger { HScale, SpinButton }
+		
+		protected void ChangePower(double new_value, PowerChanger changer)
 		{
-			double res = 0;
-			if (double.TryParse(power_entry.Text, out res))
+			if (!_PowerIsChanging)
 			{
-				try
-				{
-					StartChangingParameters();
-					((CompressionStageOperationParameters)Parameters).Power = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
+				_PowerIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != PowerChanger.HScale)
+					power_hscale.Value = new_value;
+				
+				if (changer != PowerChanger.SpinButton)
+					power_spinbutton.Value = new_value;
+				
+				((CompressionStageOperationParameters)Parameters).Power = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_PowerIsChanging = false;
 			}
 		}
-		
-		protected virtual void OnBlohaEntryChanged (object sender, System.EventArgs e)
+		protected void ChangeDarkPreserving(double new_value, DarkPreservingChanger changer)
 		{
-			double res = 0;
-			if (double.TryParse(bloha_entry.Text, out res))
+			if (!_DarkPreservingIsChanging)
 			{
-				try
-				{
-					StartChangingParameters();
-					((CompressionStageOperationParameters)Parameters).Bloha = res;
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
+				_DarkPreservingIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != DarkPreservingChanger.HScale)
+					dark_preserving_hscale.Value = new_value;
+				
+				if (changer != DarkPreservingChanger.SpinButton)
+					dark_preserving_spinbutton.Value = new_value;
+				
+				((CompressionStageOperationParameters)Parameters).DarkPreserving = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_DarkPreservingIsChanging = false;
 			}
 		}
-		
+
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			power_entry.Text = ((CompressionStageOperationParameters)Parameters).Power.ToString();
-			bloha_entry.Text = ((CompressionStageOperationParameters)Parameters).Bloha.ToString();
+			_PowerIsChanging = true;
+			power_hscale.Value = ((CompressionStageOperationParameters)Parameters).Power;
+			power_spinbutton.Value = ((CompressionStageOperationParameters)Parameters).Power;
+			_PowerIsChanging = false;
+			
+			_DarkPreservingIsChanging = true;
+			dark_preserving_hscale.Value = ((CompressionStageOperationParameters)Parameters).DarkPreserving;
+			dark_preserving_spinbutton.Value = ((CompressionStageOperationParameters)Parameters).DarkPreserving;
+			_DarkPreservingIsChanging = false;
+			
+//			power_entry.Text = ((CompressionStageOperationParameters)Parameters).Power.ToString();
+//			bloha_entry.Text = ((CompressionStageOperationParameters)Parameters).DarkPreserving.ToString();
+			
 		}
 		
+		protected void OnPowerHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangePower(power_hscale.Value, PowerChanger.HScale);
+		}
+
+		protected void OnPowerSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangePower(power_spinbutton.Value, PowerChanger.SpinButton);
+		}
+
+		protected void OnDarkPreservingHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangeDarkPreserving(dark_preserving_hscale.Value, DarkPreservingChanger.HScale);
+		}
+		
+		protected void OnDarkPreservingSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeDarkPreserving(dark_preserving_spinbutton.Value, DarkPreservingChanger.SpinButton);
+		}
 	}
 }

@@ -5,7 +5,7 @@ namespace CatEye
 	[System.ComponentModel.ToolboxItem(true)]
 	public class ToneSelectorWidget : Gtk.DrawingArea
 	{
-		int margin = 5;
+		int margin = 6;
 		double mAlpha = 0.5;
 		bool mouse_down = false;
 		
@@ -152,7 +152,7 @@ namespace CatEye
 				
 				gc.SetLineAttributes(2, Gdk.LineStyle.Solid, Gdk.CapStyle.Round,Gdk.JoinStyle.Round);
 				GdkWindow.DrawRectangle(gc, false,
-					new Gdk.Rectangle(sel_x - 3, sel_y - 3, 6, 6));
+					new Gdk.Rectangle(sel_x - 4, sel_y - 4, 8, 8));
 			}
 			finally
 			{

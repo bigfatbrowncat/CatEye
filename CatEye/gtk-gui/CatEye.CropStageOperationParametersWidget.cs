@@ -6,13 +6,13 @@ namespace CatEye
 	{
 		private global::Gtk.Table table1;
 		private global::Gtk.ComboBoxEntry aspect_comboboxentry;
-		private global::Gtk.Entry bottom_entry;
+		private global::Gtk.SpinButton bottom_spinbutton;
 		private global::Gtk.Label label7;
 		private global::Gtk.Label label8;
 		private global::Gtk.Label label9;
-		private global::Gtk.Entry left_entry;
-		private global::Gtk.Entry right_entry;
-		private global::Gtk.Entry top_entry;
+		private global::Gtk.SpinButton left_spinbutton;
+		private global::Gtk.SpinButton right_spinbutton;
+		private global::Gtk.SpinButton top_spinbutton;
 
 		protected virtual void Build ()
 		{
@@ -21,10 +21,11 @@ namespace CatEye
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.CropStageOperationParametersWidget";
 			// Container child CatEye.CropStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), true);
+			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
+			this.table1.BorderWidth = ((uint)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.aspect_comboboxentry = global::Gtk.ComboBoxEntry.NewText ();
 			this.aspect_comboboxentry.Name = "aspect_comboboxentry";
@@ -34,18 +35,17 @@ namespace CatEye
 			w1.BottomAttach = ((uint)(3));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(3));
-			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.bottom_entry = new global::Gtk.Entry ();
-			this.bottom_entry.CanFocus = true;
-			this.bottom_entry.Name = "bottom_entry";
-			this.bottom_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.bottom_entry.IsEditable = true;
-			this.bottom_entry.WidthChars = 6;
-			this.bottom_entry.InvisibleChar = '●';
-			this.table1.Add (this.bottom_entry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.bottom_entry]));
+			this.bottom_spinbutton = new global::Gtk.SpinButton (0, 1, 0.01);
+			this.bottom_spinbutton.CanFocus = true;
+			this.bottom_spinbutton.Name = "bottom_spinbutton";
+			this.bottom_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.bottom_spinbutton.ClimbRate = 0.01;
+			this.bottom_spinbutton.Digits = ((uint)(3));
+			this.bottom_spinbutton.Numeric = true;
+			this.table1.Add (this.bottom_spinbutton);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.bottom_spinbutton]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(2));
@@ -82,42 +82,43 @@ namespace CatEye
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.left_entry = new global::Gtk.Entry ();
-			this.left_entry.CanFocus = true;
-			this.left_entry.Name = "left_entry";
-			this.left_entry.Text = global::Mono.Unix.Catalog.GetString ("0");
-			this.left_entry.IsEditable = true;
-			this.left_entry.WidthChars = 6;
-			this.left_entry.InvisibleChar = '●';
-			this.table1.Add (this.left_entry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.left_entry]));
+			this.left_spinbutton = new global::Gtk.SpinButton (0, 1, 0.01);
+			this.left_spinbutton.CanFocus = true;
+			this.left_spinbutton.Name = "left_spinbutton";
+			this.left_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.left_spinbutton.ClimbRate = 0.01;
+			this.left_spinbutton.Digits = ((uint)(3));
+			this.left_spinbutton.Numeric = true;
+			this.table1.Add (this.left_spinbutton);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.left_spinbutton]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.right_entry = new global::Gtk.Entry ();
-			this.right_entry.CanFocus = true;
-			this.right_entry.Name = "right_entry";
-			this.right_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.right_entry.IsEditable = true;
-			this.right_entry.WidthChars = 6;
-			this.right_entry.InvisibleChar = '●';
-			this.table1.Add (this.right_entry);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.right_entry]));
+			this.right_spinbutton = new global::Gtk.SpinButton (0, 1, 0.01);
+			this.right_spinbutton.CanFocus = true;
+			this.right_spinbutton.Name = "right_spinbutton";
+			this.right_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.right_spinbutton.ClimbRate = 0.01;
+			this.right_spinbutton.Digits = ((uint)(3));
+			this.right_spinbutton.Numeric = true;
+			this.table1.Add (this.right_spinbutton);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.right_spinbutton]));
 			w7.LeftAttach = ((uint)(2));
 			w7.RightAttach = ((uint)(3));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.top_entry = new global::Gtk.Entry ();
-			this.top_entry.CanFocus = true;
-			this.top_entry.Name = "top_entry";
-			this.top_entry.Text = global::Mono.Unix.Catalog.GetString ("0");
-			this.top_entry.IsEditable = true;
-			this.top_entry.WidthChars = 6;
-			this.top_entry.InvisibleChar = '●';
-			this.table1.Add (this.top_entry);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.top_entry]));
+			this.top_spinbutton = new global::Gtk.SpinButton (0, 1, 0.01);
+			this.top_spinbutton.CanFocus = true;
+			this.top_spinbutton.Name = "top_spinbutton";
+			this.top_spinbutton.Adjustment.PageIncrement = 0.1;
+			this.top_spinbutton.ClimbRate = 0.01;
+			this.top_spinbutton.Digits = ((uint)(3));
+			this.top_spinbutton.Numeric = true;
+			this.table1.Add (this.top_spinbutton);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.top_spinbutton]));
 			w8.TopAttach = ((uint)(1));
 			w8.BottomAttach = ((uint)(2));
 			w8.LeftAttach = ((uint)(1));
@@ -129,10 +130,10 @@ namespace CatEye
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.top_entry.Changed += new global::System.EventHandler (this.OnTopEntryChanged);
-			this.right_entry.Changed += new global::System.EventHandler (this.OnRightEntryChanged);
-			this.left_entry.Changed += new global::System.EventHandler (this.OnLeftEntryChanged);
-			this.bottom_entry.Changed += new global::System.EventHandler (this.OnBottomEntryChanged);
+			this.top_spinbutton.ValueChanged += new global::System.EventHandler (this.OnTopSpinbuttonValueChanged);
+			this.right_spinbutton.ValueChanged += new global::System.EventHandler (this.OnRightSpinbuttonValueChanged);
+			this.left_spinbutton.ValueChanged += new global::System.EventHandler (this.OnLeftSpinbuttonValueChanged);
+			this.bottom_spinbutton.ValueChanged += new global::System.EventHandler (this.OnBottomSpinbuttonValueChanged);
 			this.aspect_comboboxentry.Changed += new global::System.EventHandler (this.OnAspectComboboxentryChanged);
 		}
 	}

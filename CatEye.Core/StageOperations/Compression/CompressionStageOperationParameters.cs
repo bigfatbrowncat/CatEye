@@ -8,7 +8,7 @@ namespace CatEye.Core
 	public class CompressionStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 0.7, mBloha = 0.01;
+		private double mPower = 0.7, mDarkPreserving = 0.01;
 
 		public double Power
 		{
@@ -19,12 +19,12 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-		public double Bloha
+		public double DarkPreserving
 		{
-			get { return mBloha; }
+			get { return mDarkPreserving; }
 			set 
 			{
-				mBloha = value;
+				mDarkPreserving = value;
 				OnChanged();
 			}
 		}
@@ -33,7 +33,7 @@ namespace CatEye.Core
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Bloha")).Value = mBloha.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("DarkPreserving")).Value = mDarkPreserving.ToString(nfi);
 			return xn;
 		}
 
@@ -50,14 +50,14 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Brightness value");
 			}
-			if (node.Attributes["Bloha"] != null)
+			if (node.Attributes["DarkPreserving"] != null)
 			{
-				if (double.TryParse(node.Attributes["Bloha"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["DarkPreserving"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mBloha = res;
+					mDarkPreserving = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Brightness value");
+					throw new IncorrectNodeValueException("Can't parse DarkPreserving value");
 			}
 			OnChanged();
 		}
