@@ -355,7 +355,7 @@ namespace CatEye.Core
 				{
 					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 								  			g_chan[i, j] * g_chan[i, j] + 
-							      			b_chan[i, j] * b_chan[i, j]);
+							      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				}
 			}
 			
@@ -566,17 +566,18 @@ namespace CatEye.Core
 			int chan = buf.NChannels;
 			int w = buf.Width, h = buf.Height, stride = buf.Rowstride;
 			
-			// counting the maximum channel value
+			// counting the maximum light value
 			double max = 0;
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				if (r_chan[i, j] > max) max = r_chan[i, j];
-				if (g_chan[i, j] > max) max = g_chan[i, j];
-				if (b_chan[i, j] > max) max = b_chan[i, j];
+				double r = N * (1 - Math.Exp(-r_chan[i, j] / N));
+				double g = N * (1 - Math.Exp(-g_chan[i, j] / N));
+				double b = N * (1 - Math.Exp(-b_chan[i, j] / N));
+
+				double light = Math.Sqrt(r*r + g*g + b*b) / Math.Sqrt(3);
+				if (light > max) max = light;
 			}
-			
-			if (max > 1) max = 1;	// Don't scale value that's greater than 1
 			
 			byte *cur_row = (byte *)buf.Pixels;
 			for (int j = 0; j < h; j++)

@@ -131,7 +131,10 @@ namespace CatEye
 			try
 			{
 				// Creating PixBuf to draw a color matrix
-				pb = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, W - margin * 2, H - margin * 2);
+				if (GdkWindow == null || W < 1 || H < 1) return true;
+				
+				pb = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, W - margin * 2, H - margin * 2);
+				//pb = Gdk.Pixbuf.FromDrawable(Parent.GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, W - margin * 2, H - margin * 2);
 				
 				// Drawing color matrix to back pixbuf
 				DrawColors(pb);

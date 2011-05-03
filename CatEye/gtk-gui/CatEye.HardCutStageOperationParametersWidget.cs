@@ -28,8 +28,8 @@ namespace CatEye
 			this.black_hscale = new global::Gtk.HScale (null);
 			this.black_hscale.CanFocus = true;
 			this.black_hscale.Name = "black_hscale";
-			this.black_hscale.Adjustment.Upper = 0.99;
-			this.black_hscale.Adjustment.PageIncrement = 0.05;
+			this.black_hscale.Adjustment.Upper = 0.999;
+			this.black_hscale.Adjustment.PageIncrement = 0.005;
 			this.black_hscale.Adjustment.StepIncrement = 0.01;
 			this.black_hscale.Adjustment.Value = 0.001;
 			this.black_hscale.DrawValue = false;
@@ -45,8 +45,8 @@ namespace CatEye
 			this.black_spinbutton.CanFocus = true;
 			this.black_spinbutton.Name = "black_spinbutton";
 			this.black_spinbutton.Adjustment.PageIncrement = 0.05;
-			this.black_spinbutton.ClimbRate = 0.01;
-			this.black_spinbutton.Digits = ((uint)(2));
+			this.black_spinbutton.ClimbRate = 0.001;
+			this.black_spinbutton.Digits = ((uint)(3));
 			this.black_spinbutton.Numeric = true;
 			this.table1.Add (this.black_spinbutton);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.black_spinbutton]));
@@ -80,9 +80,9 @@ namespace CatEye
 			this.white_hscale = new global::Gtk.HScale (null);
 			this.white_hscale.CanFocus = true;
 			this.white_hscale.Name = "white_hscale";
-			this.white_hscale.Adjustment.Lower = 0.01;
+			this.white_hscale.Adjustment.Lower = 0.001;
 			this.white_hscale.Adjustment.Upper = 1;
-			this.white_hscale.Adjustment.PageIncrement = 0.01;
+			this.white_hscale.Adjustment.PageIncrement = 0.005;
 			this.white_hscale.Adjustment.StepIncrement = 0.001;
 			this.white_hscale.Adjustment.Value = 0.01;
 			this.white_hscale.DrawValue = false;
@@ -101,8 +101,8 @@ namespace CatEye
 			this.white_spinbutton.CanFocus = true;
 			this.white_spinbutton.Name = "white_spinbutton";
 			this.white_spinbutton.Adjustment.PageIncrement = 0.05;
-			this.white_spinbutton.ClimbRate = 0.01;
-			this.white_spinbutton.Digits = ((uint)(2));
+			this.white_spinbutton.ClimbRate = 0.001;
+			this.white_spinbutton.Digits = ((uint)(3));
 			this.white_spinbutton.Numeric = true;
 			this.table1.Add (this.white_spinbutton);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.white_spinbutton]));

@@ -2045,8 +2045,8 @@
           <widget class="Gtk.HScale" id="black_hscale">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Upper">0.99</property>
-            <property name="PageIncrement">0.05</property>
+            <property name="Upper">0.999</property>
+            <property name="PageIncrement">0.005</property>
             <property name="StepIncrement">0.01</property>
             <property name="Value">0.001</property>
             <property name="DrawValue">False</property>
@@ -2074,8 +2074,8 @@
             <property name="Upper">1</property>
             <property name="PageIncrement">0.05</property>
             <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">2</property>
+            <property name="ClimbRate">0.001</property>
+            <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <signal name="ValueChanged" handler="OnBlackSpinbuttonValueChanged" />
           </widget>
@@ -2137,9 +2137,9 @@
           <widget class="Gtk.HScale" id="white_hscale">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">0.01</property>
+            <property name="Lower">0.001</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">0.01</property>
+            <property name="PageIncrement">0.005</property>
             <property name="StepIncrement">0.001</property>
             <property name="Value">0.01</property>
             <property name="DrawValue">False</property>
@@ -2170,8 +2170,8 @@
             <property name="Upper">1</property>
             <property name="PageIncrement">0.05</property>
             <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">2</property>
+            <property name="ClimbRate">0.001</property>
+            <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <signal name="ValueChanged" handler="OnWhiteSpinbuttonValueChanged" />
           </widget>
