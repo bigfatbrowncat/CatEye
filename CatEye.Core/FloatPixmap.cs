@@ -347,6 +347,7 @@ namespace CatEye.Core
 		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
 			double[,] light = new double[width, height];
+			double maxlight = 0;
 			unsafe {
 	
 				// Сalculating light
@@ -356,6 +357,7 @@ namespace CatEye.Core
 					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 								  			g_chan[i, j] * g_chan[i, j] + 
 							      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					if (light[i,j] > maxlight) maxlight = light[i,j];
 				}
 			}
 			
@@ -425,14 +427,15 @@ namespace CatEye.Core
 								kcomp = 1;
 							else
 								kcomp = Math.Pow(scale_matrix[i_back, j] / scale_matrix_adds[i_back, j] + 1, power);
-							
+
 							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
 							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
 							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
 			
-							//if (r_chan[i_back, j] > 0.99999) r_chan[i_back, j] = 0.99999;
-							//if (g_chan[i_back, j] > 0.99999) g_chan[i_back, j] = 0.99999;
-							//if (b_chan[i_back, j] > 0.99999) b_chan[i_back, j] = 0.99999;
+							if (r_chan[i_back, j] > maxlight) r_chan[i_back, j] = (float)maxlight;
+							if (g_chan[i_back, j] > maxlight) g_chan[i_back, j] = (float)maxlight;
+							if (b_chan[i_back, j] > maxlight) b_chan[i_back, j] = (float)maxlight;
+							
 						}
 					}
 				}
