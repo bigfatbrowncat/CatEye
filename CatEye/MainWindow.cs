@@ -332,7 +332,9 @@ public partial class MainWindow : Gtk.Window
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
 		if (TheUIState != MainWindow.UIState.Free)
+		{
 			cancel_pending = true;
+		}
 		Application.Quit ();
 		a.RetVal = true;
 	}
@@ -427,7 +429,8 @@ public partial class MainWindow : Gtk.Window
 			}
 		}
 		TheUIState = MainWindow.UIState.Free;
-		stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
+		if (ppl != null)
+			stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
 		LaunchUpdateTimer();
 	}
 	
