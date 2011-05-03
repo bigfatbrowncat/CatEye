@@ -14,7 +14,7 @@ namespace CatEye.Core
 	
 	public class FloatPixmap
 	{
-		private const int REPORT_EVERY_NTH_LINE = 150;
+		private const int REPORT_EVERY_NTH_LINE = 75;
 		
 		float[,] r_chan, g_chan, b_chan;
 		
@@ -68,8 +68,11 @@ namespace CatEye.Core
 				}
 			}
 			
-			// Scaling res to 0..1
+			// Searching for maximum
 			double Max = res.CalcMaxLight();
+			
+			
+			// Normalizing to 0..1
 			for (int i = 0; i < res.width; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
@@ -84,25 +87,7 @@ namespace CatEye.Core
 					res.b_chan[i, j] /= (float)Max;
 				}
 			}
-			
-			// Applying inverse limiter
-			double N = 1.0001;		// Norm
-			
-			for (int i = 0; i < res.width; i++)
-			{
-				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
-				{
-					if (!callback(0.666 + (double)i / res.width / 3)) 
-						return null;
-				}
-				for (int j = 0; j < res.height; j++)
-				{
-					res.r_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.r_chan[i, j] / N)));
-					res.g_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.g_chan[i, j] / N)));
-					res.b_chan[i, j] = (float)(N * Math.Log(1.0 / (1 - res.b_chan[i, j] / N)));
-				}
-			}
-			
+
 			return res;
 		}
 
@@ -245,13 +230,13 @@ namespace CatEye.Core
 			// Searching minimum
 			double local_min = Math.Sqrt(r_chan[0, 0] * r_chan[0, 0] +
 				                         g_chan[0, 0] * g_chan[0, 0] +
-				                         b_chan[0, 0] * b_chan[0, 0]);
+				                         b_chan[0, 0] * b_chan[0, 0]) / Math.Sqrt(3);
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
 				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                               g_chan[i, j] * g_chan[i, j] +
-				                               b_chan[i, j] * b_chan[i, j]);
+				                               b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				if (local_min > light[i, j]) local_min = light[i, j];
 			}
@@ -292,7 +277,7 @@ namespace CatEye.Core
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]);
+						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				if (Max < light) Max = light;
 			}
@@ -307,7 +292,7 @@ namespace CatEye.Core
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                         g_chan[i, j] * g_chan[i, j] +
-				                         b_chan[i, j] * b_chan[i, j]);
+				                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
 				g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));

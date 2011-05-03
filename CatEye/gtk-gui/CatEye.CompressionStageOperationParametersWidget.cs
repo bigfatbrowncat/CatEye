@@ -103,7 +103,7 @@ namespace CatEye
 			this.power_spinbutton.Name = "power_spinbutton";
 			this.power_spinbutton.Adjustment.PageIncrement = 0.05;
 			this.power_spinbutton.ClimbRate = 0.01;
-			this.power_spinbutton.Digits = ((uint)(1));
+			this.power_spinbutton.Digits = ((uint)(2));
 			this.power_spinbutton.Numeric = true;
 			this.table1.Add (this.power_spinbutton);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_spinbutton]));
