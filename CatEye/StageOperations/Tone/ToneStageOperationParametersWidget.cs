@@ -16,10 +16,42 @@ namespace CatEye
 			toneselectorwidget1.Alpha = 0.5;
 		}
 		
+		private bool _HlInvIsChanging = false;
+		
+		protected enum HlInvChanger { HScale, SpinButton }
+		
+		protected void ChangeHlInv(double new_value, HlInvChanger changer)
+		{
+			if (!_HlInvIsChanging)
+			{
+				_HlInvIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != HlInvChanger.HScale)
+					hl_inv_hscale.Value = new_value;
+				
+				if (changer != HlInvChanger.SpinButton)
+					hl_inv_spinbutton.Value = new_value;
+				
+				((ToneStageOperationParameters)Parameters).HighlightsInvariance = new_value;
+				
+				EndChangingParameters();
+				OnUserModified();
+				_HlInvIsChanging = false;
+			}
+		}
+		
+		
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			Tone tn = ((ToneStageOperationParameters)Parameters).Tone;
 			toneselectorwidget1.SelectedTone = tn;
+
+			_HlInvIsChanging = true;
+			hl_inv_hscale.Value = ((ToneStageOperationParameters)Parameters).HighlightsInvariance;
+			hl_inv_spinbutton.Value = ((ToneStageOperationParameters)Parameters).HighlightsInvariance;
+			_HlInvIsChanging = false;
 		}
 
 		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
@@ -43,6 +75,16 @@ namespace CatEye
 		protected void OnAlphaVscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
 			toneselectorwidget1.Alpha = alpha_vscale.Value;
+		}
+
+		protected void OnHlInvHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
+		{
+			ChangeHlInv(hl_inv_hscale.Value, HlInvChanger.HScale);
+		}
+
+		protected void OnHlInvSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeHlInv(hl_inv_spinbutton.Value, HlInvChanger.SpinButton);
 		}
 	}
 }

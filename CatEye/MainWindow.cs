@@ -91,6 +91,7 @@ public partial class MainWindow : Gtk.Window
 		typeof(UltraSharpStageOperation),
 		typeof(SaturationStageOperation),
 		typeof(ToneStageOperation),
+		typeof(HardCutStageOperation),
 	};
 	
 	bool update_timer_launched = false;

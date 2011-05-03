@@ -14,6 +14,7 @@ namespace CatEye
 			typeof(UltraSharpStageOperationParametersWidget),
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
+			typeof(HardCutStageOperationParametersWidget),
 		};
 		
 		
@@ -294,8 +295,10 @@ namespace CatEye
 		protected override void OnRemovedFromStage (StageOperation operation)
 		{
 			
-			StageOperationHolderWidget sohw = _Holders[operation];
+			if (_EditingOperation == operation) _EditingOperation = null;
 
+			StageOperationHolderWidget sohw = _Holders[operation];
+			
 			_StageVBox.Remove(sohw);
 			sohw.UpTitleButtonClicked -= HandleSohwUpTitleButtonClicked;
 			sohw.DownTitleButtonClicked -= HandleSohwDownTitleButtonClicked;
@@ -305,6 +308,7 @@ namespace CatEye
 			sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
 			sohw.Dispose();
 			_Holders.Remove(operation);
+			
 			
 			ArrangeVBoxes();
 

@@ -440,8 +440,10 @@ namespace CatEye.Core
 			
 		}
 		
-		public void ApplyTone(Tone tone)
+		public void ApplyTone(Tone tone, double HighlightsInvariance)
 		{
+			double maxlight = CalcMaxLight();
+			
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
@@ -449,17 +451,27 @@ namespace CatEye.Core
 				double light_before = Math.Sqrt(
 							  r_chan[i, j] * r_chan[i, j] + 
 							  g_chan[i, j] * g_chan[i, j] + 
-							  b_chan[i, j] * b_chan[i, j]);
+							  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
-				r_chan[i, j] *= (float)tone.R;
-				g_chan[i, j] *= (float)tone.G;
-				b_chan[i, j] *= (float)tone.B;
+				// Calculating color coefficients
+				// R2, G2, B2 values depend on light value.
+				// For highlights it should exponentially approach 1.
+				double kappa = Math.Pow(10, HighlightsInvariance);
+				
+				double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
+				double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
+				double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
+				
+				// Applying toning
+				r_chan[i, j] *= (float)(R2);
+				g_chan[i, j] *= (float)(G2);
+				b_chan[i, j] *= (float)(B2);
 				
 				// calculating norm after
 				double light_after = Math.Sqrt(
 							  r_chan[i, j] * r_chan[i, j] + 
 							  g_chan[i, j] * g_chan[i, j] + 
-							  b_chan[i, j] * b_chan[i, j]) + 0.00001;
+							  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
 				
 				// Normalizing
 				r_chan[i, j] *= (float)(light_before / light_after);
@@ -501,6 +513,44 @@ namespace CatEye.Core
 			}
 		}
 		
+		public void HardCut(double black, double white, ProgressReporter callback)
+		{
+			double max_light = CalcMaxLight();
+			
+			black *= max_light; white *= max_light;
+			
+			for (int j = 0; j < height; j++)
+			{
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / this.height)) return;
+				}
+				
+				for (int i = 0; i < width; i++)
+				{
+					//double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+					//			  	   g_chan[i, j] * g_chan[i, j] + 
+					//                   b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					
+					r_chan[i, j] = (float)Math.Max(0, r_chan[i, j] - black);
+					g_chan[i, j] = (float)Math.Max(0, g_chan[i, j] - black);
+					b_chan[i, j] = (float)Math.Max(0, b_chan[i, j] - black);
+					
+					r_chan[i, j] /= (float)(white - black);
+					g_chan[i, j] /= (float)(white - black);
+					b_chan[i, j] /= (float)(white - black);
+					
+					r_chan[i, j] = (float)Math.Min(r_chan[i, j], max_light);
+					g_chan[i, j] = (float)Math.Min(g_chan[i, j], max_light);
+					b_chan[i, j] = (float)Math.Min(b_chan[i, j], max_light);
+	
+					r_chan[i, j] *= (float)(max_light);
+					g_chan[i, j] *= (float)(max_light);
+					b_chan[i, j] *= (float)(max_light);
+				}
+			}
+		}
+		
 		/// <summary>
 		/// Draws image into selected pixbuf
 		/// </summary>
@@ -521,12 +571,9 @@ namespace CatEye.Core
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				double r = N * (1 - Math.Exp(-r_chan[i, j] / N));
-				double g = N * (1 - Math.Exp(-g_chan[i, j] / N));
-				double b = N * (1 - Math.Exp(-b_chan[i, j] / N));
-				if (r > max) max = r;
-				if (g > max) max = g;
-				if (b > max) max = b;
+				if (r_chan[i, j] > max) max = r_chan[i, j];
+				if (g_chan[i, j] > max) max = g_chan[i, j];
+				if (b_chan[i, j] > max) max = b_chan[i, j];
 			}
 			
 			if (max > 1) max = 1;	// Don't scale value that's greater than 1
