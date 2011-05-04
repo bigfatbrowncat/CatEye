@@ -8,7 +8,7 @@ namespace CatEye
 	public partial class SaturationStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private bool mChangingValue = false;
-		private double mMaxValue = 2;
+		private double mMaxValue;
 		
 		public double MaxValue 
 		{
@@ -17,7 +17,8 @@ namespace CatEye
 			{
 				mMaxValue = value;
 				saturation_hscale.Adjustment.Upper = value;
-				saturation_entry.Text = ((SaturationStageOperationParameters)Parameters).Saturation.ToString("0.00");
+				saturation_spinbutton.Adjustment.Upper = value;
+				saturation_spinbutton.Value = ((SaturationStageOperationParameters)Parameters).Saturation;
 			}
 		}
 		
@@ -30,36 +31,15 @@ namespace CatEye
 			
 		}
 		
-		protected virtual void OnSaturationEntryChanged (object sender, System.EventArgs e)
+		protected override void HandleParametersChangedNotByUI ()
 		{
 			if (!mChangingValue)
 			{
 				mChangingValue = true;
-				double res = 0;
-				if (double.TryParse(saturation_entry.Text, out res))
-				{
-					try
-					{
-						StartChangingParameters();
-						if (res > mMaxValue) res = mMaxValue;
-						((SaturationStageOperationParameters)Parameters).Saturation = res;
-						saturation_hscale.Value = res;
-						EndChangingParameters();
-						OnUserModified();
-					}
-					catch (IncorrectValueException)
-					{
-					}
-				}
+				saturation_spinbutton.Value = ((SaturationStageOperationParameters)Parameters).Saturation;
+				saturation_hscale.Value = ((SaturationStageOperationParameters)Parameters).Saturation;
 				mChangingValue = false;
 			}
-			
-		}
-		
-		protected override void HandleParametersChangedNotByUI ()
-		{
-			saturation_entry.Text = ((SaturationStageOperationParameters)Parameters).Saturation.ToString("0.00");
-			saturation_hscale.Value = ((SaturationStageOperationParameters)Parameters).Saturation;
 		}
 
 		protected void OnSaturationHscaleValueChanged (object sender, System.EventArgs e)
@@ -67,27 +47,29 @@ namespace CatEye
 			if (!mChangingValue)
 			{
 				mChangingValue = true;
+				
 				StartChangingParameters();
 				((SaturationStageOperationParameters)Parameters).Saturation = saturation_hscale.Value;
-				saturation_entry.Text = saturation_hscale.Value.ToString("0.00");
+				saturation_spinbutton.Value = saturation_hscale.Value;
 				EndChangingParameters();
+				
 				OnUserModified();
 				mChangingValue = false;
 			}
 		}
 
-		protected void OnSaturationHscaleMoveSlider (object o, Gtk.MoveSliderArgs args)
+		protected void OnSaturationSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-
-		}
-
-		protected void OnSaturationEntryEditingDone (object sender, System.EventArgs e)
-		{
-		}
-
-		protected void OnSaturationEntryFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
-		{
-			saturation_entry.Text = ((SaturationStageOperationParameters)Parameters).Saturation.ToString("0.00");
+			if (!mChangingValue)
+			{
+				StartChangingParameters();
+				
+				((SaturationStageOperationParameters)Parameters).Saturation = saturation_spinbutton.Value;
+				saturation_hscale.Value = saturation_spinbutton.Value;
+	
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 	}
 }

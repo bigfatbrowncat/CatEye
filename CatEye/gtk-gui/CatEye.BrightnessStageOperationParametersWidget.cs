@@ -7,7 +7,7 @@ namespace CatEye
 		private global::Gtk.Table table1;
 		private global::Gtk.HBox hbox1;
 		private global::CatEye.BrightnessSelectorWidget logbrightness_hscale;
-		private global::Gtk.Entry brightness_entry;
+		private global::Gtk.SpinButton brightness_spinbutton;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label median_label;
 		private global::Gtk.ToggleButton normalize_togglebutton;
@@ -44,16 +44,19 @@ namespace CatEye
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.logbrightness_hscale]));
 			w1.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.brightness_entry = new global::Gtk.Entry ();
-			this.brightness_entry.CanFocus = true;
-			this.brightness_entry.Name = "brightness_entry";
-			this.brightness_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.brightness_entry.IsEditable = true;
-			this.brightness_entry.WidthChars = 4;
-			this.hbox1.Add (this.brightness_entry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.brightness_entry]));
+			this.brightness_spinbutton = new global::Gtk.SpinButton (0.05, 10, 0.1);
+			this.brightness_spinbutton.CanFocus = true;
+			this.brightness_spinbutton.Name = "brightness_spinbutton";
+			this.brightness_spinbutton.Adjustment.PageIncrement = 1;
+			this.brightness_spinbutton.ClimbRate = 0.1;
+			this.brightness_spinbutton.Digits = ((uint)(2));
+			this.brightness_spinbutton.Numeric = true;
+			this.brightness_spinbutton.Value = 0.05;
+			this.hbox1.Add (this.brightness_spinbutton);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.brightness_spinbutton]));
 			w2.Position = 1;
 			w2.Expand = false;
+			w2.Fill = false;
 			this.table1.Add (this.hbox1);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w3.RightAttach = ((uint)(2));
@@ -105,7 +108,7 @@ namespace CatEye
 			this.Hide ();
 			this.normalize_togglebutton.Clicked += new global::System.EventHandler (this.OnNormalizeTogglebuttonClicked);
 			this.logbrightness_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnLogbrightnessHscaleChangeValue);
-			this.brightness_entry.Changed += new global::System.EventHandler (this.OnBrightnessEntryChanged);
+			this.brightness_spinbutton.ValueChanged += new global::System.EventHandler (this.OnBrightnessSpinbuttonValueChanged);
 		}
 	}
 }

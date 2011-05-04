@@ -5,8 +5,8 @@ namespace CatEye
 	public partial class SaturationStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-		private global::Gtk.Entry saturation_entry;
 		private global::CatEye.SaturationSelectorWidget saturation_hscale;
+		private global::Gtk.SpinButton saturation_spinbutton;
 
 		protected virtual void Build ()
 		{
@@ -21,20 +21,6 @@ namespace CatEye
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.saturation_entry = new global::Gtk.Entry ();
-			this.saturation_entry.CanFocus = true;
-			this.saturation_entry.Name = "saturation_entry";
-			this.saturation_entry.Text = global::Mono.Unix.Catalog.GetString ("1");
-			this.saturation_entry.IsEditable = true;
-			this.saturation_entry.WidthChars = 4;
-			this.saturation_entry.MaxLength = 4;
-			this.table1.Add (this.saturation_entry);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_entry]));
-			w1.LeftAttach = ((uint)(1));
-			w1.RightAttach = ((uint)(2));
-			w1.XOptions = ((global::Gtk.AttachOptions)(0));
-			w1.YOptions = ((global::Gtk.AttachOptions)(0));
-			// Container child table1.Gtk.Table+TableChild
 			this.saturation_hscale = new global::CatEye.SaturationSelectorWidget (null);
 			this.saturation_hscale.Name = "saturation_hscale";
 			this.saturation_hscale.Adjustment.Upper = 2;
@@ -45,16 +31,30 @@ namespace CatEye
 			this.saturation_hscale.Digits = 0;
 			this.saturation_hscale.ValuePos = ((global::Gtk.PositionType)(2));
 			this.table1.Add (this.saturation_hscale);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_hscale]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_hscale]));
+			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.saturation_spinbutton = new global::Gtk.SpinButton (0, 10, 0.1);
+			this.saturation_spinbutton.CanFocus = true;
+			this.saturation_spinbutton.Name = "saturation_spinbutton";
+			this.saturation_spinbutton.Adjustment.PageIncrement = 1;
+			this.saturation_spinbutton.ClimbRate = 0.1;
+			this.saturation_spinbutton.Digits = ((uint)(2));
+			this.saturation_spinbutton.Numeric = true;
+			this.saturation_spinbutton.Value = 0.05;
+			this.table1.Add (this.saturation_spinbutton);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_spinbutton]));
+			w2.LeftAttach = ((uint)(1));
+			w2.RightAttach = ((uint)(2));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.saturation_spinbutton.ValueChanged += new global::System.EventHandler (this.OnSaturationSpinbuttonValueChanged);
 			this.saturation_hscale.ValueChanged += new global::System.EventHandler (this.OnSaturationHscaleValueChanged);
-			this.saturation_entry.Changed += new global::System.EventHandler (this.OnSaturationEntryChanged);
-			this.saturation_entry.FocusOutEvent += new global::Gtk.FocusOutEventHandler (this.OnSaturationEntryFocusOutEvent);
 		}
 	}
 }

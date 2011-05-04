@@ -14,32 +14,11 @@ namespace CatEye
 			//HandleParametersChangedNotByUI();
 		}
 
-		protected virtual void OnBrightnessEntryChanged (object sender, System.EventArgs e)
-		{
-			double res = 0;
-			if (double.TryParse(brightness_entry.Text, out res))
-			{
-				try
-				{
-					StartChangingParameters();
-					((BrightnessStageOperationParameters)Parameters).Brightness = res;
-					
-					logbrightness_hscale.Value = Math.Log(res + 0.95, 5.95);
-
-					EndChangingParameters();
-					OnUserModified();
-				}
-				catch (IncorrectValueException)
-				{
-				}
-			}
-		}
-		
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			double brt = ((BrightnessStageOperationParameters)Parameters).Brightness;
-			brightness_entry.Text = brt.ToString();
-			logbrightness_hscale.Value = Math.Log(brt + 0.95, 5.95);
+			brightness_spinbutton.Value = brt;
+			logbrightness_hscale.Value = Math.Log(brt + 0.95, 10.95);
 			
 			normalize_togglebutton.Active = ((BrightnessStageOperationParameters)Parameters).Normalize;
 			
@@ -50,9 +29,8 @@ namespace CatEye
 		protected void OnLogbrightnessHscaleChangeValue (object o, Gtk.ChangeValueArgs args)
 		{
 			StartChangingParameters();
-			brightness_entry.Text = (Math.Pow(5.95, logbrightness_hscale.Value) - 0.95).ToString("0.00");
+			brightness_spinbutton.Value = (Math.Pow(10.95, logbrightness_hscale.Value) - 0.95);
 
-			double brt = ((BrightnessStageOperationParameters)Parameters).Brightness;
 			EndChangingParameters();
 			OnUserModified();
 		}
@@ -61,6 +39,18 @@ namespace CatEye
 		{
 			StartChangingParameters();
 			((BrightnessStageOperationParameters)Parameters).Normalize = normalize_togglebutton.Active;
+			EndChangingParameters();
+			OnUserModified();
+		}
+
+		protected void OnBrightnessSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			StartChangingParameters();
+			
+			((BrightnessStageOperationParameters)Parameters).Brightness = brightness_spinbutton.Value;
+			
+			logbrightness_hscale.Value = Math.Log(brightness_spinbutton.Value + 0.95, 10.95);
+
 			EndChangingParameters();
 			OnUserModified();
 		}
