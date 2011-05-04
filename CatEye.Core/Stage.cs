@@ -43,7 +43,7 @@ namespace CatEye.Core
 			typeof(UltraSharpStageOperationParameters),
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
-			typeof(HardCutStageOperationParameters),
+			typeof(BlackPointStageOperationParameters),
 		};
 		
 		protected virtual void OnAddedToStage(StageOperation operation)

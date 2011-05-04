@@ -96,8 +96,8 @@
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
     <Compile Include="FloatPixmap.cs" />
     <Compile Include="Tone.cs" />
-    <Compile Include="StageOperations\HardCut\HardCutStageOperation.cs" />
-    <Compile Include="StageOperations\HardCut\HardCutStageOperationParameters.cs" />
+    <Compile Include="StageOperations\BlackPoint\BlackPointStageOperation.cs" />
+    <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -108,7 +108,7 @@
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\UltraSharp\" />
-    <Folder Include="StageOperations\HardCut\" />
+    <Folder Include="StageOperations\BlackPoint\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

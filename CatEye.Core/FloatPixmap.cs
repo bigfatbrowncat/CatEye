@@ -516,11 +516,11 @@ namespace CatEye.Core
 			}
 		}
 		
-		public void HardCut(double black, double white, ProgressReporter callback)
+		public void CutBlackPoint(double black, ProgressReporter callback)
 		{
 			double max_light = CalcMaxLight();
 			
-			black *= max_light; white *= max_light;
+			black *= max_light;
 			
 			for (int j = 0; j < height; j++)
 			{
@@ -531,25 +531,19 @@ namespace CatEye.Core
 				
 				for (int i = 0; i < width; i++)
 				{
-					//double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-					//			  	   g_chan[i, j] * g_chan[i, j] + 
-					//                   b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					double light = Math.Sqrt(
+									r_chan[i, j] * r_chan[i, j] + 
+								  	g_chan[i, j] * g_chan[i, j] + 
+					                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 					
-					r_chan[i, j] = (float)Math.Max(0, r_chan[i, j] - black);
-					g_chan[i, j] = (float)Math.Max(0, g_chan[i, j] - black);
-					b_chan[i, j] = (float)Math.Max(0, b_chan[i, j] - black);
+					Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
 					
-					r_chan[i, j] /= (float)(white - black);
-					g_chan[i, j] /= (float)(white - black);
-					b_chan[i, j] /= (float)(white - black);
+					double newlight = light - black;
+					if (newlight < 0) newlight = 0;
 					
-					r_chan[i, j] = (float)Math.Min(r_chan[i, j], max_light);
-					g_chan[i, j] = (float)Math.Min(g_chan[i, j], max_light);
-					b_chan[i, j] = (float)Math.Min(b_chan[i, j], max_light);
-	
-					r_chan[i, j] *= (float)(max_light);
-					g_chan[i, j] *= (float)(max_light);
-					b_chan[i, j] *= (float)(max_light);
+					r_chan[i, j] = (float)(curtone.R * newlight);
+					g_chan[i, j] = (float)(curtone.G * newlight);
+					b_chan[i, j] = (float)(curtone.B * newlight);
 				}
 			}
 		}

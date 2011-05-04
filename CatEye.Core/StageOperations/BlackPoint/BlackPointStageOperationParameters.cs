@@ -4,12 +4,11 @@ using System.Globalization;
 
 namespace CatEye.Core
 {
-	[StageOperationID("HardCutStageOperation")]
-	public class HardCutStageOperationParameters : StageOperationParameters
+	[StageOperationID("BlackPointStageOperation")]
+	public class BlackPointStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		private double mBlack = 0.05;
-		private double mWhite = 0.95;
 		
 		public double Black
 		{
@@ -20,18 +19,8 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-
-		public double White
-		{
-			get { return mWhite; }
-			set 
-			{
-				mWhite = value;
-				OnChanged();
-			}
-		}
 		
-		public HardCutStageOperationParameters ()
+		public BlackPointStageOperationParameters ()
 		{
 		}
 		
@@ -39,7 +28,6 @@ namespace CatEye.Core
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Black")).Value = mBlack.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("White")).Value = mWhite.ToString(nfi);
 			return xn;
 		}
 
@@ -56,16 +44,6 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Black value");
 			}
-			if (node.Attributes["White"] != null)
-			{
-				if (double.TryParse(node.Attributes["White"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mWhite = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse White value");
-			}
-
 			OnChanged();
 		}
 	}

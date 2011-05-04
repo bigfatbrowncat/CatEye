@@ -100,8 +100,8 @@
     <Compile Include="BrightnessSelectorWidget.cs" />
     <Compile Include="FloatPixmapViewWidget.cs" />
     <Compile Include="ToneSelectorWidget.cs" />
-    <Compile Include="gtk-gui\CatEye.HardCutStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\HardCut\HardCutStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -117,7 +117,9 @@
     <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\Saturation\" />
-    <Folder Include="StageOperations\HardCut\" />
+    <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\BlackPoint\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
