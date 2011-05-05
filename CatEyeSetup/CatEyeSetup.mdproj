@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ItemType>GenericProject</ItemType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B99F4617-3B10-4388-8517-BB81CA96734C}</ProjectGuid>
+    <ReleaseVersion>0.2</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>.</OutputPath>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Build" command="makensis CatEyeSetup.nsi" workingdir="${ProjectDir}\windows" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Execute" command="CatEye_0.3-setup.exe" workingdir="${SolutionDir}\bin\Release" />
+        <Command type="Clean" command="del /y CatEye_0.3-setup.exe" workingdir="${SolutionDir}\bin\Release" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="windows\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="windows\CatEyeSetup.ico" />
+    <None Include="windows\CatEyeSetup.nsi" />
+    <None Include="windows\license.txt" />
+  </ItemGroup>
+</Project>

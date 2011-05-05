@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatEye", "CatEye\CatEye.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatEye.Core", "CatEye.Core\CatEye.Core.csproj", "{43B10E8A-1BE4-4638-93EB-DB150E3241A3}"
 EndProject
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "CatEyeSetup", "CatEyeSetup\CatEyeSetup.mdproj", "{B99F4617-3B10-4388-8517-BB81CA96734C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-MinGW|x86 = Debug-MinGW|x86
@@ -21,6 +23,11 @@ Global
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-MinGW|x86.Build.0 = Release-MinGW|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-Unix|x86.ActiveCfg = Release-Unix|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Release-Unix|x86.Build.0 = Release-Unix|x86
+		{B99F4617-3B10-4388-8517-BB81CA96734C}.Debug-MinGW|x86.ActiveCfg = Release|Any CPU
+		{B99F4617-3B10-4388-8517-BB81CA96734C}.Debug-Unix|x86.ActiveCfg = Default|Any CPU
+		{B99F4617-3B10-4388-8517-BB81CA96734C}.Release-MinGW|x86.ActiveCfg = Release|Any CPU
+		{B99F4617-3B10-4388-8517-BB81CA96734C}.Release-MinGW|x86.Build.0 = Release|Any CPU
+		{B99F4617-3B10-4388-8517-BB81CA96734C}.Release-Unix|x86.ActiveCfg = Default|Any CPU
 		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.ActiveCfg = Debug|Any CPU
 		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-MinGW|x86.Build.0 = Debug|Any CPU
 		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Debug-Unix|x86.ActiveCfg = Debug|Any CPU
@@ -40,7 +47,7 @@ Global
 		$2.scope = text/x-csrc
 		$0.StandardHeader = $3
 		$3.Text = 
-		$3.IncludeInNewFiles = True
+		$3.inheritsSet = Apache2License
 		$0.ChangeLogPolicy = $4
 		$4.UpdateMode = None
 		$4.MessageStyle = $5
