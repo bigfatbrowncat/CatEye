@@ -20,14 +20,9 @@ namespace CatEye.Core
 		
 		public int width, height;
 		
-		public FloatPixmap (int width, int height)
+		private FloatPixmap ()
 		{
-			this.width = width;
-			this.height = height;
-
-			r_chan = new float[width, height];
-			g_chan = new float[width, height];
-			b_chan = new float[width, height];
+			
 		}
 		public FloatPixmap (FloatPixmap src)
 		{
@@ -49,8 +44,14 @@ namespace CatEye.Core
 		public static FloatPixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
 		{
 			// Applying inverse hdr function: x = -N * ln[ (N - y) / N ]
-			FloatPixmap res = new FloatPixmap(ppm.Header.Width, ppm.Header.Height);
+			FloatPixmap res = new FloatPixmap();
 			
+			res.width = ppm.Header.Width;
+			res.height = ppm.Header.Height;
+			
+			res.r_chan = new float[res.width, res.height];
+			res.g_chan = new float[res.width, res.height];
+			res.b_chan = new float[res.width, res.height];
 			for (int i = 0; i < res.width; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
@@ -558,7 +559,7 @@ namespace CatEye.Core
 			Percents
 		}
 		
-		public FloatPixmap Resize(ResizeMode mode, ResizeMeasure measure, 
+		public bool Resize(ResizeMode mode, ResizeMeasure measure, 
 			double targetWidth, double targetHeight, 
 			ProgressReporter callback)
 		{
@@ -607,7 +608,11 @@ namespace CatEye.Core
 			ky = targetHeight / height;
 
 			// Creating new image
-			FloatPixmap fp = new FloatPixmap(trueWidth, trueHeight);
+//			FloatPixmap fp = new FloatPixmap(trueWidth, trueHeight);
+			
+			float[,] newr = new float[trueWidth, trueHeight];
+			float[,] newg = new float[trueWidth, trueHeight];
+			float[,] newb = new float[trueWidth, trueHeight];
 			
 			
 			// Going thru new pixels. Calculating influence from source pixel
@@ -619,7 +624,7 @@ namespace CatEye.Core
 			{
 				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)n / height)) return null;
+					if (!callback((double)n / height)) return false;
 				}
 				
 				for (int m = 0; m < width; m++)
@@ -637,8 +642,8 @@ namespace CatEye.Core
 					
 					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
 					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
-					int xmax = Math.Min((int)cp_src_tr.XMax, trueWidth);
-					int ymax = Math.Min((int)cp_src_tr.YMax, trueHeight);
+					int xmax = Math.Min((int)cp_src_tr.XMax + 1, trueWidth);
+					int ymax = Math.Min((int)cp_src_tr.YMax + 1, trueHeight);
 					
 					for (int j = ymin; j < ymax; j++)
 					{
@@ -665,16 +670,20 @@ namespace CatEye.Core
 								double part = crossing.GetArea() / 1.0;
 								
 								// Adding colors part
-								fp.r_chan[i, j] += (float)(r_chan[m, n] * part);
-								fp.g_chan[i, j] += (float)(g_chan[m, n] * part);
-								fp.b_chan[i, j] += (float)(b_chan[m, n] * part);
+								newr[i, j] += (float)(r_chan[m, n] * part);
+								newg[i, j] += (float)(g_chan[m, n] * part);
+								newb[i, j] += (float)(b_chan[m, n] * part);
 							}
 						}
 					}
 				}
 			}
 			
-			return fp;
+			r_chan = newr;
+			g_chan = newg;
+			b_chan = newb;
+			width = trueWidth; height = trueHeight;
+			return true;
 		}
 		
 		/// <summary>

@@ -10,7 +10,7 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override FloatPixmap OnDo (FloatPixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			CropStageOperationParameters pm = (CropStageOperationParameters)Parameters;
 			
@@ -19,7 +19,7 @@ namespace CatEye.Core
 				return OnReportProgress(progress);
 			});
 			
-			return hdp;
+			base.OnDo (hdp);
 		}
 	}
 }

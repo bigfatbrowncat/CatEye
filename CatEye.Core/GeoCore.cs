@@ -446,8 +446,6 @@ namespace CatEye.Core
 				
 				cur_point_index++;
 				if (cur_point_index > cur_p.mSides.Length - 1) cur_point_index = 0;
-				
-				if (trace.Count > 20) throw new Exception("Hung!");
 			}
 			while (!((trace.Count == 0 && cur_point_index == start_point_index) || 
 				   (trace.Count > 1 && trace[0] == trace[trace.Count - 1])));

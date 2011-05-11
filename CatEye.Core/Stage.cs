@@ -68,14 +68,13 @@ namespace CatEye.Core
 				OperationActivityChanged(this, EventArgs.Empty);
 		}
 		
-		public FloatPixmap ApplyAllOperations(FloatPixmap hdp)
+		public void ApplyAllOperations(FloatPixmap hdp)
 		{
 			FloatPixmap fpm = hdp;
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
-				fpm = _StageQueue[j].OnDo(fpm);
+				_StageQueue[j].OnDo(hdp);
 			}
-			return fpm;
 		}
 
 		public void AddStageOperation(StageOperation operation)

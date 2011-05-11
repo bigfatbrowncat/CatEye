@@ -457,8 +457,7 @@ public partial class MainWindow : Gtk.Window
 				});
 				if (frozen_tmp != null)
 				{
-					frozen_tmp = stages.ApplyOperationsBeforeFrozenLine(frozen_tmp);
-					if (frozen_tmp != null)
+					if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
 					{
 						frozen = frozen_tmp;
 						progressbar.Text = "Operation completed";
@@ -520,8 +519,7 @@ public partial class MainWindow : Gtk.Window
 				
 				if (hdr != null)
 				{
-					hdr = stages.ApplyOperationsAfterFrozenLine(hdr);
-					if (hdr != null)
+					if (stages.ApplyOperationsAfterFrozenLine(hdr))
 					{
 						progressbar.Text = "Operation completed";
 						progressbar.Fraction = 0;

@@ -10,7 +10,7 @@ namespace CatEye.Core
 		{
 		}
 
-		public override FloatPixmap OnDo (FloatPixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			BrightnessStageOperationParameters pm = (BrightnessStageOperationParameters)Parameters;
 			
@@ -29,7 +29,7 @@ namespace CatEye.Core
 				hdp.AmplitudeMultiply(pm.Brightness);
 			}
 			
-			return hdp;
+			base.OnDo (hdp);
 		}
 		
 	}

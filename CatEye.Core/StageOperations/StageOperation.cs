@@ -73,9 +73,8 @@ namespace CatEye
 				return true;
 		}
 		
-		public virtual FloatPixmap OnDo(FloatPixmap hdp)
+		public virtual void OnDo(FloatPixmap hdp)
 		{
-			return hdp;
 		}
 	}
 

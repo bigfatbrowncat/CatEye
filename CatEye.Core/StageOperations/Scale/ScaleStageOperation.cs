@@ -10,12 +10,12 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override FloatPixmap OnDo (FloatPixmap hdp)
+		public override void OnDo (FloatPixmap hdp)
 		{
 			ScaleStageOperationParameters pm = (ScaleStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Resizing...");
-			FloatPixmap res = hdp.Resize(
+			hdp.Resize(
 				FloatPixmap.ResizeMode.Disproportional,
 				FloatPixmap.ResizeMeasure.Pixels,
 				pm.NewWidth, pm.NewHeight, 
@@ -23,8 +23,6 @@ namespace CatEye.Core
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				});				
-			
-			return res;
 		}
 
 	}
