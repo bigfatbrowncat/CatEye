@@ -47,12 +47,12 @@ Global
 		$2.scope = text/x-csrc
 		$0.StandardHeader = $3
 		$3.Text = 
-		$3.inheritsSet = Apache2License
+		$3.IncludeInNewFiles = True
 		$0.ChangeLogPolicy = $4
 		$4.UpdateMode = None
 		$4.MessageStyle = $5
 		$5.LineAlign = 0
 		$4.inheritsSet = Mono
-		version = 0.2
+		version = 0.3
 	EndGlobalSection
 EndGlobal

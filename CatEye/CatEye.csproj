@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>CatEye</RootNamespace>
     <AssemblyName>CatEye</AssemblyName>
-    <ReleaseVersion>0.2</ReleaseVersion>
+    <ReleaseVersion>0.3</ReleaseVersion>
     <Description>Raw images developing tool</Description>
     <ApplicationIcon>res\cateye.ico</ApplicationIcon>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -103,6 +103,8 @@
     <Compile Include="ToneSelectorWidget.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Scale\ScaleStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.ScaleStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -121,6 +123,7 @@
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\Scale\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">

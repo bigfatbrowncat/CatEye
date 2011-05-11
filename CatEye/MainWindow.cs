@@ -92,6 +92,7 @@ public partial class MainWindow : Gtk.Window
 		typeof(SaturationStageOperation),
 		typeof(ToneStageOperation),
 		typeof(BlackPointStageOperation),
+		typeof(ScaleStageOperation),
 	};
 	
 	bool update_timer_launched = false;
@@ -456,7 +457,8 @@ public partial class MainWindow : Gtk.Window
 				});
 				if (frozen_tmp != null)
 				{
-					if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
+					frozen_tmp = stages.ApplyOperationsBeforeFrozenLine(frozen_tmp);
+					if (frozen_tmp != null)
 					{
 						frozen = frozen_tmp;
 						progressbar.Text = "Operation completed";
@@ -518,10 +520,12 @@ public partial class MainWindow : Gtk.Window
 				
 				if (hdr != null)
 				{
-					if (stages.ApplyOperationsAfterFrozenLine(hdr))
+					hdr = stages.ApplyOperationsAfterFrozenLine(hdr);
+					if (hdr != null)
 					{
 						progressbar.Text = "Operation completed";
 						progressbar.Fraction = 0;
+						ppmviewwidget1.HDR = hdr;
 						ppmviewwidget1.UpdatePicture();
 						ppmviewwidget1.QueueDraw();
 					}

@@ -10,14 +10,14 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override FloatPixmap OnDo (FloatPixmap hdp)
 		{
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: toning... ");
 			hdp.ApplyTone(pm.Tone, pm.HighlightsInvariance);
 				
-			base.OnDo (hdp);
+			return hdp;
 		}
 
 	}

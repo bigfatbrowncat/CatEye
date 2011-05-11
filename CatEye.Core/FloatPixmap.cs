@@ -20,9 +20,14 @@ namespace CatEye.Core
 		
 		public int width, height;
 		
-		private FloatPixmap ()
+		public FloatPixmap (int width, int height)
 		{
-			
+			this.width = width;
+			this.height = height;
+
+			r_chan = new float[width, height];
+			g_chan = new float[width, height];
+			b_chan = new float[width, height];
 		}
 		public FloatPixmap (FloatPixmap src)
 		{
@@ -44,15 +49,8 @@ namespace CatEye.Core
 		public static FloatPixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
 		{
 			// Applying inverse hdr function: x = -N * ln[ (N - y) / N ]
-			FloatPixmap res = new FloatPixmap();
+			FloatPixmap res = new FloatPixmap(ppm.Header.Width, ppm.Header.Height);
 			
-			res.width = ppm.Header.Width;
-			res.height = ppm.Header.Height;
-			
-			res.r_chan = new float[res.width, res.height];
-			res.g_chan = new float[res.width, res.height];
-			res.b_chan = new float[res.width, res.height];
-
 			for (int i = 0; i < res.width; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
@@ -546,6 +544,137 @@ namespace CatEye.Core
 					b_chan[i, j] = (float)(curtone.B * newlight);
 				}
 			}
+		}
+		
+		public enum ResizeMode 
+		{ 
+			Disproportional, 
+			ProportionalWidthFixed, 
+			ProportionalHeightFixed 
+		}
+		public enum ResizeMeasure
+		{
+			Pixels,
+			Percents
+		}
+		
+		public FloatPixmap Resize(ResizeMode mode, ResizeMeasure measure, 
+			double targetWidth, double targetHeight, 
+			ProgressReporter callback)
+		{
+			// Calculating new picture's real dimensions
+			int trueWidth = width, trueHeight = height;
+			double kx = 1, ky = 1;
+			if (measure == ResizeMeasure.Pixels)
+			{
+				switch (mode)
+				{
+				case ResizeMode.Disproportional:
+					trueWidth = (int)(targetWidth);
+					trueHeight = (int)(targetHeight);
+					break;
+				case ResizeMode.ProportionalWidthFixed:
+					trueWidth = (int)(targetWidth);
+					trueHeight = (int)(targetWidth * this.height / this.width);
+					break;
+				case ResizeMode.ProportionalHeightFixed:
+					trueWidth = (int)(targetHeight * this.width / this.height);
+					trueHeight = (int)(targetHeight);
+					break;
+				}
+			}
+			else
+			{
+				switch (mode)
+				{
+				case ResizeMode.Disproportional:
+					trueWidth = (int)(width * targetWidth);
+					trueHeight = (int)(height * targetHeight);
+					break;
+				case ResizeMode.ProportionalWidthFixed:
+					trueWidth = (int)(width * targetWidth);
+					trueHeight = (int)(height * targetWidth);
+					break;
+				case ResizeMode.ProportionalHeightFixed:
+					trueWidth = (int)(width * targetHeight);
+					trueHeight = (int)(height * targetHeight);
+					break;
+				}
+			}
+			
+			// Scaling coefficients:
+			kx = targetWidth / width;
+			ky = targetHeight / height;
+
+			// Creating new image
+			FloatPixmap fp = new FloatPixmap(trueWidth, trueHeight);
+			
+			
+			// Going thru new pixels. Calculating influence from source pixel
+			// colors to new pixel colors
+
+			double bloha = 0.00001;
+			
+			for (int n = 0; n < height; n++)
+			{
+				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)n / height)) return null;
+				}
+				
+				for (int m = 0; m < width; m++)
+				{
+					// Transformed source matrix squares
+					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
+					{
+						new CatEye.Core.Point(kx * m + bloha,       ky * n + bloha),
+						new CatEye.Core.Point(kx * (m + 1) + bloha, ky * n - bloha),
+						new CatEye.Core.Point(kx * (m + 1) - bloha, ky * (n + 1) - bloha),
+						new CatEye.Core.Point(kx * m - bloha,       ky * (n + 1) + bloha)
+					};
+					
+					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts);
+					
+					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
+					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
+					int xmax = Math.Min((int)cp_src_tr.XMax, trueWidth);
+					int ymax = Math.Min((int)cp_src_tr.YMax, trueHeight);
+					
+					for (int j = ymin; j < ymax; j++)
+					{
+						for (int i = xmin; i < xmax; i++)
+						{
+							// Destination matrix pixel squares
+							CatEye.Core.Point[] dst_pts = new CatEye.Core.Point[]
+							{
+								new CatEye.Core.Point(i, j),
+								new CatEye.Core.Point(i + 1, j),
+								new CatEye.Core.Point(i + 1, j + 1),
+								new CatEye.Core.Point(i, j + 1)
+							};
+							
+							ConvexPolygon cp_dst = new ConvexPolygon(dst_pts);
+
+							
+							// Searching crossing
+							ConvexPolygon crossing = ConvexPolygon.Cross(cp_dst, cp_src_tr);
+							
+							if (crossing != null)
+							{
+								// Dividing crossing area by the area of one pixel
+								double part = crossing.GetArea() / 1.0;
+								
+								// Adding colors part
+								fp.r_chan[i, j] += (float)(r_chan[m, n] * part);
+								fp.g_chan[i, j] += (float)(g_chan[m, n] * part);
+								fp.b_chan[i, j] += (float)(b_chan[m, n] * part);
+							}
+						}
+					}
+				}
+			}
+			
+			return fp;
 		}
 		
 		/// <summary>

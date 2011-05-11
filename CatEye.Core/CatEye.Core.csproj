@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>CatEye.Core</RootNamespace>
     <AssemblyName>CatEye.Core</AssemblyName>
-    <ReleaseVersion>0.2</ReleaseVersion>
+    <ReleaseVersion>0.3</ReleaseVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
@@ -101,6 +101,8 @@
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperation.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParameters.cs" />
     <Compile Include="GeoCore.cs" />
+    <Compile Include="StageOperations\Scale\ScaleStageOperation.cs" />
+    <Compile Include="StageOperations\Scale\ScaleStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -112,6 +114,7 @@
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\Scale\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

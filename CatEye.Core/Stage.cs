@@ -44,6 +44,7 @@ namespace CatEye.Core
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
 			typeof(BlackPointStageOperationParameters),
+			typeof(ScaleStageOperationParameters),
 		};
 		
 		protected virtual void OnAddedToStage(StageOperation operation)
@@ -67,12 +68,14 @@ namespace CatEye.Core
 				OperationActivityChanged(this, EventArgs.Empty);
 		}
 		
-		public void ApplyAllOperations(FloatPixmap hdp)
+		public FloatPixmap ApplyAllOperations(FloatPixmap hdp)
 		{
+			FloatPixmap fpm = hdp;
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
-				_StageQueue[j].OnDo(hdp);
+				fpm = _StageQueue[j].OnDo(fpm);
 			}
+			return fpm;
 		}
 
 		public void AddStageOperation(StageOperation operation)

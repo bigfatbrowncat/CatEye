@@ -10,14 +10,14 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override FloatPixmap OnDo (FloatPixmap hdp)
 		{
 			CompressionStageOperationParameters pm = (CompressionStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Compressing...");
 			hdp.CompressLight(pm.Power, pm.DarkPreserving);			
 			
-			base.OnDo (hdp);
+			return hdp;
 		}
 
 	}

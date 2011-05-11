@@ -15,6 +15,7 @@ namespace CatEye
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
 			typeof(BlackPointStageOperationParametersWidget),
+			typeof(ScaleStageOperationParametersWidget),
 		};
 		
 		
@@ -143,33 +144,35 @@ namespace CatEye
 			}
 		}
 		
-		public bool ApplyOperationsBeforeFrozenLine(FloatPixmap hdp)
+		public FloatPixmap ApplyOperationsBeforeFrozenLine(FloatPixmap hdp)
 		{
-			if (_FrozenAt == null) return true;	// If not frozen, do nothing
+			FloatPixmap fpm = hdp;
+			if (_FrozenAt == null) return fpm;	// If not frozen, do nothing
 			try
 			{
 				// Do all operations
 				for (int j = 0; j < _StageQueue.Count; j++)
 				{
 					if (_StageQueue[j].Parameters.Active)
-						_StageQueue[j].OnDo(hdp);
+						fpm = _StageQueue[j].OnDo(fpm);
 					
 					if (_StageQueue[j] == _FrozenAt)
 					{
 						// If frozen line is here, succeed.
-						return true;
+						return fpm;
 					}
 				}
 			}
 			catch (UserCancelException)
 			{
-				return false;
+				return null;
 			}
-			return true;
+			return fpm;
 		}
 		
-		public bool ApplyOperationsAfterFrozenLine(FloatPixmap hdp)
+		public FloatPixmap ApplyOperationsAfterFrozenLine(FloatPixmap hdp)
 		{
+			FloatPixmap fpm = hdp;
 			try
 			{
 				if (_FrozenAt == null)
@@ -180,7 +183,7 @@ namespace CatEye
 						if (_StageQueue[j] == EditingOperation)
 							break;
 						if (_StageQueue[j].Parameters.Active)
-							_StageQueue[j].OnDo(hdp);
+							fpm = _StageQueue[j].OnDo(fpm);
 					}
 				}
 				else
@@ -191,16 +194,16 @@ namespace CatEye
 						if (_StageQueue[j] == EditingOperation)
 							break;
 						if (frozen_line_found && _StageQueue[j].Parameters.Active)
-							_StageQueue[j].OnDo(hdp);
+							fpm = _StageQueue[j].OnDo(fpm);
 						if (_StageQueue[j] == _FrozenAt) frozen_line_found = true;
 					}
 				}
 			}
 			catch (UserCancelException)
 			{
-				return false;
+				return null;
 			}
-			return true;
+			return fpm;
 		}
 		
 		protected void ArrangeVBoxes()

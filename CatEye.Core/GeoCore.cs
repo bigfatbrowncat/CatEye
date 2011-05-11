@@ -54,7 +54,7 @@ namespace CatEye.Core
 			_A = a; _B = b;
 		}
 		
-		public static Point GetCrossing(Segment s1, Segment s2, double epsilon)
+		public static Point GetCrossing(Segment s1, Segment s2)
 		{
 			// Algorithmic equality
 			if (s1 == s2) 
@@ -70,7 +70,7 @@ namespace CatEye.Core
 			Vector AB1 = new Vector(s1._B.X - s1._A.X, s1._B.Y - s1._A.Y);
 			Vector AB2 = new Vector(s2._B.X - s2._A.X, s2._B.Y - s2._A.Y);
 			double D = Vector.CrossProduct(AB2, AB1);
-			if (Math.Abs(D) < epsilon) return null;
+			if (Math.Abs(D) == 0) return null;
 			
 			if (s1._A == s2._A || s1._A == s2._B) return s1._A;
 			if (s1._B == s2._A || s1._B == s2._B) return s1._B;
@@ -83,14 +83,10 @@ namespace CatEye.Core
 			double y = (m * AB2.Y - n * AB1.Y) / D;
 
 			// Checking if an endpoint of one segment is contained by other
-			if (Math.Abs(s1._A.X - x) < epsilon && 
-				Math.Abs(s1._A.Y - y) < epsilon) return s1._A; 
-			if (Math.Abs(s1._B.X - x) < epsilon && 
-				Math.Abs(s1._B.Y - y) < epsilon) return s1._B; 
-			if (Math.Abs(s2._A.X - x) < epsilon && 
-				Math.Abs(s2._A.Y - y) < epsilon) return s2._A; 
-			if (Math.Abs(s2._B.X - x) < epsilon && 
-				Math.Abs(s2._B.Y - y) < epsilon) return s2._B; 
+			if (s1._A.X == x && s1._A.Y == y) return s1._A; 
+			if (s1._B.X == x && s1._B.Y == y) return s1._B; 
+			if (s2._A.X == x && s2._A.Y == y) return s2._A; 
+			if (s2._B.X == x && s2._B.Y == y) return s2._B; 
 			
 			// Checking if the crossing point is in both segments
 			Vector AC1 = new Vector(x - s1._A.X, y - s1._A.Y);
@@ -114,6 +110,12 @@ namespace CatEye.Core
 	{
 		private Point[] mVertex;
 		private Segment[] mSides;
+		private double mXMin, mXMax, mYMin, mYMax;
+		
+		public double XMin { get { return mXMin; } }
+		public double XMax { get { return mXMax; } }
+		public double YMin { get { return mYMin; } }
+		public double YMax { get { return mYMax; } }
 		
 		public Point[] Vertex
 		{
@@ -168,6 +170,19 @@ namespace CatEye.Core
 			mSides[mVertex.Length - 1] = new Segment(mVertex[mVertex.Length - 1], mVertex[0]);
 			for (int i = 0; i < mVertex.Length - 1; i++)
 				mSides[i] = new Segment(mVertex[i], mVertex[i + 1]);
+			
+			// Calculating bounding box
+			mXMin = mVertex[0].X; mXMax = mVertex[0].X;
+			mYMin = mVertex[0].Y; mYMax = mVertex[0].Y;
+			
+			for (int i = 1; i < mVertex.Length; i++)
+			{
+				if (mXMin > mVertex[i].X) mXMin = mVertex[i].X;
+				if (mYMin > mVertex[i].Y) mYMin = mVertex[i].Y;
+
+				if (mXMax < mVertex[i].X) mXMax = mVertex[i].X;
+				if (mYMax < mVertex[i].Y) mYMax = mVertex[i].Y;
+			}
 		}
 		
 		public int IndexOfSideWithAEnd(Point A)
@@ -220,6 +235,16 @@ namespace CatEye.Core
 			return res;
 		}
 		
+		public static bool BoundingBoxesAreCrossed(ConvexPolygon p1, ConvexPolygon p2)
+		{
+			if (p1.mXMin > p2.mXMax) return false;
+			if (p2.mXMin > p1.mXMax) return false;
+			
+			if (p1.mYMin > p2.mYMax) return false;
+			if (p2.mYMin > p1.mYMax) return false;
+			return true;
+		}
+		
 		public bool Contains(Point p)
 		{
 			Vector a0 = new Vector(
@@ -228,7 +253,7 @@ namespace CatEye.Core
 			Vector b0 = new Vector(
 				p.X - mVertex[mVertex.Length - 1].X,
 				p.Y - mVertex[mVertex.Length - 1].Y);
-			if (Vector.CrossProduct(a0, b0) < 0) return false;
+			if (Vector.CrossProduct(a0, b0) <= 0) return false;
 			
 			for (int i = 1; i < mVertex.Length; i++)
 			{
@@ -238,35 +263,61 @@ namespace CatEye.Core
 				Vector b = new Vector(
 					p.X - mVertex[i - 1].X,
 					p.Y - mVertex[i - 1].Y);
-				if (Vector.CrossProduct(a, b) < 0) return false;
+				if (Vector.CrossProduct(a, b) <= 0) return false;
 			}
 			return true;
 		}
 		
-		public Point[] Cross(Segment s, double epsilon)
+		public Point[] Cross(Segment s, out Segment[] sides)
 		{
 			int k = 0;
 			Point[] ps = new Point[2];
+			Segment[] seg = new Segment[2];
 			for (int i = 0; i < mSides.Length; i++)
 			{
-				Point cr = Segment.GetCrossing(s, mSides[i], epsilon);
-				if (cr != null) { ps[k] = cr; k++; }
+				Point cr = Segment.GetCrossing(s, mSides[i]);
+				if (cr != null) 
+				{ 
+					ps[k] = cr; 
+					seg[k] = mSides[i];
+					k++; 
+				}
 			}
-			if (k == 0) return new Point[] {};
-			else if (k == 1) return new Point[] { ps[0] };
+			if (k == 0) 
+			{
+				sides = new Segment[] {};
+				return new Point[] {};
+			}
+			else if (k == 1) 
+			{
+				sides = new Segment[] { seg[0] };
+				return new Point[] { ps[0] };
+			}
 			else 
 			{
 				if (new Vector(s.A.X - ps[0].X, s.A.Y - ps[0].Y).Length <
 					new Vector(s.A.X - ps[1].X, s.A.Y - ps[1].Y).Length)
+				{
+					sides = seg;
 					return ps;
+				}
 				else
+				{
+					sides = new Segment[] { seg[1], seg[0] };
 					return new Point[] { ps[1], ps[0] };
+				}
 			}			
 		}
 		
 		
-		public static ConvexPolygon Cross(ConvexPolygon p1, ConvexPolygon p2, double epsilon)
+		public static ConvexPolygon Cross(ConvexPolygon p1, ConvexPolygon p2)
 		{
+			// Checking bounding boxes
+			if (!BoundingBoxesAreCrossed(p1, p2))
+			{
+				return null;
+			}
+			
 			Point cur_point = null;
 			// Searching for first outer point
 			for (int i = 0; i < p2.mVertex.Length; i++)
@@ -290,14 +341,13 @@ namespace CatEye.Core
 			ConvexPolygon other_p = p1;
 			int start_point_index = cur_p.IndexOfSideWithAEnd(cur_point);
 			int cur_point_index = start_point_index;
-
-			Console.WriteLine("start: " + cur_point_index);
-			
+			bool start = true;
 			do
 			{
-				Point[] crs = other_p.Cross(cur_p.mSides[cur_point_index], epsilon);
+				Segment[] segs;
+				Point[] crs = other_p.Cross(cur_p.mSides[cur_point_index], out segs);
 				// Ok. Now let's cross the possible cases out:
-
+				
 				if (other_p.Contains(cur_p.mSides[cur_point_index].A))
 				{
 					// 1. No crossings
@@ -315,15 +365,16 @@ namespace CatEye.Core
 						
 						// Now we should calculate the new current tracing side
 						// Searching for the side of other containing current crossing
-						Segment cur_side, other_side;
-						if (!other_p.HasCrossing(crs[0], out other_side, out cur_side))
-							throw new Exception("Something strange occured!");
+						
+						Segment other_side = segs[0];
+						//if (!other_p.HasCrossing(crs[0], out other_side, out cur_side))
+						//	throw new Exception("Something strange occured!");
 						
 						// Adding it's B point to trace
-						trace.Add(other_side.B);
+						//trace.Add(other_side.B);
 						
 						// Welcome, new cur_point_index (we subtract 1 which would be added automatically later)
-						cur_point_index = other_p.IndexOfSideWithAEnd(other_side.B) - 1;
+						cur_point_index = other_p.IndexOfSide(other_side) - 1; //.IndexOfSideWithAEnd(other_side.B) - 1;
 						
 						// We don't care about start_point_index anymore cause at least one
 						// point is already in the trace.
@@ -351,23 +402,32 @@ namespace CatEye.Core
 					}
 					if (crs.Length == 1)
 					{
+						if (start)
+						{
+							trace.Add(crs[0]);
+							start = false;
+						}
 						// The other (B) end is inside. 
 						// We should add the crossing and the B end to trace.
-						trace.Add(crs[0]);
 						trace.Add(cur_p.mSides[cur_point_index].B);
 					}
 					if (crs.Length == 2)
 					{
+						if (start)
+						{
+							trace.Add(crs[0]);
+							start = false;
+						}
 						// Both ends are outside. 
 						// At first we should add first crossing to trace.
-						trace.Add(crs[0]);
+						trace.Add(crs[1]);
 					
 						// Now we should calculate the new current tracing side
 						// Searching for the side of other containing current second crossing 
 						// (the crossing where we get out)
-						Segment cur_side, other_side;
-						if (!other_p.HasCrossing(crs[1], out other_side, out cur_side))
-							throw new Exception("Something strange occured!");
+						Segment other_side = segs[1];
+						//if (!other_p.HasCrossing(crs[1], out other_side, out cur_side))
+						//	throw new Exception("Something strange occured!");
 						
 						// Welcome, new cur_point_index (we subtract 1 which would be added automatically later)
 						cur_point_index = other_p.IndexOfSide(other_side) - 1;
@@ -386,6 +446,8 @@ namespace CatEye.Core
 				
 				cur_point_index++;
 				if (cur_point_index > cur_p.mSides.Length - 1) cur_point_index = 0;
+				
+				if (trace.Count > 20) throw new Exception("Hung!");
 			}
 			while (!((trace.Count == 0 && cur_point_index == start_point_index) || 
 				   (trace.Count > 1 && trace[0] == trace[trace.Count - 1])));

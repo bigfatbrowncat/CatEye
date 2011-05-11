@@ -42,6 +42,7 @@ namespace CatEye
 			this.sharp_radiobutton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Sharp"));
 			this.sharp_radiobutton.CanFocus = true;
 			this.sharp_radiobutton.Name = "sharp_radiobutton";
+			this.sharp_radiobutton.Active = true;
 			this.sharp_radiobutton.DrawIndicator = false;
 			this.sharp_radiobutton.UseUnderline = true;
 			this.sharp_radiobutton.Group = new global::GLib.SList (global::System.IntPtr.Zero);

@@ -42,7 +42,6 @@ namespace CatEye
 	{
 		private StageOperationParameters mParameters;
 
-		public event EventHandler<DoStageOperationEventArgs> Do;
 		public event EventHandler<ReportStageOperationProgressEventArgs> ReportProgress;
 		
 		public StageOperationParameters Parameters 
@@ -74,11 +73,9 @@ namespace CatEye
 				return true;
 		}
 		
-		public virtual void OnDo(FloatPixmap hdp)
+		public virtual FloatPixmap OnDo(FloatPixmap hdp)
 		{
-			if (Do != null)
-				Do(this, new DoStageOperationEventArgs(hdp));
-			if (!OnReportProgress(1)) throw new UserCancelException();
+			return hdp;
 		}
 	}
 

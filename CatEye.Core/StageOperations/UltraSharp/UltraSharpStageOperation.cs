@@ -10,7 +10,7 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override FloatPixmap OnDo (FloatPixmap hdp)
 		{
 			UltraSharpStageOperationParameters pm = (UltraSharpStageOperationParameters)Parameters;
 			
@@ -33,7 +33,7 @@ namespace CatEye.Core
 				return OnReportProgress(progress);
 			});
 			
-			base.OnDo (hdp);
+			return hdp;
 		}
 
 	}
