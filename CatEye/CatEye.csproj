@@ -63,11 +63,6 @@
     <EmbeddedResource Include="res\cateye-small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="res\pen.png" />
-    <EmbeddedResource Include="res\snowflake.png" />
-    <EmbeddedResource Include="res\up.png" />
-    <EmbeddedResource Include="res\down.png" />
-    <EmbeddedResource Include="res\remove.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -75,8 +70,6 @@
     <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="StageOperationTitleWidget.cs" />
-    <Compile Include="gtk-gui\CatEye.StageOperationTitleWidget.cs" />
     <Compile Include="StageOperationHolderWidget.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationHolderWidget.cs" />
     <Compile Include="RawImportDialog.cs" />
@@ -99,9 +92,6 @@
     <Compile Include="gtk-gui\CatEye.SaturationStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
     <Compile Include="ExtendedStage.cs" />
-    <Compile Include="SaturationSelectorWidget.cs" />
-    <Compile Include="BrightnessSelectorWidget.cs" />
-    <Compile Include="FloatPixmapViewWidget.cs" />
     <Compile Include="ToneSelectorWidget.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
@@ -126,12 +116,17 @@
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Scale\" />
+    <Folder Include="res\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
       <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
       <Name>CatEye.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.Widgets\CatEye.Widgets.csproj">
+      <Project>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</Project>
+      <Name>CatEye.Widgets</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

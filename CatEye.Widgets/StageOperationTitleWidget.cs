@@ -192,52 +192,52 @@ namespace CatEye
 
 		protected void OnEditTogglebuttonStateChanged (object o, Gtk.StateChangedArgs args)
 		{
-			UpdateImageOn(edit_togglebutton, "CatEye.res.pen.png");
+			UpdateImageOn(edit_togglebutton, "CatEye.Widgets.res.pen.png");
 		}
 
 		protected void OnEditTogglebuttonStyleSet (object o, Gtk.StyleSetArgs args)
 		{
-			UpdateImageOn(edit_togglebutton, "CatEye.res.pen.png");
+			UpdateImageOn(edit_togglebutton, "CatEye.Widgets.res.pen.png");
 		}
 
 		protected void OnFreezeTogglebuttonStateChanged (object o, Gtk.StateChangedArgs args)
 		{
-			UpdateImageOn(freeze_togglebutton, "CatEye.res.snowflake.png");
+			UpdateImageOn(freeze_togglebutton, "CatEye.Widgets.res.snowflake.png");
 		}
 
 		protected void OnFreezeTogglebuttonStyleSet (object o, Gtk.StyleSetArgs args)
 		{
-			UpdateImageOn(freeze_togglebutton, "CatEye.res.snowflake.png");
+			UpdateImageOn(freeze_togglebutton, "CatEye.Widgets.res.snowflake.png");
 		}
 
 		protected void OnUpButtonStyleSet (object o, Gtk.StyleSetArgs args)
 		{
-			UpdateImageOn(up_button, "CatEye.res.up.png");
+			UpdateImageOn(up_button, "CatEye.Widgets.res.up.png");
 		}
 
 		protected void OnUpButtonStateChanged (object o, Gtk.StateChangedArgs args)
 		{
-			UpdateImageOn(up_button, "CatEye.res.up.png");
+			UpdateImageOn(up_button, "CatEye.Widgets.res.up.png");
 		}
 
 		protected void OnDownButtonStyleSet (object o, Gtk.StyleSetArgs args)
 		{
-			UpdateImageOn(down_button, "CatEye.res.down.png");
+			UpdateImageOn(down_button, "CatEye.Widgets.res.down.png");
 		}
 
 		protected void OnDownButtonStateChanged (object o, Gtk.StateChangedArgs args)
 		{
-			UpdateImageOn(down_button, "CatEye.res.down.png");
+			UpdateImageOn(down_button, "CatEye.Widgets.res.down.png");
 		}
 
 		protected void OnRemoveButtonStyleSet (object o, Gtk.StyleSetArgs args)
 		{
-			UpdateImageOn(remove_button, "CatEye.res.remove.png");
+			UpdateImageOn(remove_button, "CatEye.Widgets.res.remove.png");
 		}
 
 		protected void OnRemoveButtonStateChanged (object o, Gtk.StateChangedArgs args)
 		{
-			UpdateImageOn(remove_button, "CatEye.res.remove.png");
+			UpdateImageOn(remove_button, "CatEye.Widgets.res.remove.png");
 		}
 	}
 }

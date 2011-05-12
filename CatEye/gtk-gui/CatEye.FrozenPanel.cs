@@ -5,7 +5,6 @@ namespace CatEye
 	public partial class FrozenPanel
 	{
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Image image319;
 		private global::Gtk.Label label1;
 		private global::Gtk.Button unfreeze_button;
 
@@ -20,24 +19,14 @@ namespace CatEye
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 2;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.image319 = new global::Gtk.Image ();
-			this.image319.Name = "image319";
-			this.image319.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.snowflake.png");
-			this.hbox1.Add (this.image319);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image319]));
-			w1.Position = 0;
-			w1.Expand = false;
-			w1.Fill = false;
-			w1.Padding = ((uint)(2));
-			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Frozen here</b>");
 			this.label1.UseMarkup = true;
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
-			w2.Position = 1;
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			w1.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.unfreeze_button = new global::Gtk.Button ();
 			this.unfreeze_button.CanFocus = true;
@@ -45,8 +34,8 @@ namespace CatEye
 			this.unfreeze_button.UseUnderline = true;
 			this.unfreeze_button.Label = global::Mono.Unix.Catalog.GetString ("Unfreeze");
 			this.hbox1.Add (this.unfreeze_button);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.unfreeze_button]));
-			w3.Position = 2;
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.unfreeze_button]));
+			w2.Position = 1;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

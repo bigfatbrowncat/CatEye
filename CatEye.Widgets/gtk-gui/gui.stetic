@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.12</target-gtk-version>
+  </configuration>
+  <import>
+    <widget-library name="..\bin\Debug\CatEye.Widgets.dll" internal="true" />
+  </import>
+  <widget class="Gtk.Bin" id="CatEye.StageOperationTitleWidget" design-size="328 28">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <signal name="Shown" handler="OnShown" />
+    <child>
+      <widget class="Gtk.HBox" id="hbox">
+        <property name="MemberName" />
+        <child>
+          <widget class="Gtk.CheckButton" id="title_checkbutton">
+            <property name="MemberName">title_checkbutton</property>
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">checkbutton2</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">False</property>
+            <property name="UseUnderline">True</property>
+            <signal name="Toggled" handler="OnTitleCheckbuttonToggled" />
+            <child>
+              <widget class="Gtk.Label" id="title_label">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Title&lt;/b&gt;</property>
+                <property name="UseMarkup">True</property>
+                <property name="SingleLineMode">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ToggleButton" id="edit_togglebutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">Custom</property>
+            <property name="Relief">None</property>
+            <signal name="Toggled" handler="OnViewTogglebuttonToggled" />
+            <signal name="StateChanged" handler="OnEditTogglebuttonStateChanged" />
+            <signal name="StyleSet" handler="OnEditTogglebuttonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ToggleButton" id="freeze_togglebutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">Custom</property>
+            <property name="Relief">None</property>
+            <signal name="Toggled" handler="OnFreezeTogglebuttonToggled" />
+            <signal name="StateChanged" handler="OnFreezeTogglebuttonStateChanged" />
+            <signal name="StyleSet" handler="OnFreezeTogglebuttonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="up_button">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">Custom</property>
+            <property name="Relief">None</property>
+            <signal name="Clicked" handler="OnUpButtonClicked" />
+            <signal name="StateChanged" handler="OnUpButtonStateChanged" />
+            <signal name="StyleSet" handler="OnUpButtonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="down_button">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">Custom</property>
+            <property name="Relief">None</property>
+            <signal name="Clicked" handler="OnDownButtonClicked" />
+            <signal name="StateChanged" handler="OnDownButtonStateChanged" />
+            <signal name="StyleSet" handler="OnDownButtonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">4</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="remove_button">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">Custom</property>
+            <property name="Relief">None</property>
+            <signal name="Clicked" handler="OnRemoveButtonClicked" />
+            <signal name="StateChanged" handler="OnRemoveButtonStateChanged" />
+            <signal name="StyleSet" handler="OnRemoveButtonStyleSet" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">5</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>
