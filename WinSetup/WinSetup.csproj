@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug-NSIS</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1883E056-08CA-4325-A1EC-53F2D2E03128}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WinSetup</RootNamespace>
+    <AssemblyName>WinSetup</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ReleaseVersion>0.3</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-NSIS|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-NSIS</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Build" command="makensis CatEyeSetup-Debug.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
+        <Command type="Clean" command="del /y Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-NSIS|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release-NSIS</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Build" command="makensis CatEyeSetup-Release.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Release" />
+        <Command type="Clean" command="del /y Setup.exe" workingdir="${SolutionDir}\bin\Release" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\CatEye\CatEye.csproj">
+      <Project>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</Project>
+      <Name>CatEye</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
+      <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
+      <Name>CatEye.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CatEyeSetup.ico" />
+    <None Include="license.txt" />
+    <None Include="CatEyeSetup-Debug.nsi" />
+    <None Include="CatEyeSetup-Release.nsi" />
+  </ItemGroup>
+</Project>

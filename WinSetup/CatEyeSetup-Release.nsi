@@ -12,7 +12,7 @@
 Name "CatEye setup / remove program"
 
 ; The file to write
-OutFile "..\..\bin\Release\${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe"
+OutFile "..\bin\Release\Setup.exe"
 
 ; The default installation directory
 InstallDir $ProgramFiles\${PRODUCT_NAME}
@@ -109,10 +109,10 @@ Section "Installer section"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File ..\..\bin\Release\CatEye.exe
-  File ..\..\bin\Release\CatEye.Core.dll
-  File ..\..\bin\Release\default.cestage
-  File ..\..\bin\Release\dcraw.exe
+  File ..\bin\Release\CatEye.exe
+  File ..\bin\Release\CatEye.Core.dll
+  File ..\bin\Release\default.cestage
+  File ..\bin\Release\dcraw.exe
 ;  CreateShortCut $%userprofile%\Desktop\CatEye.lnk $INSTDIR\CatEye.exe
 ;  CreateDirectory "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}" ; for Vista
 ;  CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\CatEye.lnk" $INSTDIR\CatEye.exe ; for Vista
