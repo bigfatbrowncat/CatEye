@@ -48,6 +48,10 @@
       <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
       <Name>CatEye.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CatEye.Widgets\CatEye.Widgets.csproj">
+      <Project>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</Project>
+      <Name>CatEye.Widgets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="CatEyeSetup.ico" />

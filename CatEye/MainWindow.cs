@@ -102,13 +102,6 @@ public partial class MainWindow : Gtk.Window
 
 	DateTime lastupdate;
 	
-	private void ArrangeStageOperationBoxes()
-	{
-		left_vbox.CheckResize();
-		stage_vbox.CheckResize();
-		GtkScrolledWindow1.CheckResize();
-	}
-	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
@@ -163,11 +156,9 @@ public partial class MainWindow : Gtk.Window
 		};
 		stages.OperationAddedToStage += delegate {
 			LaunchUpdateTimer();
-			ArrangeStageOperationBoxes();
 		};
 		stages.OperationRemovedFromStage += delegate {
 			LaunchUpdateTimer();
-			ArrangeStageOperationBoxes();
 		};
 		stages.ViewedOperationChanged += delegate {
 			LaunchUpdateTimer();
@@ -193,10 +184,6 @@ public partial class MainWindow : Gtk.Window
 		ppmviewwidget1.ButtonPressEvent += ImageMouseButtonPressed;
 		ppmviewwidget1.ButtonReleaseEvent += ImageMouseButtonReleased;
 		ppmviewwidget1.MotionNotifyEvent += HandleImageMouseMotion;
-
-		// Arranging boxes
-		ArrangeStageOperationBoxes();
-		
 	}
 
 	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
