@@ -78,9 +78,9 @@ public partial class MainWindow : Gtk.Window
 	
 	public delegate bool ProgressMessageReporter(double progress, string status);
 
-	PPMLoader ppl = null;
-	FloatPixmap hdr = null;
-	FloatPixmap frozen = null;
+	CatEye.Core.PPMLoader ppl = null;
+	CatEye.Core.FloatPixmap hdr = null;
+	CatEye.Core.FloatPixmap frozen = null;
 	ExtendedStage stages;
 	
 	Type[] _StageOperationTypes = new Type[]
