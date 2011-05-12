@@ -15,11 +15,11 @@ Global
 		Release-Unix|x86 = Release-Unix|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-MinGW|x86.ActiveCfg = Debug-NSIS|Any CPU
-		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-MinGW|x86.Build.0 = Debug-NSIS|Any CPU
+		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-MinGW|x86.ActiveCfg = Debug|Any CPU
+		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-MinGW|x86.Build.0 = Debug|Any CPU
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-Unix|x86.ActiveCfg = Debug|x86
-		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.ActiveCfg = Release-NSIS|Any CPU
-		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.Build.0 = Release-NSIS|Any CPU
+		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.ActiveCfg = Release|Any CPU
+		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.Build.0 = Release|Any CPU
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-Unix|x86.ActiveCfg = Debug|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.ActiveCfg = Debug-MinGW|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.Build.0 = Debug-MinGW|x86
@@ -48,7 +48,7 @@ Global
 		$2.scope = text/x-csrc
 		$0.StandardHeader = $3
 		$3.Text = 
-		$3.inheritsSet = Apache2License
+		$3.IncludeInNewFiles = True
 		$0.ChangeLogPolicy = $4
 		$4.UpdateMode = None
 		$4.MessageStyle = $5
