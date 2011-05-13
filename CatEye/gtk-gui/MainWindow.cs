@@ -22,7 +22,7 @@ public partial class MainWindow
 	private global::Gtk.VBox vbox2;
 	private global::Gtk.MenuBar main_menubar;
 	private global::Gtk.VBox vbox1;
-	private global::Gtk.HBox main_hbox;
+	private global::Gtk.HPaned hpaned1;
 	private global::Gtk.VBox left_vbox;
 	private global::Gtk.HBox stageOperationAdding_hbox;
 	private global::Gtk.ComboBox stageOperationToAdd_combobox;
@@ -32,7 +32,6 @@ public partial class MainWindow
 	private global::Gtk.HBox status_bar_hbox;
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
-	private global::Gtk.VBox vbox3;
 	private global::Gtk.ScrolledWindow scrolledwindow3;
 	private global::CatEye.DoublePixmapViewWidget ppmviewwidget1;
 
@@ -112,10 +111,11 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 4;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.main_hbox = new global::Gtk.HBox ();
-		this.main_hbox.Name = "main_hbox";
-		this.main_hbox.Spacing = 1;
-		// Container child main_hbox.Gtk.Box+BoxChild
+		this.hpaned1 = new global::Gtk.HPaned ();
+		this.hpaned1.CanFocus = true;
+		this.hpaned1.Name = "hpaned1";
+		this.hpaned1.Position = 230;
+		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";
 		this.left_vbox.Spacing = 4;
@@ -220,15 +220,10 @@ public partial class MainWindow
 		w28.Position = 2;
 		w28.Expand = false;
 		w28.Fill = false;
-		this.main_hbox.Add (this.left_vbox);
-		global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.main_hbox [this.left_vbox]));
-		w29.Position = 0;
-		w29.Expand = false;
-		// Container child main_hbox.Gtk.Box+BoxChild
-		this.vbox3 = new global::Gtk.VBox ();
-		this.vbox3.Name = "vbox3";
-		this.vbox3.Spacing = 6;
-		// Container child vbox3.Gtk.Box+BoxChild
+		this.hpaned1.Add (this.left_vbox);
+		global::Gtk.Paned.PanedChild w29 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.left_vbox]));
+		w29.Resize = false;
+		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.scrolledwindow3 = new global::Gtk.ScrolledWindow ();
 		this.scrolledwindow3.CanFocus = true;
 		this.scrolledwindow3.Name = "scrolledwindow3";
@@ -244,18 +239,13 @@ public partial class MainWindow
 		this.ppmviewwidget1.InstantUpdate = false;
 		w30.Add (this.ppmviewwidget1);
 		this.scrolledwindow3.Add (w30);
-		this.vbox3.Add (this.scrolledwindow3);
-		global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow3]));
-		w33.Position = 0;
-		this.main_hbox.Add (this.vbox3);
-		global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.main_hbox [this.vbox3]));
-		w34.Position = 1;
-		this.vbox1.Add (this.main_hbox);
-		global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.main_hbox]));
-		w35.Position = 0;
+		this.hpaned1.Add (this.scrolledwindow3);
+		this.vbox1.Add (this.hpaned1);
+		global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+		w34.Position = 0;
 		this.vbox2.Add (this.vbox1);
-		global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
-		w36.Position = 1;
+		global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
+		w35.Position = 1;
 		this.Add (this.vbox2);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
@@ -274,6 +264,7 @@ public partial class MainWindow
 		this.saveStageAsAction.Activated += new global::System.EventHandler (this.OnSaveStageAsActionActivated);
 		this.addStageOperation_button.Clicked += new global::System.EventHandler (this.OnAddStageOperationButtonClicked);
 		this.stage_vbox.ExposeEvent += new global::Gtk.ExposeEventHandler (this.OnStageVboxExposeEvent);
+		this.stage_vbox.SizeAllocated += new global::Gtk.SizeAllocatedHandler (this.OnStageVboxSizeAllocated);
 		this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 	}
 }
