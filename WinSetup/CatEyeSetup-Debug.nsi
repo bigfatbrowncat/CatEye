@@ -59,7 +59,7 @@ RequestExecutionLevel user
 ;Languages
 
 !insertmacro MUI_LANGUAGE "English"
-!insertmacro MUI_LANGUAGE "Russian"
+;!insertmacro MUI_LANGUAGE "Russian"
 
 ;--------------------------------
 
@@ -168,9 +168,9 @@ Section "Installer section"
 SectionEnd
 
 
-Function .onInit
-  !insertmacro MUI_LANGDLL_DISPLAY
-FunctionEnd
+;Function .onInit
+;  !insertmacro MUI_LANGDLL_DISPLAY
+;FunctionEnd
 
 ;--------------------------------
 
@@ -225,7 +225,7 @@ Section "un.Installer section"
 SectionEnd
 
 
-Function un.onInit
-  !insertmacro MUI_UNGETLANGUAGE
-FunctionEnd
+;Function un.onInit
+;  !insertmacro MUI_UNGETLANGUAGE
+;FunctionEnd
 
