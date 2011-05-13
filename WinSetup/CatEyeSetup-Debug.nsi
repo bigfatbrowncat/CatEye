@@ -44,7 +44,7 @@ RequestExecutionLevel user
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "${PKGDIR}license.txt"
+!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye.txt"
 
 ;Page custom IsGtkInstalled
 
@@ -62,6 +62,10 @@ RequestExecutionLevel user
 ;!insertmacro MUI_LANGUAGE "Russian"
 
 ;--------------------------------
+
+;Function .onInit
+;  !insertmacro MUI_LANGDLL_DISPLAY
+;FunctionEnd
 
 Function IsDotNETInstalled
   ; Check .NET version
@@ -88,8 +92,9 @@ Function DotNetDownload
       abort
 FunctionEnd
 
+; Function IsGtkInstalled replaced with GtkInstall
 
-Function IsGtkInstalled
+;Function IsGtkInstalled
 ; Check Gtk version
 ;var /global gtkset
 ;ReadRegStr HKEY_LOCAL_MACHINE SOFTWARE\Novell\CtkSharp\Version 
@@ -101,13 +106,31 @@ Function IsGtkInstalled
     ;  dotnetload:
         ;call DotNetDownload
 ;go2:
-  MessageBox MB_ICONINFORMATION "${PRODUCT_NAME} requires GTK# v2.12.10. GTK# would be installed on Your system."
+;  MessageBox MB_ICONINFORMATION "${PRODUCT_NAME} requires GTK# v2.12.10. GTK# would be installed on Your system."
   
-    SetOutPath $TEMP
-    File "${PKGDIR}gtk-sharp-2.12.10.win32.msi"
-    ExecWait "msiexec.exe /i $TEMP\gtk-sharp-2.12.10.win32.msi"
-    Delete "$TEMP\gtk-sharp-2.12.10.win32.msi"
+;    SetOutPath $TEMP
+;    File "${PKGDIR}gtk-sharp-2.12.10.win32.msi"
+;    ExecWait "msiexec.exe /i $TEMP\gtk-sharp-2.12.10.win32.msi"
+;    Delete "$TEMP\gtk-sharp-2.12.10.win32.msi"
   
+;FunctionEnd
+
+
+Function LicensesInstall
+  CreateDirectory "$INSTDIR\licenses"
+  SetOutPath "$INSTDIR\licenses"
+  File /r "${PKGDIR}licenses\*.*"
+  SetOutPath "$INSTDIR"
+FunctionEnd
+
+
+Function GtkInstall
+  File /r "${PKGDIR}gtk\*.*"
+  File "${PKGDIR}gtk-postinstall.bat"
+  Exec "${PKGDIR}gtk-postinstall.bat"
+  Delete "${PKGDIR}gtk-postinstall.bat"
+  ;Exec "pango-querymodules.exe > etc\pango\pango.modules"
+  ;Exec "gtk-query-immodules-2.0.exe > etc\gtk-2.0\gtk.immodules"
 FunctionEnd
 
 ;--------------------------------
@@ -117,17 +140,21 @@ Section "Installer section"
   SetShellVarContext all
   
   call IsDotNETInstalled
-  call IsGtkInstalled
+;  call IsGtkInstalled
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
+  call LicensesInstall
+  call GtkInstall
+  
   ; Put files there
   File "..\${PKGDIR}bin\${config}\CatEye.exe"
+  File "..\${PKGDIR}bin\${config}\CatEye.exe.config"
   File "..\${PKGDIR}bin\${config}\CatEye.Core.dll"
   File "..\${PKGDIR}bin\${config}\CatEye.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
-  File "${PKGDIR}dcraw.exe"
+  File "..\${PKGDIR}bin\${config}\dcraw.exe"
   
   CreateShortCut  $DESKTOP\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
   CreateDirectory $SMPROGRAMS\${PRODUCT_NAME}
@@ -167,23 +194,78 @@ Section "Installer section"
 
 SectionEnd
 
-
-;Function .onInit
-;  !insertmacro MUI_LANGDLL_DISPLAY
-;FunctionEnd
-
 ;--------------------------------
 
+;Function un.onInit
+;  !insertmacro MUI_UNGETLANGUAGE
+;FunctionEnd
+
+
+Function un.LicensesDel
+  RmDir /r "$INSTDIR\licenses"
+FunctionEnd
+
+
+Function un.GtkDelete
+  Delete "$INSTDIR\atksharpglue-2.dll"
+  Delete "$INSTDIR\freetype6.dll"
+  Delete "$INSTDIR\gdk-pixbuf-query-loaders.exe"
+  Delete "$INSTDIR\gdksharpglue-2.dll"
+  Delete "$INSTDIR\gladesharpglue-2.dll"
+  Delete "$INSTDIR\glibsharpglue-2.dll"
+  Delete "$INSTDIR\gspawn-win32-helper-console.exe"
+  Delete "$INSTDIR\gspawn-win32-helper.exe"
+  Delete "$INSTDIR\gtk-query-immodules-2.0.exe"
+  Delete "$INSTDIR\gtksharpglue-2.dll"
+  Delete "$INSTDIR\intl.dll"
+  Delete "$INSTDIR\libatk-1.0-0.dll"
+  Delete "$INSTDIR\libcairo-2.dll"
+  Delete "$INSTDIR\libexpat-1.dll"
+  Delete "$INSTDIR\libexpat1.dll"
+  Delete "$INSTDIR\libfontconfig-1.dll"
+  Delete "$INSTDIR\libgailutil-18.dll"
+  Delete "$INSTDIR\libgdk-win32-2.0-0.dll"
+  Delete "$INSTDIR\libgdk_pixbuf-2.0-0.dll"
+  Delete "$INSTDIR\libgio-2.0-0.dll"
+  Delete "$INSTDIR\libglade-2.0-0.dll"
+  Delete "$INSTDIR\libglib-2.0-0.dll"
+  Delete "$INSTDIR\libgmodule-2.0-0.dll"
+  Delete "$INSTDIR\libgobject-2.0-0.dll"
+  Delete "$INSTDIR\libgthread-2.0-0.dll"
+  Delete "$INSTDIR\libgtk-win32-2.0-0.dll"
+  Delete "$INSTDIR\libjpeg7.dll"
+  Delete "$INSTDIR\libpango-1.0-0.dll"
+  Delete "$INSTDIR\libpangocairo-1.0-0.dll"
+  Delete "$INSTDIR\libpangoft2-1.0-0.dll"
+  Delete "$INSTDIR\libpangowin32-1.0-0.dll"
+  Delete "$INSTDIR\libpng12-0.dll"
+  Delete "$INSTDIR\librsvg-2-2.dll"
+  Delete "$INSTDIR\libtiff3.dll"
+  Delete "$INSTDIR\libtiffxx3.dll"
+  Delete "$INSTDIR\libxml2-2.dll"
+  Delete "$INSTDIR\MonoPosixHelper.dll"
+  Delete "$INSTDIR\pango-querymodules.exe"
+  Delete "$INSTDIR\pangosharpglue-2.dll"
+  Delete "$INSTDIR\zlib1.dll"
+  
+  RmDir /r "$INSTDIR\etc"
+  RmDir /r "$INSTDIR\lib"
+  RmDir /r "$INSTDIR\share"
+FunctionEnd
+
+;--------------------------------
 Section "un.Installer section"
   
   SetShellVarContext all
   
+  call un.LicensesDel
+  call un.GtkDelete
+  
   Delete $INSTDIR\dcraw.exe
-  
-  
   Delete $INSTDIR\CatEye.Core.dll
   Delete $INSTDIR\CatEye.Widgets.dll
   Delete $INSTDIR\default.cestage
+  Delete $INSTDIR\CatEye.exe.config
   Delete $INSTDIR\CatEye.exe
   Delete $INSTDIR\Uninstall.exe
   RMDir  $INSTDIR
@@ -223,9 +305,4 @@ Section "un.Installer section"
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\UninstallString
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}
 SectionEnd
-
-
-;Function un.onInit
-;  !insertmacro MUI_UNGETLANGUAGE
-;FunctionEnd
 
