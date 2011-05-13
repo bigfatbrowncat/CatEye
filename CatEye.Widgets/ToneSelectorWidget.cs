@@ -112,7 +112,7 @@ namespace CatEye
 					cur_pixel[0] = (byte)(res.R / Math.Sqrt(3) * 255);
 					cur_pixel[1] = (byte)(res.G / Math.Sqrt(3) * 255);
 					cur_pixel[2] = (byte)(res.B / Math.Sqrt(3) * 255);
-					cur_pixel[3] = 255;
+					//cur_pixel[3] = 255;	// No alpha here
 					
 					cur_pixel += chan;
 				}

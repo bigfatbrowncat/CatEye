@@ -5,7 +5,9 @@ namespace CatEye
 	public partial class FrozenPanel
 	{
 		private global::Gtk.HBox hbox1;
+
 		private global::Gtk.Label label1;
+
 		private global::Gtk.Button unfreeze_button;
 
 		protected virtual void Build ()
@@ -21,11 +23,11 @@ namespace CatEye
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0F;
+			this.label1.Xalign = 0f;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Frozen here</b>");
 			this.label1.UseMarkup = true;
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
 			w1.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.unfreeze_button = new global::Gtk.Button ();
@@ -34,7 +36,7 @@ namespace CatEye
 			this.unfreeze_button.UseUnderline = true;
 			this.unfreeze_button.Label = global::Mono.Unix.Catalog.GetString ("Unfreeze");
 			this.hbox1.Add (this.unfreeze_button);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.unfreeze_button]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.unfreeze_button]));
 			w2.Position = 1;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {

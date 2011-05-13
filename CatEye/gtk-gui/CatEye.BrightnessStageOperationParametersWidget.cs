@@ -5,12 +5,19 @@ namespace CatEye
 	public partial class BrightnessStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
+
 		private global::Gtk.HBox hbox1;
+
 		private global::CatEye.BrightnessSelectorWidget logbrightness_hscale;
+
 		private global::Gtk.SpinButton brightness_spinbutton;
+
 		private global::Gtk.HBox hbox2;
+
 		private global::Gtk.Label median_label;
+
 		private global::Gtk.ToggleButton normalize_togglebutton;
+
 		private global::Gtk.Label label3;
 
 		protected virtual void Build ()
@@ -41,7 +48,7 @@ namespace CatEye
 			this.logbrightness_hscale.Digits = 0;
 			this.logbrightness_hscale.ValuePos = ((global::Gtk.PositionType)(2));
 			this.hbox1.Add (this.logbrightness_hscale);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.logbrightness_hscale]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.logbrightness_hscale]));
 			w1.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.brightness_spinbutton = new global::Gtk.SpinButton (0.05, 10, 0.1);
@@ -53,12 +60,12 @@ namespace CatEye
 			this.brightness_spinbutton.Numeric = true;
 			this.brightness_spinbutton.Value = 0.05;
 			this.hbox1.Add (this.brightness_spinbutton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.brightness_spinbutton]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.brightness_spinbutton]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -71,7 +78,7 @@ namespace CatEye
 			this.median_label.LabelProp = global::Mono.Unix.Catalog.GetString ("0,5");
 			this.median_label.UseMarkup = true;
 			this.hbox2.Add (this.median_label);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.median_label]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.median_label]));
 			w4.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.normalize_togglebutton = new global::Gtk.ToggleButton ();
@@ -80,10 +87,10 @@ namespace CatEye
 			this.normalize_togglebutton.UseUnderline = true;
 			this.normalize_togglebutton.Label = global::Mono.Unix.Catalog.GetString ("Normalize");
 			this.hbox2.Add (this.normalize_togglebutton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.normalize_togglebutton]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.normalize_togglebutton]));
 			w5.Position = 1;
 			this.table1.Add (this.hbox2);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox2]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox2]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.LeftAttach = ((uint)(1));
@@ -93,10 +100,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 1F;
+			this.label3.Xalign = 1f;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Median:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));

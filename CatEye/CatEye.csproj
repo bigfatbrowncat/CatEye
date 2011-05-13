@@ -92,7 +92,6 @@
     <Compile Include="gtk-gui\CatEye.SaturationStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.ToneStageOperationParametersWidget.cs" />
     <Compile Include="ExtendedStage.cs" />
-    <Compile Include="ToneSelectorWidget.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Scale\ScaleStageOperationParametersWidget.cs" />

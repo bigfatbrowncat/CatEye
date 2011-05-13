@@ -749,6 +749,8 @@ public partial class MainWindow : Gtk.Window
 				};
 				stages.StageQueue[i].ReportProgress += HandleProgress;
 			}
+
+			stage_vbox.CheckResize();
 		}
 		catch (Exception ex)
 		{
@@ -813,6 +815,9 @@ public partial class MainWindow : Gtk.Window
 			stages.Holders[so].OperationParametersWidget.UserModified += delegate {
 				LaunchUpdateTimer();
 			};
+			
+			stage_vbox.CheckResize();
+			
 			so.ReportProgress += HandleProgress;
 		}
 	}
@@ -824,8 +829,14 @@ public partial class MainWindow : Gtk.Window
 		w = stage_vbox.Allocation.Width; h = stage_vbox.Allocation.Height;
 		l = stage_vbox.Allocation.Left; t = stage_vbox.Allocation.Top;
 
+
 		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Active, 
-			Gtk.ShadowType.In, new Gdk.Rectangle(l + 1, t + 1, w - 2, h - 2), this, null,
+			Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
 		l + 1, t + 1, w - 2, h - 2);
+	}
+
+	protected void OnStageVboxSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+	{
+		QueueDraw();
 	}
 }

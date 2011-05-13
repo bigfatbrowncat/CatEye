@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="makensis CatEyeSetup-Debug.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Debug.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
         <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
         <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
       </CustomCommands>
@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="makensis CatEyeSetup-Release.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Release.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
         <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Release" />
         <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\Release" />
       </CustomCommands>

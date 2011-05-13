@@ -5,7 +5,9 @@ namespace CatEye
 	public partial class SaturationStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
+
 		private global::CatEye.SaturationSelectorWidget saturation_hscale;
+
 		private global::Gtk.SpinButton saturation_spinbutton;
 
 		protected virtual void Build ()
@@ -31,7 +33,7 @@ namespace CatEye
 			this.saturation_hscale.Digits = 0;
 			this.saturation_hscale.ValuePos = ((global::Gtk.PositionType)(2));
 			this.table1.Add (this.saturation_hscale);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_hscale]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.saturation_hscale]));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.saturation_spinbutton = new global::Gtk.SpinButton (0, 10, 0.1);
@@ -43,7 +45,7 @@ namespace CatEye
 			this.saturation_spinbutton.Numeric = true;
 			this.saturation_spinbutton.Value = 0.05;
 			this.table1.Add (this.saturation_spinbutton);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.saturation_spinbutton]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.saturation_spinbutton]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
