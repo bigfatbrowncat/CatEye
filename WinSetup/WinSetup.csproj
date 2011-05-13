@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>WinSetup</RootNamespace>
     <AssemblyName>WinSetup</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ReleaseVersion>0.3</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -54,9 +54,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CatEyeSetup.ico" />
     <None Include="license.txt" />
     <None Include="CatEyeSetup-Debug.nsi" />
     <None Include="CatEyeSetup-Release.nsi" />
+    <None Include="res\CatEyeRemove.ico" />
+    <None Include="res\CatEyeSetup.ico" />
+    <None Include="res\orange.bmp" />
+    <None Include="res\orange-uninstall.bmp" />
+    <None Include="dcraw.exe" />
+    <None Include="gtk-sharp-2.12.10.win32.msi" />
   </ItemGroup>
 </Project>
