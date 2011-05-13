@@ -156,7 +156,7 @@
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">230</property>
+                <property name="Position">236</property>
                 <child>
                   <widget class="Gtk.VBox" id="left_vbox">
                     <property name="MemberName" />
@@ -280,6 +280,7 @@
                   </widget>
                   <packing>
                     <property name="Resize">False</property>
+                    <property name="Shrink">False</property>
                   </packing>
                 </child>
                 <child>

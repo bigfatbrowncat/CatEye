@@ -749,6 +749,8 @@ public partial class MainWindow : Gtk.Window
 				};
 				stages.StageQueue[i].ReportProgress += HandleProgress;
 			}
+
+			stage_vbox.CheckResize();
 		}
 		catch (Exception ex)
 		{
@@ -813,6 +815,9 @@ public partial class MainWindow : Gtk.Window
 			stages.Holders[so].OperationParametersWidget.UserModified += delegate {
 				LaunchUpdateTimer();
 			};
+			
+			stage_vbox.CheckResize();
+			
 			so.ReportProgress += HandleProgress;
 		}
 	}

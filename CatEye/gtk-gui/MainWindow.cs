@@ -114,7 +114,7 @@ public partial class MainWindow
 		this.hpaned1 = new global::Gtk.HPaned ();
 		this.hpaned1.CanFocus = true;
 		this.hpaned1.Name = "hpaned1";
-		this.hpaned1.Position = 230;
+		this.hpaned1.Position = 236;
 		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";
@@ -223,6 +223,7 @@ public partial class MainWindow
 		this.hpaned1.Add (this.left_vbox);
 		global::Gtk.Paned.PanedChild w29 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.left_vbox]));
 		w29.Resize = false;
+		w29.Shrink = false;
 		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.scrolledwindow3 = new global::Gtk.ScrolledWindow ();
 		this.scrolledwindow3.CanFocus = true;
