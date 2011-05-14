@@ -1,0 +1,6 @@
+gtk-theme-name = "Glossy"
+style "user-font"
+{
+	font_name="Tahoma 8"
+}
+widget_class "*" style "user-font"
