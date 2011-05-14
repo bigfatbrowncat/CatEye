@@ -125,7 +125,7 @@ FunctionEnd
 
 
 Function GtkInstall
-  File /r "${PKGDIR}gtk\*.*"
+  File /r "${PKGDIR}gtk-embedded\*.*"
   File "${PKGDIR}gtk-postinstall.bat"
   Exec "${PKGDIR}gtk-postinstall.bat"
   Delete "${PKGDIR}gtk-postinstall.bat"
@@ -150,7 +150,7 @@ Section "Installer section"
   
   ; Put files there
   File "..\${PKGDIR}bin\${config}\CatEye.exe"
-  File "..\${PKGDIR}bin\${config}\CatEye.exe.config"
+  File "${PKGDIR}CatEye.exe.config"
   File "..\${PKGDIR}bin\${config}\CatEye.Core.dll"
   File "..\${PKGDIR}bin\${config}\CatEye.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
