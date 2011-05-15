@@ -30,6 +30,16 @@ namespace CatEye.Core
 		{
 			return new Vector(p._X, p._Y);
 		}
+		
+		public static Point Rotate(Point src, double angle, Point center)
+		{
+			double x = src.X - center.X, y = src.Y - center.Y;
+			
+			return new Point(
+				x * Math.Cos(angle) - y * Math.Sin(angle) + center.X,
+				y * Math.Cos(angle) + x * Math.Sin(angle) + center.Y
+			);
+		} 
 	}
 	
 	public class Segment

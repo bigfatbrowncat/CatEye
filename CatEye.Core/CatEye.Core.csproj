@@ -104,6 +104,8 @@
     <Compile Include="GeoCore.cs" />
     <Compile Include="StageOperations\Scale\ScaleStageOperation.cs" />
     <Compile Include="StageOperations\Scale\ScaleStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Rotate\RotateStageOperation.cs" />
+    <Compile Include="StageOperations\Rotate\RotateStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -116,6 +118,7 @@
     <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Scale\" />
+    <Folder Include="StageOperations\Rotate\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

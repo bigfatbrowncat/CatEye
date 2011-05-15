@@ -5,23 +5,14 @@ namespace CatEye
 	public partial class RawImportDialog
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.FileChooserWidget filechooserwidget;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label identification_label;
-
 		private global::Gtk.Image thumb_image;
-
 		private global::Gtk.Label origsize_label;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HScale prescale_hscale;
-
 		private global::Gtk.Button cancel_button;
-
 		private global::Gtk.Button open_button;
 
 		protected virtual void Build ()
@@ -49,7 +40,7 @@ namespace CatEye
 			this.filechooserwidget = new global::Gtk.FileChooserWidget (((global::Gtk.FileChooserAction)(0)));
 			this.filechooserwidget.Name = "filechooserwidget";
 			this.hbox1.Add (this.filechooserwidget);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.filechooserwidget]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.filechooserwidget]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -58,11 +49,11 @@ namespace CatEye
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.identification_label = new global::Gtk.Label ();
 			this.identification_label.Name = "identification_label";
-			this.identification_label.Xalign = 0f;
+			this.identification_label.Xalign = 0F;
 			this.identification_label.LabelProp = global::Mono.Unix.Catalog.GetString ("<i>Select a file...</i>");
 			this.identification_label.UseMarkup = true;
 			this.vbox2.Add (this.identification_label);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.identification_label]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.identification_label]));
 			w3.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.thumb_image = new global::Gtk.Image ();
@@ -70,26 +61,26 @@ namespace CatEye
 			this.thumb_image.HeightRequest = 200;
 			this.thumb_image.Name = "thumb_image";
 			this.vbox2.Add (this.thumb_image);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.thumb_image]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.thumb_image]));
 			w4.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.origsize_label = new global::Gtk.Label ();
 			this.origsize_label.Name = "origsize_label";
-			this.origsize_label.Xalign = 0f;
+			this.origsize_label.Xalign = 0F;
 			this.origsize_label.LabelProp = global::Mono.Unix.Catalog.GetString ("Original size:");
 			this.origsize_label.UseMarkup = true;
 			this.vbox2.Add (this.origsize_label);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.origsize_label]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.origsize_label]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Downscale by:");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -107,17 +98,17 @@ namespace CatEye
 			this.prescale_hscale.Digits = 0;
 			this.prescale_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.vbox2.Add (this.prescale_hscale);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.prescale_hscale]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.prescale_hscale]));
 			w7.Position = 4;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.hbox1]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
 			w9.Position = 0;
 			// Internal child CatEye.RawImportDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -134,7 +125,7 @@ namespace CatEye
 			this.cancel_button.UseUnderline = true;
 			this.cancel_button.Label = "gtk-cancel";
 			this.AddActionWidget (this.cancel_button, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.cancel_button]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.cancel_button]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -146,7 +137,7 @@ namespace CatEye
 			this.open_button.UseUnderline = true;
 			this.open_button.Label = "gtk-open";
 			this.AddActionWidget (this.open_button, -3);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.open_button]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.open_button]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;

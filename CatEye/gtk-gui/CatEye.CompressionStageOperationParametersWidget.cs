@@ -5,17 +5,11 @@ namespace CatEye
 	public partial class CompressionStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.HScale dark_preserving_hscale;
-
 		private global::Gtk.SpinButton dark_preserving_spinbutton;
-
 		private global::Gtk.Label label12;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.HScale power_hscale;
-
 		private global::Gtk.SpinButton power_spinbutton;
 
 		protected virtual void Build ()
@@ -42,7 +36,7 @@ namespace CatEye
 			this.dark_preserving_hscale.Digits = 3;
 			this.dark_preserving_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.dark_preserving_hscale);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.dark_preserving_hscale]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.dark_preserving_hscale]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(1));
@@ -58,7 +52,7 @@ namespace CatEye
 			this.dark_preserving_spinbutton.Digits = ((uint)(2));
 			this.dark_preserving_spinbutton.Numeric = true;
 			this.table1.Add (this.dark_preserving_spinbutton);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.dark_preserving_spinbutton]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.dark_preserving_spinbutton]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(2));
@@ -68,10 +62,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
-			this.label12.Xalign = 1f;
+			this.label12.Xalign = 1F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Dark preserving:");
 			this.table1.Add (this.label12);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label12]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.XPadding = ((uint)(2));
@@ -80,10 +74,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Power:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w4.XPadding = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -99,7 +93,7 @@ namespace CatEye
 			this.power_hscale.Digits = 3;
 			this.power_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.power_hscale);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.power_hscale]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_hscale]));
 			w5.LeftAttach = ((uint)(1));
 			w5.RightAttach = ((uint)(2));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -112,7 +106,7 @@ namespace CatEye
 			this.power_spinbutton.Digits = ((uint)(2));
 			this.power_spinbutton.Numeric = true;
 			this.table1.Add (this.power_spinbutton);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.power_spinbutton]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_spinbutton]));
 			w6.LeftAttach = ((uint)(2));
 			w6.RightAttach = ((uint)(3));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));

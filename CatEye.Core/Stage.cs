@@ -45,6 +45,7 @@ namespace CatEye.Core
 			typeof(ToneStageOperationParameters),
 			typeof(BlackPointStageOperationParameters),
 			typeof(ScaleStageOperationParameters),
+			typeof(RotateStageOperationParameters),
 		};
 		
 		protected virtual void OnAddedToStage(StageOperation operation)

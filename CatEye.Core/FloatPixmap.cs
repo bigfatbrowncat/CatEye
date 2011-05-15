@@ -14,7 +14,7 @@ namespace CatEye.Core
 	
 	public class FloatPixmap
 	{
-		private const int REPORT_EVERY_NTH_LINE = 75;
+		private const int REPORT_EVERY_NTH_LINE = 10;
 		
 		float[,] r_chan, g_chan, b_chan;
 		
@@ -546,6 +546,113 @@ namespace CatEye.Core
 				}
 			}
 		}
+
+		public bool Rotate(double beta, ProgressReporter callback)
+		{
+			beta *= Math.PI / 180.0;
+			
+			// Calculating new width and height
+			double wp2 = width / 2, hp2 = height / 2;
+			Point c = new Point(wp2, hp2);
+			
+			// Rotating corner points
+			Point lt = Point.Rotate(new Point(0, 0), beta, c);
+			Point rt = Point.Rotate(new Point(width, 0), beta, c);
+			Point lb = Point.Rotate(new Point(0, height), beta, c);
+			Point rb = Point.Rotate(new Point(width, height), beta, c);
+			
+			// Calculating new left, top, right, bottom
+			double l = Math.Min(lt.X, Math.Min(rt.X, Math.Min(lb.X, rb.X)));
+			double t = Math.Min(lt.Y, Math.Min(rt.Y, Math.Min(lb.Y, rb.Y)));
+			double r = Math.Max(lt.X, Math.Max(rt.X, Math.Max(lb.X, rb.X)));
+			double b = Math.Max(lt.Y, Math.Max(rt.Y, Math.Max(lb.Y, rb.Y)));
+			
+			// New width, height
+			double newWidth = r - l, newHeight = b - t;
+			
+			// Creating new image
+			float[,] newr = new float[(int)newWidth, (int)newHeight];
+			float[,] newg = new float[(int)newWidth, (int)newHeight];
+			float[,] newb = new float[(int)newWidth, (int)newHeight];
+			
+			
+			// Going thru new pixels. Calculating influence from source pixel
+			// colors to new pixel colors
+			double bloha = 0.00001;
+			
+			for (int n = 0; n < height; n++)
+			{
+				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)n / height)) return false;
+				}
+				
+				for (int m = 0; m < width; m++)
+				{
+					// Transformed source matrix squares
+					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
+					{
+						Point.Rotate(new CatEye.Core.Point(m + bloha,       n + bloha      ), beta, c),
+						Point.Rotate(new CatEye.Core.Point((m + 1) + bloha, n - bloha      ), beta, c),
+						Point.Rotate(new CatEye.Core.Point((m + 1) - bloha, (n + 1) - bloha), beta, c),
+						Point.Rotate(new CatEye.Core.Point(m - bloha,       (n + 1) + bloha), beta, c)
+					};
+					
+					CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
+					{
+						new Point(src_tr_pts[0].X - l, src_tr_pts[0].Y - t),
+						new Point(src_tr_pts[1].X - l, src_tr_pts[1].Y - t),
+						new Point(src_tr_pts[2].X - l, src_tr_pts[2].Y - t),
+						new Point(src_tr_pts[3].X - l, src_tr_pts[3].Y - t),
+					};
+					
+					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
+					
+					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
+					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
+					int xmax = Math.Min((int)cp_src_tr.XMax + 1, (int)newWidth);
+					int ymax = Math.Min((int)cp_src_tr.YMax + 1, (int)newHeight);
+					
+					for (int j = ymin; j < ymax; j++)
+					{
+						for (int i = xmin; i < xmax; i++)
+						{
+							// Destination matrix pixel squares
+							CatEye.Core.Point[] dst_pts = new CatEye.Core.Point[]
+							{
+								new CatEye.Core.Point(i, j),
+								new CatEye.Core.Point(i + 1, j),
+								new CatEye.Core.Point(i + 1, j + 1),
+								new CatEye.Core.Point(i, j + 1)
+							};
+							
+							ConvexPolygon cp_dst = new ConvexPolygon(dst_pts);
+
+							
+							// Searching crossing
+							ConvexPolygon crossing = ConvexPolygon.Cross(cp_dst, cp_src_tr);
+							
+							if (crossing != null)
+							{
+								// Dividing crossing area by the area of one pixel
+								double part = crossing.GetArea() / 1.0;
+								
+								// Adding colors part
+								newr[i, j] += (float)(r_chan[m, n] * part);
+								newg[i, j] += (float)(g_chan[m, n] * part);
+								newb[i, j] += (float)(b_chan[m, n] * part);
+							}
+						}
+					}
+				}
+			}
+			
+			r_chan = newr;
+			g_chan = newg;
+			b_chan = newb;
+			width = (int)newWidth; height = (int)newHeight;
+			return true;
+		}
 		
 		public enum ResizeMode 
 		{ 
@@ -608,8 +715,6 @@ namespace CatEye.Core
 			ky = targetHeight / height;
 
 			// Creating new image
-//			FloatPixmap fp = new FloatPixmap(trueWidth, trueHeight);
-			
 			float[,] newr = new float[trueWidth, trueHeight];
 			float[,] newg = new float[trueWidth, trueHeight];
 			float[,] newb = new float[trueWidth, trueHeight];
@@ -617,7 +722,6 @@ namespace CatEye.Core
 			
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
-
 			double bloha = 0.00001;
 			
 			for (int n = 0; n < height; n++)

@@ -96,6 +96,8 @@
     <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Scale\ScaleStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.ScaleStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Rotate\RotateStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.RotateStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -116,6 +118,7 @@
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Scale\" />
     <Folder Include="res\" />
+    <Folder Include="StageOperations\Rotate\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">

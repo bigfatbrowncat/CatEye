@@ -5,13 +5,9 @@ namespace CatEye
 	public partial class ScaleStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.SpinButton height_spinbutton;
-
 		private global::Gtk.Label label12;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.SpinButton width_spinbutton;
 
 		protected virtual void Build ()
@@ -35,7 +31,7 @@ namespace CatEye
 			this.height_spinbutton.Numeric = true;
 			this.height_spinbutton.Value = 1000;
 			this.table1.Add (this.height_spinbutton);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.height_spinbutton]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.height_spinbutton]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(1));
@@ -44,10 +40,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
-			this.label12.Xalign = 1f;
+			this.label12.Xalign = 1F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Height:");
 			this.table1.Add (this.label12);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label12]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.XPadding = ((uint)(2));
@@ -56,10 +52,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Width:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w3.XPadding = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -72,7 +68,7 @@ namespace CatEye
 			this.width_spinbutton.Numeric = true;
 			this.width_spinbutton.Value = 1000;
 			this.table1.Add (this.width_spinbutton);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.width_spinbutton]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.width_spinbutton]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
