@@ -5,11 +5,8 @@ namespace CatEye
 	public partial class BlackPointStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.HScale black_hscale;
-
 		private global::Gtk.SpinButton black_spinbutton;
-
 		private global::Gtk.Label label7;
 
 		protected virtual void Build ()
@@ -36,7 +33,7 @@ namespace CatEye
 			this.black_hscale.Digits = 3;
 			this.black_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.black_hscale);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.black_hscale]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.black_hscale]));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -49,7 +46,7 @@ namespace CatEye
 			this.black_spinbutton.Digits = ((uint)(3));
 			this.black_spinbutton.Numeric = true;
 			this.table1.Add (this.black_spinbutton);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.black_spinbutton]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.black_spinbutton]));
 			w2.LeftAttach = ((uint)(2));
 			w2.RightAttach = ((uint)(3));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -57,10 +54,10 @@ namespace CatEye
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 1f;
+			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Black:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w3.XPadding = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));

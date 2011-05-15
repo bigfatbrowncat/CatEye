@@ -93,6 +93,7 @@ public partial class MainWindow : Gtk.Window
 		typeof(ToneStageOperation),
 		typeof(BlackPointStageOperation),
 		typeof(ScaleStageOperation),
+		typeof(RotateStageOperation),
 	};
 	
 	bool update_timer_launched = false;

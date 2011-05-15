@@ -5,7 +5,6 @@ namespace CatEye
 	public partial class StageOperationHolderWidget
 	{
 		private global::Gtk.VBox vbox;
-
 		private global::CatEye.StageOperationTitleWidget _TitleWidget;
 
 		protected virtual void Build ()
@@ -28,7 +27,7 @@ namespace CatEye
 			this._TitleWidget.Freeze = false;
 			this._TitleWidget.FrozenButtonsState = false;
 			this.vbox.Add (this._TitleWidget);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox[this._TitleWidget]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox [this._TitleWidget]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
