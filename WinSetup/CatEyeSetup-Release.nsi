@@ -32,10 +32,15 @@ RequestExecutionLevel user
 ;--------------------------------
 ;Interface Settings
 
+BrandingText /TRIMLEFT " "
+
 !define MUI_ABORTWARNING
 ; Icons of installer and uninstaller
 !define MUI_ICON "${PKGDIR}res\CatEyeSetup.ico"
 !define MUI_UNICON "${PKGDIR}res\CatEyeRemove.ico"
+
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\win.bmp" ; optional
 
 ;--------------------------------
 ;Pages
@@ -54,6 +59,9 @@ RequestExecutionLevel user
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange-uninstall.bmp"
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_INSTFILES
+
+!define MUI_FINISHPAGE_RUN "$INSTDIR\CatEye.exe"
+!insertmacro MUI_PAGE_FINISH
 
 ;--------------------------------
 ;Languages
@@ -86,10 +94,11 @@ Function DotNetDownload
       MessageBox MB_ICONINFORMATION "Installation aborted."
       abort
     download:
-      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe again"
+      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe again."
       ;Exec "$PROGRAMFILES\Internet Explorer\iexplore.exe http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
       ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
-      abort
+      ;abort
+      quit
 FunctionEnd
 
 ; Function IsGtkInstalled replaced with GtkInstall
@@ -187,6 +196,9 @@ Section "Installer section"
   ;    CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\Uninstall.lnk" $INSTDIR\Uninstall.exe
   ;    goto ok
   ;  ok:
+  
+  WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "Version" "${PRODUCT_VERSION}"
+  WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "SetupDir" "$INSTDIR"
   
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayName" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -300,6 +312,10 @@ Section "un.Installer section"
   ;    RMDir /r "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}"
   ;    goto ok
   ;  ok:
+    
+  DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\Version
+  DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\SetupDir
+  DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}
     
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\DisplayName
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\UninstallString
