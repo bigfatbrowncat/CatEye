@@ -1,4 +1,6 @@
 using System;
+using System.Xml;
+using System.Globalization;
 using System.Collections.Generic;
 
 namespace CatEye.Core
@@ -18,6 +20,8 @@ namespace CatEye.Core
 	
 	public class Point
 	{
+		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
+
 		private double _X, _Y;
 		public double X { get { return _X; } }
 		public double Y { get { return _Y; } }
@@ -40,6 +44,40 @@ namespace CatEye.Core
 				y * Math.Cos(angle) + x * Math.Sin(angle) + center.Y
 			);
 		} 
+		public System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
+		{
+			XmlNode xn = xdoc.CreateElement("Point");
+			xn.Attributes.Append(xdoc.CreateAttribute("X")).Value = _X.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Y")).Value = _Y.ToString(nfi);
+			return xn;
+		}
+		
+		public void DeserializeFromXML (XmlNode node)
+		{
+			if (node.Name != "Point")
+				throw new IncorrectNodeException("Node should have name \"Point\"");
+			
+			double res = 0;
+			if (node.Attributes["X"] != null)
+			{
+				if (double.TryParse(node.Attributes["X"].Value, NumberStyles.Float, nfi, out res))
+				{
+					_X = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse R value");
+			}
+			if (node.Attributes["Y"] != null)
+			{
+				if (double.TryParse(node.Attributes["Y"].Value, NumberStyles.Float, nfi, out res))
+				{
+					_Y = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse G value");
+			}
+		}
+		
 	}
 	
 	public class Segment

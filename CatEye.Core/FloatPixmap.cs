@@ -547,33 +547,17 @@ namespace CatEye.Core
 			}
 		}
 
-		public bool Rotate(double beta, ProgressReporter callback)
+		/// <summary>
+		/// Crop and rotate the image
+		/// </summary>
+		public bool Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback)
 		{
 			beta *= Math.PI / 180.0;
 			
-			// Calculating new width and height
-			double wp2 = width / 2, hp2 = height / 2;
-			Point c = new Point(wp2, hp2);
-			
-			// Rotating corner points
-			Point lt = Point.Rotate(new Point(0, 0), beta, c);
-			Point rt = Point.Rotate(new Point(width, 0), beta, c);
-			Point lb = Point.Rotate(new Point(0, height), beta, c);
-			Point rb = Point.Rotate(new Point(width, height), beta, c);
-			
-			// Calculating new left, top, right, bottom
-			double l = Math.Min(lt.X, Math.Min(rt.X, Math.Min(lb.X, rb.X)));
-			double t = Math.Min(lt.Y, Math.Min(rt.Y, Math.Min(lb.Y, rb.Y)));
-			double r = Math.Max(lt.X, Math.Max(rt.X, Math.Max(lb.X, rb.X)));
-			double b = Math.Max(lt.Y, Math.Max(rt.Y, Math.Max(lb.Y, rb.Y)));
-			
-			// New width, height
-			double newWidth = r - l, newHeight = b - t;
-			
 			// Creating new image
-			float[,] newr = new float[(int)newWidth, (int)newHeight];
-			float[,] newg = new float[(int)newWidth, (int)newHeight];
-			float[,] newb = new float[(int)newWidth, (int)newHeight];
+			float[,] newr = new float[crop_w, crop_h];
+			float[,] newg = new float[crop_w, crop_h];
+			float[,] newb = new float[crop_w, crop_h];
 			
 			
 			// Going thru new pixels. Calculating influence from source pixel
@@ -589,7 +573,7 @@ namespace CatEye.Core
 				
 				for (int m = 0; m < width; m++)
 				{
-					// Transformed source matrix squares
+					// Rotated source matrix squares
 					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
 					{
 						Point.Rotate(new CatEye.Core.Point(m + bloha,       n + bloha      ), beta, c),
@@ -598,50 +582,42 @@ namespace CatEye.Core
 						Point.Rotate(new CatEye.Core.Point(m - bloha,       (n + 1) + bloha), beta, c)
 					};
 					
+					// Rotated and translated source matrix squares
 					CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
 					{
-						new Point(src_tr_pts[0].X - l, src_tr_pts[0].Y - t),
-						new Point(src_tr_pts[1].X - l, src_tr_pts[1].Y - t),
-						new Point(src_tr_pts[2].X - l, src_tr_pts[2].Y - t),
-						new Point(src_tr_pts[3].X - l, src_tr_pts[3].Y - t),
+						new Point(src_tr_pts[0].X - c.X + crop_w / 2, src_tr_pts[0].Y - c.Y + crop_h / 2),
+						new Point(src_tr_pts[1].X - c.X + crop_w / 2, src_tr_pts[1].Y - c.Y + crop_h / 2),
+						new Point(src_tr_pts[2].X - c.X + crop_w / 2, src_tr_pts[2].Y - c.Y + crop_h / 2),
+						new Point(src_tr_pts[3].X - c.X + crop_w / 2, src_tr_pts[3].Y - c.Y + crop_h / 2),
 					};
 					
 					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
 					
 					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
 					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
-					int xmax = Math.Min((int)cp_src_tr.XMax + 1, (int)newWidth);
-					int ymax = Math.Min((int)cp_src_tr.YMax + 1, (int)newHeight);
+					int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
+					int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
 					
 					for (int j = ymin; j < ymax; j++)
 					{
 						for (int i = xmin; i < xmax; i++)
 						{
-							// Destination matrix pixel squares
-							CatEye.Core.Point[] dst_pts = new CatEye.Core.Point[]
+							double part = 0;
+							for (int qx = 0; qx < quality; qx++)
+								for (int qy = 0; qy < quality; qy++)
 							{
-								new CatEye.Core.Point(i, j),
-								new CatEye.Core.Point(i + 1, j),
-								new CatEye.Core.Point(i + 1, j + 1),
-								new CatEye.Core.Point(i, j + 1)
-							};
-							
-							ConvexPolygon cp_dst = new ConvexPolygon(dst_pts);
-
-							
-							// Searching crossing
-							ConvexPolygon crossing = ConvexPolygon.Cross(cp_dst, cp_src_tr);
-							
-							if (crossing != null)
-							{
-								// Dividing crossing area by the area of one pixel
-								double part = crossing.GetArea() / 1.0;
-								
-								// Adding colors part
-								newr[i, j] += (float)(r_chan[m, n] * part);
-								newg[i, j] += (float)(g_chan[m, n] * part);
-								newb[i, j] += (float)(b_chan[m, n] * part);
+								double px = i + 1.0 / quality * qx;
+								double py = j + 1.0 / quality * qy;
+								if (cp_src_tr.Contains(new Point(px, py)))
+								{
+									part += 1.0 / quality / quality;
+								}
 							}
+							
+							// Adding colors part
+							newr[i, j] += (float)(r_chan[m, n] * part);
+							newg[i, j] += (float)(g_chan[m, n] * part);
+							newb[i, j] += (float)(b_chan[m, n] * part);
 						}
 					}
 				}
@@ -650,7 +626,7 @@ namespace CatEye.Core
 			r_chan = newr;
 			g_chan = newg;
 			b_chan = newb;
-			width = (int)newWidth; height = (int)newHeight;
+			width = crop_w; height = crop_h;
 			return true;
 		}
 		
@@ -667,7 +643,7 @@ namespace CatEye.Core
 		}
 		
 		public bool Resize(ResizeMode mode, ResizeMeasure measure, 
-			double targetWidth, double targetHeight, 
+			double targetWidth, double targetHeight, int quality, 
 			ProgressReporter callback)
 		{
 			// Calculating new picture's real dimensions
@@ -753,31 +729,22 @@ namespace CatEye.Core
 					{
 						for (int i = xmin; i < xmax; i++)
 						{
-							// Destination matrix pixel squares
-							CatEye.Core.Point[] dst_pts = new CatEye.Core.Point[]
+							double part = 0;
+							for (int qx = 0; qx < quality; qx++)
+								for (int qy = 0; qy < quality; qy++)
 							{
-								new CatEye.Core.Point(i, j),
-								new CatEye.Core.Point(i + 1, j),
-								new CatEye.Core.Point(i + 1, j + 1),
-								new CatEye.Core.Point(i, j + 1)
-							};
-							
-							ConvexPolygon cp_dst = new ConvexPolygon(dst_pts);
-
-							
-							// Searching crossing
-							ConvexPolygon crossing = ConvexPolygon.Cross(cp_dst, cp_src_tr);
-							
-							if (crossing != null)
-							{
-								// Dividing crossing area by the area of one pixel
-								double part = crossing.GetArea() / 1.0;
-								
-								// Adding colors part
-								newr[i, j] += (float)(r_chan[m, n] * part);
-								newg[i, j] += (float)(g_chan[m, n] * part);
-								newb[i, j] += (float)(b_chan[m, n] * part);
+								double px = i + 1.0 / quality * qx;
+								double py = j + 1.0 / quality * qy;
+								if (cp_src_tr.Contains(new Point(px, py)))
+								{
+									part += 1.0 / quality / quality;
+								}
 							}
+							
+							// Adding colors part
+							newr[i, j] += (float)(r_chan[m, n] * part);
+							newg[i, j] += (float)(g_chan[m, n] * part);
+							newb[i, j] += (float)(b_chan[m, n] * part);
 						}
 					}
 				}

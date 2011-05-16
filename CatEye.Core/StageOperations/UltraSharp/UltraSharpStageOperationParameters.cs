@@ -83,7 +83,6 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			int ires = 0;
 			if (node.Attributes["Power"] != null)
 			{
 				if (double.TryParse(node.Attributes["Power"].Value, NumberStyles.Float, nfi, out res))

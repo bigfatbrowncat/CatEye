@@ -18,7 +18,7 @@ namespace CatEye.Core
 			hdp.Resize(
 				FloatPixmap.ResizeMode.Disproportional,
 				FloatPixmap.ResizeMeasure.Pixels,
-				pm.NewWidth, pm.NewHeight, 
+				pm.NewWidth, pm.NewHeight, 2, 
 
 				delegate (double progress) {
 					return OnReportProgress(progress);
