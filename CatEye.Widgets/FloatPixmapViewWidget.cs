@@ -7,7 +7,7 @@ namespace CatEye
 {
 
 	[System.ComponentModel.ToolboxItem(true)]
-	public class DoublePixmapViewWidget : DrawingArea
+	public class FloatPixmapViewWidget : DrawingArea
 	{
 		public enum ScaleType { None, Divide, Multiply };
 
@@ -40,8 +40,15 @@ namespace CatEye
 		
 		public TimeSpan UpdateTimeSpan { get { return _UpdateTimeSpan; } }
 		
-		public DoublePixmapViewWidget()
+		public FloatPixmapViewWidget()
 		{
+			this.Events |= 
+							Gdk.EventMask.PointerMotionMask |
+							Gdk.EventMask.ButtonMotionMask |
+							Gdk.EventMask.ButtonPressMask |
+							Gdk.EventMask.ButtonReleaseMask |
+							Gdk.EventMask.Button1MotionMask |
+							Gdk.EventMask.ExposureMask;
 		}
 
 		

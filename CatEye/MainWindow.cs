@@ -172,15 +172,7 @@ public partial class MainWindow : Gtk.Window
 			stageOperationAdding_hbox.Sensitive = true;
 		};
 		
-		// Adding events for stage operation view redrawing
-		ppmviewwidget1.Events |= 
-								Gdk.EventMask.PointerMotionMask |
-								Gdk.EventMask.ButtonMotionMask |
-								Gdk.EventMask.ButtonPressMask |
-								Gdk.EventMask.ButtonReleaseMask |
-								Gdk.EventMask.Button1MotionMask |
-								Gdk.EventMask.ExposureMask;
-		
+		// Setting view widget events
 		ppmviewwidget1.ExposeEvent += DrawCurrentlyViewedStageOperationAdditions;
 		ppmviewwidget1.ButtonPressEvent += ImageMouseButtonPressed;
 		ppmviewwidget1.ButtonReleaseEvent += ImageMouseButtonReleased;

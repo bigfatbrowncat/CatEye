@@ -33,7 +33,7 @@ public partial class MainWindow
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
 	private global::Gtk.ScrolledWindow scrolledwindow3;
-	private global::CatEye.DoublePixmapViewWidget ppmviewwidget1;
+	private global::CatEye.FloatPixmapViewWidget ppmviewwidget1;
 
 	protected virtual void Build ()
 	{
@@ -233,7 +233,7 @@ public partial class MainWindow
 		global::Gtk.Viewport w30 = new global::Gtk.Viewport ();
 		w30.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport.Gtk.Container+ContainerChild
-		this.ppmviewwidget1 = new global::CatEye.DoublePixmapViewWidget ();
+		this.ppmviewwidget1 = new global::CatEye.FloatPixmapViewWidget ();
 		this.ppmviewwidget1.Events = ((global::Gdk.EventMask)(1022));
 		this.ppmviewwidget1.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 		this.ppmviewwidget1.Name = "ppmviewwidget1";
