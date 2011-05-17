@@ -9,13 +9,41 @@ namespace CatEye.Core
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
+		private string[] mPresetAspectRatioNames = new string[]
+		{
+			"Photo album",
+			"Photo portrait",
+			"Screen album",
+			"Screen portrait"
+		};
+
+		private double[] mPresetAspectRatioValues = new double[]
+		{
+			3.0 / 2, // Photo album
+			2.0 / 3, // Photo portrait
+			4.0 / 3, // Screen album
+			3.0 / 4  // Screen portrait
+		};
+
 		private double mAngle = 45;
 		private Point mCenter = new Point(0.5, 0.5);
 		private double mCropWidth = 1;
 		private double mCropHeight = 1;
-		private double mAspectRatio = 2.0 / 3;	// Width divided by height
+		
+		private int mAspectRatioPreset;
+		private bool mAspectRatioCustom;
+		private double mAspectRatio = 1;	// Width divided by height
 		private CrotateStageOperation.Mode mMode = CrotateStageOperation.Mode.Disproportional;
-		private CrotateStageOperation.Measure mMeasure = CrotateStageOperation.Measure.Percents;
+		
+		public double[] PresetAspectRatioValues
+		{
+			get { return mPresetAspectRatioValues; }
+		}
+		
+		public string[] PresetAspectRatioNames
+		{
+			get { return mPresetAspectRatioNames; }
+		}		
 		
 		public double Angle
 		{
@@ -52,7 +80,17 @@ namespace CatEye.Core
 			get { return mCropHeight; }
 			set
 			{
-				mCropWidth = value;
+				mCropHeight = value;
+				OnChanged();
+			}
+		}
+
+		public int AspectRatioPreset
+		{
+			get { return mAspectRatioPreset; }
+			set
+			{
+				mAspectRatioPreset = value;
 				OnChanged();
 			}
 		}
@@ -66,7 +104,17 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-
+		
+		public bool AspectRatioCustom
+		{
+			get { return mAspectRatioCustom; }
+			set
+			{
+				mAspectRatioCustom = value;
+				OnChanged();
+			}
+		}
+		
 		public CrotateStageOperation.Mode Mode
 		{
 			get { return mMode; }
@@ -77,16 +125,6 @@ namespace CatEye.Core
 			}
 		}
 
-		public CrotateStageOperation.Measure Measure
-		{
-			get { return mMeasure; }
-			set
-			{
-				mMeasure = value;
-				OnChanged();
-			}
-		}
-		
 		public CrotateStageOperationParameters ()
 		{
 		}
@@ -98,8 +136,9 @@ namespace CatEye.Core
 			xn.Attributes.Append(xdoc.CreateAttribute("CropWidth")).Value = mCropWidth.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("CropHeight")).Value = mCropHeight.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("AspectRatio")).Value = mAspectRatio.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("AspectRatioPreset")).Value = mAspectRatioPreset.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("AspectRatioCustom")).Value = mAspectRatioCustom.ToString();
 			xn.Attributes.Append(xdoc.CreateAttribute("Mode")).Value = ((int)mMode).ToString();
-			xn.Attributes.Append(xdoc.CreateAttribute("Measure")).Value = ((int)mMeasure).ToString();
 			
 			xn.AppendChild(mCenter.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "Center";
 			return xn;
@@ -154,8 +193,16 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse AspectRatio value");
 			}
-			
+
 			int ires;
+			if (node.Attributes["AspectRatioPreset"] != null)
+			{
+				if (int.TryParse(node.Attributes["AspectRatioPreset"].Value, out ires))				{
+					mAspectRatioPreset = ires;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse AspectRatioPreset value");
+			}
 			if (node.Attributes["Mode"] != null)
 			{
 				if (int.TryParse(node.Attributes["Mode"].Value, out ires))
@@ -165,16 +212,16 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Mode value");
 			}
-			if (node.Attributes["Measure"] != null)
+			
+			bool bres;
+			if (node.Attributes["AspectRatioCustom"] != null)
 			{
-				if (int.TryParse(node.Attributes["Measure"].Value, out ires))
-				{
-					mMeasure = (CrotateStageOperation.Measure)ires;
+				if (bool.TryParse(node.Attributes["AspectRatioCustom"].Value, out bres))				{
+					mAspectRatioCustom = bres;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Measure value");
+					throw new IncorrectNodeValueException("Can't parse AspectRatioCustom value");
 			}
-			
 			OnChanged();
 		}
 	}

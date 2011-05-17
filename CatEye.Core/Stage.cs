@@ -37,7 +37,6 @@ namespace CatEye.Core
 		
 		protected Type[] mStageOperationParametersTypes = new Type[]
 		{
-			typeof(CropStageOperationParameters),
 			typeof(CompressionStageOperationParameters),
 			typeof(BrightnessStageOperationParameters),
 			typeof(UltraSharpStageOperationParameters),

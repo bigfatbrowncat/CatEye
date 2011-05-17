@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <Stages>
   <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" Normalize="True" />
-  <StageOperationParameters ID="CropStageOperation" Active="False" Left="0" Right="1" Top="0" Bottom="1" AspectRatio="1.5" LockAspectRatio="True" />
+  <StageOperationParameters ID="CrotateStageOperation" Active="False" Angle="0" CropWidth="1" CropHeight="1" AspectRatio="0" AspectRatioPreset="0" AspectRatioCustom="False" Mode="1">
+    <Point X="0.5" Y="0.5" Name="Center" />
+  </StageOperationParameters>
   <StageOperationParameters ID="ToneStageOperation" Active="False" HighlightsInvariance="0">
     <Tone R="1.00094476412756" G="0.999987548333831" B="0.999066805745698" />
   </StageOperationParameters>

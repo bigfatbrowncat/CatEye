@@ -78,8 +78,6 @@
     <Compile Include="gtk-gui\CatEye.FrozenPanel.cs" />
     <Compile Include="AboutBox.cs" />
     <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
-    <Compile Include="gtk-gui\CatEye.CropStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Crop\CropStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Compression\CompressionStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.CompressionStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParametersWidget.cs" />
@@ -107,7 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="StageOperations\" />
-    <Folder Include="StageOperations\Crop\" />
     <Folder Include="StageOperations\Compression\" />
     <Folder Include="StageOperations\Brightness\" />
     <Folder Include="StageOperations\UltraSharp\" />

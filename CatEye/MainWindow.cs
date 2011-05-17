@@ -85,7 +85,6 @@ public partial class MainWindow : Gtk.Window
 	
 	Type[] _StageOperationTypes = new Type[]
 	{
-		typeof(CropStageOperation),
 		typeof(CompressionStageOperation),
 		typeof(BrightnessStageOperation),
 		typeof(UltraSharpStageOperation),

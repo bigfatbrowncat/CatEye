@@ -18,6 +18,7 @@ namespace CatEye
 			this.Name = "CatEye.ScaleStageOperationParametersWidget";
 			// Container child CatEye.ScaleStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
+			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(2));

@@ -89,8 +89,6 @@
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParameters.cs" />
     <Compile Include="StageOperations\Compression\CompressionStageOperation.cs" />
     <Compile Include="StageOperations\Compression\CompressionStageOperationParameters.cs" />
-    <Compile Include="StageOperations\Crop\CropStageOperation.cs" />
-    <Compile Include="StageOperations\Crop\CropStageOperationParameters.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperation.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
     <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
@@ -112,7 +110,6 @@
     <Folder Include="StageOperations\" />
     <Folder Include="StageOperations\Brightness\" />
     <Folder Include="StageOperations\Compression\" />
-    <Folder Include="StageOperations\Crop\" />
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\UltraSharp\" />

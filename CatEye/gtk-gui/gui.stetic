@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../CatEye.Widgets/bin/Debug/CatEye.Widgets.dll" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../CatEye.Widgets/bin/Release/CatEye.Widgets.dll" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -879,206 +879,6 @@
             <property name="LeftAttach">2</property>
             <property name="RightAttach">3</property>
             <property name="AutoSize">False</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="CatEye.CropStageOperationParametersWidget" design-size="284 97">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <widget class="Gtk.Table" id="table1">
-        <property name="MemberName" />
-        <property name="NRows">3</property>
-        <property name="NColumns">3</property>
-        <property name="RowSpacing">6</property>
-        <property name="ColumnSpacing">6</property>
-        <property name="BorderWidth">4</property>
-        <child>
-          <widget class="Gtk.ComboBoxEntry" id="aspect_comboboxentry">
-            <property name="MemberName" />
-            <property name="IsTextCombo">True</property>
-            <property name="Items" translatable="yes" />
-            <signal name="Changed" handler="OnAspectComboboxentryChanged" />
-          </widget>
-          <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
-            <property name="LeftAttach">1</property>
-            <property name="RightAttach">3</property>
-            <property name="AutoSize">False</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.SpinButton" id="bottom_spinbutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Upper">1</property>
-            <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">3</property>
-            <property name="Numeric">True</property>
-            <signal name="ValueChanged" handler="OnBottomSpinbuttonValueChanged" />
-          </widget>
-          <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
-            <property name="LeftAttach">2</property>
-            <property name="RightAttach">3</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label7">
-            <property name="MemberName" />
-            <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Left - right:</property>
-          </widget>
-          <packing>
-            <property name="AutoSize">False</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label8">
-            <property name="MemberName" />
-            <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Top - bottom:</property>
-          </widget>
-          <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
-            <property name="AutoSize">False</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label9">
-            <property name="MemberName" />
-            <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Aspect ratio:</property>
-          </widget>
-          <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.SpinButton" id="left_spinbutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Upper">1</property>
-            <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">3</property>
-            <property name="Numeric">True</property>
-            <signal name="ValueChanged" handler="OnLeftSpinbuttonValueChanged" />
-          </widget>
-          <packing>
-            <property name="LeftAttach">1</property>
-            <property name="RightAttach">2</property>
-            <property name="AutoSize">False</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.SpinButton" id="right_spinbutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Upper">1</property>
-            <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">3</property>
-            <property name="Numeric">True</property>
-            <signal name="ValueChanged" handler="OnRightSpinbuttonValueChanged" />
-          </widget>
-          <packing>
-            <property name="LeftAttach">2</property>
-            <property name="RightAttach">3</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.SpinButton" id="top_spinbutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Upper">1</property>
-            <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.01</property>
-            <property name="Digits">3</property>
-            <property name="Numeric">True</property>
-            <signal name="ValueChanged" handler="OnTopSpinbuttonValueChanged" />
-          </widget>
-          <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
-            <property name="LeftAttach">1</property>
-            <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">False</property>
@@ -2060,7 +1860,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.CrotateStageOperationParametersWidget" design-size="296 243">
+  <widget class="Gtk.Bin" id="CatEye.CrotateStageOperationParametersWidget" design-size="315 222">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -2071,12 +1871,6 @@
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
         <property name="BorderWidth">2</property>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
         <child>
           <placeholder />
         </child>
@@ -2108,18 +1902,72 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.HBox" id="ar_hbox">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.SpinButton" id="aspect_spinbutton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Lower">0.25</property>
+                <property name="Upper">4</property>
+                <property name="PageIncrement">0.1</property>
+                <property name="StepIncrement">1</property>
+                <property name="ClimbRate">0.1</property>
+                <property name="Digits">3</property>
+                <property name="Numeric">True</property>
+                <property name="Value">0.25</property>
+                <signal name="ValueChanged" handler="OnAspectSpinbuttonValueChanged" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ComboBox" id="aspect_combobox">
+                <property name="MemberName" />
+                <property name="IsTextCombo">True</property>
+                <property name="Items" translatable="yes" />
+                <signal name="Changed" handler="OnAspectComboboxChanged" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="TopAttach">6</property>
+            <property name="BottomAttach">7</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">3</property>
+            <property name="AutoSize">False</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">True</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.SpinButton" id="c_x_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">-180</property>
-            <property name="Upper">180</property>
+            <property name="Lower">0.01</property>
+            <property name="Upper">1</property>
             <property name="PageIncrement">1</property>
             <property name="StepIncrement">1</property>
             <property name="ClimbRate">0.1</property>
-            <property name="Digits">1</property>
+            <property name="Digits">2</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
-            <signal name="ValueChanged" handler="OnAngleSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnCXSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -2141,15 +1989,15 @@
           <widget class="Gtk.SpinButton" id="c_y_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">-180</property>
-            <property name="Upper">180</property>
+            <property name="Lower">0.01</property>
+            <property name="Upper">1</property>
             <property name="PageIncrement">1</property>
             <property name="StepIncrement">1</property>
             <property name="ClimbRate">0.1</property>
-            <property name="Digits">1</property>
+            <property name="Digits">2</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
-            <signal name="ValueChanged" handler="OnAngleSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnCYSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">2</property>
@@ -2171,15 +2019,15 @@
           <widget class="Gtk.SpinButton" id="crop_h_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">-180</property>
-            <property name="Upper">180</property>
+            <property name="Lower">0.01</property>
+            <property name="Upper">1</property>
             <property name="PageIncrement">1</property>
             <property name="StepIncrement">1</property>
             <property name="ClimbRate">0.1</property>
-            <property name="Digits">1</property>
+            <property name="Digits">2</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
-            <signal name="ValueChanged" handler="OnAngleSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnCropHSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">4</property>
@@ -2200,15 +2048,15 @@
           <widget class="Gtk.SpinButton" id="crop_w_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">-180</property>
-            <property name="Upper">180</property>
+            <property name="Lower">0.01</property>
+            <property name="Upper">1</property>
             <property name="PageIncrement">1</property>
             <property name="StepIncrement">1</property>
             <property name="ClimbRate">0.1</property>
-            <property name="Digits">1</property>
+            <property name="Digits">2</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
-            <signal name="ValueChanged" handler="OnAngleSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnCropWSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">3</property>
@@ -2226,41 +2074,14 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.HBox" id="hbox1">
+          <widget class="Gtk.CheckButton" id="custom_checkbutton">
             <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.SpinButton" id="aspect_spinbutton">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Lower">-180</property>
-                <property name="Upper">180</property>
-                <property name="PageIncrement">1</property>
-                <property name="StepIncrement">1</property>
-                <property name="ClimbRate">0.1</property>
-                <property name="Digits">1</property>
-                <property name="Numeric">True</property>
-                <property name="Value">0.5</property>
-                <signal name="ValueChanged" handler="OnAngleSpinbuttonValueChanged" />
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.ComboBox" id="aspect_type_combobox">
-                <property name="MemberName" />
-                <property name="IsTextCombo">True</property>
-                <property name="Items" translatable="yes" />
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Custom</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+            <signal name="Toggled" handler="OnCustomCheckbuttonToggled" />
           </widget>
           <packing>
             <property name="TopAttach">5</property>
@@ -2327,7 +2148,8 @@
           <packing>
             <property name="TopAttach">5</property>
             <property name="BottomAttach">6</property>
-            <property name="AutoSize">True</property>
+            <property name="YPadding">3</property>
+            <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
             <property name="XExpand">False</property>
@@ -2404,6 +2226,7 @@
             <property name="Type">TextOnly</property>
             <property name="Label" translatable="yes">Link</property>
             <property name="UseUnderline">True</property>
+            <signal name="Toggled" handler="OnLinkHTogglebuttonToggled" />
           </widget>
           <packing>
             <property name="TopAttach">4</property>
@@ -2428,6 +2251,7 @@
             <property name="Type">TextOnly</property>
             <property name="Label" translatable="yes">Link</property>
             <property name="UseUnderline">True</property>
+            <signal name="Toggled" handler="OnLinkWTogglebuttonToggled" />
           </widget>
           <packing>
             <property name="TopAttach">3</property>

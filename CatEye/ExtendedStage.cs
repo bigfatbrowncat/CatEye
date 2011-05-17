@@ -8,7 +8,6 @@ namespace CatEye
 	{
 		protected Type[] mStageOperationParametersWidgetTypes = new Type[]
 		{
-			typeof(CropStageOperationParametersWidget),
 			typeof(CompressionStageOperationParametersWidget),
 			typeof(BrightnessStageOperationParametersWidget),
 			typeof(UltraSharpStageOperationParametersWidget),
