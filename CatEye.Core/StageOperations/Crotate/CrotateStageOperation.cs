@@ -2,8 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Rotate"), StageOperationID("RotateStageOperation")]
-	public class RotateStageOperation : StageOperation
+	[StageOperationDescription("Crop and Rotate"), StageOperationID("CrotateStageOperation")]
+	public class CrotateStageOperation : StageOperation
 	{
 		public enum Mode 
 		{ 
@@ -17,14 +17,14 @@ namespace CatEye.Core
 			Percents = 1
 		}
 
-		public RotateStageOperation (StageOperationParameters parameters)
+		public CrotateStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}
 		
 		public override void OnDo (FloatPixmap hdp)
 		{
-			RotateStageOperationParameters pm = (RotateStageOperationParameters)Parameters;
+			CrotateStageOperationParameters pm = (CrotateStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Rotating...");
 			

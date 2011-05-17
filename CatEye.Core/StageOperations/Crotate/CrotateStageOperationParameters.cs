@@ -4,8 +4,8 @@ using System.Globalization;
 
 namespace CatEye.Core
 {
-	[StageOperationID("RotateStageOperation")]
-	public class RotateStageOperationParameters : StageOperationParameters
+	[StageOperationID("CrotateStageOperation")]
+	public class CrotateStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
@@ -14,8 +14,8 @@ namespace CatEye.Core
 		private double mCropWidth = 1;
 		private double mCropHeight = 1;
 		private double mAspectRatio = 2.0 / 3;	// Width divided by height
-		private RotateStageOperation.Mode mMode = RotateStageOperation.Mode.Disproportional;
-		private RotateStageOperation.Measure mMeasure = RotateStageOperation.Measure.Percents;
+		private CrotateStageOperation.Mode mMode = CrotateStageOperation.Mode.Disproportional;
+		private CrotateStageOperation.Measure mMeasure = CrotateStageOperation.Measure.Percents;
 		
 		public double Angle
 		{
@@ -67,7 +67,7 @@ namespace CatEye.Core
 			}
 		}
 
-		public RotateStageOperation.Mode Mode
+		public CrotateStageOperation.Mode Mode
 		{
 			get { return mMode; }
 			set
@@ -77,7 +77,7 @@ namespace CatEye.Core
 			}
 		}
 
-		public RotateStageOperation.Measure Measure
+		public CrotateStageOperation.Measure Measure
 		{
 			get { return mMeasure; }
 			set
@@ -87,7 +87,7 @@ namespace CatEye.Core
 			}
 		}
 		
-		public RotateStageOperationParameters ()
+		public CrotateStageOperationParameters ()
 		{
 		}
 		
@@ -160,7 +160,7 @@ namespace CatEye.Core
 			{
 				if (int.TryParse(node.Attributes["Mode"].Value, out ires))
 				{
-					mMode = (RotateStageOperation.Mode)ires;
+					mMode = (CrotateStageOperation.Mode)ires;
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse Mode value");
@@ -169,7 +169,7 @@ namespace CatEye.Core
 			{
 				if (int.TryParse(node.Attributes["Measure"].Value, out ires))
 				{
-					mMeasure = (RotateStageOperation.Measure)ires;
+					mMeasure = (CrotateStageOperation.Measure)ires;
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse Measure value");

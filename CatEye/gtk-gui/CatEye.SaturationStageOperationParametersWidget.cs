@@ -16,7 +16,6 @@ namespace CatEye
 			this.Name = "CatEye.SaturationStageOperationParametersWidget";
 			// Container child CatEye.SaturationStageOperationParametersWidget.Gtk.Container+ContainerChild
 			this.table1 = new global::Gtk.Table (((uint)(1)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(2));
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(4));
