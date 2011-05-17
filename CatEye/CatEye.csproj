@@ -92,10 +92,10 @@
     <Compile Include="ExtendedStage.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.BlackPointStageOperationParametersWidget.cs" />
-    <Compile Include="StageOperations\Scale\ScaleStageOperationParametersWidget.cs" />
-    <Compile Include="gtk-gui\CatEye.ScaleStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Crotate\CrotateStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.CrotateStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Scale\LimitSizeStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.LimitSizeStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

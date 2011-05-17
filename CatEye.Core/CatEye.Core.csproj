@@ -100,10 +100,10 @@
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperation.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParameters.cs" />
     <Compile Include="GeoCore.cs" />
-    <Compile Include="StageOperations\Scale\ScaleStageOperation.cs" />
-    <Compile Include="StageOperations\Scale\ScaleStageOperationParameters.cs" />
     <Compile Include="StageOperations\Crotate\CrotateStageOperation.cs" />
     <Compile Include="StageOperations\Crotate\CrotateStageOperationParameters.cs" />
+    <Compile Include="StageOperations\LimitSize\LimitSizeStageOperation.cs" />
+    <Compile Include="StageOperations\LimitSize\LimitSizeStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -114,8 +114,8 @@
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\BlackPoint\" />
-    <Folder Include="StageOperations\Scale\" />
     <Folder Include="StageOperations\Crotate\" />
+    <Folder Include="StageOperations\LimitSize\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

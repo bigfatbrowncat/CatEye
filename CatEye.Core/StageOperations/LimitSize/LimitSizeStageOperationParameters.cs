@@ -4,14 +4,16 @@ using System.Globalization;
 
 namespace CatEye.Core
 {
-	[StageOperationID("ScaleStageOperation")]
-	public class ScaleStageOperationParameters : StageOperationParameters
+	[StageOperationID("LimitSizeStageOperation")]
+	public class LimitSizeStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
 		private double mNewWidth = 1920;
-		private double mNewHeight = 1080;
-		
+		private double mNewHeight = 1024;
+		private bool mLimitWidth = false;
+		private bool mLimitHeight = false;
+
 		public double NewWidth
 		{
 			get { return mNewWidth; }
@@ -30,8 +32,26 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-		
-		public ScaleStageOperationParameters ()
+		public bool LimitWidth
+		{
+			get { return mLimitWidth; }
+			set
+			{
+				mLimitWidth = value;
+				OnChanged();
+			}
+		}
+		public bool LimitHeight
+		{
+			get { return mLimitHeight; }
+			set
+			{
+				mLimitHeight = value;
+				OnChanged();
+			}
+		}
+
+		public LimitSizeStageOperationParameters ()
 		{
 		}
 		
@@ -40,6 +60,8 @@ namespace CatEye.Core
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("NewWidth")).Value = mNewWidth.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("NewHeight")).Value = mNewHeight.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("LimitWidth")).Value = mLimitWidth.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("LimitHeight")).Value = mLimitHeight.ToString();
 			return xn;
 		}
 		
@@ -64,6 +86,26 @@ namespace CatEye.Core
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse NewHeight value");
+			}
+
+			bool bres;
+			if (node.Attributes["LimitWidth"] != null)
+			{
+				if (bool.TryParse(node.Attributes["LimitWidth"].Value, out bres))
+				{
+					mLimitWidth = bres;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse LimitWidth value");
+			}
+			if (node.Attributes["LimitHeight"] != null)
+			{
+				if (bool.TryParse(node.Attributes["LimitHeight"].Value, out bres))
+				{
+					mLimitHeight = bres;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse LimitHeight value");
 			}
 			
 			OnChanged();

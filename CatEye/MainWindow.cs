@@ -91,7 +91,7 @@ public partial class MainWindow : Gtk.Window
 		typeof(SaturationStageOperation),
 		typeof(ToneStageOperation),
 		typeof(BlackPointStageOperation),
-		typeof(ScaleStageOperation),
+		typeof(LimitSizeStageOperation),
 		typeof(CrotateStageOperation),
 	};
 	

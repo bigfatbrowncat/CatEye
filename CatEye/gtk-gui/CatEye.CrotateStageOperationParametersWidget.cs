@@ -34,7 +34,6 @@ namespace CatEye
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
-			this.table1.BorderWidth = ((uint)(2));
 			// Container child table1.Gtk.Table+TableChild
 			this.angle_spinbutton = new global::Gtk.SpinButton (-180, 180, 1);
 			this.angle_spinbutton.CanFocus = true;

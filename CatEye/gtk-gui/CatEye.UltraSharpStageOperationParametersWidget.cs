@@ -67,7 +67,7 @@ namespace CatEye
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xalign = 1F;
-			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Radius (part):");
+			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Radius:");
 			this.table1.Add (this.label12);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
 			w4.TopAttach = ((uint)(2));

@@ -14,7 +14,7 @@ namespace CatEye
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
 			typeof(BlackPointStageOperationParametersWidget),
-			typeof(ScaleStageOperationParametersWidget),
+			typeof(LimitSizeStageOperationParametersWidget),
 			typeof(CrotateStageOperationParametersWidget),
 		};
 		

@@ -43,7 +43,7 @@ namespace CatEye.Core
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
 			typeof(BlackPointStageOperationParameters),
-			typeof(ScaleStageOperationParameters),
+			typeof(LimitSizeStageOperationParameters),
 			typeof(CrotateStageOperationParameters),
 		};
 		

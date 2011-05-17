@@ -56,7 +56,7 @@ namespace CatEye.Core
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback((double)i / res.width / 3)) 
+					if (!callback((double)i / res.width / 2)) 
 						return null;
 				}
 				for (int j = 0; j < res.height; j++)
@@ -76,7 +76,7 @@ namespace CatEye.Core
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback(0.333 + (double)i / res.width / 3)) 
+					if (!callback(0.5 + (double)i / res.width / 2)) 
 						return null;
 				}
 				for (int j = 0; j < res.height; j++)
@@ -630,70 +630,20 @@ namespace CatEye.Core
 			return true;
 		}
 		
-		public enum ResizeMode 
-		{ 
-			Disproportional, 
-			ProportionalWidthFixed, 
-			ProportionalHeightFixed 
-		}
-		public enum ResizeMeasure
-		{
-			Pixels,
-			Percents
-		}
-		
-		public bool Resize(ResizeMode mode, ResizeMeasure measure, 
-			double targetWidth, double targetHeight, int quality, 
+		public bool Resize(int targetWidth, int targetHeight, int quality, 
 			ProgressReporter callback)
 		{
 			// Calculating new picture's real dimensions
-			int trueWidth = width, trueHeight = height;
 			double kx = 1, ky = 1;
-			if (measure == ResizeMeasure.Pixels)
-			{
-				switch (mode)
-				{
-				case ResizeMode.Disproportional:
-					trueWidth = (int)(targetWidth);
-					trueHeight = (int)(targetHeight);
-					break;
-				case ResizeMode.ProportionalWidthFixed:
-					trueWidth = (int)(targetWidth);
-					trueHeight = (int)(targetWidth * this.height / this.width);
-					break;
-				case ResizeMode.ProportionalHeightFixed:
-					trueWidth = (int)(targetHeight * this.width / this.height);
-					trueHeight = (int)(targetHeight);
-					break;
-				}
-			}
-			else
-			{
-				switch (mode)
-				{
-				case ResizeMode.Disproportional:
-					trueWidth = (int)(width * targetWidth);
-					trueHeight = (int)(height * targetHeight);
-					break;
-				case ResizeMode.ProportionalWidthFixed:
-					trueWidth = (int)(width * targetWidth);
-					trueHeight = (int)(height * targetWidth);
-					break;
-				case ResizeMode.ProportionalHeightFixed:
-					trueWidth = (int)(width * targetHeight);
-					trueHeight = (int)(height * targetHeight);
-					break;
-				}
-			}
 			
 			// Scaling coefficients:
-			kx = targetWidth / width;
-			ky = targetHeight / height;
+			kx = (double)targetWidth / width;
+			ky = (double)targetHeight / height;
 
 			// Creating new image
-			float[,] newr = new float[trueWidth, trueHeight];
-			float[,] newg = new float[trueWidth, trueHeight];
-			float[,] newb = new float[trueWidth, trueHeight];
+			float[,] newr = new float[targetWidth, targetWidth];
+			float[,] newg = new float[targetWidth, targetWidth];
+			float[,] newb = new float[targetWidth, targetWidth];
 			
 			
 			// Going thru new pixels. Calculating influence from source pixel
@@ -722,8 +672,8 @@ namespace CatEye.Core
 					
 					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
 					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
-					int xmax = Math.Min((int)cp_src_tr.XMax + 1, trueWidth);
-					int ymax = Math.Min((int)cp_src_tr.YMax + 1, trueHeight);
+					int xmax = Math.Min((int)cp_src_tr.XMax + 1, targetWidth);
+					int ymax = Math.Min((int)cp_src_tr.YMax + 1, targetHeight);
 					
 					for (int j = ymin; j < ymax; j++)
 					{
@@ -753,7 +703,7 @@ namespace CatEye.Core
 			r_chan = newr;
 			g_chan = newg;
 			b_chan = newb;
-			width = trueWidth; height = trueHeight;
+			width = targetWidth; height = targetHeight;
 			return true;
 		}
 		
