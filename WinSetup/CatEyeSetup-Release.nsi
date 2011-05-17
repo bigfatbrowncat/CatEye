@@ -101,7 +101,6 @@ Function DotNetDownload
       quit
 FunctionEnd
 
-; Function IsGtkInstalled replaced with GtkInstall
 
 ;Function IsGtkInstalled
 ; Check Gtk version
@@ -132,16 +131,6 @@ Function LicensesInstall
   SetOutPath "$INSTDIR"
 FunctionEnd
 
-
-Function GtkInstall
-  File /r "${PKGDIR}gtk-embedded\*.*"
-  File "${PKGDIR}gtk-postinstall.bat"
-  Exec "${PKGDIR}gtk-postinstall.bat"
-  Delete "${PKGDIR}gtk-postinstall.bat"
-  ;Exec "pango-querymodules.exe > etc\pango\pango.modules"
-  ;Exec "gtk-query-immodules-2.0.exe > etc\gtk-2.0\gtk.immodules"
-FunctionEnd
-
 ;--------------------------------
 
 Section "Installer section"
@@ -155,8 +144,16 @@ Section "Installer section"
   SetOutPath $INSTDIR
   
   call LicensesInstall
-  call GtkInstall
-  
+
+  ; GtkInstall
+  File /r "${PKGDIR}gtk-embedded\*.*"
+  File "${PKGDIR}gtk-postinstall.bat"
+  Exec "${PKGDIR}gtk-postinstall.bat"
+  Delete "${PKGDIR}gtk-postinstall.bat"
+  ;Exec "pango-querymodules.exe > etc\pango\pango.modules"
+  ;Exec "gtk-query-immodules-2.0.exe > etc\gtk-2.0\gtk.immodules"
+
+
   ; Put files there
   File "..\${PKGDIR}bin\${config}\CatEye.exe"
   File "${PKGDIR}CatEye.exe.config"
