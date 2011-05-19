@@ -648,8 +648,6 @@ namespace CatEye.Core
 			
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
-			double bloha = 0.00001;
-			
 			for (int n = 0; n < height; n++)
 			{
 				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
@@ -662,10 +660,10 @@ namespace CatEye.Core
 					// Transformed source matrix squares
 					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
 					{
-						new CatEye.Core.Point(kx * m + bloha,       ky * n + bloha),
-						new CatEye.Core.Point(kx * (m + 1) + bloha, ky * n - bloha),
-						new CatEye.Core.Point(kx * (m + 1) - bloha, ky * (n + 1) - bloha),
-						new CatEye.Core.Point(kx * m - bloha,       ky * (n + 1) + bloha)
+						new CatEye.Core.Point(kx * m,       ky * n),
+						new CatEye.Core.Point(kx * (m + 1), ky * n),
+						new CatEye.Core.Point(kx * (m + 1), ky * (n + 1)),
+						new CatEye.Core.Point(kx * m,       ky * (n + 1))
 					};
 					
 					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts);

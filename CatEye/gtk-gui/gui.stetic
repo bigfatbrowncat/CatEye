@@ -293,7 +293,7 @@
                         <property name="MemberName" />
                         <property name="ShadowType">None</property>
                         <child>
-                          <widget class="CatEye.FloatPixmapViewWidget" id="ppmviewwidget1">
+                          <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
                             <property name="MemberName" />
                             <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
                             <property name="ExtensionEvents">All</property>

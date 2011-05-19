@@ -172,52 +172,54 @@ public partial class MainWindow : Gtk.Window
 		};
 		
 		// Setting view widget events
-		ppmviewwidget1.ExposeEvent += DrawCurrentlyViewedStageOperationAdditions;
-		ppmviewwidget1.ButtonPressEvent += ImageMouseButtonPressed;
-		ppmviewwidget1.ButtonReleaseEvent += ImageMouseButtonReleased;
-		ppmviewwidget1.MotionNotifyEvent += HandleImageMouseMotion;
+		view_widget.ExposeEvent += DrawCurrentlyViewedStageOperationAdditions;
+		view_widget.ButtonPressEvent += ImageMouseButtonPressed;
+		view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
+		view_widget.MotionNotifyEvent += HandleImageMouseMotion;
 	}
 
 	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
 	{
-		if (stages.EditingOperation != null)
-		{
-			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
-			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
+		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
 
-			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, true))
-			{
-				ppmviewwidget1.QueueDraw();
-			}
+		if (stages.ReportEditorMouseButton(x, 
+									 y, 
+									 view_widget.CurrentImagePosition.Width, 
+									 view_widget.CurrentImagePosition.Height, 
+									 args.Event.Button, true))
+		{
+			view_widget.QueueDraw();
 		}
 	}
 
 	[GLib.ConnectBefore]
 	void ImageMouseButtonReleased (object o, ButtonReleaseEventArgs args)
 	{
-		if (stages.EditingOperation != null)
-		{
-			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
-			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
+		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
 
-			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMouseButton(dx, dy, args.Event.Button, false))
-			{
-				ppmviewwidget1.QueueDraw();
-			}
+		if (stages.ReportEditorMouseButton(x, 
+									 y, 
+									 view_widget.CurrentImagePosition.Width, 
+									 view_widget.CurrentImagePosition.Height, 
+									 args.Event.Button, false))
+		{
+			view_widget.QueueDraw();
 		}
 	}
 	
 	void HandleImageMouseMotion (object o, MotionNotifyEventArgs args)
 	{
-		if (stages.EditingOperation != null)
-		{
-			double dx = (args.Event.X - ppmviewwidget1.CurrentImagePosition.X) / ppmviewwidget1.CurrentImagePosition.Width;
-			double dy = (args.Event.Y - ppmviewwidget1.CurrentImagePosition.Y) / ppmviewwidget1.CurrentImagePosition.Height;
+		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
+		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
 
-			if (stages.Holders[stages.EditingOperation].OperationParametersWidget.ReportMousePosition(dx, dy))
-			{
-				ppmviewwidget1.QueueDraw();
-			}
+		if (stages.ReportEditorMousePosition(x, 
+									 y, 
+									 view_widget.CurrentImagePosition.Width, 
+									 view_widget.CurrentImagePosition.Height))
+		{
+			view_widget.QueueDraw();
 		}
 	}
 
@@ -225,8 +227,8 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (stages.EditingOperation != null)
 		{
-			stages.Holders[stages.EditingOperation].OperationParametersWidget.DrawToDrawable(ppmviewwidget1.GdkWindow, 
-			                                                       ppmviewwidget1.CurrentImagePosition);
+			stages.Holders[stages.EditingOperation].OperationParametersWidget.DrawToDrawable(view_widget.GdkWindow, 
+			                                                       view_widget.CurrentImagePosition);
 		}
 	}
 
@@ -295,10 +297,10 @@ public partial class MainWindow : Gtk.Window
 		
 		if (UpdateDuringProcessingAction.Active)
 		{
-			if ((DateTime.Now - lastupdate).TotalMilliseconds / ppmviewwidget1.UpdateTimeSpan.TotalMilliseconds > 5)
+			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 5)
 			{
-				ppmviewwidget1.UpdatePicture();
-				ppmviewwidget1.QueueDraw();
+				view_widget.UpdatePicture();
+				view_widget.QueueDraw();
 				lastupdate = DateTime.Now;
 			}
 		}
@@ -345,19 +347,19 @@ public partial class MainWindow : Gtk.Window
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			if (fcd.Filter == ffs[0])
-				ppmviewwidget1.SavePicture(fcd.Filename, "jpeg");
+				view_widget.SavePicture(fcd.Filename, "jpeg");
 			if (fcd.Filter == ffs[1])
-				ppmviewwidget1.SavePicture(fcd.Filename, "png");
+				view_widget.SavePicture(fcd.Filename, "png");
 			if (fcd.Filter == ffs[2])
-				ppmviewwidget1.SavePicture(fcd.Filename, "bmp");
+				view_widget.SavePicture(fcd.Filename, "bmp");
 		}
 		fcd.Destroy();
 	}
 	
 	private void ClearHDR()
 	{
-		ppmviewwidget1.HDR = null;
-		ppmviewwidget1.UpdatePicture();
+		view_widget.HDR = null;
+		view_widget.UpdatePicture();
 		hdr = null;
 		frozen = null;
 		GC.Collect();		// For freeing memory from unused hdr_src
@@ -494,7 +496,7 @@ public partial class MainWindow : Gtk.Window
 				else
 					hdr = new FloatPixmap(frozen);
 				
-				ppmviewwidget1.HDR = hdr;
+				view_widget.HDR = hdr;
 				
 				if (hdr != null)
 				{
@@ -502,9 +504,9 @@ public partial class MainWindow : Gtk.Window
 					{
 						progressbar.Text = "Operation completed";
 						progressbar.Fraction = 0;
-						ppmviewwidget1.HDR = hdr;
-						ppmviewwidget1.UpdatePicture();
-						ppmviewwidget1.QueueDraw();
+						view_widget.HDR = hdr;
+						view_widget.UpdatePicture();
+						view_widget.QueueDraw();
 					}
 					else
 					{
@@ -692,7 +694,7 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnUpdateDuringProcessingActionToggled (object sender, System.EventArgs e)
 	{
-		ppmviewwidget1.InstantUpdate = this.UpdateDuringProcessingAction.Active;
+		view_widget.InstantUpdate = this.UpdateDuringProcessingAction.Active;
 	}
 	
 	protected void OnSaveStageAsActionActivated (object sender, System.EventArgs e)

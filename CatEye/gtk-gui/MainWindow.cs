@@ -33,7 +33,7 @@ public partial class MainWindow
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
 	private global::Gtk.ScrolledWindow scrolledwindow3;
-	private global::CatEye.FloatPixmapViewWidget ppmviewwidget1;
+	private global::CatEye.FloatPixmapViewWidget view_widget;
 
 	protected virtual void Build ()
 	{
@@ -233,12 +233,12 @@ public partial class MainWindow
 		global::Gtk.Viewport w30 = new global::Gtk.Viewport ();
 		w30.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport.Gtk.Container+ContainerChild
-		this.ppmviewwidget1 = new global::CatEye.FloatPixmapViewWidget ();
-		this.ppmviewwidget1.Events = ((global::Gdk.EventMask)(1022));
-		this.ppmviewwidget1.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
-		this.ppmviewwidget1.Name = "ppmviewwidget1";
-		this.ppmviewwidget1.InstantUpdate = false;
-		w30.Add (this.ppmviewwidget1);
+		this.view_widget = new global::CatEye.FloatPixmapViewWidget ();
+		this.view_widget.Events = ((global::Gdk.EventMask)(1022));
+		this.view_widget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
+		this.view_widget.Name = "view_widget";
+		this.view_widget.InstantUpdate = false;
+		w30.Add (this.view_widget);
 		this.scrolledwindow3.Add (w30);
 		this.hpaned1.Add (this.scrolledwindow3);
 		this.vbox1.Add (this.hpaned1);

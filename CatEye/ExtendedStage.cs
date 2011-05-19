@@ -384,9 +384,53 @@ namespace CatEye
 			return null;
 		}
 		
-		protected override void OnStageOperationDeserialized(StageOperation so, StageOperationParameters sop)
+		/// <summary>
+		/// Handles mouse position change. 
+		/// Base method should not be called when overridden.
+		/// </summary>
+		/// <returns>
+		/// Should return "true" if it's needed to update the picture.
+		/// </returns>
+		public bool ReportEditorMousePosition(int x, int y, int width, int height)
 		{
-		}		
+			if (EditingOperation != null &&
+				Holders[EditingOperation].OperationParametersWidget != null)
+			{
+				return Holders[EditingOperation].OperationParametersWidget.ReportMousePosition(x, y, width, height);
+			}
+			else
+				return false;
+		}
+		
+		/// <summary>
+		/// Handles mouse button state change i.e. the user pushed or released the button.
+		/// Base method should not be called when overridden.
+		/// </summary>
+		/// <param name="x">
+		/// X coordinate from the left top corner of the image
+		/// </param>
+		/// <param name="y">
+		/// Y coordinate from the left top corner of the image
+		/// </param>
+		/// <param name="button_id">
+		/// The button which state is changed.
+		/// </param>
+		/// <param name="is_down">
+		/// <c>true</c> if the button is down now, <c>false</c> if it's up.
+		/// </param>
+		/// <returns>
+		/// Should return "true" if it's needed to update picture and "false" otherwise.
+		/// </returns>
+		public bool ReportEditorMouseButton(int x, int y, int width, int height, uint button_id, bool is_down)
+		{
+			if (EditingOperation != null &&
+				Holders[EditingOperation].OperationParametersWidget != null)
+			{
+				return Holders[EditingOperation].OperationParametersWidget.ReportMouseButton(x, y, width, height, button_id, is_down);
+			}
+			else
+				return false;
+		}
 	}
 }
 

@@ -86,37 +86,37 @@ namespace CatEye
 		}
 		
 		/// <summary>
-		/// Handles mouse position changed. 
+		/// Handles mouse position change. 
 		/// Base method should not be called when overridden.
 		/// </summary>
 		/// <returns>
-		/// Should return "true" if it's needed to update picture.
+		/// Should return "true" if it's needed to update the picture.
 		/// </returns>
-		public virtual bool ReportMousePosition(double x, double y)	
+		public virtual bool ReportMousePosition(int x, int y, int width, int height)
 		{ 
 			return false;
 		}
 		
 		/// <summary>
-		/// Handles mouse button state changed i.e. the user pushed or released the button.
+		/// Handles mouse button state change i.e. the user pushed or released the button.
 		/// Base method should not be called when overridden.
 		/// </summary>
 		/// <param name="x">
-		/// X coordinate from 0 to 1.
+		/// X coordinate from the left top corner of the image
 		/// </param>
 		/// <param name="y">
-		/// Y coordinate from 0 to 1.
+		/// Y coordinate from the left top corner of the image
 		/// </param>
 		/// <param name="button_id">
-		/// The button which stage is changed.
+		/// The button which state is changed.
 		/// </param>
 		/// <param name="is_down">
 		/// <c>true</c> if the button is down now, <c>false</c> if it's up.
 		/// </param>
 		/// <returns>
-		/// Should return "true" if it's needed to update picture.
+		/// Should return "true" if it's needed to update picture and "false" otherwise.
 		/// </returns>
-		public virtual bool ReportMouseButton(double x, double y, uint button_id, bool is_down) 
+		public virtual bool ReportMouseButton(int x, int y, int width, int height, uint button_id, bool is_down) 
 		{
 			return false;
 		}
