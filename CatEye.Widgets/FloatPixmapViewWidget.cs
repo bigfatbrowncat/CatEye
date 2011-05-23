@@ -43,7 +43,6 @@ namespace CatEye
 			get { return _HDR; }
 			set 
 			{
-				mHDRChangedCenteringNeeded = true;
 				_HDR = value; 
 				if (_InstantUpdate) UpdatePicture();
 			}
@@ -67,6 +66,12 @@ namespace CatEye
 							Gdk.EventMask.Button1MotionMask |
 							Gdk.EventMask.ExposureMask;
 		}
+		
+		public void CenterImagePanning()
+		{
+			mImageCenterX = Allocation.Width  / 2;
+			mImageCenterY = Allocation.Height / 2;
+		}
 
 		public void UpdatePicture()
 		{
@@ -86,15 +91,6 @@ namespace CatEye
 					_RenderedPicture.Dispose();
 
 				_RenderedPicture = newRenderedPicture;
-				
-				if (mHDRChangedCenteringNeeded)
-				{
-					// if the image is changed, centering panning
-					
-					mImageCenterX = Allocation.Width  / 2;
-					mImageCenterY = Allocation.Height / 2;
-					mHDRChangedCenteringNeeded = false;
-				}
 					
 			}
 			if (!mPanInProgress)

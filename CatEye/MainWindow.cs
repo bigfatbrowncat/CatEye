@@ -413,6 +413,8 @@ public partial class MainWindow : Gtk.Window
 		TheUIState = MainWindow.UIState.Free;
 		if (ppl != null)
 			stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
+
+		view_widget.CenterImagePanning();
 		LaunchUpdateTimer();
 	}
 	
