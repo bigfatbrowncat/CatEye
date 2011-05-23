@@ -32,7 +32,7 @@ public partial class MainWindow
 	private global::Gtk.HBox status_bar_hbox;
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
-	private global::Gtk.ScrolledWindow scrolledwindow3;
+	private global::Gtk.ScrolledWindow scrolledwindow1;
 	private global::CatEye.FloatPixmapViewWidget view_widget;
 
 	protected virtual void Build ()
@@ -114,7 +114,7 @@ public partial class MainWindow
 		this.hpaned1 = new global::Gtk.HPaned ();
 		this.hpaned1.CanFocus = true;
 		this.hpaned1.Name = "hpaned1";
-		this.hpaned1.Position = 236;
+		this.hpaned1.Position = 237;
 		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";
@@ -225,11 +225,11 @@ public partial class MainWindow
 		w29.Resize = false;
 		w29.Shrink = false;
 		// Container child hpaned1.Gtk.Paned+PanedChild
-		this.scrolledwindow3 = new global::Gtk.ScrolledWindow ();
-		this.scrolledwindow3.CanFocus = true;
-		this.scrolledwindow3.Name = "scrolledwindow3";
-		this.scrolledwindow3.ShadowType = ((global::Gtk.ShadowType)(1));
-		// Container child scrolledwindow3.Gtk.Container+ContainerChild
+		this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
+		this.scrolledwindow1.CanFocus = true;
+		this.scrolledwindow1.Name = "scrolledwindow1";
+		this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
+		// Container child scrolledwindow1.Gtk.Container+ContainerChild
 		global::Gtk.Viewport w30 = new global::Gtk.Viewport ();
 		w30.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport.Gtk.Container+ContainerChild
@@ -239,8 +239,8 @@ public partial class MainWindow
 		this.view_widget.Name = "view_widget";
 		this.view_widget.InstantUpdate = false;
 		w30.Add (this.view_widget);
-		this.scrolledwindow3.Add (w30);
-		this.hpaned1.Add (this.scrolledwindow3);
+		this.scrolledwindow1.Add (w30);
+		this.hpaned1.Add (this.scrolledwindow1);
 		this.vbox1.Add (this.hpaned1);
 		global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
 		w34.Position = 0;

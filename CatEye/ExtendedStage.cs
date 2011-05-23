@@ -431,6 +431,15 @@ namespace CatEye
 			else
 				return false;
 		}
+		
+		public void DrawEditor(Gdk.Drawable target, Gdk.Rectangle image_position)
+		{
+			if (EditingOperation != null &&
+				Holders[EditingOperation].OperationParametersWidget != null)
+			{
+				Holders[EditingOperation].OperationParametersWidget.DrawEditor(target, image_position);
+			}
+		}
 	}
 }
 

@@ -172,7 +172,7 @@ public partial class MainWindow : Gtk.Window
 		};
 		
 		// Setting view widget events
-		view_widget.ExposeEvent += DrawCurrentlyViewedStageOperationAdditions;
+		view_widget.ExposeEvent += DrawCurrentStageOperationEditor;
 		view_widget.ButtonPressEvent += ImageMouseButtonPressed;
 		view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
 		view_widget.MotionNotifyEvent += HandleImageMouseMotion;
@@ -223,13 +223,9 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
-	void DrawCurrentlyViewedStageOperationAdditions (object o, ExposeEventArgs args)
+	void DrawCurrentStageOperationEditor (object o, ExposeEventArgs args)
 	{
-		if (stages.EditingOperation != null)
-		{
-			stages.Holders[stages.EditingOperation].OperationParametersWidget.DrawToDrawable(view_widget.GdkWindow, 
-			                                                       view_widget.CurrentImagePosition);
-		}
+		stages.DrawEditor(view_widget.GdkWindow, view_widget.CurrentImagePosition);
 	}
 
 	protected void LaunchUpdateTimer()
@@ -300,7 +296,7 @@ public partial class MainWindow : Gtk.Window
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 5)
 			{
 				view_widget.UpdatePicture();
-				view_widget.QueueDraw();
+				//view_widget.QueueDraw();
 				lastupdate = DateTime.Now;
 			}
 		}
@@ -504,9 +500,8 @@ public partial class MainWindow : Gtk.Window
 					{
 						progressbar.Text = "Operation completed";
 						progressbar.Fraction = 0;
-						view_widget.HDR = hdr;
 						view_widget.UpdatePicture();
-						view_widget.QueueDraw();
+
 					}
 					else
 					{
