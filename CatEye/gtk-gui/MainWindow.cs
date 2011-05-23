@@ -19,6 +19,8 @@ public partial class MainWindow
 	private global::Gtk.Action saveStageAction;
 	private global::Gtk.Action saveStageAsAction;
 	private global::Gtk.Action qweAction;
+	private global::Gtk.Action EditAction;
+	private global::Gtk.Action PanAction;
 	private global::Gtk.VBox vbox2;
 	private global::Gtk.MenuBar main_menubar;
 	private global::Gtk.VBox vbox1;
@@ -32,7 +34,6 @@ public partial class MainWindow
 	private global::Gtk.HBox status_bar_hbox;
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
-	private global::Gtk.ScrolledWindow scrolledwindow3;
 	private global::CatEye.FloatPixmapViewWidget view_widget;
 
 	protected virtual void Build ()
@@ -88,6 +89,12 @@ public partial class MainWindow
 		this.qweAction = new global::Gtk.Action ("qweAction", global::Mono.Unix.Catalog.GetString ("qwe"), null, null);
 		this.qweAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("qwe");
 		w1.Add (this.qweAction, null);
+		this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("Edit"), null, null);
+		this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Edit");
+		w1.Add (this.EditAction, null);
+		this.PanAction = new global::Gtk.Action ("PanAction", global::Mono.Unix.Catalog.GetString ("Pan"), null, null);
+		this.PanAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pan");
+		w1.Add (this.PanAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -225,28 +232,18 @@ public partial class MainWindow
 		w29.Resize = false;
 		w29.Shrink = false;
 		// Container child hpaned1.Gtk.Paned+PanedChild
-		this.scrolledwindow3 = new global::Gtk.ScrolledWindow ();
-		this.scrolledwindow3.CanFocus = true;
-		this.scrolledwindow3.Name = "scrolledwindow3";
-		this.scrolledwindow3.ShadowType = ((global::Gtk.ShadowType)(1));
-		// Container child scrolledwindow3.Gtk.Container+ContainerChild
-		global::Gtk.Viewport w30 = new global::Gtk.Viewport ();
-		w30.ShadowType = ((global::Gtk.ShadowType)(0));
-		// Container child GtkViewport.Gtk.Container+ContainerChild
 		this.view_widget = new global::CatEye.FloatPixmapViewWidget ();
 		this.view_widget.Events = ((global::Gdk.EventMask)(1022));
 		this.view_widget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 		this.view_widget.Name = "view_widget";
 		this.view_widget.InstantUpdate = false;
-		w30.Add (this.view_widget);
-		this.scrolledwindow3.Add (w30);
-		this.hpaned1.Add (this.scrolledwindow3);
+		this.hpaned1.Add (this.view_widget);
 		this.vbox1.Add (this.hpaned1);
-		global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
-		w34.Position = 0;
+		global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+		w31.Position = 0;
 		this.vbox2.Add (this.vbox1);
-		global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
-		w35.Position = 1;
+		global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
+		w32.Position = 1;
 		this.Add (this.vbox2);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();

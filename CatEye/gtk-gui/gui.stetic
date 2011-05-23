@@ -111,6 +111,16 @@
         <property name="Label" translatable="yes">qwe</property>
         <property name="ShortLabel" translatable="yes">qwe</property>
       </action>
+      <action id="EditAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Edit</property>
+        <property name="ShortLabel" translatable="yes">Edit</property>
+      </action>
+      <action id="PanAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Pan</property>
+        <property name="ShortLabel" translatable="yes">Pan</property>
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
@@ -284,25 +294,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
+                  <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.Viewport" id="GtkViewport">
-                        <property name="MemberName" />
-                        <property name="ShadowType">None</property>
-                        <child>
-                          <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
-                            <property name="MemberName" />
-                            <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
-                            <property name="ExtensionEvents">All</property>
-                            <property name="ShowScrollbars">True</property>
-                            <property name="InstantUpdate">False</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
+                    <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
+                    <property name="ExtensionEvents">All</property>
+                    <property name="InstantUpdate">False</property>
                   </widget>
                 </child>
               </widget>
