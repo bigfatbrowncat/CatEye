@@ -284,24 +284,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
+                  <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.Viewport" id="GtkViewport">
-                        <property name="MemberName" />
-                        <property name="ShadowType">None</property>
-                        <child>
-                          <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
-                            <property name="MemberName" />
-                            <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
-                            <property name="ExtensionEvents">All</property>
-                            <property name="InstantUpdate">False</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
+                    <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
+                    <property name="ExtensionEvents">All</property>
+                    <property name="InstantUpdate">False</property>
                   </widget>
                 </child>
               </widget>

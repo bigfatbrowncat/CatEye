@@ -39,7 +39,7 @@ namespace CatEye.Core
 
 			if (pm.LimitWidth || pm.LimitHeight)
 			{
-				hdp.Resize((int)w, (int)h, 2, 
+				hdp.Resize((int)w, (int)h, 3, 
 					delegate (double progress) {
 						return OnReportProgress(progress);
 					});

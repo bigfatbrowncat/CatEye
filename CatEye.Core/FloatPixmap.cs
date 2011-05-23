@@ -14,7 +14,7 @@ namespace CatEye.Core
 	
 	public class FloatPixmap
 	{
-		private const int REPORT_EVERY_NTH_LINE = 10;
+		private const int REPORT_EVERY_NTH_LINE = 5;
 		
 		float[,] r_chan, g_chan, b_chan;
 		
@@ -562,7 +562,6 @@ namespace CatEye.Core
 			
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
-			double bloha = 0.00001;
 			
 			for (int n = 0; n < height; n++)
 			{
@@ -576,19 +575,19 @@ namespace CatEye.Core
 					// Rotated source matrix squares
 					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
 					{
-						Point.Rotate(new CatEye.Core.Point(m + bloha,       n + bloha      ), beta, c),
-						Point.Rotate(new CatEye.Core.Point((m + 1) + bloha, n - bloha      ), beta, c),
-						Point.Rotate(new CatEye.Core.Point((m + 1) - bloha, (n + 1) - bloha), beta, c),
-						Point.Rotate(new CatEye.Core.Point(m - bloha,       (n + 1) + bloha), beta, c)
+						Point.Rotate(new CatEye.Core.Point(m,       n      ), -beta, c),
+						Point.Rotate(new CatEye.Core.Point((m + 1), n      ), -beta, c),
+						Point.Rotate(new CatEye.Core.Point((m + 1), (n + 1)), -beta, c),
+						Point.Rotate(new CatEye.Core.Point(m,       (n + 1)), -beta, c)
 					};
 					
 					// Rotated and translated source matrix squares
 					CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
 					{
-						new Point(src_tr_pts[0].X - c.X + crop_w / 2, src_tr_pts[0].Y - c.Y + crop_h / 2),
-						new Point(src_tr_pts[1].X - c.X + crop_w / 2, src_tr_pts[1].Y - c.Y + crop_h / 2),
-						new Point(src_tr_pts[2].X - c.X + crop_w / 2, src_tr_pts[2].Y - c.Y + crop_h / 2),
-						new Point(src_tr_pts[3].X - c.X + crop_w / 2, src_tr_pts[3].Y - c.Y + crop_h / 2),
+						new Point(src_tr_pts[0].X - c.X + (double)crop_w / 2, src_tr_pts[0].Y - c.Y + (double)crop_h / 2),
+						new Point(src_tr_pts[1].X - c.X + (double)crop_w / 2, src_tr_pts[1].Y - c.Y + (double)crop_h / 2),
+						new Point(src_tr_pts[2].X - c.X + (double)crop_w / 2, src_tr_pts[2].Y - c.Y + (double)crop_h / 2),
+						new Point(src_tr_pts[3].X - c.X + (double)crop_w / 2, src_tr_pts[3].Y - c.Y + (double)crop_h / 2),
 					};
 					
 					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
@@ -598,6 +597,8 @@ namespace CatEye.Core
 					int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
 					int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
 					
+					double bloha = 0.00001;
+					
 					for (int j = ymin; j < ymax; j++)
 					{
 						for (int i = xmin; i < xmax; i++)
@@ -606,18 +607,20 @@ namespace CatEye.Core
 							for (int qx = 0; qx < quality; qx++)
 								for (int qy = 0; qy < quality; qy++)
 							{
-								double px = i + 1.0 / quality * qx;
-								double py = j + 1.0 / quality * qy;
+								double px = i + bloha + (double)qx / quality;
+								double py = j + bloha + (double)qy / quality;
 								if (cp_src_tr.Contains(new Point(px, py)))
 								{
-									part += 1.0 / quality / quality;
+									part += 1.0;
 								}
 							}
+							part /= quality * quality;
 							
 							// Adding colors part
 							newr[i, j] += (float)(r_chan[m, n] * part);
 							newg[i, j] += (float)(g_chan[m, n] * part);
 							newb[i, j] += (float)(b_chan[m, n] * part);
+							
 						}
 					}
 				}
@@ -681,8 +684,8 @@ namespace CatEye.Core
 							for (int qx = 0; qx < quality; qx++)
 								for (int qy = 0; qy < quality; qy++)
 							{
-								double px = i + 1.0 / quality * qx;
-								double py = j + 1.0 / quality * qy;
+								double px = i + qx / quality;
+								double py = j + qy / quality;
 								if (cp_src_tr.Contains(new Point(px, py)))
 								{
 									part += 1.0 / quality / quality;

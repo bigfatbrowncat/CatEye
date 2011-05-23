@@ -32,7 +32,6 @@ public partial class MainWindow
 	private global::Gtk.HBox status_bar_hbox;
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
-	private global::Gtk.ScrolledWindow scrolledwindow1;
 	private global::CatEye.FloatPixmapViewWidget view_widget;
 
 	protected virtual void Build ()
@@ -225,28 +224,18 @@ public partial class MainWindow
 		w29.Resize = false;
 		w29.Shrink = false;
 		// Container child hpaned1.Gtk.Paned+PanedChild
-		this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
-		this.scrolledwindow1.CanFocus = true;
-		this.scrolledwindow1.Name = "scrolledwindow1";
-		this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
-		// Container child scrolledwindow1.Gtk.Container+ContainerChild
-		global::Gtk.Viewport w30 = new global::Gtk.Viewport ();
-		w30.ShadowType = ((global::Gtk.ShadowType)(0));
-		// Container child GtkViewport.Gtk.Container+ContainerChild
 		this.view_widget = new global::CatEye.FloatPixmapViewWidget ();
 		this.view_widget.Events = ((global::Gdk.EventMask)(1022));
 		this.view_widget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 		this.view_widget.Name = "view_widget";
 		this.view_widget.InstantUpdate = false;
-		w30.Add (this.view_widget);
-		this.scrolledwindow1.Add (w30);
-		this.hpaned1.Add (this.scrolledwindow1);
+		this.hpaned1.Add (this.view_widget);
 		this.vbox1.Add (this.hpaned1);
-		global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
-		w34.Position = 0;
+		global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+		w31.Position = 0;
 		this.vbox2.Add (this.vbox1);
-		global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
-		w35.Position = 1;
+		global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
+		w32.Position = 1;
 		this.Add (this.vbox2);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();

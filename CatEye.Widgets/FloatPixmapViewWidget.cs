@@ -15,18 +15,34 @@ namespace CatEye
 		private FloatPixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
+
+		private int mImageCenterX, mImageCenterY;
+		private bool mAutoPan = true;
 		
-		private Rectangle _CurrentImagePosition = new Rectangle(0, 0, 1, 1);
+		// Panning internals
+		private bool mHDRChangedCenteringNeeded;
+		private bool mPanInProgress = false;
+		private int mPanStartX, mPanStartY, mImgCenterStartX, mImgCenterStartY;
+			
 		public Rectangle CurrentImagePosition
 		{
-			get { return _CurrentImagePosition; }
+			get 
+			{
+				if (_RenderedPicture != null)
+					return new Rectangle(
+						mImageCenterX - _RenderedPicture.Width / 2, 
+						mImageCenterY - _RenderedPicture.Height / 2, 
+						_RenderedPicture.Width, _RenderedPicture.Height);
+				else
+					return new Gdk.Rectangle(0, 0, 0, 0);
+			}
 		}
 		
 		public FloatPixmap HDR
 		{
 			get { return _HDR; }
 			set 
-			{ 
+			{
 				_HDR = value; 
 				if (_InstantUpdate) UpdatePicture();
 			}
@@ -50,25 +66,41 @@ namespace CatEye
 							Gdk.EventMask.Button1MotionMask |
 							Gdk.EventMask.ExposureMask;
 		}
-
 		
+		public void CenterImagePanning()
+		{
+			mImageCenterX = Allocation.Width  / 2;
+			mImageCenterY = Allocation.Height / 2;
+		}
+
 		public void UpdatePicture()
 		{
+			GdkWindow.Cursor = new Cursor(Gdk.CursorType.Watch);
+			
 			DateTime update_start = DateTime.Now;
 			if (_HDR != null)
 			{
-				if (_RenderedPicture != null)
-					_RenderedPicture.Dispose();
-					
-				_RenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.width, _HDR.height);
-		
-				_HDR.DrawToPixbuf(_RenderedPicture, delegate {
+				Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.width, _HDR.height);
+	
+				_HDR.DrawToPixbuf(newRenderedPicture, delegate {
 					while (Application.EventsPending()) Application.RunIteration();
 					return true;
 				});
+				
+				if (_RenderedPicture != null)
+					_RenderedPicture.Dispose();
+
+				_RenderedPicture = newRenderedPicture;
+					
 			}
+			if (!mPanInProgress)
+				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Arrow);
+			else
+				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Hand1);
+				
+			
 			_UpdateTimeSpan = DateTime.Now - update_start;
-			QueueResizeNoRedraw();
+			//QueueResizeNoRedraw();
 			QueueDraw();
 		}
 		
@@ -79,22 +111,49 @@ namespace CatEye
 			
 			if (_HDR != null && _RenderedPicture != null)
 			{
-				int w, h, x = 0, y = 0, d, dstx = 0, dsty = 0;
-				GdkWindow.GetGeometry(out x, out y, out w, out h, out d);
-				
-				if (w > _RenderedPicture.Width)
-					dstx = (w - _RenderedPicture.Width) / 2;
-				if (h > _RenderedPicture.Height)
-					dsty = (h - _RenderedPicture.Height) / 2;
-				
-				_CurrentImagePosition = new Rectangle(dstx, dsty, _RenderedPicture.Width, _RenderedPicture.Height);
+				Rectangle r = CurrentImagePosition;
 				
 				GdkWindow.DrawPixbuf(new Gdk.GC(GdkWindow), _RenderedPicture, 
-				                     0, 0, dstx, dsty, 
-				                     _RenderedPicture.Width, 
-				                     _RenderedPicture.Height, 
+				                     0, 0, 
+									 r.X, r.Y, 
+				                     r.Width, 
+				                     r.Height, 
 				                     RgbDither.None, 0, 0);
-				this.SetSizeRequest(_RenderedPicture.Width, _RenderedPicture.Height);
+				
+				// If panning, draw panning scheme
+				if (mPanInProgress)
+				{
+					int size_divider = 10;
+					
+					Rectangle screen_rect = new Rectangle(
+						Allocation.Width / 2 - Allocation.Width / size_divider / 2,
+						Allocation.Height / 2 - Allocation.Height / size_divider / 2,
+						Allocation.Width / size_divider,
+						Allocation.Height / size_divider);
+					
+					Rectangle picture_rect = new Rectangle(
+						Allocation.Width / 2 - Allocation.Width / size_divider / 2 + 
+						mImageCenterX / size_divider - _RenderedPicture.Width / size_divider / 2,
+						
+						Allocation.Height / 2 - Allocation.Height / size_divider / 2 + 
+						mImageCenterY / size_divider - _RenderedPicture.Height / size_divider / 2,
+						
+						_RenderedPicture.Width / size_divider,
+						_RenderedPicture.Height / size_divider
+						);
+					
+					using (Gdk.GC gc = new Gdk.GC(GdkWindow))
+					{
+						gc.Function = Gdk.Function.Xor;
+						gc.RgbFgColor = new Color(255, 255, 0);
+						GdkWindow.DrawRectangle(gc, false, screen_rect);
+						gc.RgbFgColor = new Color(255, 255, 255);
+						GdkWindow.DrawRectangle(gc, false, picture_rect);
+						gc.Function = Gdk.Function.Clear;
+					}
+				}
+				
+				//this.SetSizeRequest(_RenderedPicture.Width, _RenderedPicture.Height);
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -114,11 +173,89 @@ namespace CatEye
 			if (_RenderedPicture != null) _RenderedPicture.Dispose();
 			base.Dispose ();
 		}
+		
+		protected override bool OnMotionNotifyEvent (EventMotion evnt)
+		{
+			if (base.OnMotionNotifyEvent (evnt))
+			{
+				return true;
+			}
+			else
+			{
+				if (mPanInProgress)
+				{
+					if (!mAutoPan)
+					{
+						mPanInProgress = false;
+						GdkWindow.Cursor = new Cursor(Gdk.CursorType.Arrow);
+					}
+					else
+					{
+						mImageCenterX = mImgCenterStartX + (int)(evnt.X -  mPanStartX);
+						mImageCenterY = mImgCenterStartY + (int)(evnt.Y -  mPanStartY);
+						
+						// Applying framing
+						
+						if (_RenderedPicture != null)
+						{
+							if (mImageCenterX > Allocation.Width + _RenderedPicture.Width / 2)
+								mImageCenterX = Allocation.Width + _RenderedPicture.Width / 2;
+							if (mImageCenterY > Allocation.Height + _RenderedPicture.Height / 2)
+								mImageCenterY = Allocation.Height + _RenderedPicture.Height / 2;
 
+							if (mImageCenterX < -_RenderedPicture.Width / 2)
+								mImageCenterX = -_RenderedPicture.Width / 2;
+							if (mImageCenterY < -_RenderedPicture.Height / 2)
+								mImageCenterY = -_RenderedPicture.Height / 2;
+						}
+						
+						QueueDraw();
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			if (base.OnButtonPressEvent (evnt))
+			{
+				return true;
+			}
+			else
+			{
+				if (mAutoPan)
+				{
+					mPanInProgress = true;
+					GdkWindow.Cursor = new Cursor(Gdk.CursorType.Hand1);
+					mImgCenterStartX = mImageCenterX;
+					mImgCenterStartY = mImageCenterY;
+					mPanStartX = (int)evnt.X;
+					mPanStartY = (int)evnt.Y;
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			return base.OnButtonReleaseEvent(evnt);
+			if (base.OnButtonReleaseEvent(evnt))
+			{
+				return true;
+			}
+			else
+			{
+				if (mPanInProgress)
+				{
+					GdkWindow.Cursor = new Cursor(Gdk.CursorType.Arrow);
+					mPanInProgress = false;
+					QueueDraw();
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
