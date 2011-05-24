@@ -20,9 +20,9 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Debug.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
-        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Build" command="debug.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Execute" command="CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -33,9 +33,9 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Release.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
-        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Build" command="release.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Execute" command="CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -55,8 +55,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CatEyeSetup-Debug.nsi" />
-    <None Include="CatEyeSetup-Release.nsi" />
     <None Include="res\CatEyeRemove.ico" />
     <None Include="res\CatEyeSetup.ico" />
     <None Include="res\orange.bmp" />
@@ -163,6 +161,12 @@
     <None Include="gtk-embedded\pango-querymodules.exe" />
     <None Include="gtk-embedded\pangosharpglue-2.dll" />
     <None Include="gtk-embedded\zlib1.dll" />
+    <None Include="CatEye.exe.config" />
+    <None Include="res\win.bmp" />
+    <None Include="CatEyeSetup.nsi" />
+    <None Include="debug.cmd" />
+    <None Include="gtk-postinstall.bat" />
+    <None Include="release.cmd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
