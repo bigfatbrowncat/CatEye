@@ -19,8 +19,6 @@ public partial class MainWindow
 	private global::Gtk.Action saveStageAction;
 	private global::Gtk.Action saveStageAsAction;
 	private global::Gtk.Action qweAction;
-	private global::Gtk.Action EditAction;
-	private global::Gtk.Action PanAction;
 	private global::Gtk.VBox vbox2;
 	private global::Gtk.MenuBar main_menubar;
 	private global::Gtk.VBox vbox1;
@@ -89,12 +87,6 @@ public partial class MainWindow
 		this.qweAction = new global::Gtk.Action ("qweAction", global::Mono.Unix.Catalog.GetString ("qwe"), null, null);
 		this.qweAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("qwe");
 		w1.Add (this.qweAction, null);
-		this.EditAction = new global::Gtk.Action ("EditAction", global::Mono.Unix.Catalog.GetString ("Edit"), null, null);
-		this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Edit");
-		w1.Add (this.EditAction, null);
-		this.PanAction = new global::Gtk.Action ("PanAction", global::Mono.Unix.Catalog.GetString ("Pan"), null, null);
-		this.PanAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Pan");
-		w1.Add (this.PanAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -121,7 +113,7 @@ public partial class MainWindow
 		this.hpaned1 = new global::Gtk.HPaned ();
 		this.hpaned1.CanFocus = true;
 		this.hpaned1.Name = "hpaned1";
-		this.hpaned1.Position = 236;
+		this.hpaned1.Position = 237;
 		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.left_vbox = new global::Gtk.VBox ();
 		this.left_vbox.Name = "left_vbox";

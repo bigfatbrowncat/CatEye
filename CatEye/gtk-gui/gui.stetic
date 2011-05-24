@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../CatEye.Widgets/bin/Release/CatEye.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../CatEye.Widgets/bin/Debug/CatEye.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
     <action-group name="Default">
@@ -111,16 +111,6 @@
         <property name="Label" translatable="yes">qwe</property>
         <property name="ShortLabel" translatable="yes">qwe</property>
       </action>
-      <action id="EditAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Edit</property>
-        <property name="ShortLabel" translatable="yes">Edit</property>
-      </action>
-      <action id="PanAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Pan</property>
-        <property name="ShortLabel" translatable="yes">Pan</property>
-      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
@@ -166,7 +156,7 @@
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">236</property>
+                <property name="Position">237</property>
                 <child>
                   <widget class="Gtk.VBox" id="left_vbox">
                     <property name="MemberName" />
@@ -1848,8 +1838,8 @@
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">1</property>
-            <property name="StepIncrement">1</property>
+            <property name="PageIncrement">0.1</property>
+            <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
             <property name="Digits">2</property>
             <property name="Numeric">True</property>
@@ -1878,8 +1868,8 @@
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">1</property>
-            <property name="StepIncrement">1</property>
+            <property name="PageIncrement">0.1</property>
+            <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
             <property name="Digits">2</property>
             <property name="Numeric">True</property>
@@ -1908,8 +1898,8 @@
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">1</property>
-            <property name="StepIncrement">1</property>
+            <property name="PageIncrement">0.1</property>
+            <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
             <property name="Digits">2</property>
             <property name="Numeric">True</property>
@@ -1937,8 +1927,8 @@
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">1</property>
-            <property name="StepIncrement">1</property>
+            <property name="PageIncrement">0.1</property>
+            <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
             <property name="Digits">2</property>
             <property name="Numeric">True</property>

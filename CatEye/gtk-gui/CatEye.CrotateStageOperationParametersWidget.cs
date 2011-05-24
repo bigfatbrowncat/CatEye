@@ -78,10 +78,10 @@ namespace CatEye
 			w4.RightAttach = ((uint)(3));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.c_x_spinbutton = new global::Gtk.SpinButton (0.01, 1, 1);
+			this.c_x_spinbutton = new global::Gtk.SpinButton (0.01, 1, 0.01);
 			this.c_x_spinbutton.CanFocus = true;
 			this.c_x_spinbutton.Name = "c_x_spinbutton";
-			this.c_x_spinbutton.Adjustment.PageIncrement = 1;
+			this.c_x_spinbutton.Adjustment.PageIncrement = 0.1;
 			this.c_x_spinbutton.ClimbRate = 0.1;
 			this.c_x_spinbutton.Digits = ((uint)(2));
 			this.c_x_spinbutton.Numeric = true;
@@ -95,10 +95,10 @@ namespace CatEye
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.c_y_spinbutton = new global::Gtk.SpinButton (0.01, 1, 1);
+			this.c_y_spinbutton = new global::Gtk.SpinButton (0.01, 1, 0.01);
 			this.c_y_spinbutton.CanFocus = true;
 			this.c_y_spinbutton.Name = "c_y_spinbutton";
-			this.c_y_spinbutton.Adjustment.PageIncrement = 1;
+			this.c_y_spinbutton.Adjustment.PageIncrement = 0.1;
 			this.c_y_spinbutton.ClimbRate = 0.1;
 			this.c_y_spinbutton.Digits = ((uint)(2));
 			this.c_y_spinbutton.Numeric = true;
@@ -112,10 +112,10 @@ namespace CatEye
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.crop_h_spinbutton = new global::Gtk.SpinButton (0.01, 1, 1);
+			this.crop_h_spinbutton = new global::Gtk.SpinButton (0.01, 1, 0.01);
 			this.crop_h_spinbutton.CanFocus = true;
 			this.crop_h_spinbutton.Name = "crop_h_spinbutton";
-			this.crop_h_spinbutton.Adjustment.PageIncrement = 1;
+			this.crop_h_spinbutton.Adjustment.PageIncrement = 0.1;
 			this.crop_h_spinbutton.ClimbRate = 0.1;
 			this.crop_h_spinbutton.Digits = ((uint)(2));
 			this.crop_h_spinbutton.Numeric = true;
@@ -128,10 +128,10 @@ namespace CatEye
 			w7.RightAttach = ((uint)(2));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.crop_w_spinbutton = new global::Gtk.SpinButton (0.01, 1, 1);
+			this.crop_w_spinbutton = new global::Gtk.SpinButton (0.01, 1, 0.01);
 			this.crop_w_spinbutton.CanFocus = true;
 			this.crop_w_spinbutton.Name = "crop_w_spinbutton";
-			this.crop_w_spinbutton.Adjustment.PageIncrement = 1;
+			this.crop_w_spinbutton.Adjustment.PageIncrement = 0.1;
 			this.crop_w_spinbutton.ClimbRate = 0.1;
 			this.crop_w_spinbutton.Digits = ((uint)(2));
 			this.crop_w_spinbutton.Numeric = true;
