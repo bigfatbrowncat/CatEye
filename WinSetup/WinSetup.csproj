@@ -11,6 +11,7 @@
     <AssemblyName>WinSetup</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ReleaseVersion>0.3</ReleaseVersion>
+    <newfilesearch>OnLoad</newfilesearch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -20,8 +21,8 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Debug.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
-        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\Debug" />
+        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -33,8 +34,8 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="Build" command="%ProgramFiles%\NSIS\makensis CatEyeSetup-Release.nsi" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\Release" />
-        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\Release" />
+        <Command type="Execute" command="Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f Setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>

@@ -21,13 +21,14 @@ ShowUnInstDetails show
 ;Name and file
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ;OutFile "..\packages\${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe"
-OutFile "..\${PKGDIR}bin\${config}\Setup.exe"
+;OutFile "..\${PKGDIR}bin\${config}\Setup.exe"
+OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe"
 
 ;Default installation folder
 InstallDir $ProgramFiles\${PRODUCT_NAME}
 
 ;Request application privileges for Windows Vista
-RequestExecutionLevel user
+;RequestExecutionLevel user
 
 ;--------------------------------
 ;Interface Settings
@@ -123,14 +124,6 @@ FunctionEnd
   
 ;FunctionEnd
 
-
-Function LicensesInstall
-  CreateDirectory "$INSTDIR\licenses"
-  SetOutPath "$INSTDIR\licenses"
-  File /r "${PKGDIR}licenses\*.*"
-  SetOutPath "$INSTDIR"
-FunctionEnd
-
 ;--------------------------------
 
 Section "Installer section"
@@ -138,20 +131,22 @@ Section "Installer section"
   SetShellVarContext all
   
   call IsDotNETInstalled
-;  call IsGtkInstalled
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
-  call LicensesInstall
+  ; LicensesInstall
+  CreateDirectory "$INSTDIR\licenses"
+  SetOutPath "$INSTDIR\licenses"
+  File /r "${PKGDIR}licenses\*.*"
+  SetOutPath "$INSTDIR"
+
 
   ; GtkInstall
   File /r "${PKGDIR}gtk-embedded\*.*"
   File "${PKGDIR}gtk-postinstall.bat"
   Exec "${PKGDIR}gtk-postinstall.bat"
   Delete "${PKGDIR}gtk-postinstall.bat"
-  ;Exec "pango-querymodules.exe > etc\pango\pango.modules"
-  ;Exec "gtk-query-immodules-2.0.exe > etc\gtk-2.0\gtk.immodules"
 
 
   ; Put files there
@@ -198,6 +193,7 @@ Section "Installer section"
   WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "SetupDir" "$INSTDIR"
   
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayName" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+  WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayIcon" "$INSTDIR\CatEye.exe"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "UninstallString" "$INSTDIR\Uninstall.exe"
   WriteUninstaller $INSTDIR\Uninstall.exe
 
@@ -227,6 +223,7 @@ Function un.GtkDelete
   Delete "$INSTDIR\gtk-query-immodules-2.0.exe"
   Delete "$INSTDIR\gtksharpglue-2.dll"
   Delete "$INSTDIR\intl.dll"
+  Delete "$INSTDIR\jpeg62.dll"
   Delete "$INSTDIR\libatk-1.0-0.dll"
   Delete "$INSTDIR\libcairo-2.dll"
   Delete "$INSTDIR\libexpat-1.dll"
@@ -313,7 +310,8 @@ Section "un.Installer section"
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\Version
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\SetupDir
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}
-    
+  
+  DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\DisplayIcon
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\DisplayName
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\UninstallString
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}
