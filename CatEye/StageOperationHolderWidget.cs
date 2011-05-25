@@ -15,7 +15,7 @@ namespace CatEye
 		public event EventHandler<EventArgs> StageActiveButtonClicked;
 		public event EventHandler<EventArgs> UpTitleButtonClicked;
 		public event EventHandler<EventArgs> DownTitleButtonClicked;
-		public event EventHandler<EventArgs> ViewButtonClicked;
+		public event EventHandler<EventArgs> EditButtonClicked;
 		public event EventHandler<EventArgs> FreezeButtonClicked;
 		public event EventHandler<EventArgs> RemoveButtonClicked;
 		
@@ -66,8 +66,8 @@ namespace CatEye
 		
 		protected virtual void OnViewButtonClicked (object sender, System.EventArgs e)
 		{
-			if (ViewButtonClicked != null)
-				ViewButtonClicked(this, EventArgs.Empty);
+			if (EditButtonClicked != null)
+				EditButtonClicked(this, EventArgs.Empty);
 		}
 
 		protected virtual void OnFreezeButtonClicked (object sender, System.EventArgs e)

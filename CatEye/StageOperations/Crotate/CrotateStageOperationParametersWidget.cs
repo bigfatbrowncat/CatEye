@@ -7,6 +7,13 @@ namespace CatEye
 	public partial class CrotateStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		Gtk.ListStore ls;
+		private int mDotRadius = 3;
+		
+		private enum DragState { None, Center, Round };
+		private DragState mDragState = DragState.None;
+		private int mDragStartX, mDragStartY;
+		private int mCenterDotStartX, mCenterDotStartY;
+		
 		
 		public CrotateStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
@@ -45,26 +52,35 @@ namespace CatEye
 		
 		protected void OnAngleSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).Angle = angle_spinbutton.Value;
-			EndChangingParameters();
-			OnUserModified();			
+			if (mDragState != DragState.Round)
+			{
+				StartChangingParameters();
+				((CrotateStageOperationParameters)Parameters).Angle = angle_spinbutton.Value;
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnCXSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
-			EndChangingParameters();
-			OnUserModified();			
+			if (mDragState != DragState.Center)
+			{
+				StartChangingParameters();
+				((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnCYSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
-			EndChangingParameters();
-			OnUserModified();			
+			if (mDragState != DragState.Center)
+			{
+				StartChangingParameters();
+				((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnCropWSpinbuttonValueChanged (object sender, System.EventArgs e)
@@ -185,13 +201,78 @@ namespace CatEye
 		
 		public override bool ReportMouseButton (int x, int y, int width, int height, uint button_id, bool is_down)
 		{
-			return base.ReportMouseButton (x, y, width, height, button_id, is_down);
+			CrotateStageOperationParameters pm = ((CrotateStageOperationParameters)Parameters);
+
+			if (is_down)
+			{
+				// Checking if the user clicked the center dot
+				Point C = new Point(pm.Center.X, pm.Center.Y);
+				int scr_c_x = (int)(width * C.X);
+				int scr_c_y = (int)(height * C.Y);
+				
+				if (new Gdk.Rectangle(
+					scr_c_x - mDotRadius, 
+					scr_c_y - mDotRadius, 
+					2 * mDotRadius, 
+					2 * mDotRadius).Contains(new Gdk.Point(x, y)))
+				{
+					mDragState = DragState.Center;
+					mDragStartX = x;
+					mDragStartY = y;
+					mCenterDotStartX = scr_c_x;
+					mCenterDotStartY = scr_c_y;
+					return true;
+				}
+				
+				// Checking if the user clicked the "round" dot
+				Gdk.Point scr_rnd = new Gdk.Point(
+					(int)(scr_c_x + (rt_corner_rot.X + rb_corner_rot.X) / 2),
+					(int)(scr_c_y + (rt_corner_rot.Y + rb_corner_rot.Y) / 2));
+				if (new Gdk.Rectangle(
+					scr_rnd.X - mDotRadius, 
+					scr_rnd.Y - mDotRadius, 
+					2 * mDotRadius, 
+					2 * mDotRadius).Contains(new Gdk.Point(x, y)))
+				{
+					mDragState = DragState.Round;
+					mDragStartX = x;
+					mDragStartY = y;
+				}				
+			}
+			else
+			{
+				mDragState = DragState.None;
+			}
+			return false;
 		}
 		
 		public override bool ReportMousePosition (int x, int y, int width, int height)
 		{
-			return base.ReportMousePosition (x, y, width, height);
+			CrotateStageOperationParameters pm = ((CrotateStageOperationParameters)Parameters);
+
+			if (mDragState == DragState.Center)
+			{
+				int new_scr_x = mCenterDotStartX - mDragStartX + x;
+				int new_scr_y = mCenterDotStartY - mDragStartY + y;
+				
+				pm.Center = new Point((double)new_scr_x / width, (double)new_scr_y / height);
+				
+				return true;
+			}
+			else if (mDragState == DragState.Round)
+			{
+				Point scr_C = new Point(width * pm.Center.X, height * pm.Center.Y);
+				Point cur = new Point(x, y);
+				Vector cur_dir = new Vector(scr_C, cur);
+				
+				pm.Angle = 180.0 / Math.PI * Math.Atan2(cur_dir.Y, cur_dir.X);
+				return true;
+			}
+			
+			return false;
 		}
+		
+		CatEye.Core.Point lt_corner_rot, rt_corner_rot, lb_corner_rot, rb_corner_rot;
 		
 		public override void DrawEditor (Gdk.Drawable target, Gdk.Rectangle image_position)
 		{
@@ -206,7 +287,13 @@ namespace CatEye
 			int scr_c_y = image_position.Y + (int)(image_position.Height * C.Y);
 
 			gc.RgbFgColor = new Gdk.Color(255, 0, 0);
-			target.DrawRectangle(gc, false, new Gdk.Rectangle(scr_c_x - 3, scr_c_y - 3, 6, 6));
+			gc.Function = Gdk.Function.Xor;
+			
+			target.DrawRectangle(gc, true, new Gdk.Rectangle(
+				scr_c_x - mDotRadius, 
+				scr_c_y - mDotRadius, 
+				2 * mDotRadius, 
+				2 * mDotRadius));
 			
 			// Calculating new picture's real dimensions
 			int trueWidth = image_position.Width, trueHeight = image_position.Height;
@@ -244,7 +331,7 @@ namespace CatEye
 			CatEye.Core.Point lt_corner = new CatEye.Core.Point(
 				 - trueWidth / 2,
 				 - trueHeight / 2);
-			CatEye.Core.Point lt_corner_rot = CatEye.Core.Point.Rotate(lt_corner, ang, new Point(0, 0)); 
+			lt_corner_rot = CatEye.Core.Point.Rotate(lt_corner, ang, new Point(0, 0)); 
 			Gdk.Point scr_lt = new Gdk.Point(
 				(int)(scr_c_x + lt_corner_rot.X),
 				(int)(scr_c_y + lt_corner_rot.Y));
@@ -253,7 +340,7 @@ namespace CatEye
 			CatEye.Core.Point rt_corner = new CatEye.Core.Point(
 				 + trueWidth / 2,
 				 - trueHeight / 2);
-			CatEye.Core.Point rt_corner_rot = CatEye.Core.Point.Rotate(rt_corner, ang, new Point(0, 0)); 
+			rt_corner_rot = CatEye.Core.Point.Rotate(rt_corner, ang, new Point(0, 0)); 
 			Gdk.Point scr_rt = new Gdk.Point(
 				(int)(scr_c_x + rt_corner_rot.X),
 				(int)(scr_c_y + rt_corner_rot.Y));
@@ -262,7 +349,7 @@ namespace CatEye
 			CatEye.Core.Point rb_corner = new CatEye.Core.Point(
 				 + trueWidth / 2,
 				 + trueHeight / 2);
-			CatEye.Core.Point rb_corner_rot = CatEye.Core.Point.Rotate(rb_corner, ang, new Point(0, 0)); 
+			rb_corner_rot = CatEye.Core.Point.Rotate(rb_corner, ang, new Point(0, 0)); 
 			Gdk.Point scr_rb = new Gdk.Point(
 				(int)(scr_c_x + rb_corner_rot.X),
 				(int)(scr_c_y + rb_corner_rot.Y));
@@ -271,16 +358,30 @@ namespace CatEye
 			CatEye.Core.Point lb_corner = new CatEye.Core.Point(
 				 - trueWidth / 2,
 				 + trueHeight / 2);
-			CatEye.Core.Point lb_corner_rot = CatEye.Core.Point.Rotate(lb_corner, ang, new Point(0, 0)); 
+			lb_corner_rot = CatEye.Core.Point.Rotate(lb_corner, ang, new Point(0, 0)); 
 			Gdk.Point scr_lb = new Gdk.Point(
 				(int)(scr_c_x + lb_corner_rot.X),
 				(int)(scr_c_y + lb_corner_rot.Y));
 
 
-			// Draw frame
+			// Drawing frame
 			target.DrawPolygon(gc, false, new Gdk.Point[] {
 				scr_lt, scr_rt, scr_rb, scr_lb
 			});
+			
+			// Drawing "round" dot.
+			Gdk.Point scr_rnd = new Gdk.Point(
+				(int)(scr_c_x + (rt_corner_rot.X + rb_corner_rot.X) / 2),
+				(int)(scr_c_y + (rt_corner_rot.Y + rb_corner_rot.Y) / 2));
+
+			target.DrawArc(gc, true, 
+				scr_rnd.X - mDotRadius - 1, 
+				scr_rnd.Y - mDotRadius - 1, 
+				2 * mDotRadius + 2, 
+				2 * mDotRadius + 2,
+				0, 64 * 360);
+				
+
 		}
 	}
 }

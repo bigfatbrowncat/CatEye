@@ -50,7 +50,7 @@ namespace CatEye
 		protected Dictionary<StageOperation, StageOperationHolderWidget> _Holders = 
 			new Dictionary<StageOperation, StageOperationHolderWidget>();
 
-		public event EventHandler<EventArgs> ViewedOperationChanged;
+		public event EventHandler<EventArgs> EditingOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public ReadOnlyDictionary<StageOperation, StageOperationHolderWidget> Holders
@@ -241,8 +241,8 @@ namespace CatEye
 
 		protected virtual void OnEditingOperationChanged()
 		{
-			if (ViewedOperationChanged != null)
-				ViewedOperationChanged(this, EventArgs.Empty);
+			if (EditingOperationChanged != null)
+				EditingOperationChanged(this, EventArgs.Empty);
 		}
 		protected virtual void OnOperationFrozen()
 		{
@@ -276,7 +276,7 @@ namespace CatEye
 			sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
 			sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
 			sohw.StageActiveButtonClicked += HandleSohwStageActiveButtonClicked;
-			sohw.ViewButtonClicked += HandleSohwViewButtonClicked;
+			sohw.EditButtonClicked += HandleSohwEditButtonClicked;
 			sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
 			sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
 
@@ -304,7 +304,7 @@ namespace CatEye
 			sohw.UpTitleButtonClicked -= HandleSohwUpTitleButtonClicked;
 			sohw.DownTitleButtonClicked -= HandleSohwDownTitleButtonClicked;
 			sohw.StageActiveButtonClicked -= HandleSohwStageActiveButtonClicked;
-			sohw.ViewButtonClicked -= HandleSohwViewButtonClicked;
+			sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
 			sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
 			sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
 			sohw.Dispose();
@@ -328,7 +328,7 @@ namespace CatEye
 			FrozenAt = sop;
 		}
 
-		void HandleSohwViewButtonClicked (object sender, EventArgs e)
+		void HandleSohwEditButtonClicked (object sender, EventArgs e)
 		{
 			StageOperation sop = StageOperationByHolder(sender as StageOperationHolderWidget);
 			
@@ -389,7 +389,7 @@ namespace CatEye
 		/// Base method should not be called when overridden.
 		/// </summary>
 		/// <returns>
-		/// Should return "true" if it's needed to update the picture.
+		/// Should return "true" if something is changed.
 		/// </returns>
 		public bool ReportEditorMousePosition(int x, int y, int width, int height)
 		{
@@ -419,7 +419,7 @@ namespace CatEye
 		/// <c>true</c> if the button is down now, <c>false</c> if it's up.
 		/// </param>
 		/// <returns>
-		/// Should return "true" if it's needed to update picture and "false" otherwise.
+		/// Should return "true" if something is changed and "false" otherwise.
 		/// </returns>
 		public bool ReportEditorMouseButton(int x, int y, int width, int height, uint button_id, bool is_down)
 		{

@@ -641,6 +641,12 @@ namespace CatEye.Core
                 return q;
         }
 
+		public Vector(Point begin, Point end)
+		{
+			this.m_x = end.X - begin.X;
+			this.m_y = end.Y - begin.Y;
+		}
+		
         public static implicit operator Point(Vector a)
         {
             return new Point(a.m_x, a.m_y);

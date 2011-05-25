@@ -482,21 +482,6 @@ namespace CatEye.Core
 				
 			}
 		}
-		
-		public void ApplyGreenAngle(double RBtoG_angle)
-		{
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				double mu = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + b_chan[i, j] * b_chan[i, j]);
-				double mu_new = mu * Math.Cos(RBtoG_angle) - g_chan[i, j] * Math.Sin(RBtoG_angle);
-				double g_new = g_chan[i, j] * Math.Cos(RBtoG_angle) + mu * Math.Sin(RBtoG_angle);
-				
-				r_chan[i, j] *= (float)(mu_new / mu);
-				b_chan[i, j] *= (float)(mu_new / mu);
-				g_chan[i, j] = (float)g_new;
-			}
-		}
 			
 		public void ApplySaturation(double satur_factor)
 		{

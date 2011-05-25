@@ -5,12 +5,18 @@ using CatEye.Core;
 
 namespace CatEye
 {
+	public delegate bool MousePositionChangedHandler(object sender, int x, int y);
+	public delegate bool MouseButtonStateChangedHandler(object sender, int x, int y, uint button_id, bool is_down);
 
+	
 	[System.ComponentModel.ToolboxItem(true)]
 	public class FloatPixmapViewWidget : DrawingArea
 	{
 		public enum ScaleType { None, Divide, Multiply };
-
+		
+		public event MousePositionChangedHandler MousePositionChanged;
+		public event MouseButtonStateChangedHandler MouseButtonStateChanged;
+		
 		private bool _InstantUpdate = false;
 		private FloatPixmap _HDR;
 		private Pixbuf _RenderedPicture = null;
@@ -20,7 +26,6 @@ namespace CatEye
 		private bool mAutoPan = true;
 		
 		// Panning internals
-		private bool mHDRChangedCenteringNeeded;
 		private bool mPanInProgress = false;
 		private int mPanStartX, mPanStartY, mImgCenterStartX, mImgCenterStartY;
 			
@@ -176,7 +181,7 @@ namespace CatEye
 		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
-			if (base.OnMotionNotifyEvent (evnt))
+			if (MousePositionChanged != null && MousePositionChanged(this, (int)evnt.X, (int)evnt.Y))
 			{
 				return true;
 			}
@@ -219,7 +224,8 @@ namespace CatEye
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			if (base.OnButtonPressEvent (evnt))
+			if (MouseButtonStateChanged != null && 
+				MouseButtonStateChanged(this, (int)evnt.X, (int)evnt.Y, evnt.Button, true))
 			{
 				return true;
 			}
@@ -241,7 +247,8 @@ namespace CatEye
 		
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			if (base.OnButtonReleaseEvent(evnt))
+			if (MouseButtonStateChanged != null && 
+				MouseButtonStateChanged(this, (int)evnt.X, (int)evnt.Y, evnt.Button, false))
 			{
 				return true;
 			}

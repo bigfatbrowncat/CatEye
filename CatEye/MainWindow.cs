@@ -160,7 +160,7 @@ public partial class MainWindow : Gtk.Window
 		stages.OperationRemovedFromStage += delegate {
 			LaunchUpdateTimer();
 		};
-		stages.ViewedOperationChanged += delegate {
+		stages.EditingOperationChanged += delegate {
 			LaunchUpdateTimer();
 		};
 		stages.OperationFrozen += delegate {
@@ -173,55 +173,48 @@ public partial class MainWindow : Gtk.Window
 		
 		// Setting view widget events
 		view_widget.ExposeEvent += DrawCurrentStageOperationEditor;
-		view_widget.ButtonPressEvent += ImageMouseButtonPressed;
-		view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
-		view_widget.MotionNotifyEvent += HandleImageMouseMotion;
+		
+		view_widget.MousePositionChanged += HandleView_widgetMousePositionChanged;
+		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
+		
+		//view_widget.ButtonPressEvent += ImageMouseButtonPressed;
+		//view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
+		//view_widget.MotionNotifyEvent += HandleImageMouseMotion;
 	}
 
-	void ImageMouseButtonPressed (object o, ButtonPressEventArgs args)
+	bool HandleView_widgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
 	{
-		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
-		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
+		int x_rel = x - view_widget.CurrentImagePosition.X;
+		int y_rel = y - view_widget.CurrentImagePosition.Y;
 
-		if (stages.ReportEditorMouseButton(x, 
-									 y, 
+		if (stages.ReportEditorMouseButton(x_rel, 
+									 y_rel, 
 									 view_widget.CurrentImagePosition.Width, 
 									 view_widget.CurrentImagePosition.Height, 
-									 args.Event.Button, true))
+									 button_id, is_down))
 		{
 			view_widget.QueueDraw();
+			return true;
 		}
+		return false;
 	}
 
-	[GLib.ConnectBefore]
-	void ImageMouseButtonReleased (object o, ButtonReleaseEventArgs args)
+	bool HandleView_widgetMousePositionChanged (object sender, int x, int y)
 	{
-		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
-		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
+		int x_rel = x - view_widget.CurrentImagePosition.X;
+		int y_rel = y - view_widget.CurrentImagePosition.Y;
 
-		if (stages.ReportEditorMouseButton(x, 
-									 y, 
-									 view_widget.CurrentImagePosition.Width, 
-									 view_widget.CurrentImagePosition.Height, 
-									 args.Event.Button, false))
-		{
-			view_widget.QueueDraw();
-		}
-	}
-	
-	void HandleImageMouseMotion (object o, MotionNotifyEventArgs args)
-	{
-		int x = (int)args.Event.X - view_widget.CurrentImagePosition.X;
-		int y = (int)args.Event.Y - view_widget.CurrentImagePosition.Y;
-
-		if (stages.ReportEditorMousePosition(x, 
-									 y, 
+		if (stages.ReportEditorMousePosition(x_rel, 
+									 y_rel, 
 									 view_widget.CurrentImagePosition.Width, 
 									 view_widget.CurrentImagePosition.Height))
 		{
 			view_widget.QueueDraw();
+			return true;
 		}
+		return false;
 	}
+
 
 	void DrawCurrentStageOperationEditor (object o, ExposeEventArgs args)
 	{
@@ -295,7 +288,9 @@ public partial class MainWindow : Gtk.Window
 		{
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 5)
 			{
-				view_widget.UpdatePicture();
+				if (view_widget.HDR != hdr) view_widget.HDR = hdr;
+				else
+					view_widget.UpdatePicture();
 				//view_widget.QueueDraw();
 				lastupdate = DateTime.Now;
 			}
@@ -494,16 +489,14 @@ public partial class MainWindow : Gtk.Window
 				else
 					hdr = new FloatPixmap(frozen);
 				
-				view_widget.HDR = hdr;
-				
 				if (hdr != null)
 				{
 					if (stages.ApplyOperationsAfterFrozenLine(hdr))
 					{
 						progressbar.Text = "Operation completed";
 						progressbar.Fraction = 0;
+						view_widget.HDR = hdr;
 						view_widget.UpdatePicture();
-
 					}
 					else
 					{
