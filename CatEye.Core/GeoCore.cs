@@ -78,6 +78,11 @@ namespace CatEye.Core
 			}
 		}
 		
+		public static Point Move(Point p, Vector v)
+		{
+			return new Point(p._X + v.X, p._Y + v.Y);
+		}
+		
 	}
 	
 	public class Segment

@@ -9,11 +9,11 @@ namespace CatEye
 		Gtk.ListStore ls;
 		private int mDotRadius = 3;
 		
-		private enum DragState { None, Center, Round };
+		private enum DragState { None, Center, Round, Corner };
 		private DragState mDragState = DragState.None;
 		private int mDragStartX, mDragStartY;
 		private int mCenterDotStartX, mCenterDotStartY;
-		
+		private double mCropWidthStart, mCropHeightStart;
 		
 		public CrotateStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
@@ -237,7 +237,27 @@ namespace CatEye
 					mDragState = DragState.Round;
 					mDragStartX = x;
 					mDragStartY = y;
-				}				
+					return true;
+				}
+				
+				// Checking if the user clicked the rb corner dot
+				Gdk.Point scr_rb = new Gdk.Point(
+					(int)(scr_c_x + rb_corner_rot.X),
+					(int)(scr_c_y + rb_corner_rot.Y));
+				if (new Gdk.Rectangle(
+					scr_rb.X - mDotRadius, 
+					scr_rb.Y - mDotRadius, 
+					2 * mDotRadius, 
+					2 * mDotRadius).Contains(new Gdk.Point(x, y)))
+				{
+					mDragState = DragState.Corner;
+					mDragStartX = x;
+					mDragStartY = y;
+					mCropWidthStart = pm.CropWidth;
+					mCropHeightStart = pm.CropHeight;
+					return true;
+				}
+				
 			}
 			else
 			{
@@ -266,6 +286,45 @@ namespace CatEye
 				Vector cur_dir = new Vector(scr_C, cur);
 				
 				pm.Angle = 180.0 / Math.PI * Math.Atan2(cur_dir.Y, cur_dir.X);
+				return true;
+			}
+			else if (mDragState == DragState.Corner)
+			{
+				Point scr_C = new Point(width * pm.Center.X, height * pm.Center.Y);
+				Point scr_cur = new Point(x, y);
+				Point scr_rnd = new Point(
+					(scr_C.X + (rt_corner_rot.X + rb_corner_rot.X) / 2),
+					(scr_C.Y + (rt_corner_rot.Y + rb_corner_rot.Y) / 2));
+				Point scr_start = new Point(mDragStartX, mDragStartY);
+				
+				// Rotated orts
+				Vector v_w = new Vector(scr_C, scr_rnd);
+				v_w /= v_w.Length;
+				Vector v_h = new Vector(v_w.Y, -v_w.X);
+				
+				// Current diameter
+				Vector D = new Vector(scr_C, scr_cur);
+				double Dw = D * v_w;
+				double Dh = D * v_h;
+				
+				// Starting diameter
+				Vector D0 = new Vector(scr_C, scr_start);
+				double D0w = D0 * v_w;
+				double D0h = D0 * v_h;
+				
+				switch (pm.Mode)
+				{
+				case CatEye.Core.CrotateStageOperation.Mode.Disproportional:
+					pm.CropWidth = mCropWidthStart * Dw / D0w;
+					pm.CropHeight = mCropHeightStart * Dh / D0h;
+					break;
+				case CatEye.Core.CrotateStageOperation.Mode.ProportionalWidthFixed:
+					pm.CropWidth = mCropWidthStart * Dw / D0w;
+					break;
+				case CatEye.Core.CrotateStageOperation.Mode.ProportionalHeightFixed:
+					pm.CropHeight = mCropHeightStart * Dh / D0h;
+					break;
+				}
 				return true;
 			}
 			
@@ -325,7 +384,7 @@ namespace CatEye
 				break;
 			}
 			
-			// Calculating new corners positions
+			// Calculating new corners positions and "round" dot position
 			double ang = pm.Angle / 180 * Math.PI;
 			
 			CatEye.Core.Point lt_corner = new CatEye.Core.Point(
@@ -363,17 +422,17 @@ namespace CatEye
 				(int)(scr_c_x + lb_corner_rot.X),
 				(int)(scr_c_y + lb_corner_rot.Y));
 
+			Gdk.Point scr_rnd = new Gdk.Point(
+				(int)(scr_c_x + (rt_corner_rot.X + rb_corner_rot.X) / 2),
+				(int)(scr_c_y + (rt_corner_rot.Y + rb_corner_rot.Y) / 2));
 
+			
 			// Drawing frame
 			target.DrawPolygon(gc, false, new Gdk.Point[] {
 				scr_lt, scr_rt, scr_rb, scr_lb
 			});
 			
 			// Drawing "round" dot.
-			Gdk.Point scr_rnd = new Gdk.Point(
-				(int)(scr_c_x + (rt_corner_rot.X + rb_corner_rot.X) / 2),
-				(int)(scr_c_y + (rt_corner_rot.Y + rb_corner_rot.Y) / 2));
-
 			target.DrawArc(gc, true, 
 				scr_rnd.X - mDotRadius - 1, 
 				scr_rnd.Y - mDotRadius - 1, 
@@ -381,7 +440,14 @@ namespace CatEye
 				2 * mDotRadius + 2,
 				0, 64 * 360);
 				
-
+			// Drawing rb corner dot
+			target.DrawArc(gc, true, 
+				scr_rb.X - mDotRadius, 
+				scr_rb.Y - mDotRadius, 
+				2 * mDotRadius, 
+				2 * mDotRadius,
+				0, 64 * 360);
+			
 		}
 	}
 }

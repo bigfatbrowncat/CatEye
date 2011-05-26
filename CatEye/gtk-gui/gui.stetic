@@ -1836,8 +1836,8 @@
           <widget class="Gtk.SpinButton" id="c_x_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">0.01</property>
-            <property name="Upper">1</property>
+            <property name="Lower">-2</property>
+            <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
@@ -1866,8 +1866,8 @@
           <widget class="Gtk.SpinButton" id="c_y_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">0.01</property>
-            <property name="Upper">1</property>
+            <property name="Lower">-2</property>
+            <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
@@ -1897,7 +1897,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
-            <property name="Upper">1</property>
+            <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>
@@ -1926,7 +1926,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
-            <property name="Upper">1</property>
+            <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">0.1</property>

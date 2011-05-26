@@ -58,7 +58,7 @@ namespace CatEye.Core
 			
 			Console.WriteLine(pm.Mode.ToString());
 			
-			hdp.Crotate(pm.Angle, c_pix, trueWidth, trueHeight, 2,
+			hdp.Crotate(pm.Angle, c_pix, trueWidth, trueHeight, 3,
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

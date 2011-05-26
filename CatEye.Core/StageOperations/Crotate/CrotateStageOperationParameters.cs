@@ -71,6 +71,7 @@ namespace CatEye.Core
 			set
 			{
 				mCropWidth = value;
+				if (mCropWidth < 0.01) mCropWidth = 0.01;
 				OnChanged();
 			}
 		}
@@ -81,6 +82,7 @@ namespace CatEye.Core
 			set
 			{
 				mCropHeight = value;
+				if (mCropHeight < 0.01) mCropHeight = 0.01;
 				OnChanged();
 			}
 		}
