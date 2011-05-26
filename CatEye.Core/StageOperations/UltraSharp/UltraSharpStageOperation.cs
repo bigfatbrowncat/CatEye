@@ -29,9 +29,11 @@ namespace CatEye.Core
 			
 			FloatPixmap.ISharpeningSamplingMethod sampler = new FloatPixmap.MonteCarloSharpeningSamplingMethod(points, new Random());
 			
-			hdp.SharpenLight(pm.Radius, power, pm.LimitUp, pm.LimitDown, sampler, delegate (double progress) {
-				return OnReportProgress(progress);
-			});
+			hdp.SharpenLight(pm.Radius, power, pm.LimitUp, pm.LimitDown, sampler, 
+				delegate (double progress) {
+					return OnReportProgress(progress);
+				}
+			);
 			
 			base.OnDo (hdp);
 		}

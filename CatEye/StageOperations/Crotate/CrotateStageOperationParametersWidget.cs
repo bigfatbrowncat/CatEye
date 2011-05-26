@@ -85,18 +85,24 @@ namespace CatEye
 
 		protected void OnCropWSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).CropWidth = crop_w_spinbutton.Value;
-			EndChangingParameters();
-			OnUserModified();
+			if (mDragState != DragState.Corner)
+			{
+				StartChangingParameters();
+				((CrotateStageOperationParameters)Parameters).CropWidth = crop_w_spinbutton.Value;
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnCropHSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).CropHeight = crop_h_spinbutton.Value;
-			EndChangingParameters();
-			OnUserModified();			
+			if (mDragState != DragState.Corner)
+			{
+				StartChangingParameters();
+				((CrotateStageOperationParameters)Parameters).CropHeight = crop_h_spinbutton.Value;
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnAspectComboboxChanged (object sender, System.EventArgs e)
@@ -261,7 +267,11 @@ namespace CatEye
 			}
 			else
 			{
-				mDragState = DragState.None;
+				if (mDragState != DragState.None)
+				{
+					mDragState = DragState.None;
+					OnUserModified();
+				}
 			}
 			return false;
 		}
