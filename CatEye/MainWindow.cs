@@ -52,7 +52,7 @@ public partial class MainWindow : Gtk.Window
 					loadRawAction.Sensitive = true;
 					loadStageAction.Sensitive = true;
 					saveStageAsAction.Sensitive = true;
-					saveImageAsAction.Sensitive = true;
+					renderToAction.Sensitive = true;
 					cancel_button.Visible = false;
 				}
 				else if (value == MainWindow.UIState.Loading)
@@ -60,7 +60,7 @@ public partial class MainWindow : Gtk.Window
 					loadRawAction.Sensitive = false;
 					loadStageAction.Sensitive = false;
 					saveStageAsAction.Sensitive = false;
-					saveImageAsAction.Sensitive = false;
+					renderToAction.Sensitive = false;
 					cancel_button.Visible = true;
 					cancel_button.Sensitive = true;
 				}
@@ -69,7 +69,7 @@ public partial class MainWindow : Gtk.Window
 					loadRawAction.Sensitive = true;
 					loadStageAction.Sensitive = true;
 					saveStageAsAction.Sensitive = true;
-					saveImageAsAction.Sensitive = false;
+					renderToAction.Sensitive = true;
 					cancel_button.Visible = false;
 				}
 			}
@@ -314,37 +314,6 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnSaveAsActionActivated (object sender, System.EventArgs e)
 	{
-		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Save photo", 
-		                                                      this, 
-		                                                      FileChooserAction.Save,
-		                                                      "Cancel", ResponseType.Cancel,
-		                                                      "Save", ResponseType.Accept);
-		
-		FileFilter[] ffs = new FileFilter[3];
-		ffs[0] = new FileFilter();
-		ffs[0].AddPattern("*.jpg");
-		ffs[0].Name = "JPEG image";
-		ffs[1] = new FileFilter();
-		ffs[1].AddPattern("*.png");
-		ffs[1].Name = "PNG image";
-		ffs[2] = new FileFilter();
-		ffs[2].AddPattern("*.bmp");
-		ffs[2].Name = "Plain 24 bpp bitmap (BMP)";
-
-		fcd.AddFilter(ffs[0]);
-		fcd.AddFilter(ffs[1]);
-		fcd.AddFilter(ffs[2]);
-		
-		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
-		{
-			if (fcd.Filter == ffs[0])
-				view_widget.SavePicture(fcd.Filename, "jpeg");
-			if (fcd.Filter == ffs[1])
-				view_widget.SavePicture(fcd.Filename, "png");
-			if (fcd.Filter == ffs[2])
-				view_widget.SavePicture(fcd.Filename, "bmp");
-		}
-		fcd.Destroy();
 	}
 	
 	private void ClearHDR()
@@ -822,5 +791,84 @@ public partial class MainWindow : Gtk.Window
 	protected void OnStageVboxSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 	{
 		QueueDraw();
+	}
+
+	protected void OnRenderToActionActivated (object sender, System.EventArgs e)
+	{
+		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Render image to", 
+		                                                      this, 
+		                                                      FileChooserAction.Save,
+		                                                      "Cancel", ResponseType.Cancel,
+		                                                      "Render", ResponseType.Accept);
+		
+		FileFilter[] ffs = new FileFilter[3];
+		ffs[0] = new FileFilter();
+		ffs[0].AddPattern("*.jpg");
+		ffs[0].Name = "JPEG image";
+		ffs[1] = new FileFilter();
+		ffs[1].AddPattern("*.png");
+		ffs[1].Name = "PNG image";
+		ffs[2] = new FileFilter();
+		ffs[2].AddPattern("*.bmp");
+		ffs[2].Name = "Plain 24 bpp bitmap (BMP)";
+
+		fcd.AddFilter(ffs[0]);
+		fcd.AddFilter(ffs[1]);
+		fcd.AddFilter(ffs[2]);
+		
+		string type = "", filename = "";
+		bool accept = false;
+		
+		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
+		{
+			if (fcd.Filter == ffs[0])
+				type = "jpeg";
+			if (fcd.Filter == ffs[1])
+				type = "png";
+			if (fcd.Filter == ffs[2])
+				type = "bmp";
+			accept = true;
+			filename = fcd.Filename;
+		}
+		fcd.Destroy();
+
+		if (accept)
+		{
+			// Rendering
+			RenderingProgressWindow rpw = new RenderingProgressWindow();
+			rpw.ImageName = this.FileName;
+			rpw.Show();
+			
+			FloatPixmap renderDest = FloatPixmap.FromPPM(ppl, 
+				delegate (double progress) {
+					return rpw.SetStatusAndProgress(progress, "Loading source image...");
+				}
+			);
+			
+			// Rendering			
+			stages.ApplyAllOperations(renderDest);
+			
+			// Drawing to pixbuf and saving to file
+			Gdk.Pixbuf rp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, renderDest.width, renderDest.height);
+
+			renderDest.DrawToPixbuf(rp, 
+				delegate (double progress) {
+					rpw.SetStatusAndProgress(progress, "Saving image...");
+					while (Application.EventsPending()) Application.RunIteration();
+					return true;
+				}
+			);
+		
+			// TODO Can't be used currently cause of buggy Gtk#
+			//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
+	
+			rp.Save(filename, type);
+				
+			rpw.Hide();
+			rpw.Dispose();
+			
+			if (rp != null)
+				rp.Dispose();
+		}
 	}
 }

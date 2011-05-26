@@ -96,6 +96,8 @@
     <Compile Include="gtk-gui\CatEye.CrotateStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Scale\LimitSizeStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.LimitSizeStageOperationParametersWidget.cs" />
+    <Compile Include="RenderingProgressWindow.cs" />
+    <Compile Include="gtk-gui\CatEye.RenderingProgressWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

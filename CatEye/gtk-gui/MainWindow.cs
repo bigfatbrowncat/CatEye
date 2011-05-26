@@ -8,7 +8,7 @@ public partial class MainWindow
 	private global::Gtk.Action FileAction;
 	private global::Gtk.Action CloseAction;
 	private global::Gtk.Action quitAction;
-	private global::Gtk.Action saveImageAsAction;
+	private global::Gtk.Action renderToAction;
 	private global::Gtk.Action loadRawAction;
 	private global::Gtk.Action HelpAction;
 	private global::Gtk.Action aboutAction;
@@ -53,9 +53,9 @@ public partial class MainWindow
 		this.quitAction = new global::Gtk.Action ("quitAction", global::Mono.Unix.Catalog.GetString ("Quit"), null, "gtk-quit");
 		this.quitAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Quit");
 		w1.Add (this.quitAction, "<Control>q");
-		this.saveImageAsAction = new global::Gtk.Action ("saveImageAsAction", global::Mono.Unix.Catalog.GetString ("Save image as..."), null, "gtk-save-as");
-		this.saveImageAsAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Save as...");
-		w1.Add (this.saveImageAsAction, "<Control>s");
+		this.renderToAction = new global::Gtk.Action ("renderToAction", global::Mono.Unix.Catalog.GetString ("Render to..."), null, "gtk-execute");
+		this.renderToAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Render to...");
+		w1.Add (this.renderToAction, "<Control>r");
 		this.loadRawAction = new global::Gtk.Action ("loadRawAction", global::Mono.Unix.Catalog.GetString ("Load raw image..."), null, "gtk-open");
 		this.loadRawAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Import from DCRaw...");
 		w1.Add (this.loadRawAction, "<Control>o");
@@ -97,7 +97,7 @@ public partial class MainWindow
 		this.vbox2 = new global::Gtk.VBox ();
 		this.vbox2.Name = "vbox2";
 		// Container child vbox2.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadStageAction' action='loadStageAction'/><menuitem name='saveStageAsAction' action='saveStageAsAction'/><separator/><menuitem name='loadRawAction' action='loadRawAction'/><menuitem name='saveImageAsAction' action='saveImageAsAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='UpdateDuringProcessingAction' action='UpdateDuringProcessingAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadStageAction' action='loadStageAction'/><menuitem name='saveStageAsAction' action='saveStageAsAction'/><separator/><menuitem name='loadRawAction' action='loadRawAction'/><menuitem name='renderToAction' action='renderToAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='UpdateDuringProcessingAction' action='UpdateDuringProcessingAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.main_menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/main_menubar")));
 		this.main_menubar.Name = "main_menubar";
 		this.vbox2.Add (this.main_menubar);
@@ -246,7 +246,7 @@ public partial class MainWindow
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.quitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
-		this.saveImageAsAction.Activated += new global::System.EventHandler (this.OnSaveAsActionActivated);
+		this.renderToAction.Activated += new global::System.EventHandler (this.OnRenderToActionActivated);
 		this.loadRawAction.Activated += new global::System.EventHandler (this.OnImportFromDCRawActionActivated);
 		this.aboutAction.Activated += new global::System.EventHandler (this.OnAboutActionActivated);
 		this.UpdateDuringProcessingAction.Toggled += new global::System.EventHandler (this.OnUpdateDuringProcessingActionToggled);

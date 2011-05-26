@@ -73,7 +73,8 @@ namespace CatEye.Core
 			FloatPixmap fpm = hdp;
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
-				_StageQueue[j].OnDo(hdp);
+				if (_StageQueue[j].Parameters.Active)
+					_StageQueue[j].OnDo(hdp);
 			}
 		}
 
