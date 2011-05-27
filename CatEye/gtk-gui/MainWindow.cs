@@ -19,6 +19,9 @@ public partial class MainWindow
 	private global::Gtk.Action saveStageAction;
 	private global::Gtk.Action saveStageAsAction;
 	private global::Gtk.Action qweAction;
+	private global::Gtk.Action zoomInAction;
+	private global::Gtk.Action zoomOutAction;
+	private global::Gtk.Action zoom100Action;
 	private global::Gtk.VBox vbox2;
 	private global::Gtk.MenuBar main_menubar;
 	private global::Gtk.VBox vbox1;
@@ -32,7 +35,15 @@ public partial class MainWindow
 	private global::Gtk.HBox status_bar_hbox;
 	private global::Gtk.ProgressBar progressbar;
 	private global::Gtk.Button cancel_button;
+	private global::Gtk.VBox vbox3;
 	private global::CatEye.FloatPixmapViewWidget view_widget;
+	private global::Gtk.HBox hbox1;
+	private global::Gtk.Label status_label;
+	private global::Gtk.Button zoomOut_button;
+	private global::Gtk.Label zoom_label;
+	private global::Gtk.HScale zoom_hscale;
+	private global::Gtk.Button zoomIN_button;
+	private global::Gtk.Button zoom100_button;
 
 	protected virtual void Build ()
 	{
@@ -87,6 +98,12 @@ public partial class MainWindow
 		this.qweAction = new global::Gtk.Action ("qweAction", global::Mono.Unix.Catalog.GetString ("qwe"), null, null);
 		this.qweAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("qwe");
 		w1.Add (this.qweAction, null);
+		this.zoomInAction = new global::Gtk.Action ("zoomInAction", null, null, "gtk-zoom-in");
+		w1.Add (this.zoomInAction, null);
+		this.zoomOutAction = new global::Gtk.Action ("zoomOutAction", null, null, "gtk-zoom-out");
+		w1.Add (this.zoomOutAction, null);
+		this.zoom100Action = new global::Gtk.Action ("zoom100Action", null, null, "gtk-zoom-100");
+		w1.Add (this.zoom100Action, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -224,24 +241,152 @@ public partial class MainWindow
 		w29.Resize = false;
 		w29.Shrink = false;
 		// Container child hpaned1.Gtk.Paned+PanedChild
+		this.vbox3 = new global::Gtk.VBox ();
+		this.vbox3.Name = "vbox3";
+		this.vbox3.Spacing = 2;
+		// Container child vbox3.Gtk.Box+BoxChild
 		this.view_widget = new global::CatEye.FloatPixmapViewWidget ();
 		this.view_widget.Events = ((global::Gdk.EventMask)(1022));
 		this.view_widget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 		this.view_widget.Name = "view_widget";
 		this.view_widget.InstantUpdate = false;
-		this.hpaned1.Add (this.view_widget);
-		this.vbox1.Add (this.hpaned1);
-		global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+		this.vbox3.Add (this.view_widget);
+		global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.view_widget]));
+		w30.Position = 1;
+		// Container child vbox3.Gtk.Box+BoxChild
+		this.hbox1 = new global::Gtk.HBox ();
+		this.hbox1.Name = "hbox1";
+		this.hbox1.Spacing = 2;
+		this.hbox1.BorderWidth = ((uint)(2));
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.status_label = new global::Gtk.Label ();
+		this.status_label.Name = "status_label";
+		this.status_label.Xalign = 0F;
+		this.status_label.LabelProp = global::Mono.Unix.Catalog.GetString ("Any parameter could be changed <b>during</b> image processing. You are welcome!");
+		this.status_label.UseMarkup = true;
+		this.status_label.Ellipsize = ((global::Pango.EllipsizeMode)(3));
+		this.hbox1.Add (this.status_label);
+		global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.status_label]));
 		w31.Position = 0;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.zoomOut_button = new global::Gtk.Button ();
+		this.zoomOut_button.CanFocus = true;
+		this.zoomOut_button.Name = "zoomOut_button";
+		this.zoomOut_button.UseUnderline = true;
+		this.zoomOut_button.Relief = ((global::Gtk.ReliefStyle)(2));
+		// Container child zoomOut_button.Gtk.Container+ContainerChild
+		global::Gtk.Alignment w32 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+		// Container child GtkAlignment.Gtk.Container+ContainerChild
+		global::Gtk.HBox w33 = new global::Gtk.HBox ();
+		w33.Spacing = 2;
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Image w34 = new global::Gtk.Image ();
+		w34.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-out", global::Gtk.IconSize.Menu);
+		w33.Add (w34);
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Label w36 = new global::Gtk.Label ();
+		w33.Add (w36);
+		w32.Add (w33);
+		this.zoomOut_button.Add (w32);
+		this.hbox1.Add (this.zoomOut_button);
+		global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoomOut_button]));
+		w40.Position = 1;
+		w40.Expand = false;
+		w40.Fill = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.zoom_label = new global::Gtk.Label ();
+		this.zoom_label.Name = "zoom_label";
+		this.zoom_label.LabelProp = global::Mono.Unix.Catalog.GetString ("100%");
+		this.hbox1.Add (this.zoom_label);
+		global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoom_label]));
+		w41.Position = 2;
+		w41.Expand = false;
+		w41.Fill = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.zoom_hscale = new global::Gtk.HScale (null);
+		this.zoom_hscale.WidthRequest = 70;
+		this.zoom_hscale.CanFocus = true;
+		this.zoom_hscale.Name = "zoom_hscale";
+		this.zoom_hscale.Adjustment.Lower = 1;
+		this.zoom_hscale.Adjustment.Upper = 10;
+		this.zoom_hscale.Adjustment.PageIncrement = 1;
+		this.zoom_hscale.Adjustment.StepIncrement = 1;
+		this.zoom_hscale.Adjustment.Value = 10;
+		this.zoom_hscale.DrawValue = false;
+		this.zoom_hscale.Digits = 0;
+		this.zoom_hscale.ValuePos = ((global::Gtk.PositionType)(0));
+		this.hbox1.Add (this.zoom_hscale);
+		global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoom_hscale]));
+		w42.Position = 3;
+		w42.Expand = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.zoomIN_button = new global::Gtk.Button ();
+		this.zoomIN_button.CanFocus = true;
+		this.zoomIN_button.Name = "zoomIN_button";
+		this.zoomIN_button.UseUnderline = true;
+		this.zoomIN_button.Relief = ((global::Gtk.ReliefStyle)(2));
+		// Container child zoomIN_button.Gtk.Container+ContainerChild
+		global::Gtk.Alignment w43 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+		// Container child GtkAlignment.Gtk.Container+ContainerChild
+		global::Gtk.HBox w44 = new global::Gtk.HBox ();
+		w44.Spacing = 2;
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Image w45 = new global::Gtk.Image ();
+		w45.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-in", global::Gtk.IconSize.Menu);
+		w44.Add (w45);
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Label w47 = new global::Gtk.Label ();
+		w44.Add (w47);
+		w43.Add (w44);
+		this.zoomIN_button.Add (w43);
+		this.hbox1.Add (this.zoomIN_button);
+		global::Gtk.Box.BoxChild w51 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoomIN_button]));
+		w51.Position = 4;
+		w51.Expand = false;
+		w51.Fill = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.zoom100_button = new global::Gtk.Button ();
+		this.zoom100_button.CanFocus = true;
+		this.zoom100_button.Name = "zoom100_button";
+		this.zoom100_button.UseUnderline = true;
+		this.zoom100_button.Relief = ((global::Gtk.ReliefStyle)(2));
+		// Container child zoom100_button.Gtk.Container+ContainerChild
+		global::Gtk.Alignment w52 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+		// Container child GtkAlignment.Gtk.Container+ContainerChild
+		global::Gtk.HBox w53 = new global::Gtk.HBox ();
+		w53.Spacing = 2;
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Image w54 = new global::Gtk.Image ();
+		w54.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-100", global::Gtk.IconSize.Menu);
+		w53.Add (w54);
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Label w56 = new global::Gtk.Label ();
+		w53.Add (w56);
+		w52.Add (w53);
+		this.zoom100_button.Add (w52);
+		this.hbox1.Add (this.zoom100_button);
+		global::Gtk.Box.BoxChild w60 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoom100_button]));
+		w60.Position = 5;
+		w60.Expand = false;
+		w60.Fill = false;
+		this.vbox3.Add (this.hbox1);
+		global::Gtk.Box.BoxChild w61 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
+		w61.Position = 2;
+		w61.Expand = false;
+		w61.Fill = false;
+		this.hpaned1.Add (this.vbox3);
+		this.vbox1.Add (this.hpaned1);
+		global::Gtk.Box.BoxChild w63 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+		w63.Position = 0;
 		this.vbox2.Add (this.vbox1);
-		global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
-		w32.Position = 1;
+		global::Gtk.Box.BoxChild w64 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox1]));
+		w64.Position = 1;
 		this.Add (this.vbox2);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
-		this.DefaultWidth = 879;
-		this.DefaultHeight = 500;
+		this.DefaultWidth = 654;
+		this.DefaultHeight = 521;
 		this.cancel_button.Hide ();
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
