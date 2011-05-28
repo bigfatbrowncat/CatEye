@@ -49,6 +49,8 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\CatEye.StageOperationTitleWidget.cs" />
     <Compile Include="ToneSelectorWidget.cs" />
+    <Compile Include="ZoomWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.Widgets.ZoomWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

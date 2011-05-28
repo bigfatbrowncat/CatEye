@@ -6,10 +6,10 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../CatEye.Widgets/bin/Release/CatEye.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../CatEye.Widgets/bin/Debug/CatEye.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="654 521">
+  <widget class="Gtk.Window" id="MainWindow" design-size="1021 668">
     <action-group name="Default">
       <action id="ScaledRangeAction">
         <property name="Type">Radio</property>
@@ -172,11 +172,12 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Position">237</property>
+                <property name="BorderWidth">1</property>
                 <child>
                   <widget class="Gtk.VBox" id="left_vbox">
                     <property name="MemberName" />
                     <property name="Spacing">4</property>
-                    <property name="BorderWidth">4</property>
+                    <property name="BorderWidth">2</property>
                     <child>
                       <widget class="Gtk.HBox" id="stageOperationAdding_hbox">
                         <property name="MemberName" />
@@ -252,46 +253,6 @@
                         <property name="AutoSize">False</property>
                       </packing>
                     </child>
-                    <child>
-                      <widget class="Gtk.HBox" id="status_bar_hbox">
-                        <property name="MemberName" />
-                        <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.ProgressBar" id="progressbar">
-                            <property name="MemberName" />
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Button" id="cancel_button">
-                            <property name="MemberName" />
-                            <property name="Visible">False</property>
-                            <property name="Sensitive">False</property>
-                            <property name="CanFocus">True</property>
-                            <property name="Type">TextAndIcon</property>
-                            <property name="Icon">stock:gtk-cancel Menu</property>
-                            <property name="Label" translatable="yes">_Cancel</property>
-                            <property name="UseUnderline">True</property>
-                            <signal name="Clicked" handler="OnCancelButtonClicked" />
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">True</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
                   </widget>
                   <packing>
                     <property name="Resize">False</property>
@@ -301,7 +262,6 @@
                 <child>
                   <widget class="Gtk.VBox" id="vbox3">
                     <property name="MemberName" />
-                    <property name="Spacing">2</property>
                     <child>
                       <placeholder />
                     </child>
@@ -320,13 +280,13 @@
                     <child>
                       <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
-                        <property name="Spacing">2</property>
+                        <property name="Spacing">6</property>
                         <property name="BorderWidth">2</property>
                         <child>
                           <widget class="Gtk.Label" id="status_label">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">Any parameter could be changed &lt;b&gt;during&lt;/b&gt; image processing. You are welcome!</property>
+                            <property name="LabelProp" translatable="yes">Parameters could be changed &lt;b&gt;during&lt;/b&gt; processing. You are welcome!</property>
                             <property name="UseMarkup">True</property>
                             <property name="Ellipsize">End</property>
                           </widget>
@@ -336,86 +296,45 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="zoomOut_button">
+                          <widget class="Gtk.ProgressBar" id="progressbar">
                             <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Type">TextAndIcon</property>
-                            <property name="Icon">stock:gtk-zoom-out Menu</property>
-                            <property name="Label" translatable="yes" />
-                            <property name="UseUnderline">True</property>
-                            <property name="Relief">None</property>
+                            <property name="Visible">False</property>
                           </widget>
                           <packing>
                             <property name="Position">1</property>
-                            <property name="AutoSize">True</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="zoom_label">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">100%</property>
-                          </widget>
-                          <packing>
-                            <property name="Position">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.HScale" id="zoom_hscale">
-                            <property name="MemberName" />
-                            <property name="WidthRequest">70</property>
-                            <property name="CanFocus">True</property>
-                            <property name="Lower">1</property>
-                            <property name="Upper">10</property>
-                            <property name="PageIncrement">1</property>
-                            <property name="StepIncrement">1</property>
-                            <property name="Value">10</property>
-                            <property name="DrawValue">False</property>
-                            <property name="Digits">0</property>
-                            <property name="ValuePos">Left</property>
-                          </widget>
-                          <packing>
-                            <property name="Position">3</property>
                             <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="zoomIN_button">
+                          <widget class="Gtk.Button" id="cancel_button">
                             <property name="MemberName" />
+                            <property name="Visible">False</property>
+                            <property name="Sensitive">False</property>
                             <property name="CanFocus">True</property>
                             <property name="Type">TextAndIcon</property>
-                            <property name="Icon">stock:gtk-zoom-in Menu</property>
-                            <property name="Label" translatable="yes" />
+                            <property name="Icon">stock:gtk-cancel Menu</property>
+                            <property name="Label" translatable="yes">_Cancel</property>
                             <property name="UseUnderline">True</property>
-                            <property name="Relief">None</property>
+                            <signal name="Clicked" handler="OnCancelButtonClicked" />
                           </widget>
                           <packing>
-                            <property name="Position">4</property>
-                            <property name="AutoSize">True</property>
+                            <property name="Position">2</property>
+                            <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="zoom100_button">
+                          <widget class="CatEye.Widgets.ZoomWidget" id="zoomwidget1">
                             <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Type">TextAndIcon</property>
-                            <property name="Icon">stock:gtk-zoom-100 Menu</property>
-                            <property name="Label" translatable="yes" />
-                            <property name="UseUnderline">True</property>
-                            <property name="Relief">None</property>
+                            <property name="Events">ButtonPressMask</property>
+                            <property name="Divider">0</property>
                           </widget>
                           <packing>
-                            <property name="Position">5</property>
-                            <property name="AutoSize">True</property>
+                            <property name="Position">3</property>
+                            <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
-                            <property name="Fill">False</property>
                           </packing>
                         </child>
                       </widget>
@@ -1236,6 +1155,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Sharp</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">False</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
