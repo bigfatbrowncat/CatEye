@@ -42,7 +42,6 @@ namespace CatEye
 			this.sharp_radiobutton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Sharp"));
 			this.sharp_radiobutton.CanFocus = true;
 			this.sharp_radiobutton.Name = "sharp_radiobutton";
-			this.sharp_radiobutton.Active = true;
 			this.sharp_radiobutton.DrawIndicator = false;
 			this.sharp_radiobutton.UseUnderline = true;
 			this.sharp_radiobutton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -221,7 +220,7 @@ namespace CatEye
 			this.radius_hscale.CanFocus = true;
 			this.radius_hscale.Name = "radius_hscale";
 			this.radius_hscale.Adjustment.Lower = 0.001;
-			this.radius_hscale.Adjustment.Upper = 1;
+			this.radius_hscale.Adjustment.Upper = 0.5;
 			this.radius_hscale.Adjustment.PageIncrement = 0.01;
 			this.radius_hscale.Adjustment.StepIncrement = 0.001;
 			this.radius_hscale.Adjustment.Value = 0.001;

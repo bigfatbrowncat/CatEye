@@ -1459,7 +1459,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Lower">0.001</property>
-            <property name="Upper">1</property>
+            <property name="Upper">0.5</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.001</property>
             <property name="Value">0.001</property>

@@ -390,7 +390,7 @@ namespace CatEye.Core
 							for (int k = 0; k < points; k++)
 							{
 								double phi = rnd.NextDouble() * 2 * Math.PI;
-								double rad = rnd.NextDouble() * radius; //-radius / 3 * Math.Log(rnd.NextDouble() + Math.Exp(-3));
+								double rad = -radius / 3 * Math.Log(rnd.NextDouble() + Math.Exp(-3));
 							
 								int u = i + (int)(rad * Math.Cos(phi));
 								int v = j + (int)(rad * Math.Sin(phi));

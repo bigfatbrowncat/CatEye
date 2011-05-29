@@ -463,40 +463,49 @@ public partial class MainWindow : Gtk.Window
 		{
 			UIState curstate = TheUIState;
 			TheUIState = MainWindow.UIState.Processing;
-			
-			if (ppl != null)
+
+			try
 			{
-				if (frozen == null)
+				if (ppl != null)
 				{
-					hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
-						return ImportRawAndLoadingReporter(progress, "Loading source image...");
-					});
+					if (frozen == null)
+					{
+						hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
+							return ImportRawAndLoadingReporter(progress, "Loading source image...");
+						});
+						
+						if (hdr != null)
+						{
+							if (zoomwidget1.Divider != 1)
+							{
+								hdr.Downscale(zoomwidget1.Divider, 
+									delegate (double progress) {
+										return ImportRawAndLoadingReporter(progress, "Downscaling...");
+									}
+								);
+							}
+							view_widget.HDR = hdr;
+							view_widget.UpdatePicture();
+						}
+					}
+					else
+						hdr = new FloatPixmap(frozen);
 					
 					if (hdr != null)
 					{
-						if (zoomwidget1.Divider != 1)
+						if (stages.ApplyOperationsAfterFrozenLine(hdr))
 						{
-							hdr.Downscale(zoomwidget1.Divider, 
-								delegate (double progress) {
-									return ImportRawAndLoadingReporter(progress, "Downscaling...");
-								}
-							);
+							progressbar.Text = "Operation completed";
+							progressbar.Fraction = 0;
+	
+							view_widget.UpdatePicture();
 						}
-						view_widget.HDR = hdr;
-						view_widget.UpdatePicture();
-					}
-				}
-				else
-					hdr = new FloatPixmap(frozen);
-				
-				if (hdr != null)
-				{
-					if (stages.ApplyOperationsAfterFrozenLine(hdr))
-					{
-						progressbar.Text = "Operation completed";
-						progressbar.Fraction = 0;
-
-						view_widget.UpdatePicture();
+						else
+						{
+							progressbar.Text = "Operation cancelled";
+							progressbar.Fraction = 0;
+							cancel_pending = false;
+						}
 					}
 					else
 					{
@@ -505,12 +514,10 @@ public partial class MainWindow : Gtk.Window
 						cancel_pending = false;
 					}
 				}
-				else
-				{
-					progressbar.Text = "Operation cancelled";
-					progressbar.Fraction = 0;
-					cancel_pending = false;
-				}
+			}
+			catch (UserCancelException)
+			{
+				// Do nothing. Just relax.
 			}
 			TheUIState = curstate;
 		}
