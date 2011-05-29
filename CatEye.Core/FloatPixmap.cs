@@ -345,6 +345,10 @@ namespace CatEye.Core
 		
 		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, ISharpeningSamplingMethod ssm, ProgressReporter callback)
 		{
+			Console.WriteLine("width=" + width + ", height=" + height + 
+				", rp=" + radius_part + ", lu=" + limit_up + ", ld=" + limit_down);
+			DateTime dt = DateTime.Now;
+			
 			double[,] light = new double[width, height];
 			double maxlight = 0;
 			unsafe {
@@ -365,6 +369,9 @@ namespace CatEye.Core
 			
 			int radius = (int)((width + height) / 2 * radius_part + 1);
 			
+			int points = 50;
+			Random rnd = new Random();
+			
 			Console.WriteLine("Calculating scale factors...");
 			unsafe {
 				for (int i = 0; i < width + radius; i++)	// "radius" added to process all "i_back" values
@@ -380,20 +387,18 @@ namespace CatEye.Core
 					{
 						if (i < width)
 						{
-							ssm.DoSampling(delegate (int u, int v) {
-								u += i; v += j;
-								
-								double rad = Math.Sqrt((double)((u - i) * (u - i) + (v - j) * (v - j)));
-								if (rad > radius) return;
-								
-								double falloff = Math.Exp(-3 * (rad / radius)) - Math.Exp(-3) + 0.0001;
+							for (int k = 0; k < points; k++)
+							{
+								double phi = rnd.NextDouble() * 2 * Math.PI;
+								double rad = rnd.NextDouble() * radius; //-radius / 3 * Math.Log(rnd.NextDouble() + Math.Exp(-3));
+							
+								int u = i + (int)(rad * Math.Cos(phi));
+								int v = j + (int)(rad * Math.Sin(phi));
 								
 								if (u >= 0 && u < width && v >= 0 && v < height)
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									
-									//double f = Math.Log(Math.Abs(delta / delta_0) + 1) * Math.Sign(delta);
 									double f;
 									if (delta > 0)
 									{
@@ -408,14 +413,12 @@ namespace CatEye.Core
 										f = -limit_down * (1 - Math.Exp(-f / limit_down));
 									}
 									
-									double scale = f * falloff;
-									//double limited_scale = Math.Abs(scale) < delta_limit ? scale : delta_limit * Math.Sign(scale);
+									double scale = f;
 									
-									scale_matrix[u, v] += scale;//limited_scale;
-									
+									scale_matrix[u, v] += scale;
 									scale_matrix_adds[u, v] ++;
 								}
-							}, radius);
+							}
 						}
 							
 						if (i_back >= 0)
@@ -439,7 +442,8 @@ namespace CatEye.Core
 					}
 				}
 			}
-			
+			TimeSpan ts = DateTime.Now - dt;
+			Console.WriteLine(ts);
 		}
 		
 		public void ApplyTone(Tone tone, double HighlightsInvariance)

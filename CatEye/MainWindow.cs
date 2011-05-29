@@ -185,10 +185,6 @@ public partial class MainWindow : Gtk.Window
 		zoomwidget1.DividerChanged += delegate {
 			LaunchUpdateTimer();
 		};
-		
-		//view_widget.ButtonPressEvent += ImageMouseButtonPressed;
-		//view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
-		//view_widget.MotionNotifyEvent += HandleImageMouseMotion;
 	}
 
 	bool HandleView_widgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
@@ -295,7 +291,7 @@ public partial class MainWindow : Gtk.Window
 		
 		if (UpdateDuringProcessingAction.Active)
 		{
-			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 5)
+			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
 				if (view_widget.HDR != hdr) view_widget.HDR = hdr;
 				else
