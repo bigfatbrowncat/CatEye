@@ -167,6 +167,11 @@
     <None Include="debug.cmd" />
     <None Include="gtk-postinstall.bat" />
     <None Include="release.cmd" />
+    <None Include="CatEyeSetup_001.nsi">
+      <Visible>False</Visible>
+    </None>
+    <None Include="GetVersion.nsi" />
+    <None Include="GetVersion.exe" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
