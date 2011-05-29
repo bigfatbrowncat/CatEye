@@ -2,7 +2,7 @@
 !define File "..\${PKGDIR}bin\${config}\CatEye.exe"
 
 
-OutFile "GetVersion.exe"
+OutFile "..\${PKGDIR}bin\${config}\GetVersion.exe"
 SilentInstall silent
  
 Section

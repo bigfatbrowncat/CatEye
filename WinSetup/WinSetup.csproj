@@ -171,7 +171,6 @@
       <Visible>False</Visible>
     </None>
     <None Include="GetVersion.nsi" />
-    <None Include="GetVersion.exe" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

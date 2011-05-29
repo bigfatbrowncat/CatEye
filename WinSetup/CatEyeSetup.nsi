@@ -15,7 +15,7 @@ ShowUnInstDetails show
 
 !define PRODUCT_NAME "CatEye"
 !define PKGDIR ""
-!system "GetVersion.exe"
+!system "..\${PKGDIR}bin\${config}\GetVersion.exe"
 !include "..\${PKGDIR}bin\${config}\Version.txt"
 
 
