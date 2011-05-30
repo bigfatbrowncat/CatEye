@@ -54,6 +54,8 @@ public partial class MainWindow : Gtk.Window
 					saveStageAsAction.Sensitive = true;
 					renderToAction.Sensitive = true;
 					cancel_button.Visible = false;
+					progressbar.Visible = false;
+
 				}
 				else if (value == MainWindow.UIState.Loading)
 				{
@@ -63,6 +65,7 @@ public partial class MainWindow : Gtk.Window
 					renderToAction.Sensitive = false;
 					cancel_button.Visible = true;
 					cancel_button.Sensitive = true;
+					progressbar.Visible = true;
 				}
 				else if (value == MainWindow.UIState.Processing)
 				{
@@ -71,6 +74,7 @@ public partial class MainWindow : Gtk.Window
 					saveStageAsAction.Sensitive = true;
 					renderToAction.Sensitive = true;
 					cancel_button.Visible = false;
+					progressbar.Visible = true;
 				}
 			}
 		}
@@ -177,9 +181,10 @@ public partial class MainWindow : Gtk.Window
 		view_widget.MousePositionChanged += HandleView_widgetMousePositionChanged;
 		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
 		
-		//view_widget.ButtonPressEvent += ImageMouseButtonPressed;
-		//view_widget.ButtonReleaseEvent += ImageMouseButtonReleased;
-		//view_widget.MotionNotifyEvent += HandleImageMouseMotion;
+		// Setting zoom widget events
+		zoomwidget1.DividerChanged += delegate {
+			LaunchUpdateTimer();
+		};
 	}
 
 	bool HandleView_widgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
@@ -286,7 +291,7 @@ public partial class MainWindow : Gtk.Window
 		
 		if (UpdateDuringProcessingAction.Active)
 		{
-			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 5)
+			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
 				if (view_widget.HDR != hdr) view_widget.HDR = hdr;
 				else
@@ -394,12 +399,24 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				FloatPixmap frozen_tmp = FloatPixmap.FromPPM(ppl, delegate (double progress) {
-					return ImportRawAndLoadingReporter(progress, "Loading source image...");
+				FloatPixmap frozen_tmp = FloatPixmap.FromPPM(ppl, 
+					delegate (double progress) {
+						return ImportRawAndLoadingReporter(progress, "Loading source image...");
+					}
+				);
+						
 					
-				});
 				if (frozen_tmp != null)
 				{
+					if (zoomwidget1.Divider != 1)
+					{
+						frozen_tmp.Downscale(zoomwidget1.Divider, 
+							delegate (double progress) {
+								return ImportRawAndLoadingReporter(progress, "Downscaling...");
+							}
+						);
+					}
+
 					if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
 					{
 						frozen = frozen_tmp;
@@ -446,26 +463,49 @@ public partial class MainWindow : Gtk.Window
 		{
 			UIState curstate = TheUIState;
 			TheUIState = MainWindow.UIState.Processing;
-			
-			if (ppl != null)
+
+			try
 			{
-				if (frozen == null)
+				if (ppl != null)
 				{
-					hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
-						return ImportRawAndLoadingReporter(progress, "Loading source image...");
-					});
-				}
-				else
-					hdr = new FloatPixmap(frozen);
-				
-				if (hdr != null)
-				{
-					if (stages.ApplyOperationsAfterFrozenLine(hdr))
+					if (frozen == null)
 					{
-						progressbar.Text = "Operation completed";
-						progressbar.Fraction = 0;
-						view_widget.HDR = hdr;
-						view_widget.UpdatePicture();
+						hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
+							return ImportRawAndLoadingReporter(progress, "Loading source image...");
+						});
+						
+						if (hdr != null)
+						{
+							if (zoomwidget1.Divider != 1)
+							{
+								hdr.Downscale(zoomwidget1.Divider, 
+									delegate (double progress) {
+										return ImportRawAndLoadingReporter(progress, "Downscaling...");
+									}
+								);
+							}
+							view_widget.HDR = hdr;
+							view_widget.UpdatePicture();
+						}
+					}
+					else
+						hdr = new FloatPixmap(frozen);
+					
+					if (hdr != null)
+					{
+						if (stages.ApplyOperationsAfterFrozenLine(hdr))
+						{
+							progressbar.Text = "Operation completed";
+							progressbar.Fraction = 0;
+	
+							view_widget.UpdatePicture();
+						}
+						else
+						{
+							progressbar.Text = "Operation cancelled";
+							progressbar.Fraction = 0;
+							cancel_pending = false;
+						}
 					}
 					else
 					{
@@ -474,12 +514,10 @@ public partial class MainWindow : Gtk.Window
 						cancel_pending = false;
 					}
 				}
-				else
-				{
-					progressbar.Text = "Operation cancelled";
-					progressbar.Fraction = 0;
-					cancel_pending = false;
-				}
+			}
+			catch (UserCancelException)
+			{
+				// Do nothing. Just relax.
 			}
 			TheUIState = curstate;
 		}
@@ -870,5 +908,10 @@ public partial class MainWindow : Gtk.Window
 			if (rp != null)
 				rp.Dispose();
 		}
+	}
+
+	protected void OnZoomwidget1DividerChanged (object sender, System.EventArgs e)
+	{
+
 	}
 }

@@ -9,7 +9,7 @@
     <widget-library name="../../CatEye.Widgets/bin/Debug/CatEye.Widgets.dll" />
     <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="879 500">
+  <widget class="Gtk.Window" id="MainWindow" design-size="1021 668">
     <action-group name="Default">
       <action id="ScaledRangeAction">
         <property name="Type">Radio</property>
@@ -111,6 +111,21 @@
         <property name="Label" translatable="yes">qwe</property>
         <property name="ShortLabel" translatable="yes">qwe</property>
       </action>
+      <action id="zoomInAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-zoom-in</property>
+      </action>
+      <action id="zoomOutAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-zoom-out</property>
+      </action>
+      <action id="zoom100Action">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-zoom-100</property>
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
@@ -157,11 +172,12 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Position">237</property>
+                <property name="BorderWidth">1</property>
                 <child>
                   <widget class="Gtk.VBox" id="left_vbox">
                     <property name="MemberName" />
                     <property name="Spacing">4</property>
-                    <property name="BorderWidth">4</property>
+                    <property name="BorderWidth">2</property>
                     <child>
                       <widget class="Gtk.HBox" id="stageOperationAdding_hbox">
                         <property name="MemberName" />
@@ -237,17 +253,57 @@
                         <property name="AutoSize">False</property>
                       </packing>
                     </child>
+                  </widget>
+                  <packing>
+                    <property name="Resize">False</property>
+                    <property name="Shrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VBox" id="vbox3">
+                    <property name="MemberName" />
                     <child>
-                      <widget class="Gtk.HBox" id="status_bar_hbox">
+                      <placeholder />
+                    </child>
+                    <child>
+                      <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
+                        <property name="MemberName" />
+                        <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
+                        <property name="ExtensionEvents">All</property>
+                        <property name="InstantUpdate">False</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
+                        <property name="BorderWidth">2</property>
                         <child>
-                          <widget class="Gtk.ProgressBar" id="progressbar">
+                          <widget class="Gtk.Label" id="status_label">
                             <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="LabelProp" translatable="yes">Parameters could be changed &lt;b&gt;during&lt;/b&gt; processing. You are welcome!</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="Ellipsize">End</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
-                            <property name="AutoSize">True</property>
+                            <property name="AutoSize">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.ProgressBar" id="progressbar">
+                            <property name="MemberName" />
+                            <property name="Visible">False</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">False</property>
+                            <property name="Expand">False</property>
                           </packing>
                         </child>
                         <child>
@@ -263,10 +319,22 @@
                             <signal name="Clicked" handler="OnCancelButtonClicked" />
                           </widget>
                           <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">True</property>
+                            <property name="Position">2</property>
+                            <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="CatEye.Widgets.ZoomWidget" id="zoomwidget1">
+                            <property name="MemberName" />
+                            <property name="Events">ButtonPressMask</property>
+                            <property name="Divider">0</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">3</property>
+                            <property name="AutoSize">False</property>
+                            <property name="Expand">False</property>
                           </packing>
                         </child>
                       </widget>
@@ -277,18 +345,6 @@
                         <property name="Fill">False</property>
                       </packing>
                     </child>
-                  </widget>
-                  <packing>
-                    <property name="Resize">False</property>
-                    <property name="Shrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="CatEye.FloatPixmapViewWidget" id="view_widget">
-                    <property name="MemberName" />
-                    <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
-                    <property name="ExtensionEvents">All</property>
-                    <property name="InstantUpdate">False</property>
                   </widget>
                 </child>
               </widget>
@@ -1099,6 +1155,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Sharp</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">False</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1402,7 +1459,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Lower">0.001</property>
-            <property name="Upper">1</property>
+            <property name="Upper">0.5</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.001</property>
             <property name="Value">0.001</property>

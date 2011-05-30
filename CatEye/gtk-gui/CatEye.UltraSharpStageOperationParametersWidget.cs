@@ -220,7 +220,7 @@ namespace CatEye
 			this.radius_hscale.CanFocus = true;
 			this.radius_hscale.Name = "radius_hscale";
 			this.radius_hscale.Adjustment.Lower = 0.001;
-			this.radius_hscale.Adjustment.Upper = 1;
+			this.radius_hscale.Adjustment.Upper = 0.5;
 			this.radius_hscale.Adjustment.PageIncrement = 0.01;
 			this.radius_hscale.Adjustment.StepIncrement = 0.001;
 			this.radius_hscale.Adjustment.Value = 0.001;

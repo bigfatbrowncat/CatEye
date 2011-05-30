@@ -57,7 +57,7 @@ namespace CatEye
 		{
 			get { return new ReadOnlyDictionary<StageOperation, StageOperationHolderWidget>(_Holders); }
 		}
-
+		
 		public StageOperation EditingOperation
 		{
 			get { return _EditingOperation; }
