@@ -5,7 +5,7 @@ namespace CatEye.Widgets
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ZoomWidget : Gtk.Bin
 	{
-		private double[] mGoodValues = new double[] { 0.125, 0.25, 0.5, 0.75, 1 };
+		private double[] mGoodValues = new double[] { 0.125/2, 0.125, 0.25, 0.5, 0.75, 1 };
 		
 		private double mValue = 1;
 		private bool setting_divider = false;
@@ -24,7 +24,14 @@ namespace CatEye.Widgets
 			if (!setting_divider)
 			{
 				setting_divider = true;
-				zoom_label.Text = (100.0 * mValue).ToString("0") + "%";
+				if (mValue >= 0.99 || Math.Abs(mValue*100 - Math.Round(mValue * 100)) < 0.01)
+				{
+					zoom_label.Text = (100.0 * mValue).ToString("0") + "%";
+				}
+				else
+				{
+					zoom_label.Text = (100.0 * mValue).ToString("0.0") + "%";
+				}
 				zoom_hscale.Value = (double)mValue;
 				setting_divider = false;
 			}
