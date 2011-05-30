@@ -14,14 +14,13 @@ ShowUnInstDetails show
 ;General
 
 !define PRODUCT_NAME "CatEye"
-!define PRODUCT_VERSION "0.3"
 !define PKGDIR ""
-;!define config "Debug"
+!system "..\${PKGDIR}bin\${config}\GetVersion.exe"
+!include "..\${PKGDIR}bin\${config}\Version.txt"
+
 
 ;Name and file
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-;OutFile "..\packages\${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe"
-;OutFile "..\${PKGDIR}bin\${config}\Setup.exe"
 OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
 
 ;Default installation folder
@@ -29,6 +28,17 @@ InstallDir $ProgramFiles\${PRODUCT_NAME}
 
 ;Request application privileges for Windows Vista
 ;RequestExecutionLevel user
+
+; Properties of executable setup file
+VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
+VIAddVersionKey "Comments" "Software for developing raw photos"
+;VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" ""
+;VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" ""
+VIAddVersionKey "LegalCopyright" "© Mizus Ilya & Lysakov Igor"
+VIAddVersionKey "FileDescription" "Software for developing raw photos"
+VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
+VIProductVersion "${PRODUCT_VERSION}"
+
 
 ;--------------------------------
 ;Interface Settings
@@ -82,9 +92,7 @@ Function IsDotNETInstalled
   ReadRegDWORD $dotnetset HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
   IntCmp $dotnetset 1 go1 nonet
     nonet:
-     ;MessageBox MB_OK|MB_ICONINFORMATION "${PRODUCT_NAME} requires that the .NET Framework 2.0 was installed." IDOK dotnetload
-      ;  dotnetload:
-         call DotNetDownload
+      call DotNetDownload
   go1:
 FunctionEnd
 
@@ -95,34 +103,11 @@ Function DotNetDownload
       MessageBox MB_ICONINFORMATION "Installation aborted."
       abort
     download:
-      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}_${PRODUCT_VERSION}-setup.exe again."
-      ;Exec "$PROGRAMFILES\Internet Explorer\iexplore.exe http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
+      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe again."
       ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
-      ;abort
       quit
 FunctionEnd
 
-
-;Function IsGtkInstalled
-; Check Gtk version
-;var /global gtkset
-;ReadRegStr HKEY_LOCAL_MACHINE SOFTWARE\Novell\CtkSharp\Version 
-;ReadRegStr $gtkset HKLM 'SOFTWARE\Novell\GtkSharp\Version' @
-;MessageBox MB_ICONINFORMATION $gtkset
-;IntCmp $gtkset 1 go2 nogtk
-;  nogtk:
-    ;MessageBox MB_OK|MB_ICONINFORMATION "${PRODUCT_NAME} requires that the .NET Framework 2.0 was installed." IDOK dotnetload
-    ;  dotnetload:
-        ;call DotNetDownload
-;go2:
-;  MessageBox MB_ICONINFORMATION "${PRODUCT_NAME} requires GTK# v2.12.10. GTK# would be installed on Your system."
-  
-;    SetOutPath $TEMP
-;    File "${PKGDIR}gtk-sharp-2.12.10.win32.msi"
-;    ExecWait "msiexec.exe /i $TEMP\gtk-sharp-2.12.10.win32.msi"
-;    Delete "$TEMP\gtk-sharp-2.12.10.win32.msi"
-  
-;FunctionEnd
 
 ;--------------------------------
 
@@ -161,34 +146,7 @@ Section "Installer section"
   CreateDirectory $SMPROGRAMS\${PRODUCT_NAME}
   CreateShortCut  $SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
   CreateShortCut  $SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk $INSTDIR\Uninstall.exe
-  ;CreateShortCut $%userprofile%\Desktop\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
-  ; Check windows version
-  ;var /global winver
-  ;ReadRegStr $winver HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-  ;MessageBox MB_ICONINFORMATION $winver
-  ;IntCmp $winver "6.0" eq lt gt
-  ;  eq:
-  ;    ;MessageBox MB_ICONINFORMATION "eq"
-  ;    ; system Vista
-  ;    CreateDirectory "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}"
-  ;    CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\CatEye.lnk" $INSTDIR\CatEye.exe
-  ;    CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\Uninstall.lnk" $INSTDIR\Uninstall.exe
-  ;    goto ok
-  ;  lt:
-      ;MessageBox MB_ICONINFORMATION "lt"
-      ; XP or earlier
-      ; need path
-  ;    goto ok
-  ;  gt:
-      ;MessageBox MB_ICONINFORMATION "gt"
-      ; maybe Seven
-      ; Vista code
-  ;    CreateDirectory "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}"
-  ;    CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\CatEye.lnk" $INSTDIR\CatEye.exe
-  ;    CreateShortCut "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\Uninstall.lnk" $INSTDIR\Uninstall.exe
-  ;    goto ok
-  ;  ok:
-  
+
   WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "Version" "${PRODUCT_VERSION}"
   WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "SetupDir" "$INSTDIR"
   
@@ -280,33 +238,6 @@ Section "un.Installer section"
   Delete $SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk
   RmDir  $SMPROGRAMS\${PRODUCT_NAME}
   
-  ; Check windows version
-  ;var /global unwinver
-  ;ReadRegStr $unwinver HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-  ;MessageBox MB_ICONINFORMATION $winver
-  ;IntCmp $unwinver "6.0" eq lt gt
-  ;  eq:
-      ;MessageBox MB_ICONINFORMATION "eq"
-      ; system Vista
-  ;    Delete "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\CatEye.lnk"
-  ;    Delete "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\Uninstall.lnk"
-  ;    RMDir /r "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}"
-  ;    goto ok
-  ;  lt:
-      ;MessageBox MB_ICONINFORMATION "lt"
-      ; XP or earlier
-      ; need path
-  ;    goto ok
-  ;  gt:
-      ;MessageBox MB_ICONINFORMATION "gt"
-      ; maybe Seven
-      ; Vista code
-  ;    Delete "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\CatEye.lnk"
-  ;    Delete "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}\Uninstall.lnk"
-  ;    RMDir /r "$%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\${PRODUCT_NAME}"
-  ;    goto ok
-  ;  ok:
-    
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\Version
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}\SetupDir
   DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}
