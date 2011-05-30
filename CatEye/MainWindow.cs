@@ -83,6 +83,7 @@ public partial class MainWindow : Gtk.Window
 	public delegate bool ProgressMessageReporter(double progress, string status);
 
 	CatEye.Core.PPMLoader ppl = null;
+	CatEye.Core.FloatPixmap src_img = null;
 	CatEye.Core.FloatPixmap hdr = null;
 	CatEye.Core.FloatPixmap frozen = null;
 	ExtendedStage stages;
@@ -182,7 +183,7 @@ public partial class MainWindow : Gtk.Window
 		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		zoomwidget1.DividerChanged += delegate {
+		zoomwidget1.ValueChanged += delegate {
 			LaunchUpdateTimer();
 		};
 	}
@@ -293,10 +294,11 @@ public partial class MainWindow : Gtk.Window
 		{
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
-				if (view_widget.HDR != hdr) view_widget.HDR = hdr;
+				if (view_widget.HDR != hdr)
+					view_widget.HDR = hdr;
 				else
 					view_widget.UpdatePicture();
-				//view_widget.QueueDraw();
+
 				lastupdate = DateTime.Now;
 			}
 		}
@@ -375,10 +377,24 @@ public partial class MainWindow : Gtk.Window
 				}
 			}
 		}
-		TheUIState = MainWindow.UIState.Free;
 		if (ppl != null)
+		{
+			src_img = FloatPixmap.FromPPM(ppl, 
+				delegate (double progress) {
+					return ImportRawAndLoadingReporter(progress, "Loading source image...");
+				}
+			);
+			
 			stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
+		}
+		else
+		{
+			src_img = null;
+			stages.ReportImageChanged(0, 0);
+		}
 
+		TheUIState = MainWindow.UIState.Free;
+		
 		view_widget.CenterImagePanning();
 		LaunchUpdateTimer();
 	}
@@ -399,19 +415,14 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ppl != null)
 			{
-				FloatPixmap frozen_tmp = FloatPixmap.FromPPM(ppl, 
-					delegate (double progress) {
-						return ImportRawAndLoadingReporter(progress, "Loading source image...");
-					}
-				);
-						
+				FloatPixmap frozen_tmp = new FloatPixmap(src_img);
 					
 				if (frozen_tmp != null)
 				{
 					if ((double)zoomwidget1.Value < 0.999 ||
 						(double)zoomwidget1.Value > 1.001)
 					{
-						frozen_tmp.Downscale(zoomwidget1.Value,
+						frozen_tmp.ScaleFast(zoomwidget1.Value,
 							delegate (double progress) {
 								return ImportRawAndLoadingReporter(progress, "Downscaling...");
 							}
@@ -471,16 +482,14 @@ public partial class MainWindow : Gtk.Window
 				{
 					if (frozen == null)
 					{
-						hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
-							return ImportRawAndLoadingReporter(progress, "Loading source image...");
-						});
+						hdr = new FloatPixmap(src_img);
 						
 						if (hdr != null)
 						{
 							if ((double)zoomwidget1.Value < 0.999 ||
 								(double)zoomwidget1.Value > 1.001)
 							{
-								hdr.Downscale(zoomwidget1.Value,
+								hdr.ScaleFast(zoomwidget1.Value,
 									delegate (double progress) {
 										return ImportRawAndLoadingReporter(progress, "Downscaling...");
 									}
@@ -519,7 +528,7 @@ public partial class MainWindow : Gtk.Window
 			}
 			catch (UserCancelException)
 			{
-				// Do nothing. Just relax.
+				cancel_pending = false;
 			}
 			TheUIState = curstate;
 		}
@@ -879,11 +888,7 @@ public partial class MainWindow : Gtk.Window
 			rpw.ImageName = this.FileName;
 			rpw.Show();
 			
-			FloatPixmap renderDest = FloatPixmap.FromPPM(ppl, 
-				delegate (double progress) {
-					return rpw.SetStatusAndProgress(progress, "Loading source image...");
-				}
-			);
+			FloatPixmap renderDest = new FloatPixmap(src_img);
 			
 			// Rendering			
 			stages.ApplyAllOperations(renderDest);

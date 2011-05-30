@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes. 
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("CatEye")]
-[assembly: AssemblyDescription("CatEye raw images processor")]
+[assembly: AssemblyTitle("CatEye raw images processor")]
+[assembly: AssemblyDescription("Software for development of raw photo images")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]

@@ -11,7 +11,7 @@ namespace CatEye.Widgets
 		private bool setting_divider = false;
 
 		
-		public event EventHandler<EventArgs> DividerChanged;
+		public event EventHandler<EventArgs> ValueChanged;
 		
 		private bool ValueIsNear(double val)
 		{
@@ -39,7 +39,7 @@ namespace CatEye.Widgets
 				if (mValue < mGoodValues[0]) mValue = mGoodValues[0];
 				if (mValue > mGoodValues[mGoodValues.Length - 1]) 
 					mValue = mGoodValues[mGoodValues.Length - 1];
-				if (DividerChanged != null) DividerChanged(this, EventArgs.Empty);
+				if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
 				UpdateDividerView();
 			}
 		}
