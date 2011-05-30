@@ -182,11 +182,10 @@
             <property name="MemberName" />
             <property name="WidthRequest">70</property>
             <property name="CanFocus">True</property>
-            <property name="Lower">1</property>
-            <property name="Upper">10</property>
+            <property name="Upper">1</property>
             <property name="PageIncrement">1</property>
             <property name="StepIncrement">1</property>
-            <property name="Value">10</property>
+            <property name="Value">1</property>
             <property name="DrawValue">False</property>
             <property name="Digits">0</property>
             <property name="ValuePos">Left</property>

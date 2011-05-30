@@ -60,11 +60,10 @@ namespace CatEye.Widgets
 			this.zoom_hscale.WidthRequest = 70;
 			this.zoom_hscale.CanFocus = true;
 			this.zoom_hscale.Name = "zoom_hscale";
-			this.zoom_hscale.Adjustment.Lower = 1;
-			this.zoom_hscale.Adjustment.Upper = 10;
+			this.zoom_hscale.Adjustment.Upper = 1;
 			this.zoom_hscale.Adjustment.PageIncrement = 1;
 			this.zoom_hscale.Adjustment.StepIncrement = 1;
-			this.zoom_hscale.Adjustment.Value = 10;
+			this.zoom_hscale.Adjustment.Value = 1;
 			this.zoom_hscale.DrawValue = false;
 			this.zoom_hscale.Digits = 0;
 			this.zoom_hscale.ValuePos = ((global::Gtk.PositionType)(0));

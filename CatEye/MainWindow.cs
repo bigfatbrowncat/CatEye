@@ -408,9 +408,10 @@ public partial class MainWindow : Gtk.Window
 					
 				if (frozen_tmp != null)
 				{
-					if (zoomwidget1.Divider != 1)
+					if ((double)zoomwidget1.Value < 0.999 ||
+						(double)zoomwidget1.Value > 1.001)
 					{
-						frozen_tmp.Downscale(zoomwidget1.Divider, 
+						frozen_tmp.Downscale(zoomwidget1.Value,
 							delegate (double progress) {
 								return ImportRawAndLoadingReporter(progress, "Downscaling...");
 							}
@@ -476,9 +477,10 @@ public partial class MainWindow : Gtk.Window
 						
 						if (hdr != null)
 						{
-							if (zoomwidget1.Divider != 1)
+							if ((double)zoomwidget1.Value < 0.999 ||
+								(double)zoomwidget1.Value > 1.001)
 							{
-								hdr.Downscale(zoomwidget1.Divider, 
+								hdr.Downscale(zoomwidget1.Value,
 									delegate (double progress) {
 										return ImportRawAndLoadingReporter(progress, "Downscaling...");
 									}

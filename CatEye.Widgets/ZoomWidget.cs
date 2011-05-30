@@ -5,36 +5,45 @@ namespace CatEye.Widgets
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ZoomWidget : Gtk.Bin
 	{
+		private double[] mGoodValues = new double[] { 0.125, 0.25, 0.5, 0.75, 1 };
 		
-		private int mDivider = 1;
+		private double mValue = 1;
 		private bool setting_divider = false;
+
 		
 		public event EventHandler<EventArgs> DividerChanged;
 		
+		private bool ValueIsNear(double val)
+		{
+			return (Value > val - 0.01) && (Value < val + 0.01);
+		}
+			
+
 		private void UpdateDividerView()
 		{
 			if (!setting_divider)
 			{
 				setting_divider = true;
-				zoom_label.Text = (100.0 / mDivider).ToString("0") + "%";
-				zoom_hscale.Value = 11 - mDivider;
-				if (DividerChanged != null) DividerChanged(this, EventArgs.Empty);
+				zoom_label.Text = (100.0 * mValue).ToString("0") + "%";
+				zoom_hscale.Value = (double)mValue;
 				setting_divider = false;
 			}
 		}
 		
-		public int Divider
+		public double Value
 		{
-			get { return mDivider; }
+			get { return mValue; }
 			set
 			{
-				mDivider = value;
-				if (mDivider < 1) mDivider = 1;
-				if (mDivider > 10) mDivider = 10;
+				mValue = value;
+				if (mValue < mGoodValues[0]) mValue = mGoodValues[0];
+				if (mValue > mGoodValues[mGoodValues.Length - 1]) 
+					mValue = mGoodValues[mGoodValues.Length - 1];
+				if (DividerChanged != null) DividerChanged(this, EventArgs.Empty);
 				UpdateDividerView();
 			}
 		}
-		
+
 		public ZoomWidget ()
 		{
 			this.Build ();
@@ -42,23 +51,38 @@ namespace CatEye.Widgets
 
 		protected void OnZoomHscaleValueChanged (object sender, System.EventArgs e)
 		{
-			mDivider = 11 - (int)zoom_hscale.Value;
+			Value = zoom_hscale.Value;
+			
 			UpdateDividerView();
 		}
 
 		protected void OnZoom100ButtonClicked (object sender, System.EventArgs e)
 		{
-			Divider = 1;
+			Value = 1;
 		}
 
 		protected void OnZoomInButtonClicked (object sender, System.EventArgs e)
 		{
-			Divider --;
+			for (int i = 0; i < mGoodValues.Length - 1; i++)
+			{
+				if ((ValueIsNear(mGoodValues[i]) || Value > mGoodValues[i]) && Value < mGoodValues[i + 1])
+				{
+					Value = mGoodValues[i + 1];
+					break;
+				}
+			}
 		}
 
 		protected void OnZoomOutButtonClicked (object sender, System.EventArgs e)
 		{
-			Divider ++;
+			for (int i = 0; i < mGoodValues.Length - 1; i++)
+			{
+				if (Value > mGoodValues[i] && (ValueIsNear(mGoodValues[i + 1]) || Value < mGoodValues[i + 1]))
+				{
+					Value = mGoodValues[i];
+					break;
+				}
+			}
 		}
 	}
 }

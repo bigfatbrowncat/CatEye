@@ -97,49 +97,57 @@ namespace CatEye.Core
 			return (byte)val;
 		}
 		
-		public void Downscale(int k, ProgressReporter callback)
+		public void Downscale(double k, ProgressReporter callback)
 		{
-			float[,] new_r = new float[width / k, height / k];
-			float[,] new_g = new float[width / k, height / k];
-			float[,] new_b = new float[width / k, height / k];
+			float[,] new_r = new float[(int)(width * k), (int)(height * k)];
+			float[,] new_g = new float[(int)(width * k), (int)(height * k)];
+			float[,] new_b = new float[(int)(width * k), (int)(height * k)];
+			int[,] sum = new int[(int)(width * k), (int)(height * k)];
 
-			for (int i = 0; i < width / k; i++)
+			for (int i = 0; i < (int)(width * k); i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)i / (width / k)))
+					if (!callback((double)i / (width * k)))
 					{
 						throw new UserCancelException();
 					}
 				}
-				for (int j = 0; j < height / k; j++)
+				for (int j = 0; j < (int)(height * k); j++)
 				{
-					double r = 0, g = 0, b = 0;
-					for (int u = i * k; u < i * k + k; u++)
-					for (int v = j * k; v < j * k + k; v++)
+					double r = 0, g = 0, b = 0; int s = 0;
+					for (int u = (int)((double)i / k); u < (int)(((double)i + 1) / k); u++)
+					for (int v = (int)((double)j / k); v < (int)(((double)j + 1) / k); v++)
 					{
 						if (u < width && v < height)
 						{
 							r += r_chan[u, v];
 							g += g_chan[u, v];
 							b += b_chan[u, v];
+							s ++;
 						}
 					}
-					r /= (k * k);
-					g /= (k * k);
-					b /= (k * k);
-					
 					new_r[i, j] = (float)r;
 					new_g[i, j] = (float)g;
 					new_b[i, j] = (float)b;
+					sum[i, j] = s;
 				}
 				
 			}
+			
+			for (int i = 0; i < (int)(width * k); i++)
+				for (int j = 0; j < (int)(height * k); j++)
+			{
+				new_r[i, j] /= sum[i, j];
+				new_g[i, j] /= sum[i, j];
+				new_b[i, j] /= sum[i, j];
+			}
+
 			r_chan = new_r;
 			g_chan = new_g;
 			b_chan = new_b;
-			width /= k;
-			height /= k;
+			width = (int)(width * k);
+			height = (int)(height * k);
 		}
 		
 		/// <summary>
@@ -343,12 +351,8 @@ namespace CatEye.Core
 			}
 		}
 		
-		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, ISharpeningSamplingMethod ssm, ProgressReporter callback)
+		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, int points, ProgressReporter callback)
 		{
-			Console.WriteLine("width=" + width + ", height=" + height + 
-				", rp=" + radius_part + ", lu=" + limit_up + ", ld=" + limit_down);
-			DateTime dt = DateTime.Now;
-			
 			double[,] light = new double[width, height];
 			double maxlight = 0;
 			unsafe {
@@ -369,7 +373,6 @@ namespace CatEye.Core
 			
 			int radius = (int)((width + height) / 2 * radius_part + 1);
 			
-			int points = 50;
 			Random rnd = new Random();
 			
 			Console.WriteLine("Calculating scale factors...");
@@ -390,7 +393,8 @@ namespace CatEye.Core
 							for (int k = 0; k < points; k++)
 							{
 								double phi = rnd.NextDouble() * 2 * Math.PI;
-								double rad = -radius / 3 * Math.Log(rnd.NextDouble() + Math.Exp(-3));
+								double alpha = 3;
+								double rad = -radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
 							
 								int u = i + (int)(rad * Math.Cos(phi));
 								int v = j + (int)(rad * Math.Sin(phi));
@@ -413,7 +417,7 @@ namespace CatEye.Core
 										f = -limit_down * (1 - Math.Exp(-f / limit_down));
 									}
 									
-									double scale = f;
+									double scale = f / 10;
 									
 									scale_matrix[u, v] += scale;
 									scale_matrix_adds[u, v] ++;
@@ -442,8 +446,6 @@ namespace CatEye.Core
 					}
 				}
 			}
-			TimeSpan ts = DateTime.Now - dt;
-			Console.WriteLine(ts);
 		}
 		
 		public void ApplyTone(Tone tone, double HighlightsInvariance)

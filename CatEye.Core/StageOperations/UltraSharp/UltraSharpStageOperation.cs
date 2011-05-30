@@ -21,15 +21,13 @@ namespace CatEye.Core
 			
 			// TODO: There should be some quality configuration which should calculate
 			// points number value
-			int points = 200; 
+			int points = 50; 
 			
 			double power = pm.Power;
 			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 
 				power *= -1;
 			
-			FloatPixmap.ISharpeningSamplingMethod sampler = new FloatPixmap.MonteCarloSharpeningSamplingMethod(points, new Random());
-			
-			hdp.SharpenLight(pm.Radius, power, pm.LimitUp, pm.LimitDown, sampler, 
+			hdp.SharpenLight(pm.Radius, power, pm.LimitUp, pm.LimitDown, points, 
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}
