@@ -9,8 +9,6 @@ public partial class MainWindow : Gtk.Window
 {
 	private static string APP_NAME = "CatEye";
 
-	protected enum UIState { Processing, Loading, Free };
-	private UIState _TheUIState = UIState.Free;
 	private string _FileName = null;
 	private int _PreScale = 0;
 	
@@ -39,71 +37,8 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
-	protected UIState TheUIState 
-	{ 
-		get { return _TheUIState; } 
-		set
-		{
-			if (_TheUIState != value)
-			{
-				_TheUIState = value;
-				if (value == MainWindow.UIState.Free)
-				{
-					loadRawAction.Sensitive = true;
-					loadStageAction.Sensitive = true;
-					saveStageAsAction.Sensitive = true;
-					renderToAction.Sensitive = true;
-					cancel_button.Visible = false;
-					progressbar.Visible = false;
-
-				}
-				else if (value == MainWindow.UIState.Loading)
-				{
-					loadRawAction.Sensitive = false;
-					loadStageAction.Sensitive = false;
-					saveStageAsAction.Sensitive = false;
-					renderToAction.Sensitive = false;
-					cancel_button.Visible = true;
-					cancel_button.Sensitive = true;
-					progressbar.Visible = true;
-				}
-				else if (value == MainWindow.UIState.Processing)
-				{
-					loadRawAction.Sensitive = true;
-					loadStageAction.Sensitive = true;
-					saveStageAsAction.Sensitive = true;
-					renderToAction.Sensitive = true;
-					cancel_button.Visible = false;
-					progressbar.Visible = true;
-				}
-			}
-		}
-	}
-	
-	public delegate bool ProgressMessageReporter(double progress, string status);
-
-	CatEye.Core.PPMLoader ppl = null;
-	CatEye.Core.FloatPixmap hdr = null;
-	CatEye.Core.FloatPixmap frozen = null;
 	ExtendedStage stages;
 	
-	Type[] _StageOperationTypes = new Type[]
-	{
-		typeof(CompressionStageOperation),
-		typeof(BrightnessStageOperation),
-		typeof(UltraSharpStageOperation),
-		typeof(SaturationStageOperation),
-		typeof(ToneStageOperation),
-		typeof(BlackPointStageOperation),
-		typeof(LimitSizeStageOperation),
-		typeof(CrotateStageOperation),
-	};
-	
-	bool update_timer_launched = false;
-	bool cancel_pending = false;
-	
-	uint update_timer_delay = 500;
-
 	DateTime lastupdate;
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
@@ -115,13 +50,13 @@ public partial class MainWindow : Gtk.Window
 
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
-		for (int i = 0; i < _StageOperationTypes.Length; i++)
+		for (int i = 0; i < ExtendedStage._StageOperationTypes.Length; i++)
 		{
 			string desc;
-			object[] descs = _StageOperationTypes[i].GetCustomAttributes(
+			object[] descs = ExtendedStage._StageOperationTypes[i].GetCustomAttributes(
 				typeof(StageOperationDescriptionAttribute), true);
 			if (descs.Length == 0)
-				desc = _StageOperationTypes[i].Name;
+				desc = ExtendedStage._StageOperationTypes[i].Name;
 			else
 				desc = ((StageOperationDescriptionAttribute)descs[0]).Name;
 		
@@ -138,7 +73,7 @@ public partial class MainWindow : Gtk.Window
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
 		if (System.IO.File.Exists(defaultstage))
 		{
-			LoadStage(defaultstage);
+			stages.LoadStage(defaultstage);
 		}
 		else
 		{
@@ -152,39 +87,56 @@ public partial class MainWindow : Gtk.Window
 		
 		// Setting stages events
 		
-		stages.OperationActivityChanged += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.OperationIndexChanged += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.OperationAddedToStage += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.OperationRemovedFromStage += delegate {
-			LaunchUpdateTimer();
-		};
-		stages.EditingOperationChanged += delegate {
-			LaunchUpdateTimer();
-		};
 		stages.OperationFrozen += delegate {
-			LaunchUpdateTimer();
 			stageOperationAdding_hbox.Sensitive = false;
 		};
 		stages.OperationDefrozen += delegate {
 			stageOperationAdding_hbox.Sensitive = true;
 		};
+		stages.UIStateChanged += HandleStagesUIStateChanged;
 		
 		// Setting view widget events
 		view_widget.ExposeEvent += DrawCurrentStageOperationEditor;
-		
 		view_widget.MousePositionChanged += HandleView_widgetMousePositionChanged;
 		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		zoomwidget1.DividerChanged += delegate {
-			LaunchUpdateTimer();
+		zoomwidget1.ValueChanged += delegate {
+			stages.LaunchUpdateTimer();
 		};
+	}
+
+	void HandleStagesUIStateChanged (object sender, EventArgs e)
+	{
+		if (stages.TheUIState == UIState.Free)
+		{
+			loadRawAction.Sensitive = true;
+			loadStageAction.Sensitive = true;
+			saveStageAsAction.Sensitive = true;
+			renderToAction.Sensitive = true;
+			cancel_button.Visible = false;
+			progressbar.Visible = false;
+
+		}
+		else if (stages.TheUIState == UIState.Loading)
+		{
+			loadRawAction.Sensitive = false;
+			loadStageAction.Sensitive = false;
+			saveStageAsAction.Sensitive = false;
+			renderToAction.Sensitive = false;
+			cancel_button.Visible = true;
+			cancel_button.Sensitive = true;
+			progressbar.Visible = true;
+		}
+		else if (stages.TheUIState == UIState.Processing)
+		{
+			loadRawAction.Sensitive = true;
+			loadStageAction.Sensitive = true;
+			saveStageAsAction.Sensitive = true;
+			renderToAction.Sensitive = true;
+			cancel_button.Visible = false;
+			progressbar.Visible = true;
+		}		
 	}
 
 	bool HandleView_widgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
@@ -226,61 +178,6 @@ public partial class MainWindow : Gtk.Window
 		stages.DrawEditor(view_widget.GdkWindow, view_widget.CurrentImagePosition);
 	}
 
-	protected void LaunchUpdateTimer()
-	{
-		if (!update_timer_launched)
-		{
-			update_timer_launched = true;
-			GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
-				update_timer_launched = false;
-				switch (TheUIState)
-				{
-				case UIState.Processing:
-					// Already processing. Image processing needs to be interrupted, after 
-					// that we have to hit the update timer again
-					cancel_pending = true;
-					return true;
-				
-				case UIState.Loading:
-					// The image is loading. No refresh allowed. Just ignoring the command
-					return false;
-					
-				case UIState.Free:
-					// Updating and stopping the timer
-					if (stages.FrozenAt == null)
-					{
-						frozen = null;
-						UpdateStageAfterFrozen();
-					}
-					else
-					{
-						if (frozen == null)
-						{
-							if (UpdateFrozen())
-							{
-								UpdateStageAfterFrozen();
-							}
-							else
-							{
-								Console.WriteLine("Frozen image isn't updated.");
-							}
-						}
-						else
-						{
-							UpdateStageAfterFrozen();
-						}
-						
-					}
-					
-					return false;
-				default:
-					throw new Exception("Unhandled case occured: " + TheUIState);
-				}
-			}));
-		}
-	}
-
-
 	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
 	{
 		progressbar.Fraction = e.Progress;
@@ -293,10 +190,11 @@ public partial class MainWindow : Gtk.Window
 		{
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
-				if (view_widget.HDR != hdr) view_widget.HDR = hdr;
+				if (view_widget.HDR != stages.CurrentImage)
+					view_widget.HDR = stages.CurrentImage;
 				else
 					view_widget.UpdatePicture();
-				//view_widget.QueueDraw();
+
 				lastupdate = DateTime.Now;
 			}
 		}
@@ -304,225 +202,17 @@ public partial class MainWindow : Gtk.Window
 		while (Gtk.Application.EventsPending())
 			Gtk.Application.RunIteration();
 		
-		if (cancel_pending) e.Cancel = true;
+		if (stages.CancelPending) e.Cancel = true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
-		if (TheUIState != MainWindow.UIState.Free)
+		if (stages.TheUIState != UIState.Free)
 		{
-			cancel_pending = true;
+			stages.SetCancelPending();
 		}
 		Application.Quit ();
 		a.RetVal = true;
-	}
-	
-	protected virtual void OnSaveAsActionActivated (object sender, System.EventArgs e)
-	{
-	}
-	
-	private void ClearHDR()
-	{
-		view_widget.HDR = null;
-		view_widget.UpdatePicture();
-		hdr = null;
-		frozen = null;
-		GC.Collect();		// For freeing memory from unused hdr_src
-	}
-	
-	private void LoadStream(System.IO.Stream stream, ProgressMessageReporter callback, int downscale_by)
-	{
-		ClearHDR();
-		
-		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
-			if (callback != null) 
-			{
-				return callback(progress, "Parsing image...");
-			}
-			else 
-				return true; // If callback is not assigned, just continue
-		});
-		
-		if (ppl == null)
-		{
-			if (callback != null)
-			{
-				cancel_pending = false;
-				callback(0, "Loading cancelled");
-			}
-		}
-		else
-		{
-			if (downscale_by != 1)		
-			{
-				bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
-					if (callback != null) 
-					{
-						return callback(progress, "Downscaling...");
-					}
-					else 
-						return true; // If callback is not assigned, just continue
-				});
-				
-				if (dsres == false)
-				{
-					ppl = null;
-					if (callback != null)
-					{
-						cancel_pending = false;
-						callback(0, "Loading cancelled");
-					}
-				}
-			}
-		}
-		TheUIState = MainWindow.UIState.Free;
-		if (ppl != null)
-			stages.ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
-
-		view_widget.CenterImagePanning();
-		LaunchUpdateTimer();
-	}
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns>
-	/// True if complete, false if user hit Cancel
-	/// </returns>
-	bool UpdateFrozen()
-	{
-		bool res;
-		if (TheUIState != MainWindow.UIState.Processing)
-		{
-			UIState curstate = TheUIState;
-			TheUIState = MainWindow.UIState.Processing;
-			
-			if (ppl != null)
-			{
-				FloatPixmap frozen_tmp = FloatPixmap.FromPPM(ppl, 
-					delegate (double progress) {
-						return ImportRawAndLoadingReporter(progress, "Loading source image...");
-					}
-				);
-						
-					
-				if (frozen_tmp != null)
-				{
-					if ((double)zoomwidget1.Value < 0.999 ||
-						(double)zoomwidget1.Value > 1.001)
-					{
-						frozen_tmp.Downscale(zoomwidget1.Value,
-							delegate (double progress) {
-								return ImportRawAndLoadingReporter(progress, "Downscaling...");
-							}
-						);
-					}
-
-					if (stages.ApplyOperationsBeforeFrozenLine(frozen_tmp))
-					{
-						frozen = frozen_tmp;
-						progressbar.Text = "Operation completed";
-						progressbar.Fraction = 0;
-						res = true;
-					}
-					else
-					{
-						progressbar.Text = "Operation cancelled";
-						progressbar.Fraction = 0;
-						cancel_pending = false;
-						res = false;
-					}
-				}
-				else
-				{
-					progressbar.Text = "Operation cancelled";
-					progressbar.Fraction = 0;
-					cancel_pending = false;
-					res = false;
-				}
-			}
-			else
-			{
-				res = false;
-			}
-			
-			TheUIState = curstate;
-		}
-		else
-		{
-			res = false;
-		}
-		return res;
-	}
-	
-	/// <summary>
-	/// Assumes that frozen image is prepared already
-	/// </summary>
-	void UpdateStageAfterFrozen()
-	{
-		if (TheUIState != MainWindow.UIState.Processing)
-		{
-			UIState curstate = TheUIState;
-			TheUIState = MainWindow.UIState.Processing;
-
-			try
-			{
-				if (ppl != null)
-				{
-					if (frozen == null)
-					{
-						hdr = FloatPixmap.FromPPM(ppl, delegate (double progress) {
-							return ImportRawAndLoadingReporter(progress, "Loading source image...");
-						});
-						
-						if (hdr != null)
-						{
-							if ((double)zoomwidget1.Value < 0.999 ||
-								(double)zoomwidget1.Value > 1.001)
-							{
-								hdr.Downscale(zoomwidget1.Value,
-									delegate (double progress) {
-										return ImportRawAndLoadingReporter(progress, "Downscaling...");
-									}
-								);
-							}
-							view_widget.HDR = hdr;
-							view_widget.UpdatePicture();
-						}
-					}
-					else
-						hdr = new FloatPixmap(frozen);
-					
-					if (hdr != null)
-					{
-						if (stages.ApplyOperationsAfterFrozenLine(hdr))
-						{
-							progressbar.Text = "Operation completed";
-							progressbar.Fraction = 0;
-	
-							view_widget.UpdatePicture();
-						}
-						else
-						{
-							progressbar.Text = "Operation cancelled";
-							progressbar.Fraction = 0;
-							cancel_pending = false;
-						}
-					}
-					else
-					{
-						progressbar.Text = "Operation cancelled";
-						progressbar.Fraction = 0;
-						cancel_pending = false;
-					}
-				}
-			}
-			catch (UserCancelException)
-			{
-				// Do nothing. Just relax.
-			}
-			TheUIState = curstate;
-		}
 	}
 	
 	bool ImportRawAndLoadingReporter(double progress, string status)
@@ -531,7 +221,7 @@ public partial class MainWindow : Gtk.Window
 		progressbar.Text = status;
 		while (Application.EventsPending()) Application.RunIteration();
 
-		return (!cancel_pending);
+		return (!stages.CancelPending);
 	}
 	
 	/// <summary>
@@ -612,7 +302,7 @@ public partial class MainWindow : Gtk.Window
 	
 	protected void LoadRawImageActionPicked()
 	{
-		if (TheUIState == MainWindow.UIState.Loading)
+		if (stages.TheUIState == UIState.Loading)
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
@@ -640,26 +330,11 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ok)
 			{
-				UIState curstate = TheUIState;
-				TheUIState = MainWindow.UIState.Loading;
-				System.IO.MemoryStream strm = ImportRaw(FileName, ImportRawAndLoadingReporter);
-				if (strm == null)
-				{
-					cancel_pending = false;
-					progressbar.Fraction = 0;
-					progressbar.Text = "Importing cancelled";
-				}
-				else
-				{
-					LoadStream(strm, ImportRawAndLoadingReporter, PreScale);
-					strm.Close();
-					strm.Dispose();
-				}
-				TheUIState = curstate;
 			}
 		}
 	}
-	
+
+
 	protected virtual void OnImportFromDCRawActionActivated (object sender, System.EventArgs e)
 	{
 		GLib.Timeout.Add(1, delegate {
@@ -670,13 +345,12 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
 	{
-		cancel_pending = true;
+		stages.SetCancelPending();
 	}
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		if (TheUIState != MainWindow.UIState.Free)
-			cancel_pending = true;
+		stages.CancelAll();
 		Application.Quit();
 	}
 	
@@ -685,10 +359,6 @@ public partial class MainWindow : Gtk.Window
 		AboutBox abb = new AboutBox();
 		abb.Run();
 		abb.Destroy();
-	}
-	
-	protected virtual void OnUpdateDuringProcessingActionChanged (object o, Gtk.ChangedArgs args)
-	{
 	}
 	
 	protected virtual void OnUpdateDuringProcessingActionToggled (object sender, System.EventArgs e)
@@ -725,39 +395,7 @@ public partial class MainWindow : Gtk.Window
 		fcd.Destroy();
 	}
 	
-	public void LoadStage(string filename)
-	{
-		XmlDocument xdoc = new XmlDocument();
-		xdoc.Load(filename);
-		try
-		{
-			stages.FrozenAt = null;
-			stages.DeserializeFromXML(xdoc.ChildNodes[1], _StageOperationTypes);
-			
-			// Assigning our handlers
-			for (int i = 0; i < stages.StageQueue.Length; i++)
-			{
-				stages.Holders[stages.StageQueue[i]].OperationParametersWidget.UserModified += delegate {
-					LaunchUpdateTimer();
-				};
-				stages.StageQueue[i].ReportProgress += HandleProgress;
-			}
-
-			stage_vbox.CheckResize();
-		}
-		catch (Exception ex)
-		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
-			                                             MessageType.Error, ButtonsType.Ok, 
-			                                             ex.Message);
-			md.Title = "Stage file loading error";
-			md.Run();
-			md.Destroy();
-#if DEBUG
-			throw ex;
-#endif
-		}
-	}		
+		
 	
 	protected void OnLoadStageActionActivated (object sender, System.EventArgs e)
 	{
@@ -779,20 +417,7 @@ public partial class MainWindow : Gtk.Window
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			string fn = fcd.Filename;
-			GLib.Timeout.Add(100, delegate {
-				if (TheUIState == MainWindow.UIState.Processing)
-				{
-					cancel_pending = true;
-					return true;
-				}
-				else
-				{
-					fcd.Hide();
-					LoadStage(fn);
-					return false;
-				}
-			});
-			
+			stages.LaunchStageLoading(fcd.Filename);
 		}
 		fcd.Destroy();
 	}
@@ -803,11 +428,7 @@ public partial class MainWindow : Gtk.Window
 			Gtk.TreeIter ti;
 			stageOperationToAdd_combobox.GetActiveIter(out ti);
 			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-			StageOperation so = stages.CreateAndAddNewStageOperation(_StageOperationTypes[index]);
-			
-			stages.Holders[so].OperationParametersWidget.UserModified += delegate {
-				LaunchUpdateTimer();
-			};
+			StageOperation so = stages.CreateAndAddNewStageOperation(ExtendedStage._StageOperationTypes[index]);
 			
 			stage_vbox.CheckResize();
 			
@@ -874,16 +495,13 @@ public partial class MainWindow : Gtk.Window
 
 		if (accept)
 		{
+			/*
 			// Rendering
 			RenderingProgressWindow rpw = new RenderingProgressWindow();
 			rpw.ImageName = this.FileName;
 			rpw.Show();
 			
-			FloatPixmap renderDest = FloatPixmap.FromPPM(ppl, 
-				delegate (double progress) {
-					return rpw.SetStatusAndProgress(progress, "Loading source image...");
-				}
-			);
+			FloatPixmap renderDest = new FloatPixmap(src_img);
 			
 			// Rendering			
 			stages.ApplyAllOperations(renderDest);
@@ -909,11 +527,8 @@ public partial class MainWindow : Gtk.Window
 			
 			if (rp != null)
 				rp.Dispose();
+			*/
 		}
 	}
 
-	protected void OnZoomwidget1DividerChanged (object sender, System.EventArgs e)
-	{
-
-	}
 }

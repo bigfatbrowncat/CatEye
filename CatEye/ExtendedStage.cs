@@ -1,11 +1,46 @@
 using System;
+using System.Xml;
 using System.Collections.Generic;
 using CatEye.Core;
 
 namespace CatEye
 {
+	public enum UIState { Processing, Loading, Free };
+	public delegate bool ProgressMessageReporter(double progress, string status);
+	
 	public class ExtendedStage : Stage
 	{
+		private UIState _TheUIState = UIState.Free;
+		private bool update_timer_launched = false;
+		private bool mCancelPending = false;
+		private uint update_timer_delay = 500;
+		private PPMLoader ppl = null;
+		private FloatPixmap src_img = null;
+		private FloatPixmap mCurrentImage = null;
+		private FloatPixmap frozen = null;
+		private StageOperation _EditingOperation = null;
+		private StageOperation _FrozenAt = null;
+		private FrozenPanel _FrozenPanel;
+		private Gtk.VBox _StageVBox;
+		private double mZoomValue = 0.5;
+		private ProgressReporter mZoomingProgressReporter;
+		private ProgressMessageReporter mProgressMessagesReporter;
+		
+		protected Dictionary<StageOperation, StageOperationHolderWidget> _Holders = 
+			new Dictionary<StageOperation, StageOperationHolderWidget>();
+
+		public static readonly Type[] _StageOperationTypes = new Type[]
+		{
+			typeof(CompressionStageOperation),
+			typeof(BrightnessStageOperation),
+			typeof(UltraSharpStageOperation),
+			typeof(SaturationStageOperation),
+			typeof(ToneStageOperation),
+			typeof(BlackPointStageOperation),
+			typeof(LimitSizeStageOperation),
+			typeof(CrotateStageOperation),
+		};
+		
 		protected Type[] mStageOperationParametersWidgetTypes = new Type[]
 		{
 			typeof(CompressionStageOperationParametersWidget),
@@ -18,7 +53,15 @@ namespace CatEye
 			typeof(CrotateStageOperationParametersWidget),
 		};
 		
-		
+		protected void SetUIState(UIState value)
+		{
+			if (_TheUIState != value)
+			{
+				_TheUIState = value;
+				if (UIStateChanged != null)
+					UIStateChanged(this, EventArgs.Empty);
+			}
+		}
 		
 		protected Type FindTypeForStageOperation(Type[] types, Type stageOperationType)
 		{
@@ -42,20 +85,47 @@ namespace CatEye
 			return FindTypeWithStageOperationIDEqualTo(mStageOperationParametersTypes, id);
 		}
 		
-		private StageOperation _EditingOperation = null;
-		private StageOperation _FrozenAt = null;
-		private FrozenPanel _FrozenPanel;
-		private Gtk.VBox _StageVBox;
-
-		protected Dictionary<StageOperation, StageOperationHolderWidget> _Holders = 
-			new Dictionary<StageOperation, StageOperationHolderWidget>();
-
+		protected override void OnOperationActivityChanged ()
+		{
+			base.OnOperationActivityChanged ();
+			LaunchUpdateTimer();
+		}
+		
+		protected override void OnOperationIndexChanged ()
+		{
+			base.OnOperationIndexChanged ();
+			LaunchUpdateTimer();
+		}
+		
+		
+		public event EventHandler<ReportStageOperationProgressEventArgs> HandleProgress;
+		public event EventHandler<EventArgs> UIStateChanged;
 		public event EventHandler<EventArgs> EditingOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public ReadOnlyDictionary<StageOperation, StageOperationHolderWidget> Holders
 		{
 			get { return new ReadOnlyDictionary<StageOperation, StageOperationHolderWidget>(_Holders); }
+		}
+		
+		public void SetCancelPending()
+		{
+			mCancelPending = true;
+		}
+		
+		public UIState TheUIState 
+		{ 
+			get { return _TheUIState; } 
+		}
+		
+		public FloatPixmap CurrentImage
+		{
+			get { return mCurrentImage; }
+		}
+		
+		public bool CancelPending
+		{
+			get { return mCancelPending; }
 		}
 		
 		public StageOperation EditingOperation
@@ -75,6 +145,315 @@ namespace CatEye
 			}
 		}
 		
+		public void CancelAll()
+		{
+			if (TheUIState != UIState.Free)
+				SetCancelPending();
+		}
+		
+		public void LaunchStageLoading(string filename)
+		{
+			GLib.Timeout.Add(update_timer_delay, delegate {
+				if (TheUIState == UIState.Processing)
+				{
+					mCancelPending = true;
+					return true;
+				}
+				else
+				{
+					LoadStage(filename);
+					return false;
+				}
+			});
+		}
+		
+		public void LoadStage(string filename)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.Load(filename);
+
+			FrozenAt = null;
+			DeserializeFromXML(xdoc.ChildNodes[1], _StageOperationTypes);
+			
+			// Assigning our handlers
+			for (int i = 0; i < StageQueue.Length; i++)
+			{
+				Holders[StageQueue[i]].OperationParametersWidget.UserModified += delegate {
+					LaunchUpdateTimer();
+				};
+				
+				StageQueue[i].ReportProgress += delegate (object sender, ReportStageOperationProgressEventArgs args)
+				{
+					HandleProgress(sender, args);
+				};
+			}
+		}
+		
+		public void LoadStream(System.IO.Stream stream, ProgressMessageReporter callback)
+		{
+			ppl = PPMLoader.FromStream(stream, delegate (double progress) {
+				if (callback != null) 
+				{
+					return callback(progress, "Parsing image...");
+				}
+				else 
+					return true; // If callback is not assigned, just continue
+			});
+		}
+	
+		public void LoadRaw(System.IO.MemoryStream strm, int prescale, ProgressMessageReporter reporter)
+		{
+			UIState curstate = TheUIState;
+			SetUIState(UIState.Loading);
+			
+			if (strm == null)
+			{
+				mCancelPending = false;
+			}
+			else
+			{
+				LoadStream(strm, reporter);
+				strm.Close();
+				strm.Dispose();
+			}
+			SetUIState(curstate);
+		}
+		
+		public void LaunchUpdateTimer()
+		{
+			if (!update_timer_launched)
+			{
+				update_timer_launched = true;
+				GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
+					update_timer_launched = false;
+					switch (TheUIState)
+					{
+					case UIState.Processing:
+						// Already processing. Image processing needs to be interrupted, after 
+						// that we have to hit the update timer again
+						mCancelPending = true;
+						return true;
+					
+					case UIState.Loading:
+						// The image is loading. No refresh allowed. Just ignoring the command
+						return false;
+						
+					case UIState.Free:
+						// Updating and stopping the timer
+						if (FrozenAt == null)
+						{
+							frozen = null;
+							UpdateStageAfterFrozen();
+						}
+						else
+						{
+							if (frozen == null)
+							{
+								if (UpdateFrozen())
+								{
+									UpdateStageAfterFrozen();
+								}
+								else
+								{
+									Console.WriteLine("Frozen image isn't updated.");
+								}
+							}
+							else
+							{
+								UpdateStageAfterFrozen();
+							}
+							
+						}
+						
+						return false;
+					default:
+						throw new Exception("Unhandled case occured: " + TheUIState);
+					}
+				}));
+			}
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>
+		/// True if complete, false if user hit Cancel
+		/// </returns>
+		bool UpdateFrozen()
+		{
+			bool res;
+			if (TheUIState != UIState.Processing)
+			{
+				UIState curstate = TheUIState;
+				SetUIState(UIState.Processing);
+				
+				if (ppl != null)
+				{
+					FloatPixmap frozen_tmp = new FloatPixmap(src_img);
+						
+					if (frozen_tmp != null)
+					{
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
+						{
+							frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
+								return mProgressMessagesReporter(progress, "Zooming...");
+							});
+						}
+	
+						if (ApplyOperationsBeforeFrozenLine(frozen_tmp))
+						{
+							frozen = frozen_tmp;
+							res = true;
+						}
+						else
+						{
+							mCancelPending = false;
+							res = false;
+						}
+					}
+					else
+					{
+						mCancelPending = false;
+						res = false;
+					}
+				}
+				else
+				{
+					res = false;
+				}
+				
+				SetUIState(curstate);
+			}
+			else
+			{
+				res = false;
+			}
+			return res;
+		}
+		
+		/// <summary>
+		/// Assumes that frozen image is prepared already
+		/// </summary>
+		void UpdateStageAfterFrozen()
+		{
+			if (TheUIState != UIState.Processing)
+			{
+				UIState curstate = TheUIState;
+				SetUIState(UIState.Processing);
+	
+				try
+				{
+					if (ppl != null)
+					{
+						if (frozen == null)
+						{
+							mCurrentImage = new FloatPixmap(src_img);
+							
+							if (mCurrentImage != null)
+							{
+								if (mZoomValue < 0.999 || mZoomValue > 1.001)
+								{
+									mCurrentImage.ScaleFast(mZoomValue, mZoomingProgressReporter);
+								}
+//								view_widget.HDR = mCurrentImage;
+//								view_widget.UpdatePicture();
+							}
+						}
+						else
+							mCurrentImage = new FloatPixmap(frozen);
+						
+						if (mCurrentImage != null)
+						{
+							if (ApplyOperationsAfterFrozenLine(mCurrentImage))
+							{
+		
+//								view_widget.UpdatePicture();
+							}
+							else
+							{
+								mCancelPending = false;
+							}
+						}
+						else
+						{
+							mCancelPending = false;
+						}
+					}
+				}
+				catch (UserCancelException)
+				{
+					mCancelPending = false;
+				}
+				SetUIState(curstate);
+			}
+		}
+			
+		private void ClearHDR()
+		{
+			mCurrentImage = null;
+			frozen = null;
+//			view_widget.HDR = null;
+//			view_widget.UpdatePicture();
+		}
+
+		public void LoadStream(PPMLoader ppl, ProgressMessageReporter callback, int downscale_by)
+		{
+			ClearHDR();
+			
+			if (ppl == null)
+			{
+				if (callback != null)
+				{
+					mCancelPending = false;
+					callback(0, "Loading cancelled");
+				}
+			}
+			else
+			{
+				if (downscale_by != 1)		
+				{
+					bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
+						if (callback != null) 
+						{
+							return callback(progress, "Downscaling...");
+						}
+						else 
+							return true; // If callback is not assigned, just continue
+					});
+					
+					if (dsres == false)
+					{
+						ppl = null;
+						if (callback != null)
+						{
+							mCancelPending = false;
+							callback(0, "Loading cancelled");
+						}
+					}
+				}
+			}
+			if (ppl != null)
+			{
+				src_img = FloatPixmap.FromPPM(ppl, 
+					delegate (double progress) {
+						return mProgressMessagesReporter(progress, "Loading source image...");
+					}
+				);
+				
+				ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
+			}
+			else
+			{
+				src_img = null;
+				ReportImageChanged(0, 0);
+			}
+	
+			SetUIState(UIState.Free);
+			
+//			view_widget.CenterImagePanning();
+			LaunchUpdateTimer();
+		}
+
 		public StageOperation FrozenAt
 		{
 			get { return _FrozenAt; }
@@ -243,11 +622,13 @@ namespace CatEye
 		{
 			if (EditingOperationChanged != null)
 				EditingOperationChanged(this, EventArgs.Empty);
+			LaunchUpdateTimer();
 		}
 		protected virtual void OnOperationFrozen()
 		{
 			if (OperationFrozen != null)
 				OperationFrozen(this, EventArgs.Empty);
+			LaunchUpdateTimer();
 		}
 
 		protected virtual void OnOperationDefrozen()
@@ -272,6 +653,8 @@ namespace CatEye
 			if (attrs != null && attrs.Length > 0)
 				sohw.Title = (attrs[0] as StageOperationDescriptionAttribute).Name;
 			
+			sohw.OperationParametersWidget.UserModified += HandleSohwOperationParametersWidgetUserModified;
+			
 			// Setting events
 			sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
 			sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
@@ -291,11 +674,16 @@ namespace CatEye
 			ArrangeVBoxes();
 			
 			base.OnAddedToStage (operation);
+			LaunchUpdateTimer();
+		}
+
+		void HandleSohwOperationParametersWidgetUserModified (object sender, EventArgs e)
+		{
+			LaunchUpdateTimer();
 		}
 		
 		protected override void OnRemovedFromStage (StageOperation operation)
 		{
-			
 			if (_EditingOperation == operation) _EditingOperation = null;
 
 			StageOperationHolderWidget sohw = _Holders[operation];
@@ -307,13 +695,14 @@ namespace CatEye
 			sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
 			sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
 			sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
+			sohw.OperationParametersWidget.UserModified -= HandleSohwOperationParametersWidgetUserModified;
 			sohw.Dispose();
 			_Holders.Remove(operation);
-			
 			
 			ArrangeVBoxes();
 
 			base.OnRemovedFromStage (operation);
+			LaunchUpdateTimer();
 		}
 		
 		void HandleSohwRemoveButtonClicked (object sender, EventArgs e)

@@ -97,7 +97,7 @@ namespace CatEye.Core
 			return (byte)val;
 		}
 		
-		public void Downscale(double k, ProgressReporter callback)
+		public void ScaleFast(double k, ProgressReporter callback)
 		{
 			float[,] new_r = new float[(int)(width * k), (int)(height * k)];
 			float[,] new_g = new float[(int)(width * k), (int)(height * k)];
@@ -393,8 +393,8 @@ namespace CatEye.Core
 							for (int k = 0; k < points; k++)
 							{
 								double phi = rnd.NextDouble() * 2 * Math.PI;
-								double alpha = 3;
-								double rad = -radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+								//double alpha = 3;
+								double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
 							
 								int u = i + (int)(rad * Math.Cos(phi));
 								int v = j + (int)(rad * Math.Sin(phi));
@@ -417,7 +417,7 @@ namespace CatEye.Core
 										f = -limit_down * (1 - Math.Exp(-f / limit_down));
 									}
 									
-									double scale = f / 10;
+									double scale = f / 5;
 									
 									scale_matrix[u, v] += scale;
 									scale_matrix_adds[u, v] ++;
