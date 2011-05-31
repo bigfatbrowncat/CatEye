@@ -20,8 +20,8 @@ ShowUnInstDetails show
 
 
 ;Name and file
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
+Name "${PRODUCT_NAME} ${VERSION_LONG}"
+OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}-${VERSION_LONG}-setup.exe"
 
 ;Default installation folder
 InstallDir $ProgramFiles\${PRODUCT_NAME}
@@ -103,7 +103,7 @@ Function DotNetDownload
       MessageBox MB_ICONINFORMATION "Installation aborted."
       abort
     download:
-      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe again."
+      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${VERSION_LONG}-setup.exe again."
       ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
       quit
 FunctionEnd
