@@ -150,6 +150,8 @@ public partial class MainWindow : Gtk.Window
 			cancel_button.Visible = true;
 			cancel_button.Sensitive = true;
 			progressbar.Visible = true;
+			progressbar.Fraction = 0;
+			progressbar.Text = "";
 		}
 		else if (stages.TheUIState == UIState.Processing)
 		{
@@ -159,6 +161,8 @@ public partial class MainWindow : Gtk.Window
 			renderToAction.Sensitive = true;
 			cancel_button.Visible = false;
 			progressbar.Visible = true;
+			progressbar.Fraction = 0;
+			progressbar.Text = "";
 		}		
 	}
 
@@ -351,13 +355,11 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ok)
 			{
-				progressbar.Visible = true;
 				MemoryStream ms = ImportRaw(FileName, ImportRawAndLoadingReporter);
 				stages.LoadRaw(ms, PreScale, ImportRawAndLoadingReporter);
 				
 				ms.Close();
 				ms.Dispose();
-				progressbar.Visible = false;
 			}
 		}
 	}

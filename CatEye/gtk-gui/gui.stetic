@@ -375,7 +375,7 @@
             <property name="MemberName">_TitleWidget</property>
             <property name="Events">ButtonPressMask</property>
             <property name="Active">False</property>
-            <property name="View">False</property>
+            <property name="Edit">False</property>
             <property name="Freeze">False</property>
             <property name="FrozenButtonsState">False</property>
           </widget>
