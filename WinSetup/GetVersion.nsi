@@ -18,6 +18,16 @@ Section
  ## Write it to a !define for use in main script
  FileOpen $R0 "..\${PKGDIR}bin\${config}\Version.txt" w
   FileWrite $R0 '!define PRODUCT_VERSION "$R1"'
+  FileWriteByte $R0 "13"
+  FileWriteByte $R0 "10"
+  StrCpy $R1 "$R2.$R3.$R4"
+  FileWrite $R0 '!define VERSION_LONG "$R1"'
+  FileWriteByte $R0 "13"
+  FileWriteByte $R0 "10"
+  StrCpy $R1 "$R2.$R3"
+  FileWrite $R0 '!define VERSION_SHORT "$R1"'
+  FileWriteByte $R0 "13"
+  FileWriteByte $R0 "10"
  FileClose $R0
  
 SectionEnd

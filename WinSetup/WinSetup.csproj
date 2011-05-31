@@ -21,8 +21,8 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="Build" command="debug.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
-        <Command type="Clean" command="del /f CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Execute" command="CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -34,8 +34,8 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="Build" command="release.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
-        <Command type="Execute" command="CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
-        <Command type="Clean" command="del /f CatEye-0.3-setup.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Execute" command="CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
+        <Command type="Clean" command="del /f CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -167,9 +167,6 @@
     <None Include="debug.cmd" />
     <None Include="gtk-postinstall.bat" />
     <None Include="release.cmd" />
-    <None Include="CatEyeSetup_001.nsi">
-      <Visible>False</Visible>
-    </None>
     <None Include="GetVersion.nsi" />
   </ItemGroup>
   <ItemGroup>
