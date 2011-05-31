@@ -41,7 +41,7 @@ namespace CatEye
 			}
 		}
 		
-		public bool View
+		public bool Edit
 		{
 			get { return edit_togglebutton.Active; }
 			set 

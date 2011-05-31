@@ -25,12 +25,12 @@ namespace CatEye
 			set { _TitleWidget.Title = value; }
 		}
 		
-		public bool View
+		public bool Edit
 		{
-			get { return _TitleWidget.View; }
+			get { return _TitleWidget.Edit; }
 			set 
 			{ 
-				_TitleWidget.View = value; 
+				_TitleWidget.Edit = value; 
 			}
 		}
 		

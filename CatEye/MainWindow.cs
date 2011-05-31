@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using Gtk;
@@ -47,7 +48,7 @@ public partial class MainWindow : Gtk.Window
 
 		// Creating stage operations and stages
 		stages = new ExtendedStage(stage_vbox);
-
+		
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
 		for (int i = 0; i < ExtendedStage._StageOperationTypes.Length; i++)
@@ -68,6 +69,27 @@ public partial class MainWindow : Gtk.Window
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
 		
+		// Setting stages events
+		
+		stages.OperationFrozen += delegate {
+			stageOperationAdding_hbox.Sensitive = false;
+		};
+		stages.OperationDefrozen += delegate {
+			stageOperationAdding_hbox.Sensitive = true;
+		};
+		stages.ImageChanged += delegate {
+			view_widget.HDR = stages.CurrentImage;
+		};
+		stages.ImageUpdated += delegate {
+			view_widget.UpdatePicture();
+		};
+		stages.OperationAddedToStage += HandleStagesOperationAddedToStage;
+		stages.OperationRemovedFromStage += HandleStagesOperationRemovedFromStage;
+		stages.UIStateChanged += HandleStagesUIStateChanged;
+		stages.RawLoaded += delegate {
+			view_widget.CenterImagePanning();
+		};
+		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
@@ -85,25 +107,26 @@ public partial class MainWindow : Gtk.Window
 			md.Destroy();
 		}
 		
-		// Setting stages events
-		
-		stages.OperationFrozen += delegate {
-			stageOperationAdding_hbox.Sensitive = false;
-		};
-		stages.OperationDefrozen += delegate {
-			stageOperationAdding_hbox.Sensitive = true;
-		};
-		stages.UIStateChanged += HandleStagesUIStateChanged;
-		
 		// Setting view widget events
 		view_widget.ExposeEvent += DrawCurrentStageOperationEditor;
 		view_widget.MousePositionChanged += HandleView_widgetMousePositionChanged;
 		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
+		stages.ZoomValue = zoomwidget1.Value;
 		zoomwidget1.ValueChanged += delegate {
-			stages.LaunchUpdateTimer();
+			stages.ZoomValue = zoomwidget1.Value;
 		};
+	}
+
+	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
+	{
+		e.Operation.ReportProgress -= HandleProgress;
+	}
+
+	void HandleStagesOperationAddedToStage (object sender, OperationAddedToStageEventArgs e)
+	{
+		e.Operation.ReportProgress += HandleProgress;
 	}
 
 	void HandleStagesUIStateChanged (object sender, EventArgs e)
@@ -298,8 +321,6 @@ public partial class MainWindow : Gtk.Window
 		return null;
 	}
 	
-	
-	
 	protected void LoadRawImageActionPicked()
 	{
 		if (stages.TheUIState == UIState.Loading)
@@ -330,6 +351,13 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ok)
 			{
+				progressbar.Visible = true;
+				MemoryStream ms = ImportRaw(FileName, ImportRawAndLoadingReporter);
+				stages.LoadRaw(ms, PreScale, ImportRawAndLoadingReporter);
+				
+				ms.Close();
+				ms.Dispose();
+				progressbar.Visible = false;
 			}
 		}
 	}
@@ -416,11 +444,11 @@ public partial class MainWindow : Gtk.Window
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
-			string fn = fcd.Filename;
 			stages.LaunchStageLoading(fcd.Filename);
 		}
 		fcd.Destroy();
 	}
+	
 	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
 	{
 		if (stages.FrozenAt == null)
@@ -431,8 +459,6 @@ public partial class MainWindow : Gtk.Window
 			StageOperation so = stages.CreateAndAddNewStageOperation(ExtendedStage._StageOperationTypes[index]);
 			
 			stage_vbox.CheckResize();
-			
-			so.ReportProgress += HandleProgress;
 		}
 	}
 

@@ -81,7 +81,6 @@ namespace CatEye.Core
 		public void AddStageOperation(StageOperation operation)
 		{
 			_StageQueue.Add(operation);
-			
 			OnAddedToStage(operation);
 		}
 
@@ -165,7 +164,7 @@ namespace CatEye.Core
 
 					// Deserializing stage operation parameters
 					sop.DeserializeFromXML(ch);
-
+					
 					sos.Add(so);
 					
 					OnStageOperationDeserialized(so, sop);

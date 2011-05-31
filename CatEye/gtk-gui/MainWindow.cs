@@ -259,7 +259,7 @@ public partial class MainWindow
 		this.zoomwidget1 = new global::CatEye.Widgets.ZoomWidget ();
 		this.zoomwidget1.Events = ((global::Gdk.EventMask)(256));
 		this.zoomwidget1.Name = "zoomwidget1";
-		this.zoomwidget1.Value = 0;
+		this.zoomwidget1.Value = 0.25;
 		this.hbox1.Add (this.zoomwidget1);
 		global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.zoomwidget1]));
 		w31.Position = 3;
