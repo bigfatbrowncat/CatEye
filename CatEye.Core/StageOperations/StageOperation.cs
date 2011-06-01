@@ -5,9 +5,9 @@ namespace CatEye
 {
 	public class DoStageOperationEventArgs : EventArgs
 	{
-		FloatPixmap _hdp;
-		public FloatPixmap HDP { get { return _hdp; } }
-		public DoStageOperationEventArgs(FloatPixmap hdp) { _hdp = hdp; }
+		IBitmapCore _hdp;
+		public IBitmapCore HDP { get { return _hdp; } }
+		public DoStageOperationEventArgs(IBitmapCore hdp) { _hdp = hdp; }
 	}
 	
 	public class ReportStageOperationProgressEventArgs : EventArgs
@@ -85,7 +85,7 @@ namespace CatEye
 				return true;
 		}
 		
-		public virtual void OnDo(FloatPixmap hdp)
+		public virtual void OnDo(IBitmapCore hdp)
 		{
 		}
 		

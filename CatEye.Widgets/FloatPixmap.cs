@@ -3,36 +3,30 @@ using System;
 
 namespace CatEye.Core
 {
-	/// <summary>
-	/// Used to report prograss to caller. If caller returns false,
-	/// the callee should interrupt the process
-	/// </summary>
-	public delegate bool ProgressReporter(double progress);
-	public class UserCancelException : Exception
+	public class FloatPixmap : IBitmapCore
 	{
-	}
-	
-	public class FloatPixmap
-	{
-		private const int REPORT_EVERY_NTH_LINE = 5;
+		protected const int REPORT_EVERY_NTH_LINE = 5;
 		
-		float[,] r_chan, g_chan, b_chan;
+		protected float[,] r_chan, g_chan, b_chan;
 		
-		public int width, height;
+		protected int mWidth, mHeight;
 		
-		private FloatPixmap ()
+		public int Width { get { return mWidth; } }
+		public int Height { get { return mHeight; } }
+		
+		protected FloatPixmap ()
 		{
 			
 		}
 		public FloatPixmap (FloatPixmap src)
 		{
-			width = src.width; height = src.height;
-			r_chan = new float[width, height];
-			g_chan = new float[width, height];
-			b_chan = new float[width, height];
+			mWidth = src.mWidth; mHeight = src.mHeight;
+			r_chan = new float[mWidth, mHeight];
+			g_chan = new float[mWidth, mHeight];
+			b_chan = new float[mWidth, mHeight];
 			
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				r_chan[i, j] = src.r_chan[i, j];
 				g_chan[i, j] = src.g_chan[i, j];
@@ -41,85 +35,91 @@ namespace CatEye.Core
 			
 		}
 		
+		public object Clone ()
+		{
+			return new FloatPixmap(this);
+		}
+		
 		public static FloatPixmap FromPPM(PPMLoader ppm, ProgressReporter callback)
 		{
-			// Applying inverse hdr function: x = -N * ln[ (N - y) / N ]
-			FloatPixmap res = new FloatPixmap();
+			FloatPixmap fbg = new FloatPixmap();
 			
-			res.width = ppm.Header.Width;
-			res.height = ppm.Header.Height;
+			if (fbg.LoadDataFromPPM(ppm, callback))
+				return fbg;
+			else
+				return null;
+		}
+		
+		protected bool LoadDataFromPPM(PPMLoader ppm, ProgressReporter callback)
+		{
+			mWidth = ppm.Header.Width;
+			mHeight = ppm.Header.Height;
 			
-			res.r_chan = new float[res.width, res.height];
-			res.g_chan = new float[res.width, res.height];
-			res.b_chan = new float[res.width, res.height];
-			for (int i = 0; i < res.width; i++)
+			r_chan = new float[mWidth, mHeight];
+			g_chan = new float[mWidth, mHeight];
+			b_chan = new float[mWidth, mHeight];
+			
+			for (int i = 0; i < mWidth; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback((double)i / res.width / 2)) 
-						return null;
+					if (!callback((double)i / mWidth / 2)) 
+						return false;
 				}
-				for (int j = 0; j < res.height; j++)
+				for (int j = 0; j < mHeight; j++)
 				{
-					res.r_chan[i, j] = ppm.RChannel[i, j];
-					res.g_chan[i, j] = ppm.GChannel[i, j];
-					res.b_chan[i, j] = ppm.BChannel[i, j];
+					r_chan[i, j] = ppm.RChannel[i, j];
+					g_chan[i, j] = ppm.GChannel[i, j];
+					b_chan[i, j] = ppm.BChannel[i, j];
 				}
 			}
 			
 			// Searching for maximum
-			double Max = res.CalcMaxLight();
+			double Max = CalcMaxLight();
 			
 			
 			// Normalizing to 0..1
-			for (int i = 0; i < res.width; i++)
+			for (int i = 0; i < mWidth; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
 				{
-					if (!callback(0.5 + (double)i / res.width / 2)) 
-						return null;
+					if (!callback(0.5 + (double)i / mWidth / 2)) 
+						return false;
 				}
-				for (int j = 0; j < res.height; j++)
+				for (int j = 0; j < mHeight; j++)
 				{
-					res.r_chan[i, j] /= (float)Max;
-					res.g_chan[i, j] /= (float)Max;
-					res.b_chan[i, j] /= (float)Max;
+					r_chan[i, j] /= (float)Max;
+					g_chan[i, j] /= (float)Max;
+					b_chan[i, j] /= (float)Max;
 				}
 			}
-
-			return res;
+			
+			return true;
 		}
 
-		private byte cut(double val)
-		{
-			if (val > 255) return 255;
-			if (val < 0) return 0;
-			return (byte)val;
-		}
-		
 		public void ScaleFast(double k, ProgressReporter callback)
 		{
-			float[,] new_r = new float[(int)(width * k), (int)(height * k)];
-			float[,] new_g = new float[(int)(width * k), (int)(height * k)];
-			float[,] new_b = new float[(int)(width * k), (int)(height * k)];
-			int[,] sum = new int[(int)(width * k), (int)(height * k)];
+			float[,] new_r = new float[(int)(mWidth * k), (int)(mHeight * k)];
+			float[,] new_g = new float[(int)(mWidth * k), (int)(mHeight * k)];
+			float[,] new_b = new float[(int)(mWidth * k), (int)(mHeight * k)];
+			int[,] sum = new int[(int)(mWidth * k), (int)(mHeight * k)];
 
-			for (int i = 0; i < (int)(width * k); i++)
+			for (int i = 0; i < (int)(mWidth * k); i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)i / (width * k)))
+					if (!callback((double)i / (mWidth * k)))
 					{
 						throw new UserCancelException();
 					}
 				}
-				for (int j = 0; j < (int)(height * k); j++)
+				for (int j = 0; j < (int)(mHeight * k); j++)
 				{
 					double r = 0, g = 0, b = 0; int s = 0;
 					for (int u = (int)((double)i / k); u < (int)(((double)i + 1) / k); u++)
 					for (int v = (int)((double)j / k); v < (int)(((double)j + 1) / k); v++)
 					{
-						if (u < width && v < height)
+						if (u < mWidth && v < mHeight)
 						{
 							r += r_chan[u, v];
 							g += g_chan[u, v];
@@ -135,8 +135,8 @@ namespace CatEye.Core
 				
 			}
 			
-			for (int i = 0; i < (int)(width * k); i++)
-				for (int j = 0; j < (int)(height * k); j++)
+			for (int i = 0; i < (int)(mWidth * k); i++)
+				for (int j = 0; j < (int)(mHeight * k); j++)
 			{
 				new_r[i, j] /= sum[i, j];
 				new_g[i, j] /= sum[i, j];
@@ -146,11 +146,11 @@ namespace CatEye.Core
 			r_chan = new_r;
 			g_chan = new_g;
 			b_chan = new_b;
-			width = (int)(width * k);
-			height = (int)(height * k);
+			mWidth = (int)(mWidth * k);
+			mHeight = (int)(mHeight * k);
 		}
 		
-		/// <summary>
+/*		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="left">
@@ -195,14 +195,15 @@ namespace CatEye.Core
 			width = i2 - i1 + 1;
 			height = j2 - j1 + 1;
 		}
+*/
 		
 		public void AmplitudeMultiply(double Amplitude)
 		{
 			double local_mid = 0;
-			double[,] light = new double[width, height];
+			double[,] light = new double[mWidth, mHeight];
 			
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				r_chan[i, j] *= (float)Amplitude;
 				g_chan[i, j] *= (float)Amplitude;
@@ -213,11 +214,11 @@ namespace CatEye.Core
 		public double AmplitudeFindMedian()
 		{
 			double local_mid = 0;
-			double[,] light = new double[width, height];
+			double[,] light = new double[mWidth, mHeight];
 			
 			// Searching median
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                               g_chan[i, j] * g_chan[i, j] +
@@ -225,21 +226,21 @@ namespace CatEye.Core
 				
 				local_mid += light[i, j];
 			}
-			local_mid /= (double)width * height;
+			local_mid /= (double)mWidth * mHeight;
 			
 			return local_mid;
 		}
 
 		public double AmplitudeFindBlackPoint()
 		{
-			double[,] light = new double[width, height];
+			double[,] light = new double[mWidth, mHeight];
 			
 			// Searching minimum
 			double local_min = Math.Sqrt(r_chan[0, 0] * r_chan[0, 0] +
 				                         g_chan[0, 0] * g_chan[0, 0] +
 				                         b_chan[0, 0] * b_chan[0, 0]) / Math.Sqrt(3);
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                               g_chan[i, j] * g_chan[i, j] +
@@ -253,8 +254,8 @@ namespace CatEye.Core
 		
 		public void AmplitudeAdd(double delta)
 		{
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{				
 				double amp = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 				                       g_chan[i, j] * g_chan[i, j] + 
@@ -276,11 +277,11 @@ namespace CatEye.Core
 			}
 		}
 		
-		public double CalcMaxLight()
+		protected double CalcMaxLight()
 		{
 			double Max = 0;
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 							  			g_chan[i, j] * g_chan[i, j] + 
@@ -294,8 +295,8 @@ namespace CatEye.Core
 		public void CompressLight(double power, double dark_preserving)
 		{
 	
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                         g_chan[i, j] * g_chan[i, j] +
@@ -309,57 +310,15 @@ namespace CatEye.Core
 			
 		}
 		
-		public delegate void PointProcessingDelegate(int u, int v);
-		
-		public interface ISharpeningSamplingMethod
-		{
-			void DoSampling(PointProcessingDelegate ppd, int radius);
-		}
-		
-		public class StraightSharpeningSamplingMethod : ISharpeningSamplingMethod
-		{
-			public void DoSampling (FloatPixmap.PointProcessingDelegate ppd, int radius)
-			{
-				// Go thru all the square
-				for (int u = - radius; u <= radius; u++)
-				for (int v = - radius; v <= radius; v++)
-				{
-					ppd(u, v);
-				}
-			}
-
-		}
-		
-		public class MonteCarloSharpeningSamplingMethod : ISharpeningSamplingMethod
-		{
-			public int SamplesCount;
-			public Random rnd;
-			public MonteCarloSharpeningSamplingMethod(int samplesCount, Random rnd)
-			{
-				SamplesCount = samplesCount;
-				this.rnd = rnd;
-			}
-			public void DoSampling (FloatPixmap.PointProcessingDelegate ppd, int radius)
-			{
-				for (int k = 0; k < SamplesCount; k++)
-				{
-					int u = (int)(rnd.NextDouble() * 2 * radius - radius);
-					int v = (int)(rnd.NextDouble() * 2 * radius - radius);
-					
-					ppd(u, v);
-				}
-			}
-		}
-		
 		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, int points, ProgressReporter callback)
 		{
-			double[,] light = new double[width, height];
+			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
 			unsafe {
 	
 				// Сalculating light
-				for (int i = 0; i < width; i++)
-				for (int j = 0; j < height; j++)
+				for (int i = 0; i < mWidth; i++)
+				for (int j = 0; j < mHeight; j++)
 				{
 					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 								  			g_chan[i, j] * g_chan[i, j] + 
@@ -368,27 +327,27 @@ namespace CatEye.Core
 				}
 			}
 			
-			double[,] scale_matrix = new double[width, height];
-			int[,] scale_matrix_adds = new int[width, height];
+			double[,] scale_matrix = new double[mWidth, mHeight];
+			int[,] scale_matrix_adds = new int[mWidth, mHeight];
 			
-			int radius = (int)((width + height) / 2 * radius_part + 1);
+			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
 			
 			Random rnd = new Random();
 			
 			Console.WriteLine("Calculating scale factors...");
 			unsafe {
-				for (int i = 0; i < width + radius; i++)	// "radius" added to process all "i_back" values
+				for (int i = 0; i < mWidth + radius; i++)	// "radius" added to process all "i_back" values
 				{
 					int i_back = i - radius;
 					if (callback != null)
 					{
-						if (!callback((double)i / (width + radius)))
+						if (!callback((double)i / (mWidth + radius)))
 							throw new UserCancelException();
 					}
 	
-					for (int j = 0; j < height; j++)
+					for (int j = 0; j < mHeight; j++)
 					{
-						if (i < width)
+						if (i < mWidth)
 						{
 							for (int k = 0; k < points; k++)
 							{
@@ -399,7 +358,7 @@ namespace CatEye.Core
 								int u = i + (int)(rad * Math.Cos(phi));
 								int v = j + (int)(rad * Math.Sin(phi));
 								
-								if (u >= 0 && u < width && v >= 0 && v < height)
+								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
@@ -452,8 +411,8 @@ namespace CatEye.Core
 		{
 			double maxlight = CalcMaxLight();
 			
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				// calculating current norm
 				double light_before = Math.Sqrt(
@@ -491,8 +450,8 @@ namespace CatEye.Core
 			
 		public void ApplySaturation(double satur_factor)
 		{
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				double light_sqr = r_chan[i, j] * r_chan[i, j] + 
 							  			 g_chan[i, j] * g_chan[i, j] + 
@@ -512,14 +471,14 @@ namespace CatEye.Core
 			
 			black *= max_light;
 			
-			for (int j = 0; j < height; j++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)j / this.height)) return;
+					if (!callback((double)j / this.mHeight)) return;
 				}
 				
-				for (int i = 0; i < width; i++)
+				for (int i = 0; i < mWidth; i++)
 				{
 					double light = Math.Sqrt(
 									r_chan[i, j] * r_chan[i, j] + 
@@ -537,10 +496,7 @@ namespace CatEye.Core
 				}
 			}
 		}
-
-		/// <summary>
-		/// Crop and rotate the image
-		/// </summary>
+				
 		public bool Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback)
 		{
 			beta *= Math.PI / 180.0;
@@ -554,14 +510,14 @@ namespace CatEye.Core
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
 			
-			for (int n = 0; n < height; n++)
+			for (int n = 0; n < mHeight; n++)
 			{
 				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)n / height)) return false;
+					if (!callback((double)n / mHeight)) return false;
 				}
 				
-				for (int m = 0; m < width; m++)
+				for (int m = 0; m < mWidth; m++)
 				{
 					// Rotated source matrix squares
 					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
@@ -620,7 +576,7 @@ namespace CatEye.Core
 			r_chan = newr;
 			g_chan = newg;
 			b_chan = newb;
-			width = crop_w; height = crop_h;
+			mWidth = crop_w; mHeight = crop_h;
 			return true;
 		}
 		
@@ -631,8 +587,8 @@ namespace CatEye.Core
 			double kx = 1, ky = 1;
 			
 			// Scaling coefficients:
-			kx = (double)targetWidth / width;
-			ky = (double)targetHeight / height;
+			kx = (double)targetWidth / mWidth;
+			ky = (double)targetHeight / mHeight;
 
 			// Creating new image
 			float[,] newr = new float[targetWidth, targetWidth];
@@ -642,14 +598,14 @@ namespace CatEye.Core
 			
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
-			for (int n = 0; n < height; n++)
+			for (int n = 0; n < mHeight; n++)
 			{
 				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)n / height)) return false;
+					if (!callback((double)n / mHeight)) return false;
 				}
 				
-				for (int m = 0; m < width; m++)
+				for (int m = 0; m < mWidth; m++)
 				{
 					// Transformed source matrix squares
 					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
@@ -695,8 +651,15 @@ namespace CatEye.Core
 			r_chan = newr;
 			g_chan = newg;
 			b_chan = newb;
-			width = targetWidth; height = targetHeight;
+			mWidth = targetWidth; mHeight = targetHeight;
 			return true;
+		}
+		
+		private byte cut(double val)
+		{
+			if (val > 255) return 255;
+			if (val < 0) return 0;
+			return (byte)val;
 		}
 		
 		/// <summary>
@@ -716,8 +679,8 @@ namespace CatEye.Core
 			
 			// counting the maximum light value
 			double max = 0;
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
 				double r = N * (1 - Math.Exp(-r_chan[i, j] / N));
 				double g = N * (1 - Math.Exp(-g_chan[i, j] / N));
@@ -730,20 +693,20 @@ namespace CatEye.Core
 			byte *cur_row = (byte *)buf.Pixels;
 			for (int j = 0; j < h; j++)
 			{
-				if (j >= this.height)
+				if (j >= this.mHeight)
 				{
 					break;
 				}
 				
 				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)j / this.height)) return;
+					if (!callback((double)j / this.mHeight)) return;
 				}
 				
 				byte *cur_pixel = cur_row;
 				for (int i = 0; i < w; i++)
 				{
-					if (i >= this.width)
+					if (i >= this.mWidth)
 					{
 						break;
 					}
@@ -760,5 +723,6 @@ namespace CatEye.Core
 				cur_row += stride;
 			}
 		}
+		
 	}
 }

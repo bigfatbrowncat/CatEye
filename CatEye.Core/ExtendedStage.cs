@@ -14,15 +14,15 @@ namespace CatEye
 		private bool update_timer_launched = false;
 		private bool mCancelPending = false;
 		private uint update_timer_delay = 500;
-		private PPMLoader ppl = null;
-		private FloatPixmap src_img = null;
-		private FloatPixmap mCurrentImage = null;
-		private FloatPixmap frozen = null;
+		private IBitmapCore mSourceImage = null;
+		private IBitmapCore mCurrentImage = null;
+		private IBitmapCore frozen = null;
 		private StageOperation _EditingOperation = null;
 		private StageOperation _FrozenAt = null;
 		private double mZoomValue = 0.5;
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
 		private StageOperationHolderFactory mSOHolderFactory;
+		private bool _UpdatePending = false;
 		
 		protected Dictionary<StageOperation, IStageOperationHolder> _Holders = 
 			new Dictionary<StageOperation, IStageOperationHolder>();
@@ -34,7 +34,6 @@ namespace CatEye
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public event EventHandler<EventArgs> ImageChanged;
 		public event EventHandler<EventArgs> ImageUpdated;
-		public event EventHandler<EventArgs> RawLoaded;
 		
 		public static readonly Type[] _StageOperationTypes = new Type[]
 		{
@@ -47,6 +46,20 @@ namespace CatEye
 			typeof(LimitSizeStageOperation),
 			typeof(CrotateStageOperation),
 		};
+		
+		public IBitmapCore SourceImage
+		{
+			get { return mSourceImage; }
+			set 
+			{ 
+				mCurrentImage = null;
+				frozen = null;
+				mSourceImage = value;
+				
+				if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+				LaunchUpdateTimer();
+			}
+		}
 		
 		public double ZoomValue
 		{
@@ -66,23 +79,6 @@ namespace CatEye
 				if (UIStateChanged != null)
 					UIStateChanged(this, EventArgs.Empty);
 			}
-		}
-		
-		protected Type GetStageOperationParametersWidget(Type stageOperationType)
-		{
-			object[] attrs = stageOperationType.GetCustomAttributes(typeof(StageOperationIDAttribute), true);
-			if (attrs.Length == 0)
-			{
-				return null;
-			}
-			string id = ((StageOperationIDAttribute)attrs[0]).ID;
-			return FindTypeWithStageOperationIDEqualTo(mStageOperationParametersTypes, id);
-		}
-		
-		protected virtual void OnRawLoaded()
-		{
-			if (RawLoaded != null)
-				RawLoaded(this, EventArgs.Empty);
 		}
 		
 		protected override void OnOperationActivityChanged ()
@@ -117,7 +113,7 @@ namespace CatEye
 			get { return _TheUIState; } 
 		}
 		
-		public FloatPixmap CurrentImage
+		public IBitmapCore CurrentImage
 		{
 			get { return mCurrentImage; }
 		}
@@ -150,6 +146,7 @@ namespace CatEye
 				SetCancelPending();
 		}
 		
+		/*
 		public void LaunchStageLoading(string filename)
 		{
 			GLib.Timeout.Add(update_timer_delay, delegate {
@@ -165,6 +162,7 @@ namespace CatEye
 				}
 			});
 		}
+		*/
 		
 		public void LoadStage(string filename)
 		{
@@ -183,24 +181,28 @@ namespace CatEye
 			}
 		}
 		
+		
+		
 		public void LaunchUpdateTimer()
 		{
 			if (!update_timer_launched)
 			{
 				update_timer_launched = true;
-				GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
-					update_timer_launched = false;
+				_UpdatePending = false;
+/*				GLib.Timeout.Add(update_timer_delay, new GLib.TimeoutHandler(delegate {
+					update_timer_launched = false;*/
 					switch (TheUIState)
 					{
 					case UIState.Processing:
 						// Already processing. Image processing needs to be interrupted, after 
 						// that we have to hit the update timer again
 						mCancelPending = true;
-						return true;
+						_UpdatePending = true;
+						return;
 					
 					case UIState.Loading:
 						// The image is loading. No refresh allowed. Just ignoring the command
-						return false;
+						return;
 						
 					case UIState.Free:
 						// Updating and stopping the timer
@@ -229,11 +231,11 @@ namespace CatEye
 							
 						}
 						
-						return false;
+						return;
 					default:
 						throw new Exception("Unhandled case occured: " + TheUIState);
 					}
-				}));
+//				}));
 			}
 		}
 		
@@ -253,26 +255,23 @@ namespace CatEye
 					UIState curstate = TheUIState;
 					SetUIState(UIState.Processing);
 					
-					if (ppl != null)
+					IBitmapCore frozen_tmp = (IBitmapCore)mSourceImage.Clone();
+						
+					if (frozen_tmp != null)
 					{
-						FloatPixmap frozen_tmp = new FloatPixmap(src_img);
-							
-						if (frozen_tmp != null)
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
 						{
-							if (mZoomValue < 0.999 || mZoomValue > 1.001)
-							{
-								frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
-									if (ProgressMessagesReporter != null) 
-												return ProgressMessagesReporter(progress, "Zooming...");
-											else 
-												return true; // If callback is not assigned, just continue
-								});
-							}
-		
-							ApplyOperationsBeforeFrozenLine(frozen_tmp);
-							frozen = frozen_tmp;
-							res = true;
+							frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
+								if (ProgressMessagesReporter != null) 
+											return ProgressMessagesReporter(progress, "Zooming...");
+										else 
+											return true; // If callback is not assigned, just continue
+							});
 						}
+	
+						ApplyOperationsBeforeFrozenLine(frozen_tmp);
+						frozen = frozen_tmp;
+						res = true;
 					}
 					
 					SetUIState(curstate);
@@ -291,6 +290,7 @@ namespace CatEye
 		/// </summary>
 		void UpdateStageAfterFrozen()
 		{
+			if (mSourceImage == null) return;
 			if (TheUIState != UIState.Processing)
 			{
 				UIState curstate = TheUIState;
@@ -298,37 +298,34 @@ namespace CatEye
 	
 				try
 				{
-					if (ppl != null)
+					// 1. Creating the new CurrentImage out of source or frozen image
+					
+					if (frozen == null)
 					{
-						// 1. Creating the new CurrentImage out of source or frozen image
+						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
 						
-						if (frozen == null)
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
 						{
-							mCurrentImage = new FloatPixmap(src_img);
-							
-							if (mZoomValue < 0.999 || mZoomValue > 1.001)
-							{
-								mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
-									if (ProgressMessagesReporter != null) 
-										return ProgressMessagesReporter(progress, "Downscaling...");
-									else 
-										return true; // If callback is not assigned, just continue
-								});
-							}
-
-							if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-							if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+							mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
+								if (ProgressMessagesReporter != null) 
+									return ProgressMessagesReporter(progress, "Downscaling...");
+								else 
+									return true; // If callback is not assigned, just continue
+							});
 						}
-						else
-							mCurrentImage = new FloatPixmap(frozen);
-						
-						// 2. Processing the stage operations to newly created image
 
-						if (mCurrentImage != null)
-						{
-							ApplyOperationsAfterFrozenLine(mCurrentImage);
-							if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
-						}
+						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					}
+					else
+						mCurrentImage = (IBitmapCore)frozen.Clone();
+					
+					// 2. Processing the stage operations to newly created image
+
+					if (mCurrentImage != null)
+					{
+						ApplyOperationsAfterFrozenLine(mCurrentImage);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
 					}
 				}
 				catch (UserCancelException)
@@ -337,86 +334,6 @@ namespace CatEye
 				}
 				SetUIState(curstate);
 			}
-		}
-			
-		private void ClearHDR()
-		{
-			mCurrentImage = null;
-			frozen = null;
-			if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-//			view_widget.HDR = null;
-//			view_widget.UpdatePicture();
-		}
-		
-		public void LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
-		{
-			UIState curstate = TheUIState;
-			SetUIState(UIState.Loading);
-			
-			if (stream == null)
-			{
-				mCancelPending = false;
-			}
-			else
-			{
-				ppl = PPMLoader.FromStream(stream, delegate (double progress) {
-					if (callback != null) 
-					{
-						return callback(progress, "Parsing image...");
-					}
-					else 
-						return true; // If callback is not assigned, just continue
-				});
-			}
-
-			if (ppl == null)
-			{
-				if (callback != null)
-				{
-					mCancelPending = false;
-					callback(0, "Loading cancelled");
-				}
-			}
-			else
-			{
-				ClearHDR();
-				if (downscale_by != 1)		
-				{
-					bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
-						if (callback != null) 
-						{
-							return callback(progress, "Downscaling...");
-						}
-						else 
-							return true; // If callback is not assigned, just continue
-					});
-					
-					if (dsres == false)
-					{
-						ppl = null;
-						if (callback != null)
-						{
-							mCancelPending = false;
-							callback(0, "Loading cancelled");
-						}
-					}
-				}
-
-				src_img = FloatPixmap.FromPPM(ppl, 
-					delegate (double progress) {
-						if (ProgressMessagesReporter != null) 
-							return ProgressMessagesReporter(progress, "Loading source image...");
-						else 
-							return true; // If callback is not assigned, just continue
-					}
-				);
-				
-				ReportImageChanged(ppl.Header.Width, ppl.Header.Height);
-			}
-	
-			SetUIState(curstate);
-			OnRawLoaded();
-			LaunchUpdateTimer();
 		}
 
 		public StageOperation FrozenAt
@@ -480,7 +397,7 @@ namespace CatEye
 			}
 		}
 		
-		public void ApplyOperationsBeforeFrozenLine(FloatPixmap hdp)
+		public void ApplyOperationsBeforeFrozenLine(IBitmapCore hdp)
 		{
 			if (_FrozenAt == null) return;	// If not frozen, do nothing
 
@@ -498,7 +415,7 @@ namespace CatEye
 			}
 		}
 		
-		public void ApplyOperationsAfterFrozenLine(FloatPixmap hdp)
+		public void ApplyOperationsAfterFrozenLine(IBitmapCore hdp)
 		{
 			if (_FrozenAt == null)
 			{
@@ -633,7 +550,7 @@ namespace CatEye
 			LaunchUpdateTimer();
 		}
 		
-		void StepDown(StageOperation sop)
+		public void StepDown(StageOperation sop)
 		{
 			int index = _StageQueue.IndexOf(sop);
 			if (index < _StageQueue.Count - 1)
@@ -644,7 +561,7 @@ namespace CatEye
 			}
 		}
 
-		void StepUp(StageOperation sop)
+		public void StepUp(StageOperation sop)
 		{
 			int index = _StageQueue.IndexOf(sop);
 			if (index > 0)
@@ -712,12 +629,12 @@ namespace CatEye
 				return false;
 		}
 		
-		public void DrawEditor(Gdk.Drawable target, Gdk.Rectangle image_position)
+		public void DrawEditor(IBitmapView target)
 		{
 			if (EditingOperation != null &&
 				Holders[EditingOperation].StageOperationParametersEditor != null)
 			{
-				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(target, image_position);
+				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(target);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override void OnDo (IBitmapCore hdp)
 		{
 			UltraSharpStageOperationParameters pm = (UltraSharpStageOperationParameters)Parameters;
 			

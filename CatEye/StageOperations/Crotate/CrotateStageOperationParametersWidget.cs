@@ -343,8 +343,11 @@ namespace CatEye
 		
 		CatEye.Core.Point lt_corner_rot, rt_corner_rot, lb_corner_rot, rb_corner_rot;
 		
-		public override void DrawEditor (Gdk.Drawable target, Gdk.Rectangle image_position)
+		public override void DrawEditor (IBitmapView view)
 		{
+			Gdk.Drawable target = ((FloatPixmapViewWidget)view).GdkWindow;
+			Gdk.Rectangle image_position = ((FloatPixmapViewWidget)view).CurrentImagePosition;
+			
 			CrotateStageOperationParameters pm = ((CrotateStageOperationParameters)Parameters);
 			
 			Gdk.GC gc = new Gdk.GC(target);

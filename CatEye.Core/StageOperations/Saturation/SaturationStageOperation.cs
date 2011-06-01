@@ -10,13 +10,12 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override void OnDo (IBitmapCore hdp)
 		{
 			SaturationStageOperationParameters pm = (SaturationStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: applying saturation...");
 			hdp.ApplySaturation(pm.Saturation);
-			if (!OnReportProgress(0.66)) throw new UserCancelException();
 			
 			base.OnDo (hdp);
 		}

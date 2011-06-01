@@ -27,6 +27,8 @@ public partial class MainWindow : Gtk.Window
 	private ExtendedStage stages;
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
+	private PPMLoader ppl = null;
+	private	bool mCancelPending = false;
 	
 	private void UpdateTitle()
 	{
@@ -69,7 +71,63 @@ public partial class MainWindow : Gtk.Window
 		);
 		return pwid;
 	}
-	
+
+	public void LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
+	{
+		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
+			if (callback != null) 
+			{
+				return callback(progress, "Parsing image...");
+			}
+			else 
+				return true; // If callback is not assigned, just continue
+		});
+
+		if (ppl == null)
+		{
+			if (callback != null)
+			{
+				mCancelPending = false;
+				callback(0, "Loading cancelled");
+			}
+		}
+		else
+		{
+			if (downscale_by != 1)		
+			{
+				bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
+					if (callback != null) 
+					{
+						return callback(progress, "Downscaling...");
+					}
+					else 
+						return true; // If callback is not assigned, just continue
+				});
+				
+				if (dsres == false)
+				{
+					ppl = null;
+					if (callback != null)
+					{
+						mCancelPending = false;
+						callback(0, "Loading cancelled");
+					}
+				}
+			}
+
+			stages.SourceImage = FloatPixmap.FromPPM(ppl, 
+				delegate (double progress) {
+					if (callback != null) 
+					{
+						return callback(progress, "Loading source image...");
+					}
+				else
+					return true; // If callback is not assigned, just continue
+			});
+			
+		}
+	}
+
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
@@ -119,7 +177,7 @@ public partial class MainWindow : Gtk.Window
 			stageOperationAdding_hbox.Sensitive = true;
 		};
 		stages.ImageChanged += delegate {
-			view_widget.HDR = stages.CurrentImage;
+			view_widget.HDR = (FloatPixmap)stages.CurrentImage;
 		};
 		stages.ImageUpdated += delegate {
 			view_widget.UpdatePicture();
@@ -130,9 +188,9 @@ public partial class MainWindow : Gtk.Window
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
-		stages.RawLoaded += delegate {
-			view_widget.CenterImagePanning();
-		};
+//		stages.RawLoaded += delegate {
+//			view_widget.CenterImagePanning();
+//		};
 		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
@@ -173,23 +231,6 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
-	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
-	{
-		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
-		
-		// Unsetting events
-		sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
-		sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
-		sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
-		
-		stage_vbox.Remove(sohw);
-		sohw.Dispose();
-		
-		ArrangeVBoxes();
-
-		e.Operation.ReportProgress -= HandleProgress;
-	}
-	
 	void HandleSohwRemoveButtonClicked (object sender, EventArgs e)
 	{
 		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
@@ -216,14 +257,28 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
+	void HandleSohwUpTitleButtonClicked (object sender, EventArgs e)
+	{
+		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
+		stages.StepUp(sop);
+	}
+
+	void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
+	{
+		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
+		stages.StepDown(sop);
+	}
+	
 	void HandleStagesOperationAddedToStage (object sender, OperationAddedToStageEventArgs e)
 	{
 		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
 
 		// Setting events
-		sohw.EditButtonClicked += HandleSohwEditButtonClicked;
 		sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
 		sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
+		sohw.EditButtonClicked += HandleSohwEditButtonClicked;
+		sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
+		sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
 		
 		stage_vbox.Add(sohw);
 		((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
@@ -231,7 +286,28 @@ public partial class MainWindow : Gtk.Window
 
 		sohw.Show();
 		ArrangeVBoxes();		
+		
 		e.Operation.ReportProgress += HandleProgress;
+	}
+
+	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
+	{
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
+		
+		// Unsetting events
+		sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
+		sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
+		sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
+		sohw.UpTitleButtonClicked -= HandleSohwUpTitleButtonClicked;
+		sohw.DownTitleButtonClicked -= HandleSohwDownTitleButtonClicked;
+		
+		stage_vbox.Remove(sohw);
+		sohw.Hide();
+		sohw.Dispose();
+		
+		ArrangeVBoxes();
+
+		e.Operation.ReportProgress -= HandleProgress;
 	}
 
 	void HandleStagesUIStateChanged (object sender, EventArgs e)
@@ -307,7 +383,7 @@ public partial class MainWindow : Gtk.Window
 
 	void DrawCurrentStageOperationEditor (object o, ExposeEventArgs args)
 	{
-		stages.DrawEditor(view_widget.GdkWindow, view_widget.CurrentImagePosition);
+		stages.DrawEditor(view_widget);
 	}
 
 	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
@@ -323,7 +399,7 @@ public partial class MainWindow : Gtk.Window
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
 				if (view_widget.HDR != stages.CurrentImage)
-					view_widget.HDR = stages.CurrentImage;
+					view_widget.HDR = (FloatPixmap)stages.CurrentImage;
 				else
 					view_widget.UpdatePicture();
 
@@ -349,6 +425,7 @@ public partial class MainWindow : Gtk.Window
 	
 	bool ImportRawAndLoadingReporter(double progress, string status)
 	{
+		progressbar.Visible = true;
 		progressbar.Fraction = progress;
 		progressbar.Text = status;
 		while (Application.EventsPending()) Application.RunIteration();
@@ -357,7 +434,7 @@ public partial class MainWindow : Gtk.Window
 	}
 	
 	/// <summary>
-	/// Launching dcraw to process the raw file, loads the result into memory stream
+	/// Launching dcraw to process the raw file, loads the result into a memory stream
 	/// </summary>
 	/// <returns>
 	/// A stream to read the decoded PPM data from. 
@@ -461,7 +538,7 @@ public partial class MainWindow : Gtk.Window
 			if (ok)
 			{
 				MemoryStream ms = ImportRaw(FileName, ImportRawAndLoadingReporter);
-				stages.LoadRaw(ms, PreScale, ImportRawAndLoadingReporter);
+				LoadRaw(ms, PreScale, ImportRawAndLoadingReporter);
 				
 				ms.Close();
 				ms.Dispose();
@@ -551,7 +628,7 @@ public partial class MainWindow : Gtk.Window
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
-			stages.LaunchStageLoading(fcd.Filename);
+			stages.LoadStage(fcd.Filename);
 		}
 		fcd.Destroy();
 	}

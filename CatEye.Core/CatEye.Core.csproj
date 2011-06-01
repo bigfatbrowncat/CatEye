@@ -74,8 +74,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -95,7 +93,6 @@
     <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
     <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
-    <Compile Include="FloatPixmap.cs" />
     <Compile Include="Tone.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperation.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParameters.cs" />
@@ -106,6 +103,11 @@
     <Compile Include="StageOperations\LimitSize\LimitSizeStageOperationParameters.cs" />
     <Compile Include="IStageOperationHolder.cs" />
     <Compile Include="IStageOperationParametersEditor.cs" />
+    <Compile Include="ExtendedStage.cs" />
+    <Compile Include="IBitmapCore.cs" />
+    <Compile Include="ProgressReporter.cs" />
+    <Compile Include="UserCancelException.cs" />
+    <Compile Include="IBitmapView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

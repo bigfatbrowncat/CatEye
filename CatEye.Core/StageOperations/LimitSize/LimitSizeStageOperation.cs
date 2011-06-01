@@ -17,13 +17,13 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override void OnDo (IBitmapCore hdp)
 		{
 			LimitSizeStageOperationParameters pm = (LimitSizeStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Limiting size...");
 			
-			double w = hdp.width, h = hdp.height;
+			double w = hdp.Width, h = hdp.Height;
 
 			if (pm.LimitWidth && w > pm.NewWidth) 
 			{

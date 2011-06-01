@@ -10,7 +10,7 @@ namespace CatEye
 
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public class FloatPixmapViewWidget : DrawingArea
+	public class FloatPixmapViewWidget : DrawingArea, IBitmapView
 	{
 		public enum ScaleType { None, Divide, Multiply };
 		
@@ -85,7 +85,7 @@ namespace CatEye
 			DateTime update_start = DateTime.Now;
 			if (_HDR != null)
 			{
-				Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.width, _HDR.height);
+				Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.Width, _HDR.Height);
 	
 				_HDR.DrawToPixbuf(newRenderedPicture, delegate {
 					while (Application.EventsPending()) Application.RunIteration();

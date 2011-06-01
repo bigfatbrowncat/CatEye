@@ -17,21 +17,21 @@ namespace CatEye.Core
 		{
 		}
 		
-		public override void OnDo (FloatPixmap hdp)
+		public override void OnDo (IBitmapCore hdp)
 		{
 			CrotateStageOperationParameters pm = (CrotateStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Rotating...");
 			
 			// Calculating new picture's real dimensions
-			int trueWidth = hdp.width, trueHeight = hdp.height;
+			int trueWidth = hdp.Width, trueHeight = hdp.Height;
 			
 			double w1, h1;
 			Point c_pix;
 
-			c_pix = new Point(pm.Center.X * hdp.width, pm.Center.Y * hdp.height);
-			w1 = pm.CropWidth * hdp.width;
-			h1 = pm.CropHeight * hdp.height;
+			c_pix = new Point(pm.Center.X * hdp.Width, pm.Center.Y * hdp.Height);
+			w1 = pm.CropWidth * hdp.Width;
+			h1 = pm.CropHeight * hdp.Height;
 			
 			double asp_rat;
 

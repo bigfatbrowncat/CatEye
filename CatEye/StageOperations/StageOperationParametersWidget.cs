@@ -146,7 +146,7 @@ namespace CatEye
 		/// <param name="image_position">
 		/// The rectangle on the <c>target</c> which is occupied by the image.
 		/// </param>
-		public virtual void DrawEditor(Gdk.Drawable target, Gdk.Rectangle image_position) 
+		public virtual void DrawEditor(IBitmapView view) 
 		{
 		}
 		

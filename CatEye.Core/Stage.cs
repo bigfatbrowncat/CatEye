@@ -68,9 +68,8 @@ namespace CatEye.Core
 				OperationActivityChanged(this, EventArgs.Empty);
 		}
 		
-		public void ApplyAllOperations(FloatPixmap hdp)
+		public void ApplyAllOperations(IBitmapCore hdp)
 		{
-			FloatPixmap fpm = hdp;
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
 				if (_StageQueue[j].Parameters.Active)
