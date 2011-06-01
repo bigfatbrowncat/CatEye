@@ -46,5 +46,11 @@ namespace CatEye.Core
 			}
 			OnChanged();
 		}
+		
+		public override Type GetSOType ()
+		{
+			return typeof(BlackPointStageOperation);
+		}
+		
 	}
 }

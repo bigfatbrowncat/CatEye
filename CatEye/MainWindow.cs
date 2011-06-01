@@ -8,10 +8,25 @@ using CatEye.Core;
 
 public partial class MainWindow : Gtk.Window
 {
+	private Type[] mStageOperationParametersWidgetTypes = new Type[]
+	{
+		typeof(CompressionStageOperationParametersWidget),
+		typeof(BrightnessStageOperationParametersWidget),
+		typeof(UltraSharpStageOperationParametersWidget),
+		typeof(SaturationStageOperationParametersWidget),
+		typeof(ToneStageOperationParametersWidget),
+		typeof(BlackPointStageOperationParametersWidget),
+		typeof(LimitSizeStageOperationParametersWidget),
+		typeof(CrotateStageOperationParametersWidget),
+	};
+	
 	private static string APP_NAME = "CatEye";
 
 	private string _FileName = null;
 	private int _PreScale = 0;
+	private ExtendedStage stages;
+	private DateTime lastupdate;
+	private FrozenPanel _FrozenPanel;
 	
 	private void UpdateTitle()
 	{
@@ -38,16 +53,35 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
-	ExtendedStage stages;
-	
-	DateTime lastupdate;
+	private IStageOperationHolder StageOperationHolderWidgetFactory(IStageOperationParametersEditor editor)
+	{
+		return new StageOperationHolderWidget((StageOperationParametersWidget)editor);
+	}
+	private IStageOperationParametersEditor StageOperationParametersWidgetFactory(StageOperation so)
+	{
+		Type paramType = so.GetParametersType();
+		Type paramWidgetType = StageOperationIDAttribute.FindTypeByID(
+				mStageOperationParametersWidgetTypes,
+				StageOperationIDAttribute.GetTypeID(so.GetType())
+			);
+		StageOperationParametersWidget pwid = (StageOperationParametersWidget)(
+			paramWidgetType.GetConstructor(new Type[] { paramType }).Invoke(new object[] { so.Parameters })
+		);
+		return pwid;
+	}
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
 
 		// Creating stage operations and stages
-		stages = new ExtendedStage(stage_vbox);
+		stages = new ExtendedStage(StageOperationParametersWidgetFactory, StageOperationHolderWidgetFactory);
+		
+		_FrozenPanel = new FrozenPanel();
+		_FrozenPanel.UnfreezeButtonClicked  += delegate {
+			stages.FrozenAt = null;
+		};
+		stage_vbox.Add(_FrozenPanel);
 		
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
@@ -72,9 +106,16 @@ public partial class MainWindow : Gtk.Window
 		// Setting stages events
 		
 		stages.OperationFrozen += delegate {
+			int index = stages.IndexOf(stages.FrozenAt);
+			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Position = index + 1;
+			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Fill = true;
+			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Expand = false;
+			_FrozenPanel.Show();
+
 			stageOperationAdding_hbox.Sensitive = false;
 		};
 		stages.OperationDefrozen += delegate {
+			_FrozenPanel.Hide();
 			stageOperationAdding_hbox.Sensitive = true;
 		};
 		stages.ImageChanged += delegate {
@@ -85,6 +126,9 @@ public partial class MainWindow : Gtk.Window
 		};
 		stages.OperationAddedToStage += HandleStagesOperationAddedToStage;
 		stages.OperationRemovedFromStage += HandleStagesOperationRemovedFromStage;
+		stages.OperationIndexChanged += delegate {
+			ArrangeVBoxes();
+		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
 		stages.RawLoaded += delegate {
 			view_widget.CenterImagePanning();
@@ -118,14 +162,75 @@ public partial class MainWindow : Gtk.Window
 			stages.ZoomValue = zoomwidget1.Value;
 		};
 	}
-
+	
+	protected void ArrangeVBoxes()
+	{
+		// Arranging stage 2
+		for (int i = 0; i < stages.StageQueue.Length; i++)
+		{
+			StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[stages.StageQueue[i]];
+			((Gtk.Box.BoxChild)stage_vbox[sohw]).Position = i;
+		}
+	}
+	
 	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
 	{
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
+		
+		// Unsetting events
+		sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
+		sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
+		sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
+		
+		stage_vbox.Remove(sohw);
+		sohw.Dispose();
+		
+		ArrangeVBoxes();
+
 		e.Operation.ReportProgress -= HandleProgress;
 	}
+	
+	void HandleSohwRemoveButtonClicked (object sender, EventArgs e)
+	{
+		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
+		stages.RemoveStageOperation(sop);
+	}
 
+	void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
+	{
+		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
+		stages.FrozenAt = sop;
+	}
+
+	void HandleSohwEditButtonClicked (object sender, EventArgs e)
+	{
+		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
+		
+		if (stages.Holders[sop].Edit)
+		{
+			stages.EditingOperation = sop;
+		}
+		else
+		{
+			stages.EditingOperation = null;
+		}
+	}
+	
 	void HandleStagesOperationAddedToStage (object sender, OperationAddedToStageEventArgs e)
 	{
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
+
+		// Setting events
+		sohw.EditButtonClicked += HandleSohwEditButtonClicked;
+		sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
+		sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
+		
+		stage_vbox.Add(sohw);
+		((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
+		((Gtk.Box.BoxChild)stage_vbox[sohw]).Expand = false;
+
+		sohw.Show();
+		ArrangeVBoxes();		
 		e.Operation.ReportProgress += HandleProgress;
 	}
 
@@ -459,7 +564,7 @@ public partial class MainWindow : Gtk.Window
 			stageOperationToAdd_combobox.GetActiveIter(out ti);
 			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
 			StageOperation so = stages.CreateAndAddNewStageOperation(ExtendedStage._StageOperationTypes[index]);
-			
+				
 			stage_vbox.CheckResize();
 		}
 	}

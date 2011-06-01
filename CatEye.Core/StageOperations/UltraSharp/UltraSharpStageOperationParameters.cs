@@ -139,6 +139,12 @@ namespace CatEye.Core
 		public UltraSharpStageOperationParameters ()
 		{
 		}
+
+		public override Type GetSOType ()
+		{
+			return typeof(UltraSharpStageOperation);
+		}
+		
 	}
 }
 

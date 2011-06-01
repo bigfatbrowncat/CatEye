@@ -104,6 +104,8 @@
     <Compile Include="StageOperations\Crotate\CrotateStageOperationParameters.cs" />
     <Compile Include="StageOperations\LimitSize\LimitSizeStageOperation.cs" />
     <Compile Include="StageOperations\LimitSize\LimitSizeStageOperationParameters.cs" />
+    <Compile Include="IStageOperationHolder.cs" />
+    <Compile Include="IStageOperationParametersEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

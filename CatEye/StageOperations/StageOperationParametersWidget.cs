@@ -1,16 +1,17 @@
 using System;
+using CatEye.Core;
 
 namespace CatEye
 {
 
 	[StageOperationID("StageOperation")]
-	public class StageOperationParametersWidget : Gtk.Bin
+	public class StageOperationParametersWidget : Gtk.Bin, IStageOperationParametersEditor
 	{
 		private StageOperationParameters mParameters;
 		private bool mParametersAreChangingByMe = false;
-		
-		public event EventHandler<EventArgs> UserModified;
 
+		public event EventHandler<EventArgs> UserModified;
+		
 		public StageOperationParameters Parameters
 		{
 			get { return mParameters; }

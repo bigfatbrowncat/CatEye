@@ -19,6 +19,10 @@ namespace CatEye.Core
 				
 			base.OnDo (hdp);
 		}
+		public override Type GetParametersType ()
+		{
+			return typeof(ToneStageOperationParameters);
+		}
 
 	}
 }

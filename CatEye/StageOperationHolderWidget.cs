@@ -1,13 +1,13 @@
 using System;
+using CatEye.Core;
 namespace CatEye
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class StageOperationHolderWidget : Gtk.Bin
+	public partial class StageOperationHolderWidget : Gtk.Bin, IStageOperationHolder
 	{
 		private StageOperationParametersWidget _OperationParametersWidget;
-		private Gtk.StateType _AdditionalState = Gtk.StateType.Normal;
 		
-		public StageOperationParametersWidget OperationParametersWidget 
+		public IStageOperationParametersEditor StageOperationParametersEditor 
 		{
 			get { return _OperationParametersWidget; } 
 		}
@@ -18,12 +18,6 @@ namespace CatEye
 		public event EventHandler<EventArgs> EditButtonClicked;
 		public event EventHandler<EventArgs> FreezeButtonClicked;
 		public event EventHandler<EventArgs> RemoveButtonClicked;
-		
-		public string Title
-		{
-			get { return _TitleWidget.Title; }
-			set { _TitleWidget.Title = value; }
-		}
 		
 		public bool Edit
 		{
@@ -87,6 +81,9 @@ namespace CatEye
 			this.Build ();
 			
 			_OperationParametersWidget = operationParametersWidget;
+			
+			_TitleWidget.Title = StageOperationDescriptionAttribute.GetSOName(_OperationParametersWidget.Parameters.GetSOType());
+			
 			vbox.Add(operationParametersWidget);
 			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Position = 1;
 			((Gtk.Box.BoxChild)vbox[operationParametersWidget]).Fill = false;

@@ -65,6 +65,12 @@ namespace CatEye.Core
 		public CompressionStageOperationParameters ()
 		{
 		}
+
+		public override Type GetSOType ()
+		{
+			return typeof(CompressionStageOperation);
+		}
+		
 	}
 }
 

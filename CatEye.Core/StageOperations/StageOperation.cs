@@ -35,10 +35,22 @@ namespace CatEye
 		{
 			_Name = name;
 		}
+
+		public static string GetSOName(Type stageOperationType)
+		{
+			object[] attrs = stageOperationType.GetCustomAttributes(typeof(StageOperationDescriptionAttribute), true);
+			if (attrs.Length == 0)
+			{
+				return null;
+			}
+			
+			return ((StageOperationDescriptionAttribute)attrs[0]).Name;
+		}
+		
 	}
 	
 	[StageOperationID("StageOperation")]
-	public class StageOperation
+	public abstract class StageOperation
 	{
 		private StageOperationParameters mParameters;
 
@@ -76,6 +88,8 @@ namespace CatEye
 		public virtual void OnDo(FloatPixmap hdp)
 		{
 		}
+		
+		public abstract Type GetParametersType();
 	}
 
 }
