@@ -28,7 +28,6 @@ public partial class MainWindow : Gtk.Window
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
 	private PPMLoader ppl = null;
-	private	bool mCancelPending = false;
 	
 	private void UpdateTitle()
 	{
@@ -72,7 +71,7 @@ public partial class MainWindow : Gtk.Window
 		return pwid;
 	}
 
-	public void LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
+	public FloatPixmap LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
 	{
 		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
 			if (callback != null) 
@@ -85,11 +84,7 @@ public partial class MainWindow : Gtk.Window
 
 		if (ppl == null)
 		{
-			if (callback != null)
-			{
-				mCancelPending = false;
-				callback(0, "Loading cancelled");
-			}
+			return null;
 		}
 		else
 		{
@@ -109,13 +104,12 @@ public partial class MainWindow : Gtk.Window
 					ppl = null;
 					if (callback != null)
 					{
-						mCancelPending = false;
-						callback(0, "Loading cancelled");
+						return null;
 					}
 				}
 			}
 
-			stages.SourceImage = FloatPixmap.FromPPM(ppl, 
+			return FloatPixmap.FromPPM(ppl, 
 				delegate (double progress) {
 					if (callback != null) 
 					{
@@ -133,7 +127,7 @@ public partial class MainWindow : Gtk.Window
 		Build ();
 
 		// Creating stage operations and stages
-		stages = new ExtendedStage(StageOperationParametersWidgetFactory, StageOperationHolderWidgetFactory);
+		stages = new ExtendedStage(StageOperationParametersWidgetFactory, StageOperationHolderWidgetFactory, ImageLoader);
 		
 		_FrozenPanel = new FrozenPanel();
 		_FrozenPanel.UnfreezeButtonClicked  += delegate {
@@ -188,9 +182,8 @@ public partial class MainWindow : Gtk.Window
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
-//		stages.RawLoaded += delegate {
-//			view_widget.CenterImagePanning();
-//		};
+
+		stages.ProgressMessagesReporter += ImportRawAndLoadingReporter;
 		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
@@ -277,6 +270,7 @@ public partial class MainWindow : Gtk.Window
 		sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
 		sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
 		sohw.EditButtonClicked += HandleSohwEditButtonClicked;
+		sohw.StageActiveButtonClicked += HandleSohwStageActiveButtonClicked;
 		sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
 		sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
 		
@@ -288,6 +282,11 @@ public partial class MainWindow : Gtk.Window
 		ArrangeVBoxes();		
 		
 		e.Operation.ReportProgress += HandleProgress;
+	}
+
+	void HandleSohwStageActiveButtonClicked (object sender, EventArgs e)
+	{
+		stages.QueueUpdate();
 	}
 
 	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
@@ -312,7 +311,7 @@ public partial class MainWindow : Gtk.Window
 
 	void HandleStagesUIStateChanged (object sender, EventArgs e)
 	{
-		if (stages.TheUIState == UIState.Free)
+		if (stages.TheUIState == UIState.Idle)
 		{
 			loadRawAction.Sensitive = true;
 			loadStageAction.Sensitive = true;
@@ -409,15 +408,13 @@ public partial class MainWindow : Gtk.Window
 		
 		while (Gtk.Application.EventsPending())
 			Gtk.Application.RunIteration();
-		
-		if (stages.CancelPending) e.Cancel = true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
-		if (stages.TheUIState != UIState.Free)
+		if (stages.TheUIState != UIState.Idle)
 		{
-			stages.SetCancelPending();
+			stages.CancelAll();
 		}
 		Application.Quit ();
 		a.RetVal = true;
@@ -429,8 +426,15 @@ public partial class MainWindow : Gtk.Window
 		progressbar.Fraction = progress;
 		progressbar.Text = status;
 		while (Application.EventsPending()) Application.RunIteration();
-
-		return (!stages.CancelPending);
+		
+		if (stages.CancelProcessingPending || stages.CancelLoadingPending)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 	
 	/// <summary>
@@ -507,6 +511,21 @@ public partial class MainWindow : Gtk.Window
 		return null;
 	}
 	
+	private IBitmapCore ImageLoader(string filename, int downscale_by, ProgressMessageReporter callback)
+	{
+		MemoryStream ms = ImportRaw(filename, callback);
+		if (ms != null)
+		{
+			IBitmapCore ibc = LoadRaw(ms, downscale_by, callback);
+				
+			ms.Close();
+			ms.Dispose();
+			return ibc;
+		}
+		else
+			return null;
+	}
+	
 	protected void LoadRawImageActionPicked()
 	{
 		if (stages.TheUIState == UIState.Loading)
@@ -537,11 +556,7 @@ public partial class MainWindow : Gtk.Window
 			
 			if (ok)
 			{
-				MemoryStream ms = ImportRaw(FileName, ImportRawAndLoadingReporter);
-				LoadRaw(ms, PreScale, ImportRawAndLoadingReporter);
-				
-				ms.Close();
-				ms.Dispose();
+				stages.LoadImage(FileName, PreScale);
 			}
 		}
 	}
@@ -557,7 +572,7 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
 	{
-		stages.SetCancelPending();
+		stages.CancelLoading();
 	}
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)

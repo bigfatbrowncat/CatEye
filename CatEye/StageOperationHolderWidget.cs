@@ -95,11 +95,7 @@ namespace CatEye
 			_OperationParametersWidget.Parameters.Changed += delegate {
 				_TitleWidget.Active = _OperationParametersWidget.Parameters.Active;
 			};
-			
-			_TitleWidget.TitleCheckButtonClicked += delegate {
-				_OperationParametersWidget.Parameters.Active = _TitleWidget.Active;
-			};
-			
+
 
 			_TitleWidget.UpButtonClicked += delegate {
 				OnUpTitleButtonClicked(this, EventArgs.Empty);
@@ -108,6 +104,7 @@ namespace CatEye
 				OnDownTitleButtonClicked(this, EventArgs.Empty);
 			};
 			_TitleWidget.TitleCheckButtonClicked += delegate {
+				_OperationParametersWidget.Parameters.Active = _TitleWidget.Active;
 				OnStageActiveButtonClicked(this, EventArgs.Empty);
 			};
 			_TitleWidget.ViewButtonClicked += delegate {
