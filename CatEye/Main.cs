@@ -35,6 +35,12 @@ namespace CatEye
 			return pwid;
 		}
 		
+		private static bool mQuitFlag = false;
+		private static int mDelayBeforeUpdate = 100;
+		public static void Quit()
+		{
+			mQuitFlag = true;
+		}
 		
 		public static void Main (string[] args)
 		{
@@ -52,15 +58,16 @@ namespace CatEye
 			
 			MainWindow win = new MainWindow (stage);
 			win.Show ();
-			GLib.Idle.Add(delegate {
-				if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > 500)
+			
+			
+			while (!mQuitFlag)
+			{
+				Gtk.Application.RunIteration();
+				if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > mDelayBeforeUpdate)
 				{
 					stage.ProcessQueued();
 				}
-				return true;
-			});
-			
-			Application.Run();
+			}
 		}
 	}
 }

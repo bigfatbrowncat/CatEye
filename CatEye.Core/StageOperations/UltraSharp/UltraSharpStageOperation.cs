@@ -21,7 +21,7 @@ namespace CatEye.Core
 			
 			// TODO: There should be some quality configuration which should calculate
 			// points number value
-			int points = 50; 
+			int points = 260; 
 			
 			double power = pm.Power;
 			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 

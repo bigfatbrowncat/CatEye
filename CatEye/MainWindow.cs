@@ -389,7 +389,9 @@ public partial class MainWindow : Gtk.Window
 		{
 			stages.CancelAll();
 		}
-		Application.Quit ();
+		//Main.Quit();
+		//Application.Quit ();
+		MainClass.Quit();
 		a.RetVal = true;
 	}
 	
