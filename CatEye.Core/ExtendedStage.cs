@@ -177,35 +177,42 @@ namespace CatEye
 			SetUIState(UIState.Idle);
 		}
 		
+		bool updating_in_progress = false;
+		
 		private void DoUpdate()
 		{
-			try
+			if (!updating_in_progress)
 			{
-				_UpdateQueued = false;
-				// Updating and stopping the timer
-				if (FrozenAt == null)
+				updating_in_progress = true;
+				try
 				{
-					// It isn't frozen at all
-					frozen = null;
-					UpdateStageAfterFrozen();
-				} else if (frozen == null)
-				{
-					// It is frozen, but the frozen image isn't calculated yet.
-					UpdateFrozen();
-					UpdateStageAfterFrozen();
+					_UpdateQueued = false;
+					// Updating and stopping the timer
+					if (FrozenAt == null)
+					{
+						// It isn't frozen at all
+						frozen = null;
+						UpdateStageAfterFrozen();
+					} else if (frozen == null)
+					{
+						// It is frozen, but the frozen image isn't calculated yet.
+						UpdateFrozen();
+						UpdateStageAfterFrozen();
+					}
+					else
+					{
+						// It's frozen and the frozen image is ok.
+						UpdateStageAfterFrozen();
+					}
 				}
-				else
+				catch (UserCancelException)
 				{
-					// It's frozen and the frozen image is ok.
-					UpdateStageAfterFrozen();
+					// The user cancelled processing.
+					// Unset cancelling flag.
+					mCancelProcessingPending = false;
+					SetUIState(UIState.Idle);
 				}
-			}
-			catch (UserCancelException)
-			{
-				// The user cancelled processing.
-				// Unset cancelling flag.
-				mCancelProcessingPending = false;
-				SetUIState(UIState.Idle);
+				updating_in_progress = false;
 			}
 		}
 		
@@ -394,7 +401,10 @@ namespace CatEye
 					if (_StageQueue[j] == EditingOperation)
 						break;
 					if (_StageQueue[j].Parameters.Active)
+					{
 						_StageQueue[j].OnDo(hdp);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					}
 				}
 			}
 			else
@@ -405,7 +415,10 @@ namespace CatEye
 					if (_StageQueue[j] == EditingOperation)
 						break;
 					if (frozen_line_found && _StageQueue[j].Parameters.Active)
+					{
 						_StageQueue[j].OnDo(hdp);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					}
 					if (_StageQueue[j] == _FrozenAt) frozen_line_found = true;
 				}
 			}

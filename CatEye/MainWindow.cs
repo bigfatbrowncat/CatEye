@@ -182,7 +182,6 @@ public partial class MainWindow : Gtk.Window
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
-
 		stages.ProgressMessagesReporter += ImportRawAndLoadingReporter;
 		
 		// Loading default stage

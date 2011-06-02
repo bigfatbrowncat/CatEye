@@ -197,17 +197,24 @@ namespace CatEye.Core
 		}
 */
 		
-		public void AmplitudeMultiply(double Amplitude)
+		public void AmplitudeMultiply(double Amplitude, ProgressReporter callback)
 		{
-			double local_mid = 0;
-			double[,] light = new double[mWidth, mHeight];
-			
 			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
 			{
-				r_chan[i, j] *= (float)Amplitude;
-				g_chan[i, j] *= (float)Amplitude;
-				b_chan[i, j] *= (float)Amplitude;
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)i / mWidth))
+					{
+						throw new UserCancelException();
+					}
+				}
+				
+				for (int j = 0; j < mHeight; j++)
+				{
+					r_chan[i, j] *= (float)Amplitude;
+					g_chan[i, j] *= (float)Amplitude;
+					b_chan[i, j] *= (float)Amplitude;
+				}
 			}
 		}
 
@@ -292,22 +299,29 @@ namespace CatEye.Core
 			return Max;
 		}
 		
-		public void CompressLight(double power, double dark_preserving)
+		public void CompressLight(double power, double dark_preserving, ProgressReporter callback)
 		{
-	
 			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
 			{
-				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
-				                         g_chan[i, j] * g_chan[i, j] +
-				                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-				
-				r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
-				g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
-				b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
-
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)i / mWidth))
+					{
+						throw new UserCancelException();
+					}
+				}
+				for (int j = 0; j < mHeight; j++)
+				{
+					double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                         g_chan[i, j] * g_chan[i, j] +
+					                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					
+					r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+					g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+					b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+		
+				}
 			}
-			
 		}
 		
 		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, int points, ProgressReporter callback)
@@ -407,61 +421,81 @@ namespace CatEye.Core
 			}
 		}
 		
-		public void ApplyTone(Tone tone, double HighlightsInvariance)
+		public void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback)
 		{
 			double maxlight = CalcMaxLight();
 			
 			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
 			{
-				// calculating current norm
-				double light_before = Math.Sqrt(
-							  r_chan[i, j] * r_chan[i, j] + 
-							  g_chan[i, j] * g_chan[i, j] + 
-							  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)i / mWidth))
+					{
+						throw new UserCancelException();
+					}
+				}
 				
-				// Calculating color coefficients
-				// R2, G2, B2 values depend on light value.
-				// For highlights it should exponentially approach 1.
-				double kappa = Math.Pow(10, HighlightsInvariance);
-				
-				double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
-				double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
-				double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
-				
-				// Applying toning
-				r_chan[i, j] *= (float)(R2);
-				g_chan[i, j] *= (float)(G2);
-				b_chan[i, j] *= (float)(B2);
-				
-				// calculating norm after
-				double light_after = Math.Sqrt(
-							  r_chan[i, j] * r_chan[i, j] + 
-							  g_chan[i, j] * g_chan[i, j] + 
-							  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
-				
-				// Normalizing
-				r_chan[i, j] *= (float)(light_before / light_after);
-				g_chan[i, j] *= (float)(light_before / light_after);
-				b_chan[i, j] *= (float)(light_before / light_after);
-				
+				for (int j = 0; j < mHeight; j++)
+				{
+					// calculating current norm
+					double light_before = Math.Sqrt(
+								  r_chan[i, j] * r_chan[i, j] + 
+								  g_chan[i, j] * g_chan[i, j] + 
+								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					
+					// Calculating color coefficients
+					// R2, G2, B2 values depend on light value.
+					// For highlights it should exponentially approach 1.
+					double kappa = Math.Pow(10, HighlightsInvariance);
+					
+					double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
+					double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
+					double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
+					
+					// Applying toning
+					r_chan[i, j] *= (float)(R2);
+					g_chan[i, j] *= (float)(G2);
+					b_chan[i, j] *= (float)(B2);
+					
+					// calculating norm after
+					double light_after = Math.Sqrt(
+								  r_chan[i, j] * r_chan[i, j] + 
+								  g_chan[i, j] * g_chan[i, j] + 
+								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
+					
+					// Normalizing
+					r_chan[i, j] *= (float)(light_before / light_after);
+					g_chan[i, j] *= (float)(light_before / light_after);
+					b_chan[i, j] *= (float)(light_before / light_after);
+					
+				}
 			}
 		}
 			
-		public void ApplySaturation(double satur_factor)
+		public void ApplySaturation(double satur_factor, ProgressReporter callback)
 		{
 			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
 			{
-				double light_sqr = r_chan[i, j] * r_chan[i, j] + 
-							  			 g_chan[i, j] * g_chan[i, j] + 
-				                         b_chan[i, j] * b_chan[i, j];
-				double val = Math.Sqrt(light_sqr / 3);
+				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)i / mWidth))
+					{
+						throw new UserCancelException();
+					}
+				}
 				
-				// Normalizing image
-				r_chan[i, j] = (float)(r_chan[i, j] * satur_factor + val * (1 - satur_factor));
-				g_chan[i, j] = (float)(g_chan[i, j] * satur_factor + val * (1 - satur_factor));
-				b_chan[i, j] = (float)(b_chan[i, j] * satur_factor + val * (1 - satur_factor));
+				for (int j = 0; j < mHeight; j++)
+				{
+					double light_sqr = r_chan[i, j] * r_chan[i, j] + 
+								  			 g_chan[i, j] * g_chan[i, j] + 
+					                         b_chan[i, j] * b_chan[i, j];
+					double val = Math.Sqrt(light_sqr / 3);
+					
+					// Normalizing image
+					r_chan[i, j] = (float)(r_chan[i, j] * satur_factor + val * (1 - satur_factor));
+					g_chan[i, j] = (float)(g_chan[i, j] * satur_factor + val * (1 - satur_factor));
+					b_chan[i, j] = (float)(b_chan[i, j] * satur_factor + val * (1 - satur_factor));
+				}
 			}
 		}
 		

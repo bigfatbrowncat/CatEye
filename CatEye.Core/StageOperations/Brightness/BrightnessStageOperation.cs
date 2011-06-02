@@ -22,11 +22,19 @@ namespace CatEye.Core
 			hdp.AmplitudeAdd(-hdp.AmplitudeFindBlackPoint());
 			if (pm.Normalize)
 			{
-				hdp.AmplitudeMultiply(pm.Brightness * 0.5 / pm.Median);
+				hdp.AmplitudeMultiply(pm.Brightness * 0.5 / pm.Median, 
+					delegate (double progress) {
+						return OnReportProgress(progress);
+					}
+				);
 			}
 			else
 			{
-				hdp.AmplitudeMultiply(pm.Brightness);
+				hdp.AmplitudeMultiply(pm.Brightness, 
+					delegate (double progress) {
+						return OnReportProgress(progress);
+					}
+				);
 			}
 			
 			base.OnDo (hdp);

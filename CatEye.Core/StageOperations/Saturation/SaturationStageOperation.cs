@@ -15,7 +15,11 @@ namespace CatEye.Core
 			SaturationStageOperationParameters pm = (SaturationStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: applying saturation...");
-			hdp.ApplySaturation(pm.Saturation);
+			hdp.ApplySaturation(pm.Saturation, 
+				delegate (double progress) {
+					return OnReportProgress(progress);
+				}
+			);
 			
 			base.OnDo (hdp);
 		}
