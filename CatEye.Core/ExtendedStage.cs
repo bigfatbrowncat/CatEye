@@ -36,6 +36,7 @@ namespace CatEye
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public event EventHandler<EventArgs> ImageChanged;
 		public event EventHandler<EventArgs> ImageUpdated;
+		public event EventHandler<EventArgs> UpdateQueued;
 		
 		public static readonly Type[] _StageOperationTypes = new Type[]
 		{
@@ -48,6 +49,12 @@ namespace CatEye
 			typeof(LimitSizeStageOperation),
 			typeof(CrotateStageOperation),
 		};
+		
+		public ImageLoader ImageLoader
+		{
+			get { return mImageLoader; }
+			set { mImageLoader = value; }
+		}		
 		
 		public IBitmapCore SourceImage
 		{
@@ -80,13 +87,6 @@ namespace CatEye
 				_TheUIState = value;
 				if (UIStateChanged != null)
 					UIStateChanged(this, EventArgs.Empty);
-				if (_TheUIState == UIState.Idle)
-				{
-					if (_UpdateQueued)
-					{
-						DoUpdate();
-					}
-				}
 			}
 		}
 		
@@ -177,47 +177,50 @@ namespace CatEye
 			SetUIState(UIState.Idle);
 		}
 		
-		bool updating_in_progress = false;
-		
 		private void DoUpdate()
 		{
-			if (!updating_in_progress)
+			try
 			{
-				updating_in_progress = true;
-				try
+				_UpdateQueued = false;
+				// Updating and stopping the timer
+				if (FrozenAt == null)
 				{
-					_UpdateQueued = false;
-					// Updating and stopping the timer
-					if (FrozenAt == null)
-					{
-						// It isn't frozen at all
-						frozen = null;
-						UpdateStageAfterFrozen();
-					} else if (frozen == null)
-					{
-						// It is frozen, but the frozen image isn't calculated yet.
-						UpdateFrozen();
-						UpdateStageAfterFrozen();
-					}
-					else
-					{
-						// It's frozen and the frozen image is ok.
-						UpdateStageAfterFrozen();
-					}
-				}
-				catch (UserCancelException)
+					// It isn't frozen at all
+					frozen = null;
+					UpdateStageAfterFrozen();
+				} else if (frozen == null)
 				{
-					// The user cancelled processing.
-					// Unset cancelling flag.
-					mCancelProcessingPending = false;
-					SetUIState(UIState.Idle);
+					// It is frozen, but the frozen image isn't calculated yet.
+					UpdateFrozen();
+					UpdateStageAfterFrozen();
 				}
-				updating_in_progress = false;
+				else
+				{
+					// It's frozen and the frozen image is ok.
+					UpdateStageAfterFrozen();
+				}
+			}
+			catch (UserCancelException)
+			{
+				// The user cancelled processing.
+				// Unset cancelling flag.
+				mCancelProcessingPending = false;
+				QueueUpdate();
+			}
+		}
+		
+		public void ProcessQueued()
+		{
+			if (_UpdateQueued)
+			{
+				DoUpdate();
 			}
 		}
 		
 		public void QueueUpdate()
 		{
+			if (UpdateQueued != null) UpdateQueued(this, EventArgs.Empty);
+			
 			switch (TheUIState)
 			{
 			case UIState.Processing:
@@ -233,7 +236,7 @@ namespace CatEye
 				break;
 				
 			case UIState.Idle:
-				DoUpdate();
+				_UpdateQueued = true;
 				break;
 			default:
 				throw new Exception("Unhandled case occured: " + TheUIState);
@@ -242,30 +245,34 @@ namespace CatEye
 		
 		void UpdateFrozen()
 		{
-			if (TheUIState != UIState.Processing)
+			if (TheUIState == UIState.Idle)
 			{
-				UIState curstate = TheUIState;
-				SetUIState(UIState.Processing);
-				
-				IBitmapCore frozen_tmp = (IBitmapCore)mSourceImage.Clone();
-					
-				if (frozen_tmp != null)
+				try
 				{
-					if (mZoomValue < 0.999 || mZoomValue > 1.001)
+					SetUIState(UIState.Processing);
+					
+					IBitmapCore frozen_tmp = (IBitmapCore)mSourceImage.Clone();
+						
+					if (frozen_tmp != null)
 					{
-						frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
-							if (ProgressMessagesReporter != null) 
-										return ProgressMessagesReporter(progress, "Zooming...");
-									else 
-										return true; // If callback is not assigned, just continue
-						});
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
+						{
+							frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
+								if (ProgressMessagesReporter != null) 
+											return ProgressMessagesReporter(progress, "Zooming...");
+										else 
+											return true; // If callback is not assigned, just continue
+							});
+						}
+	
+						ApplyOperationsBeforeFrozenLine(frozen_tmp);
+						frozen = frozen_tmp;
 					}
-
-					ApplyOperationsBeforeFrozenLine(frozen_tmp);
-					frozen = frozen_tmp;
 				}
-				
-				SetUIState(curstate);
+				finally
+				{
+					SetUIState(UIState.Idle);
+				}
 			}
 		}
 		
@@ -278,37 +285,43 @@ namespace CatEye
 			if (TheUIState == UIState.Idle)
 			{
 				SetUIState(UIState.Processing);
-
-				// 1. Creating the new CurrentImage out of source or frozen image
 				
-				if (frozen == null)
+				try
 				{
-					mCurrentImage = (IBitmapCore)mSourceImage.Clone();
+					// 1. Creating the new CurrentImage out of source or frozen image
 					
-					if (mZoomValue < 0.999 || mZoomValue > 1.001)
+					if (frozen == null)
 					{
-						mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
-							if (ProgressMessagesReporter != null) 
-								return ProgressMessagesReporter(progress, "Downscaling...");
-							else 
-								return true; // If callback is not assigned, just continue
-						});
+						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
+						
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
+						{
+							mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
+								if (ProgressMessagesReporter != null) 
+									return ProgressMessagesReporter(progress, "Downscaling...");
+								else 
+									return true; // If callback is not assigned, just continue
+							});
+						}
+	
 					}
-
+					else
+						mCurrentImage = (IBitmapCore)frozen.Clone();
+	
+					if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+					
+					// 2. Processing the stage operations to newly created image
+	
+					if (mCurrentImage != null)
+					{
+						ApplyOperationsAfterFrozenLine(mCurrentImage);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					}
 				}
-				else
-					mCurrentImage = (IBitmapCore)frozen.Clone();
-
-				if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-				
-				// 2. Processing the stage operations to newly created image
-
-				if (mCurrentImage != null)
+				finally
 				{
-					ApplyOperationsAfterFrozenLine(mCurrentImage);
-					if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					SetUIState(UIState.Idle);
 				}
-				SetUIState(UIState.Idle);
 			}
 		}
 
@@ -456,8 +469,7 @@ namespace CatEye
 		
 		
 		public ExtendedStage (StageOperationParametersEditorFactory SOParametersEditorFactory,
-							  StageOperationHolderFactory SOHolderFactory,
-							  ImageLoader ImageLoader)
+							  StageOperationHolderFactory SOHolderFactory)
 		{
 			mSOParametersEditorFactory = SOParametersEditorFactory;
 			mSOHolderFactory = SOHolderFactory;

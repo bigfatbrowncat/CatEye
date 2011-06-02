@@ -8,18 +8,7 @@ using CatEye.Core;
 
 public partial class MainWindow : Gtk.Window
 {
-	private Type[] mStageOperationParametersWidgetTypes = new Type[]
-	{
-		typeof(CompressionStageOperationParametersWidget),
-		typeof(BrightnessStageOperationParametersWidget),
-		typeof(UltraSharpStageOperationParametersWidget),
-		typeof(SaturationStageOperationParametersWidget),
-		typeof(ToneStageOperationParametersWidget),
-		typeof(BlackPointStageOperationParametersWidget),
-		typeof(LimitSizeStageOperationParametersWidget),
-		typeof(CrotateStageOperationParametersWidget),
-	};
-	
+
 	private static string APP_NAME = "CatEye";
 
 	private string _FileName = null;
@@ -54,22 +43,6 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
-	private IStageOperationHolder StageOperationHolderWidgetFactory(IStageOperationParametersEditor editor)
-	{
-		return new StageOperationHolderWidget((StageOperationParametersWidget)editor);
-	}
-	private IStageOperationParametersEditor StageOperationParametersWidgetFactory(StageOperation so)
-	{
-		Type paramType = so.GetParametersType();
-		Type paramWidgetType = StageOperationIDAttribute.FindTypeByID(
-				mStageOperationParametersWidgetTypes,
-				StageOperationIDAttribute.GetTypeID(so.GetType())
-			);
-		StageOperationParametersWidget pwid = (StageOperationParametersWidget)(
-			paramWidgetType.GetConstructor(new Type[] { paramType }).Invoke(new object[] { so.Parameters })
-		);
-		return pwid;
-	}
 
 	public FloatPixmap LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
 	{
@@ -122,12 +95,13 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
-	public MainWindow () : base(Gtk.WindowType.Toplevel)
+	public MainWindow (ExtendedStage stage) : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
 
 		// Creating stage operations and stages
-		stages = new ExtendedStage(StageOperationParametersWidgetFactory, StageOperationHolderWidgetFactory, ImageLoader);
+		stages = stage;
+		stages.ImageLoader = ImageLoader;
 		
 		_FrozenPanel = new FrozenPanel();
 		_FrozenPanel.UnfreezeButtonClicked  += delegate {
