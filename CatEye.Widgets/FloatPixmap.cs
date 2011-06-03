@@ -750,9 +750,9 @@ namespace CatEye.Core
 					double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
 					double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
 					
-					cur_pixel[0] = cut(r * 255);      // Red
-					cur_pixel[1] = cut(g * 255);      // Green
-					cur_pixel[2] = cut(b * 255);      // Blue
+					cur_pixel[0] = cut(r / max * 255);      // Red
+					cur_pixel[1] = cut(g / max * 255);      // Green
+					cur_pixel[2] = cut(b / max * 255);      // Blue
 					cur_pixel += chan;
 				}
 				cur_row += stride;
