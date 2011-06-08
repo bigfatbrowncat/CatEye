@@ -20,7 +20,7 @@ ShowUnInstDetails show
 
 
 ;Name and file
-Name "${PRODUCT_NAME} ${VERSION_LONG}"
+Name "${PRODUCT_NAME} ${VERSION_SHORT}"
 OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}-${VERSION_LONG}-setup.exe"
 
 ;Default installation folder
