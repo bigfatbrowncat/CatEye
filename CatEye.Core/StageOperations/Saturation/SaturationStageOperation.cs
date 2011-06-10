@@ -10,6 +10,11 @@ namespace CatEye.Core
 		{
 		}
 		
+		public override double CalculateEfforts (IBitmapCore hdp)
+		{
+			return hdp.Width * hdp.Height;
+		}
+		
 		public override void OnDo (IBitmapCore hdp)
 		{
 			SaturationStageOperationParameters pm = (SaturationStageOperationParameters)Parameters;
@@ -20,8 +25,6 @@ namespace CatEye.Core
 					return OnReportProgress(progress);
 				}
 			);
-			
-			base.OnDo (hdp);
 		}
 		public override Type GetParametersType ()
 		{

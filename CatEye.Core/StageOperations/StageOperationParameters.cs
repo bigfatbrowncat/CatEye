@@ -47,6 +47,9 @@ namespace CatEye
 		}
 	}
 	
+	public delegate StageOperation StageOperationFactory(StageOperationParameters parameters);
+	public delegate StageOperationParameters StageOperationParametersFactoryFromID(string id);
+	
 	[StageOperationID("StageOperation")]
 	public abstract class StageOperationParameters
 	{
@@ -63,7 +66,7 @@ namespace CatEye
 				OnChanged();
 			}
 		}
-
+		
 		protected string GetStageOperationID()
 		{
 			object[] attrs = GetType().GetCustomAttributes(typeof(StageOperationIDAttribute), true);

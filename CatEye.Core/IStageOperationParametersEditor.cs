@@ -2,7 +2,7 @@ using System;
 
 namespace CatEye.Core
 {
-	public delegate IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperation so);
+	public delegate IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters so);
 
 	public interface IStageOperationParametersEditor
 	{

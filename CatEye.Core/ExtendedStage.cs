@@ -16,18 +16,20 @@ namespace CatEye
 		private bool mCancelLoadingPending = false;
 		private uint update_timer_delay = 500;
 		private IBitmapCore mSourceImage = null;
+		private	IBitmapCore mFrozenImage = null;
 		private IBitmapCore mCurrentImage = null;
-		private IBitmapCore frozen = null;
-		private StageOperation _EditingOperation = null;
-		private StageOperation _FrozenAt = null;
+		private StageOperationParameters _EditingOperation = null;
+		private StageOperationParameters _FrozenAt = null;
 		private double mZoomValue = 0.5;
+		private bool mZoomValueIsChanged = true;
+		
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
 		private StageOperationHolderFactory mSOHolderFactory;
 		private ImageLoader mImageLoader;
 		private bool _UpdateQueued = false;
 		
-		protected Dictionary<StageOperation, IStageOperationHolder> _Holders = 
-			new Dictionary<StageOperation, IStageOperationHolder>();
+		protected Dictionary<StageOperationParameters, IStageOperationHolder> _Holders = 
+			new Dictionary<StageOperationParameters, IStageOperationHolder>();
 
 		public event ProgressMessageReporter ProgressMessagesReporter;
 		public event EventHandler<EventArgs> UIStateChanged;
@@ -37,18 +39,6 @@ namespace CatEye
 		public event EventHandler<EventArgs> ImageChanged;
 		public event EventHandler<EventArgs> ImageUpdated;
 		public event EventHandler<EventArgs> UpdateQueued;
-		
-		public static readonly Type[] _StageOperationTypes = new Type[]
-		{
-			typeof(CompressionStageOperation),
-			typeof(BrightnessStageOperation),
-			typeof(UltraSharpStageOperation),
-			typeof(SaturationStageOperation),
-			typeof(ToneStageOperation),
-			typeof(BlackPointStageOperation),
-			typeof(LimitSizeStageOperation),
-			typeof(CrotateStageOperation),
-		};
 		
 		public ImageLoader ImageLoader
 		{
@@ -62,7 +52,7 @@ namespace CatEye
 			set 
 			{ 
 				mCurrentImage = null;
-				frozen = null;
+				mFrozenImage = null;
 				mSourceImage = value;
 				
 				if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
@@ -76,6 +66,7 @@ namespace CatEye
 			set 
 			{
 				mZoomValue = value;
+				mZoomValueIsChanged = true;
 				QueueUpdate();
 			}
 		}
@@ -90,24 +81,24 @@ namespace CatEye
 			}
 		}
 		
-		protected override void OnOperationActivityChanged ()
+		protected override void OnItemChanged (StageOperationParameters item)
 		{
-			base.OnOperationActivityChanged ();
+			base.OnItemChanged (item);
 			QueueUpdate();
 		}
 		
-		protected override void OnOperationIndexChanged ()
+		protected override void OnItemIndexChanged(StageOperationParameters item)
 		{
-			base.OnOperationIndexChanged ();
+			base.OnItemIndexChanged (item);
 			QueueUpdate();
 		}
 		
-		public ReadOnlyDictionary<StageOperation, IStageOperationHolder> Holders
+		public ReadOnlyDictionary<StageOperationParameters, IStageOperationHolder> Holders
 		{
-			get { return new ReadOnlyDictionary<StageOperation, IStageOperationHolder>(_Holders); }
+			get { return new ReadOnlyDictionary<StageOperationParameters, IStageOperationHolder>(_Holders); }
 		}
 
-		public int IndexOf(StageOperation so)
+		public int IndexOf(StageOperationParameters so)
 		{
 			return _StageQueue.IndexOf(so);
 		}
@@ -134,7 +125,7 @@ namespace CatEye
 		}
 		
 		
-		public StageOperation EditingOperation
+		public StageOperationParameters EditingOperation
 		{
 			get { return _EditingOperation; }
 			set
@@ -173,39 +164,105 @@ namespace CatEye
 			xdoc.Load(filename);
 
 			FrozenAt = null;
-			DeserializeFromXML(xdoc.ChildNodes[1], _StageOperationTypes);
+			DeserializeFromXML(xdoc.ChildNodes[1]);
 			SetUIState(UIState.Idle);
 		}
 		
 		private void DoUpdate()
 		{
-			try
+			if (mSourceImage != null)
 			{
-				_UpdateQueued = false;
-				// Updating and stopping the timer
-				if (FrozenAt == null)
+				try
 				{
-					// It isn't frozen at all
-					frozen = null;
-					UpdateStageAfterFrozen();
-				} else if (frozen == null)
-				{
-					// It is frozen, but the frozen image isn't calculated yet.
-					UpdateFrozen();
-					UpdateStageAfterFrozen();
+					SetUIState(UIState.Processing);
+					// Removing updating queue flag
+					_UpdateQueued = false;
+					
+					bool from_frozen_line = false;
+					
+					// Checking if the stage is frozen or not and is there a frozen image.
+					if (FrozenAt == null || mFrozenImage == null || mZoomValueIsChanged == true)
+					{
+						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
+						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+
+						if (mZoomValue < 0.999 || mZoomValue > 1.001)
+						{
+							mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
+								if (ProgressMessagesReporter != null) 
+									return ProgressMessagesReporter(progress, "Downscaling...");
+								else 
+									return true; // If callback is not assigned, just continue
+							});
+						}
+					}
+					else
+					{
+						mCurrentImage = (IBitmapCore)mFrozenImage.Clone();
+						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+						from_frozen_line = true;
+					}
+					
+					// Making the list of stage operations to apply
+					List<StageOperation> operationsToApply = new List<StageOperation>();
+					List<double> efforts = new List<double>();
+					int start_index = 0;
+					if (from_frozen_line) 
+						start_index = _StageQueue.IndexOf(FrozenAt) + 1;
+					double full_efforts = 0;
+					
+					for (int i = start_index; i < _StageQueue.Count; i++)
+					{
+						if (_StageQueue[i] != _EditingOperation) 
+						{
+							// Don't add inactives
+							if (_StageQueue[i].Active == false) continue;
+							
+							StageOperation newOperation = _StageOperationFactory(_StageQueue[i]);
+							operationsToApply.Add(newOperation);
+							efforts.Add(newOperation.CalculateEfforts(mCurrentImage));
+							full_efforts += efforts[efforts.Count - 1];
+							
+							newOperation.ReportProgress += delegate(object sender, ReportStageOperationProgressEventArgs e) {
+								if (ProgressMessagesReporter != null) 
+								{
+									double cur_eff = 0;
+									int j = 0;
+									while (operationsToApply[j] != (StageOperation)sender)
+									{
+										cur_eff += efforts[j];
+										j++;
+									}
+									cur_eff += e.Progress * efforts[j];
+									string desc = StageOperationDescriptionAttribute.GetSOName(sender.GetType());
+									e.Cancel = ProgressMessagesReporter(
+										cur_eff / full_efforts, 
+										"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...");
+								}
+							};
+						}
+						else
+							break;
+					}
+					
+					// Executing
+					for (int k = 0; k < operationsToApply.Count; k++)
+					{
+						operationsToApply[k].OnDo(mCurrentImage);
+						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+					}
 				}
-				else
+				catch (UserCancelException)
 				{
-					// It's frozen and the frozen image is ok.
-					UpdateStageAfterFrozen();
+					// The user cancelled processing.
+					// Unset cancelling flag.
+					mCancelProcessingPending = false;
+					QueueUpdate();
 				}
-			}
-			catch (UserCancelException)
-			{
-				// The user cancelled processing.
-				// Unset cancelling flag.
-				mCancelProcessingPending = false;
-				QueueUpdate();
+				finally 
+				{
+					SetUIState(UIState.Idle);
+				}
 			}
 		}
 		
@@ -243,89 +300,7 @@ namespace CatEye
 			}
 		}
 		
-		void UpdateFrozen()
-		{
-			if (TheUIState == UIState.Idle)
-			{
-				try
-				{
-					SetUIState(UIState.Processing);
-					
-					IBitmapCore frozen_tmp = (IBitmapCore)mSourceImage.Clone();
-						
-					if (frozen_tmp != null)
-					{
-						if (mZoomValue < 0.999 || mZoomValue > 1.001)
-						{
-							frozen_tmp.ScaleFast(mZoomValue, delegate (double progress) {
-								if (ProgressMessagesReporter != null) 
-											return ProgressMessagesReporter(progress, "Zooming...");
-										else 
-											return true; // If callback is not assigned, just continue
-							});
-						}
-	
-						ApplyOperationsBeforeFrozenLine(frozen_tmp);
-						frozen = frozen_tmp;
-					}
-				}
-				finally
-				{
-					SetUIState(UIState.Idle);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Assumes that frozen image is prepared already
-		/// </summary>
-		void UpdateStageAfterFrozen()
-		{
-			if (mSourceImage == null) return;
-			if (TheUIState == UIState.Idle)
-			{
-				SetUIState(UIState.Processing);
-				
-				try
-				{
-					// 1. Creating the new CurrentImage out of source or frozen image
-					
-					if (frozen == null)
-					{
-						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
-						
-						if (mZoomValue < 0.999 || mZoomValue > 1.001)
-						{
-							mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
-								if (ProgressMessagesReporter != null) 
-									return ProgressMessagesReporter(progress, "Downscaling...");
-								else 
-									return true; // If callback is not assigned, just continue
-							});
-						}
-	
-					}
-					else
-						mCurrentImage = (IBitmapCore)frozen.Clone();
-	
-					if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-					
-					// 2. Processing the stage operations to newly created image
-	
-					if (mCurrentImage != null)
-					{
-						ApplyOperationsAfterFrozenLine(mCurrentImage);
-						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
-					}
-				}
-				finally
-				{
-					SetUIState(UIState.Idle);
-				}
-			}
-		}
-
-		public StageOperation FrozenAt
+		public StageOperationParameters FrozenAt
 		{
 			get { return _FrozenAt; }
 			set
@@ -380,63 +355,12 @@ namespace CatEye
 		
 		public void ReportImageChanged(int image_width, int image_height)
 		{
-			foreach (StageOperation sop in _StageQueue)
+			foreach (StageOperationParameters sop in _StageQueue)
 			{
 				_Holders[sop].StageOperationParametersEditor.ReportImageChanged(image_width, image_height);
 			}
 		}
 		
-		public void ApplyOperationsBeforeFrozenLine(IBitmapCore hdp)
-		{
-			if (_FrozenAt == null) return;	// If not frozen, do nothing
-
-			// Do operations
-			for (int j = 0; j < _StageQueue.Count; j++)
-			{
-				if (_StageQueue[j].Parameters.Active)
-					_StageQueue[j].OnDo(hdp);
-				
-				if (_StageQueue[j] == _FrozenAt)
-				{
-					// If frozen line is here, succeed.
-					return;
-				}
-			}
-		}
-		
-		public void ApplyOperationsAfterFrozenLine(IBitmapCore hdp)
-		{
-			if (_FrozenAt == null)
-			{
-				// Do all operations
-				for (int j = 0; j < _StageQueue.Count; j++)
-				{
-					if (_StageQueue[j] == EditingOperation)
-						break;
-					if (_StageQueue[j].Parameters.Active)
-					{
-						_StageQueue[j].OnDo(hdp);
-						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
-					}
-				}
-			}
-			else
-			{
-				bool frozen_line_found = false;
-				for (int j = 0; j < _StageQueue.Count; j++)
-				{
-					if (_StageQueue[j] == EditingOperation)
-						break;
-					if (frozen_line_found && _StageQueue[j].Parameters.Active)
-					{
-						_StageQueue[j].OnDo(hdp);
-						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
-					}
-					if (_StageQueue[j] == _FrozenAt) frozen_line_found = true;
-				}
-			}
-		}
-
 		public void LoadImage(string filename, int downscale_by)
 		{
 			SetUIState(UIState.Loading);
@@ -450,26 +374,20 @@ namespace CatEye
 		}
 		
 		
-		public StageOperation CreateAndAddNewStageOperation(Type sot)
+		public StageOperationParameters CreateAndAddNewItem(Type sot)
 		{
 			// Constructing so-sop-sopw structure
 			string id = StageOperationIDAttribute.GetTypeID(sot);
-			Type sopt = StageOperationIDAttribute.FindTypeByID(mStageOperationParametersTypes, id);
-			
-			StageOperationParameters sop = (StageOperationParameters)sopt.GetConstructor(
-					new Type[] { }).Invoke(new object[] { });
-			
-			StageOperation so = (StageOperation)sot.GetConstructor(
-					new Type[] { typeof(StageOperationParameters) }
-				).Invoke(new object[] { sop });
-			
-			AddStageOperation(so);
-			return so;
+			StageOperationParameters sop = _StageOperationParametersFactoryFromID(id);
+			Add(sop);
+			return sop;
 		}
 		
 		
-		public ExtendedStage (StageOperationParametersEditorFactory SOParametersEditorFactory,
-							  StageOperationHolderFactory SOHolderFactory)
+		public ExtendedStage (StageOperationFactory stageOperationFactory, 
+			StageOperationParametersFactoryFromID stageOperationParametersFactoryFromID,
+			StageOperationParametersEditorFactory SOParametersEditorFactory,
+			StageOperationHolderFactory SOHolderFactory) : base(stageOperationFactory, stageOperationParametersFactoryFromID)
 		{
 			mSOParametersEditorFactory = SOParametersEditorFactory;
 			mSOHolderFactory = SOHolderFactory;
@@ -494,19 +412,6 @@ namespace CatEye
 			if (OperationDefrozen != null)
 				OperationDefrozen(this, EventArgs.Empty);
 		}
-		
-		protected override void OnAddedToStage (StageOperation operation)
-		{
-			IStageOperationParametersEditor edtr = mSOParametersEditorFactory(operation);
-			IStageOperationHolder sohw = mSOHolderFactory(edtr);
-			_Holders.Add(operation, sohw);
-			_Holders[operation].StageOperationParametersEditor.UserModified += HandleSohwOperationParametersEditorUserModified;
-			operation.ReportProgress += HandleOperationReportProgress;
-			
-			base.OnAddedToStage (operation);
-
-			QueueUpdate();
-		}
 
 		void HandleOperationReportProgress (object sender, ReportStageOperationProgressEventArgs e)
 		{
@@ -519,45 +424,96 @@ namespace CatEye
 			QueueUpdate();
 		}
 		
-		protected override void OnRemovedFromStage (StageOperation operation)
+		void HandleSohwRemoveButtonClicked (object sender, EventArgs e)
 		{
-			if (_EditingOperation == operation) _EditingOperation = null;
-
-			base.OnRemovedFromStage (operation);
+			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
+			Remove(sop);
+		}
+	
+		void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
+		{
+			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
+			FrozenAt = sop;
+		}
+	
+		void HandleSohwEditButtonClicked (object sender, EventArgs e)
+		{
+			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
 			
-			_Holders[operation].StageOperationParametersEditor.UserModified -= HandleSohwOperationParametersEditorUserModified;
-			_Holders.Remove(operation);
-			operation.ReportProgress -= HandleOperationReportProgress;
+			if (_Holders[sop].Edit)
+			{
+				EditingOperation = sop;
+			}
+			else
+			{
+				EditingOperation = null;
+			}
+		}
+		
+		void HandleSohwUpTitleButtonClicked (object sender, EventArgs e)
+		{
+			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
+			StepUp(sop);
+		}
+	
+		void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
+		{
+			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
+			StepDown(sop);
+		}
+		
+		void HandleSohwStageActiveButtonClicked (object sender, EventArgs e)
+		{
 			QueueUpdate();
 		}
 		
-		public void StepDown(StageOperation sop)
+		protected override void OnItemAdded (StageOperationParameters item)
 		{
-			int index = _StageQueue.IndexOf(sop);
-			if (index < _StageQueue.Count - 1)
-			{
-				_StageQueue.Remove(sop);
-				_StageQueue.Insert(index + 1, sop);
-				OnOperationIndexChanged();
-			}
-		}
+			IStageOperationParametersEditor edtr = mSOParametersEditorFactory(item);
+			IStageOperationHolder sohw = mSOHolderFactory(edtr);
+			
+			// Setting events
+			sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
+			sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
+			sohw.EditButtonClicked += HandleSohwEditButtonClicked;
+			sohw.StageActiveButtonClicked += HandleSohwStageActiveButtonClicked;
+			sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
+			sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
+			
+			_Holders.Add(item, sohw);
+			_Holders[item].StageOperationParametersEditor.UserModified += HandleSohwOperationParametersEditorUserModified;
 
-		public void StepUp(StageOperation sop)
-		{
-			int index = _StageQueue.IndexOf(sop);
-			if (index > 0)
-			{
-				_StageQueue.Remove(sop);
-				_StageQueue.Insert(index - 1, sop);
-				OnOperationIndexChanged();
-			}
+			base.OnItemAdded(item);
+
+			QueueUpdate();
 		}
 		
-		public StageOperation StageOperationByHolder(IStageOperationHolder hw)
+		protected override void OnItemRemoved (StageOperationParameters item)
 		{
-			foreach (StageOperation sop in _Holders.Keys)
+			if (_EditingOperation == item) _EditingOperation = null;
+			IStageOperationHolder sohw = _Holders[item];
+			
+			// Clearing events
+			sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
+			sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
+			sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
+			sohw.StageActiveButtonClicked -= HandleSohwStageActiveButtonClicked;
+			sohw.UpTitleButtonClicked -= HandleSohwUpTitleButtonClicked;
+			sohw.DownTitleButtonClicked -= HandleSohwDownTitleButtonClicked;
+
+			_Holders[item].StageOperationParametersEditor.UserModified -= HandleSohwOperationParametersEditorUserModified;
+			_Holders.Remove(item);
+
+			base.OnItemRemoved (item);
+			
+			QueueUpdate();
+		}
+		
+		protected StageOperationParameters StageOperationByHolder(IStageOperationHolder h)
+		{
+			foreach (StageOperationParameters item in _Holders.Keys)
 			{
-				if (_Holders[sop] == hw) return sop;
+				if (_Holders[item] == h) return item;
 			}
 			return null;
 		}

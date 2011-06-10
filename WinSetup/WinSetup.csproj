@@ -168,6 +168,9 @@
     <None Include="gtk-postinstall.bat" />
     <None Include="release.cmd" />
     <None Include="GetVersion.nsi" />
+    <None Include="readme.txt">
+      <Visible>False</Visible>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

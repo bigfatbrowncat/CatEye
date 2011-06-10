@@ -12,6 +12,13 @@ namespace CatEye.Core
 		bool Freeze { get; set; }
 		bool FrozenButtonsState { get; set; }
 		
+		event EventHandler<EventArgs> StageActiveButtonClicked;
+		event EventHandler<EventArgs> UpTitleButtonClicked;
+		event EventHandler<EventArgs> DownTitleButtonClicked;
+		event EventHandler<EventArgs> EditButtonClicked;
+		event EventHandler<EventArgs> FreezeButtonClicked;
+		event EventHandler<EventArgs> RemoveButtonClicked;
+		
 		IStageOperationParametersEditor StageOperationParametersEditor { get; }
 	}
 }

@@ -4,99 +4,129 @@ using System.Collections.Generic;
 
 namespace CatEye.Core
 {
-	public class OperationRemovedFromStageEventArgs : EventArgs
+	public class StageOperationParametersEventArgs : EventArgs
 	{
-		StageOperation _Operation;
-		public StageOperation Operation { get { return _Operation; } }
-		public OperationRemovedFromStageEventArgs(StageOperation operation)
+		StageOperationParameters _Target;
+		public StageOperationParameters Target { get { return _Target; } }
+		public StageOperationParametersEventArgs(StageOperationParameters target)
 		{
-			_Operation = operation;
-		}
-	}
-	
-	public class OperationAddedToStageEventArgs : EventArgs
-	{
-		StageOperation _Operation;
-		public StageOperation Operation { get { return _Operation; } }
-		public OperationAddedToStageEventArgs(StageOperation operation)
-		{
-			_Operation = operation;
+			_Target = target;
 		}
 	}
 	
 	public class Stage
 	{
-		protected List<StageOperation> _StageQueue;
+		protected StageOperationFactory _StageOperationFactory;
+		protected StageOperationParametersFactoryFromID _StageOperationParametersFactoryFromID;
+		protected List<StageOperationParameters> _StageQueue;
 		
-		public StageOperation[] StageQueue { get { return _StageQueue.ToArray(); } }
+		public StageOperationParameters[] StageQueue { get { return _StageQueue.ToArray(); } }
 		
-		public event EventHandler<OperationRemovedFromStageEventArgs> OperationRemovedFromStage;
-		public event EventHandler<OperationAddedToStageEventArgs> OperationAddedToStage;
-		public event EventHandler<EventArgs> OperationIndexChanged;
-		public event EventHandler<EventArgs> OperationActivityChanged;
+		public event EventHandler<StageOperationParametersEventArgs> ItemRemoved;
+		public event EventHandler<StageOperationParametersEventArgs> ItemAdded;
+		public event EventHandler<StageOperationParametersEventArgs> ItemIndexChanged;
+		public event EventHandler<StageOperationParametersEventArgs> ItemChanged;
 		
-		protected Type[] mStageOperationParametersTypes = new Type[]
+		void HandleItemChanged(object sender, EventArgs e)
 		{
-			typeof(CompressionStageOperationParameters),
-			typeof(BrightnessStageOperationParameters),
-			typeof(UltraSharpStageOperationParameters),
-			typeof(SaturationStageOperationParameters),
-			typeof(ToneStageOperationParameters),
-			typeof(BlackPointStageOperationParameters),
-			typeof(LimitSizeStageOperationParameters),
-			typeof(CrotateStageOperationParameters),
-		};
-		
-		protected virtual void OnAddedToStage(StageOperation operation)
-		{
-			if (OperationAddedToStage != null) 
-				OperationAddedToStage(this, new OperationAddedToStageEventArgs(operation));
+			OnItemChanged((StageOperationParameters)sender);			
 		}
-		protected virtual void OnRemovedFromStage(StageOperation operation)
+
+		public Stage(StageOperationFactory stageOperationFactory, 
+			StageOperationParametersFactoryFromID stageOperationParametersFactoryFromID)
 		{
-			if (OperationRemovedFromStage != null) 
-				OperationRemovedFromStage(this, new OperationRemovedFromStageEventArgs(operation));
+			_StageQueue = new List<StageOperationParameters>();
+			_StageOperationFactory = stageOperationFactory;
+			_StageOperationParametersFactoryFromID = stageOperationParametersFactoryFromID;
 		}
-		protected virtual void OnOperationIndexChanged()
+		
+		protected virtual void OnItemAdded(StageOperationParameters item)
 		{
-			if (OperationIndexChanged != null)
-				OperationIndexChanged(this, EventArgs.Empty);
+			if (ItemAdded != null) 
+				ItemAdded(this, new StageOperationParametersEventArgs(item));
 		}
-		protected virtual void OnOperationActivityChanged()
+		protected virtual void OnItemRemoved(StageOperationParameters item)
 		{
-			if (OperationActivityChanged != null)
-				OperationActivityChanged(this, EventArgs.Empty);
+			if (ItemRemoved != null) 
+				ItemRemoved(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnItemIndexChanged(StageOperationParameters item)
+		{
+			if (ItemIndexChanged != null)
+				ItemIndexChanged(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnItemChanged(StageOperationParameters item)
+		{
+			if (ItemChanged != null)
+				ItemChanged(this, new StageOperationParametersEventArgs(item));
 		}
 		
 		public void ApplyAllOperations(IBitmapCore hdp)
 		{
 			for (int j = 0; j < _StageQueue.Count; j++)
 			{
-				if (_StageQueue[j].Parameters.Active)
-					_StageQueue[j].OnDo(hdp);
+				if (_StageQueue[j].Active)
+				{
+					StageOperation so = _StageOperationFactory(_StageQueue[j]);
+					so.OnDo(hdp);
+				}
+			}
+		}
+		
+		public double CalculateAllEfforts(IBitmapCore hdp)
+		{
+			double res = 0;
+			for (int j = 0; j < _StageQueue.Count; j++)
+			{
+				if (_StageQueue[j].Active)
+				{
+					StageOperation so = _StageOperationFactory(_StageQueue[j]);
+					res += so.CalculateEfforts(hdp);
+				}
+			}
+			return res;
+		}
+
+		public void Add(StageOperationParameters newItem)
+		{
+			_StageQueue.Add(newItem);
+			newItem.Changed += HandleItemChanged;
+			OnItemAdded(newItem);
+		}
+
+		public void Remove(StageOperationParameters item)
+		{
+			_StageQueue.Remove(item);
+			item.Changed -= HandleItemChanged;
+			OnItemRemoved(item);
+		}
+
+		public void StepDown(StageOperationParameters item)
+		{
+			int index = _StageQueue.IndexOf(item);
+			if (index < _StageQueue.Count - 1)
+			{
+				_StageQueue.Remove(item);
+				_StageQueue.Insert(index + 1, item);
+				OnItemIndexChanged(item);
 			}
 		}
 
-		public void AddStageOperation(StageOperation operation)
+		public void StepUp(StageOperationParameters item)
 		{
-			_StageQueue.Add(operation);
-			OnAddedToStage(operation);
-		}
-
-		public void RemoveStageOperation(StageOperation operation)
-		{
-			_StageQueue.Remove(operation);
-			OnRemovedFromStage(operation);
-		}
-		
-		public void ClearStage()
-		{
-			while (_StageQueue.Count > 0) RemoveStageOperation(_StageQueue[0]);
+			int index = _StageQueue.IndexOf(item);
+			if (index > 0)
+			{
+				_StageQueue.Remove(item);
+				_StageQueue.Insert(index - 1, item);
+				OnItemIndexChanged(item);
+			}
 		}
 		
-		public Stage ()
+		public void Clear()
 		{
-			_StageQueue = new List<StageOperation>();
+			while (_StageQueue.Count > 0)
+				Remove(_StageQueue[0]);
 		}
 		
 		public XmlNode SerializeToXML(XmlDocument xdoc)
@@ -104,12 +134,13 @@ namespace CatEye.Core
 			XmlNode xn = xdoc.CreateElement("Stages");
 			for (int i = 0; i < _StageQueue.Count; i++)
 			{
-				XmlNode ch = _StageQueue[i].Parameters.SerializeToXML(xdoc);
+				XmlNode ch = _StageQueue[i].SerializeToXML(xdoc);
 				xn.AppendChild(ch);
 			}
 			return xn;
 		}
-		
+
+		/*
 		protected Type FindTypeWithStageOperationIDEqualTo(Type[] types, string id)
 		{
 			for (int i = 0; i < types.Length; i++)
@@ -124,18 +155,18 @@ namespace CatEye.Core
 			}
 			return null;
 		}
+		*/
 		
-		protected virtual void OnStageOperationDeserialized(StageOperation so, StageOperationParameters sop)
+		protected virtual void OnItemDeserialized(StageOperationParameters sop)
 		{
 		}
 		
-		public void DeserializeFromXML(XmlNode xn, Type[] stageOperationTypes)
+		public void DeserializeFromXML(XmlNode xn)
 		{
 			if (xn.Name != "Stages")
 				throw new IncorrectNodeException("Node isn't a Stages node");
 			
-			List<StageOperation> sos = new List<StageOperation>();
-			Dictionary<StageOperation, bool> actives = new Dictionary<StageOperation, bool>();
+			List<StageOperationParameters> sops = new List<StageOperationParameters>();
 			
 			for (int i = 0; i < xn.ChildNodes.Count; i++)
 			{
@@ -145,49 +176,21 @@ namespace CatEye.Core
 					if (ch.Attributes["ID"] == null)
 						throw new IncorrectNodeException("StageOperationParameters node doesn't contain ID");
 					
-					Type sot = FindTypeWithStageOperationIDEqualTo(stageOperationTypes, ch.Attributes["ID"].Value);
-					if (sot == null)
-						throw new IncorrectNodeValueException("Can't find StageOperation type for the ID (" + ch.Attributes["ID"].Value + ")");
-					Type sopt = FindTypeWithStageOperationIDEqualTo(mStageOperationParametersTypes, ch.Attributes["ID"].Value);
-					if (sopt == null)
-						throw new IncorrectNodeValueException("Can't find StageOperationParameters type for the ID (" + ch.Attributes["ID"].Value + ")");
-
-					// Constructing so-sop structure
-					StageOperationParameters sop = (StageOperationParameters)sopt.GetConstructor(
-							new Type[] {}
-						).Invoke(new object[] {});
-					
-					StageOperation so = (StageOperation)sot.GetConstructor(
-							new Type[] { typeof(StageOperationParameters) }
-						).Invoke(new object[] { sop });
-
+					StageOperationParameters sop = _StageOperationParametersFactoryFromID(ch.Attributes["ID"].Value);
+					 
 					// Deserializing stage operation parameters
 					sop.DeserializeFromXML(ch);
+					sops.Add(sop);
 					
-					sos.Add(so);
-					
-					OnStageOperationDeserialized(so, sop);
-					
-					// Checking "Active"
-					if (ch.Attributes["Active"] != null) 
-					{
-						bool bres;
-						if (bool.TryParse(ch.Attributes["Active"].Value, out bres))
-						{
-							actives.Add(so, bres);
-						}
-						else
-							throw new IncorrectNodeValueException("Can not parse Active value");
-					}
+					OnItemDeserialized(sop);
 				}
 			}
 			
-			ClearStage();
+			Clear();
 			
-			
-			for (int i = 0; i < sos.Count; i++)
+			for (int i = 0; i < sops.Count; i++)
 			{
-				AddStageOperation(sos[i]);
+				Add(sops[i]);
 			}
 			
 		}

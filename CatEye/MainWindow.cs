@@ -17,6 +17,7 @@ public partial class MainWindow : Gtk.Window
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
 	private PPMLoader ppl = null;
+	private Type[] mStageOperationTypes;
 	
 	private void UpdateTitle()
 	{
@@ -95,7 +96,7 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
-	public MainWindow (ExtendedStage stage) : base(Gtk.WindowType.Toplevel)
+	public MainWindow (ExtendedStage stage, Type[] stageOperationTypes) : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
 
@@ -109,17 +110,13 @@ public partial class MainWindow : Gtk.Window
 		};
 		stage_vbox.Add(_FrozenPanel);
 		
+		mStageOperationTypes = stageOperationTypes;
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
-		for (int i = 0; i < ExtendedStage._StageOperationTypes.Length; i++)
+		for (int i = 0; i < mStageOperationTypes.Length; i++)
 		{
-			string desc;
-			object[] descs = ExtendedStage._StageOperationTypes[i].GetCustomAttributes(
-				typeof(StageOperationDescriptionAttribute), true);
-			if (descs.Length == 0)
-				desc = ExtendedStage._StageOperationTypes[i].Name;
-			else
-				desc = ((StageOperationDescriptionAttribute)descs[0]).Name;
+			string desc = StageOperationDescriptionAttribute.GetSOName(mStageOperationTypes[i]);
+			if (desc == null) desc = mStageOperationTypes[i].Name;
 		
 			ls.AppendValues(desc, i);
 		}
@@ -150,9 +147,9 @@ public partial class MainWindow : Gtk.Window
 		stages.ImageUpdated += delegate {
 			view_widget.UpdatePicture();
 		};
-		stages.OperationAddedToStage += HandleStagesOperationAddedToStage;
-		stages.OperationRemovedFromStage += HandleStagesOperationRemovedFromStage;
-		stages.OperationIndexChanged += delegate {
+		stages.ItemAdded += HandleStagesOperationAddedToStage;
+		stages.ItemRemoved += HandleStagesOperationRemovedFromStage;
+		stages.ItemIndexChanged += delegate {
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
@@ -197,56 +194,10 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 	
-	void HandleSohwRemoveButtonClicked (object sender, EventArgs e)
+	void HandleStagesOperationAddedToStage (object sender, StageOperationParametersEventArgs e)
 	{
-		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
-		stages.RemoveStageOperation(sop);
-	}
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Target];
 
-	void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
-	{
-		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
-		stages.FrozenAt = sop;
-	}
-
-	void HandleSohwEditButtonClicked (object sender, EventArgs e)
-	{
-		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
-		
-		if (stages.Holders[sop].Edit)
-		{
-			stages.EditingOperation = sop;
-		}
-		else
-		{
-			stages.EditingOperation = null;
-		}
-	}
-	
-	void HandleSohwUpTitleButtonClicked (object sender, EventArgs e)
-	{
-		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
-		stages.StepUp(sop);
-	}
-
-	void HandleSohwDownTitleButtonClicked (object sender, EventArgs e)
-	{
-		StageOperation sop = stages.StageOperationByHolder(sender as StageOperationHolderWidget);
-		stages.StepDown(sop);
-	}
-	
-	void HandleStagesOperationAddedToStage (object sender, OperationAddedToStageEventArgs e)
-	{
-		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
-
-		// Setting events
-		sohw.FreezeButtonClicked += HandleSohwFreezeButtonClicked;
-		sohw.RemoveButtonClicked += HandleSohwRemoveButtonClicked;
-		sohw.EditButtonClicked += HandleSohwEditButtonClicked;
-		sohw.StageActiveButtonClicked += HandleSohwStageActiveButtonClicked;
-		sohw.UpTitleButtonClicked += HandleSohwUpTitleButtonClicked;
-		sohw.DownTitleButtonClicked += HandleSohwDownTitleButtonClicked;
-		
 		stage_vbox.Add(sohw);
 		((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
 		((Gtk.Box.BoxChild)stage_vbox[sohw]).Expand = false;
@@ -254,24 +205,11 @@ public partial class MainWindow : Gtk.Window
 		sohw.Show();
 		ArrangeVBoxes();		
 		
-		e.Operation.ReportProgress += HandleProgress;
 	}
 
-	void HandleSohwStageActiveButtonClicked (object sender, EventArgs e)
+	void HandleStagesOperationRemovedFromStage (object sender, StageOperationParametersEventArgs e)
 	{
-		stages.QueueUpdate();
-	}
-
-	void HandleStagesOperationRemovedFromStage (object sender, OperationRemovedFromStageEventArgs e)
-	{
-		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Operation];
-		
-		// Unsetting events
-		sohw.FreezeButtonClicked -= HandleSohwFreezeButtonClicked;
-		sohw.RemoveButtonClicked -= HandleSohwRemoveButtonClicked;
-		sohw.EditButtonClicked -= HandleSohwEditButtonClicked;
-		sohw.UpTitleButtonClicked -= HandleSohwUpTitleButtonClicked;
-		sohw.DownTitleButtonClicked -= HandleSohwDownTitleButtonClicked;
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Target];
 		
 		stage_vbox.Remove(sohw);
 		sohw.Hide();
@@ -279,7 +217,6 @@ public partial class MainWindow : Gtk.Window
 		
 		ArrangeVBoxes();
 
-		e.Operation.ReportProgress -= HandleProgress;
 	}
 
 	void HandleStagesUIStateChanged (object sender, EventArgs e)
@@ -630,7 +567,7 @@ public partial class MainWindow : Gtk.Window
 			Gtk.TreeIter ti;
 			stageOperationToAdd_combobox.GetActiveIter(out ti);
 			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-			StageOperation so = stages.CreateAndAddNewStageOperation(ExtendedStage._StageOperationTypes[index]);
+			stages.CreateAndAddNewItem(mStageOperationTypes[index]);
 				
 			stage_vbox.CheckResize();
 		}

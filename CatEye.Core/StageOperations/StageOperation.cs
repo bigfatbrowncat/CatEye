@@ -85,10 +85,8 @@ namespace CatEye
 				return true;
 		}
 		
-		public virtual void OnDo(IBitmapCore hdp)
-		{
-		}
-		
+		public abstract double CalculateEfforts(IBitmapCore hdp);
+		public abstract void OnDo(IBitmapCore hdp);
 		public abstract Type GetParametersType();
 	}
 

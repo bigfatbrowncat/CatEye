@@ -6,7 +6,31 @@ namespace CatEye
 {
 	class MainClass
 	{
-		private static Type[] mStageOperationParametersWidgetTypes = new Type[]
+		private static readonly Type[] mStageOperationTypes = new Type[]
+		{
+			typeof(CompressionStageOperation),
+			typeof(BrightnessStageOperation),
+			typeof(UltraSharpStageOperation),
+			typeof(SaturationStageOperation),
+			typeof(ToneStageOperation),
+			typeof(BlackPointStageOperation),
+			typeof(LimitSizeStageOperation),
+			typeof(CrotateStageOperation)
+		};
+
+		private static readonly Type[] mStageOperationParametersTypes = new Type[]
+		{
+			typeof(CompressionStageOperationParameters),
+			typeof(BrightnessStageOperationParameters),
+			typeof(UltraSharpStageOperationParameters),
+			typeof(SaturationStageOperationParameters),
+			typeof(ToneStageOperationParameters),
+			typeof(BlackPointStageOperationParameters),
+			typeof(LimitSizeStageOperationParameters),
+			typeof(CrotateStageOperationParameters)
+		};
+				
+		private static readonly Type[] mStageOperationParametersWidgetTypes = new Type[]
 		{
 			typeof(CompressionStageOperationParametersWidget),
 			typeof(BrightnessStageOperationParametersWidget),
@@ -15,22 +39,50 @@ namespace CatEye
 			typeof(ToneStageOperationParametersWidget),
 			typeof(BlackPointStageOperationParametersWidget),
 			typeof(LimitSizeStageOperationParametersWidget),
-			typeof(CrotateStageOperationParametersWidget),
+			typeof(CrotateStageOperationParametersWidget)
 		};
-			
-		private static IStageOperationHolder StageOperationHolderWidgetFactory(IStageOperationParametersEditor editor)
+		
+		private static StageOperation StageOperationFactory(StageOperationParameters parameters)
+		{
+			string id = StageOperationIDAttribute.GetTypeID(parameters.GetType());
+			Type sot = StageOperationIDAttribute.FindTypeByID(mStageOperationTypes, id);
+
+			if (sot == null)
+				throw new IncorrectNodeValueException("Can't find StageOperation type for the ID (" + id + ")");
+
+			// Creating stage operation
+			StageOperation so = (StageOperation)sot.GetConstructor(
+					new Type[] {typeof(StageOperationParameters)}
+				).Invoke(new object[] {parameters});
+			return so;			
+		}
+		private static StageOperationParameters StageOperationParametersFactoryFromID(string id)
+		{
+			Type sopt = StageOperationIDAttribute.FindTypeByID(mStageOperationParametersTypes, id);
+				
+			if (sopt == null)
+				throw new IncorrectNodeValueException("Can't find StageOperationParameters type for the ID (" + id + ")");
+
+			// Creating stage operation parameters
+			StageOperationParameters sop = (StageOperationParameters)sopt.GetConstructor(
+					new Type[] {}
+				).Invoke(new object[] {});
+			return sop;			
+		}
+		
+		private static IStageOperationHolder StageOperationHolderFactory(IStageOperationParametersEditor editor)
 		{
 			return new StageOperationHolderWidget((StageOperationParametersWidget)editor);
 		}
-		private static IStageOperationParametersEditor StageOperationParametersWidgetFactory(StageOperation so)
+		private static IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters sop)
 		{
-			Type paramType = so.GetParametersType();
+			Type paramType = sop.GetType();
 			Type paramWidgetType = StageOperationIDAttribute.FindTypeByID(
 					mStageOperationParametersWidgetTypes,
-					StageOperationIDAttribute.GetTypeID(so.GetType())
+					StageOperationIDAttribute.GetTypeID(sop.GetType())
 				);
 			StageOperationParametersWidget pwid = (StageOperationParametersWidget)(
-				paramWidgetType.GetConstructor(new Type[] { paramType }).Invoke(new object[] { so.Parameters })
+				paramWidgetType.GetConstructor(new Type[] { paramType }).Invoke(new object[] { sop })
 			);
 			return pwid;
 		}
@@ -47,8 +99,10 @@ namespace CatEye
 			Application.Init ();
 
 			ExtendedStage stage = new ExtendedStage(
-				StageOperationParametersWidgetFactory, 
-				StageOperationHolderWidgetFactory);
+				StageOperationFactory, 
+				StageOperationParametersFactoryFromID,
+				StageOperationParametersEditorFactory, 
+				StageOperationHolderFactory);
 			
 			DateTime lastUpdateQueuedTime = DateTime.Now;
 			
@@ -56,7 +110,7 @@ namespace CatEye
 				lastUpdateQueuedTime = DateTime.Now;
 			};
 			
-			MainWindow win = new MainWindow (stage);
+			MainWindow win = new MainWindow (stage, mStageOperationTypes);
 			win.Show ();
 			
 			

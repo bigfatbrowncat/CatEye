@@ -9,6 +9,11 @@ namespace CatEye.Core
 			: base (parameters)
 		{
 		}
+
+		public override double CalculateEfforts (IBitmapCore hdp)
+		{
+			return hdp.Width * hdp.Height;
+		}
 		
 		public override void OnDo (IBitmapCore hdp)
 		{
@@ -19,7 +24,6 @@ namespace CatEye.Core
 				return OnReportProgress(progress);
 			});
 			
-			base.OnDo (hdp);
 		}
 		public override Type GetParametersType ()
 		{

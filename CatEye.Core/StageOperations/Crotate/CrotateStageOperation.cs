@@ -5,31 +5,19 @@ namespace CatEye.Core
 	[StageOperationDescription("Crop and Rotate"), StageOperationID("CrotateStageOperation")]
 	public class CrotateStageOperation : StageOperation
 	{
-		public enum Mode 
-		{ 
-			Disproportional = 0, 
-			ProportionalWidthFixed = 1, 
-			ProportionalHeightFixed = 2 
-		}
+		int quality = 3;
 
-		public CrotateStageOperation (StageOperationParameters parameters)
-			: base (parameters)
-		{
-		}
+		struct size { public int width, height; }
 		
-		public override void OnDo (IBitmapCore hdp)
+		size TrueSize(IBitmapCore hdp)
 		{
 			CrotateStageOperationParameters pm = (CrotateStageOperationParameters)Parameters;
-			
-			Console.WriteLine("Rotating...");
-			
-			// Calculating new picture's real dimensions
+
 			int trueWidth = hdp.Width, trueHeight = hdp.Height;
 			
 			double w1, h1;
-			Point c_pix;
+			Point c_pix = new Point(pm.Center.X * hdp.Width, pm.Center.Y * hdp.Height);
 
-			c_pix = new Point(pm.Center.X * hdp.Width, pm.Center.Y * hdp.Height);
 			w1 = pm.CropWidth * hdp.Width;
 			h1 = pm.CropHeight * hdp.Height;
 			
@@ -56,7 +44,41 @@ namespace CatEye.Core
 				break;
 			}
 			
-			hdp.Crotate(pm.Angle, c_pix, trueWidth, trueHeight, 3,
+			size res = new size();
+			res.width = trueWidth; res.height = trueHeight;
+			return res;
+		}
+		
+		public enum Mode 
+		{ 
+			Disproportional = 0, 
+			ProportionalWidthFixed = 1, 
+			ProportionalHeightFixed = 2 
+		}
+
+		public CrotateStageOperation (StageOperationParameters parameters)
+			: base (parameters)
+		{
+		}
+		
+		public override double CalculateEfforts (IBitmapCore hdp)
+		{
+			return hdp.Width * hdp.Height * quality * quality;
+		}
+		
+		public override void OnDo (IBitmapCore hdp)
+		{
+			Console.WriteLine("Rotating...");
+			
+			size trueSize = TrueSize(hdp);
+			int trueWidth = trueSize.width, trueHeight = trueSize.height;
+			
+			CrotateStageOperationParameters pm = (CrotateStageOperationParameters)Parameters;
+			Point c_pix = new Point(pm.Center.X * hdp.Width, pm.Center.Y * hdp.Height);
+			
+			// Calculating new picture's real dimensions
+			
+			hdp.Crotate(pm.Angle, c_pix, trueWidth, trueHeight, quality,
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

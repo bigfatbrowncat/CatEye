@@ -5,9 +5,18 @@ namespace CatEye.Core
 	[StageOperationDescription("Ultra sharp"), StageOperationID("UltraSharpStageOperation")]
 	public class UltraSharpStageOperation : StageOperation
 	{
+		// TODO: There should be some quality configuration which should calculate
+		// points number value
+		int points = 260; 
+
 		public UltraSharpStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
+		}
+		
+		public override double CalculateEfforts (IBitmapCore hdp)
+		{
+			return hdp.Width * hdp.Height * points;
 		}
 		
 		public override void OnDo (IBitmapCore hdp)
@@ -19,9 +28,6 @@ namespace CatEye.Core
 			// Making delta0 from base
 			//double delta0 = Math.Pow(10, -pm.Base);
 			
-			// TODO: There should be some quality configuration which should calculate
-			// points number value
-			int points = 260; 
 			
 			double power = pm.Power;
 			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 
@@ -32,8 +38,6 @@ namespace CatEye.Core
 					return OnReportProgress(progress);
 				}
 			);
-			
-			base.OnDo (hdp);
 		}
 		public override Type GetParametersType ()
 		{
