@@ -28,7 +28,6 @@ namespace CatEye.Core
 			internal set
 			{
 				mMedian = value;
-				OnChanged();
 			}
 		}
 		

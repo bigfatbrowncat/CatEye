@@ -144,7 +144,7 @@ public partial class MainWindow : Gtk.Window
 		stages.ImageChanged += delegate {
 			view_widget.HDR = (FloatPixmap)stages.CurrentImage;
 		};
-		stages.ImageUpdated += delegate {
+		stages.ImageUpdatingCompleted += delegate {
 			view_widget.UpdatePicture();
 		};
 		stages.ItemAdded += HandleStagesOperationAddedToStage;
@@ -153,7 +153,7 @@ public partial class MainWindow : Gtk.Window
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
-		stages.ProgressMessagesReporter += ImportRawAndLoadingReporter;
+		stages.ProgressMessagesReporter += HandleProgress;
 		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
@@ -295,13 +295,11 @@ public partial class MainWindow : Gtk.Window
 		stages.DrawEditor(view_widget);
 	}
 
-	void HandleProgress (object sender, ReportStageOperationProgressEventArgs e)
+	bool HandleProgress(double progress, string status)
 	{
-		progressbar.Fraction = e.Progress;
-		object[] attrs = sender.GetType().GetCustomAttributes(typeof(StageOperationDescriptionAttribute), false);
-		if (attrs.Length > 0) 
-			progressbar.Text = (attrs[0] as StageOperationDescriptionAttribute).Name + ": ";
-		progressbar.Text += (e.Progress * 100).ToString("0") + "%";
+		progressbar.Fraction = progress;
+		progressbar.Text = (progress * 100).ToString("0") + "%";
+		status_label.Text = status;
 		
 		if (UpdateDuringProcessingAction.Active)
 		{
@@ -318,6 +316,8 @@ public partial class MainWindow : Gtk.Window
 		
 		while (Gtk.Application.EventsPending())
 			Gtk.Application.RunIteration();
+		
+		return true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -331,7 +331,7 @@ public partial class MainWindow : Gtk.Window
 		MainClass.Quit();
 		a.RetVal = true;
 	}
-	
+/*	
 	bool ImportRawAndLoadingReporter(double progress, string status)
 	{
 		progressbar.Visible = true;
@@ -348,7 +348,7 @@ public partial class MainWindow : Gtk.Window
 			return true;
 		}
 	}
-	
+*/	
 	/// <summary>
 	/// Launching dcraw to process the raw file, loads the result into a memory stream
 	/// </summary>

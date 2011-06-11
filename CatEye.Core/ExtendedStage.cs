@@ -14,14 +14,12 @@ namespace CatEye
 		private UIState _TheUIState = UIState.Idle;
 		private bool mCancelProcessingPending = false;
 		private bool mCancelLoadingPending = false;
-		private uint update_timer_delay = 500;
 		private IBitmapCore mSourceImage = null;
 		private	IBitmapCore mFrozenImage = null;
 		private IBitmapCore mCurrentImage = null;
 		private StageOperationParameters _EditingOperation = null;
 		private StageOperationParameters _FrozenAt = null;
 		private double mZoomValue = 0.5;
-		private bool mZoomValueIsChanged = true;
 		
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
 		private StageOperationHolderFactory mSOHolderFactory;
@@ -37,7 +35,7 @@ namespace CatEye
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public event EventHandler<EventArgs> ImageChanged;
-		public event EventHandler<EventArgs> ImageUpdated;
+		public event EventHandler<EventArgs> ImageUpdatingCompleted;
 		public event EventHandler<EventArgs> UpdateQueued;
 		
 		public ImageLoader ImageLoader
@@ -66,7 +64,7 @@ namespace CatEye
 			set 
 			{
 				mZoomValue = value;
-				mZoomValueIsChanged = true;
+				mFrozenImage = null;
 				QueueUpdate();
 			}
 		}
@@ -148,7 +146,7 @@ namespace CatEye
 			CancelProcessing();
 		}
 		
-		public bool CancelProcessingPending
+/*		public bool CancelProcessingPending
 		{
 			get { return mCancelProcessingPending; }
 		}
@@ -156,7 +154,7 @@ namespace CatEye
 		{
 			get { return mCancelLoadingPending; }
 		}
-		
+*/		
 		public void LoadStage(string filename)
 		{
 			SetUIState(UIState.Loading);
@@ -174,14 +172,15 @@ namespace CatEye
 			{
 				try
 				{
+					mCancelProcessingPending = false;
+					_UpdateQueued = false;
+					
 					SetUIState(UIState.Processing);
 					// Removing updating queue flag
 					_UpdateQueued = false;
 					
-					bool from_frozen_line = false;
-					
 					// Checking if the stage is frozen or not and is there a frozen image.
-					if (FrozenAt == null || mFrozenImage == null || mZoomValueIsChanged == true)
+					if (FrozenAt == null || mFrozenImage == null)
 					{
 						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
 						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
@@ -200,16 +199,17 @@ namespace CatEye
 					{
 						mCurrentImage = (IBitmapCore)mFrozenImage.Clone();
 						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-						from_frozen_line = true;
+
 					}
 					
 					// Making the list of stage operations to apply
 					List<StageOperation> operationsToApply = new List<StageOperation>();
 					List<double> efforts = new List<double>();
-					int start_index = 0;
-					if (from_frozen_line) 
-						start_index = _StageQueue.IndexOf(FrozenAt) + 1;
 					double full_efforts = 0;
+
+					int start_index = 0;
+					if (FrozenAt != null && mFrozenImage != null)
+						start_index = _StageQueue.IndexOf(FrozenAt) + 1;
 					
 					for (int i = start_index; i < _StageQueue.Count; i++)
 					{
@@ -235,9 +235,11 @@ namespace CatEye
 									}
 									cur_eff += e.Progress * efforts[j];
 									string desc = StageOperationDescriptionAttribute.GetSOName(sender.GetType());
-									e.Cancel = ProgressMessagesReporter(
+									e.Cancel = !ProgressMessagesReporter(
 										cur_eff / full_efforts, 
 										"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...");
+									if (mCancelProcessingPending)
+										e.Cancel = true;
 								}
 							};
 						}
@@ -249,19 +251,23 @@ namespace CatEye
 					for (int k = 0; k < operationsToApply.Count; k++)
 					{
 						operationsToApply[k].OnDo(mCurrentImage);
-						if (ImageUpdated != null) ImageUpdated(this, EventArgs.Empty);
+						if (operationsToApply[k].Parameters == FrozenAt)
+						{
+							// After the frozen line is reached,
+							// setting the current frozen image
+							mFrozenImage = (IBitmapCore)mCurrentImage.Clone();
+						}
 					}
+					if (ImageUpdatingCompleted != null) ImageUpdatingCompleted(this, EventArgs.Empty);
+					SetUIState(UIState.Idle);
 				}
 				catch (UserCancelException)
 				{
 					// The user cancelled processing.
-					// Unset cancelling flag.
-					mCancelProcessingPending = false;
-					QueueUpdate();
-				}
-				finally 
-				{
+					// Setting to idle state
 					SetUIState(UIState.Idle);
+					// Unset cancelling flag.
+					QueueUpdate();
 				}
 			}
 		}
@@ -276,28 +282,9 @@ namespace CatEye
 		
 		public void QueueUpdate()
 		{
+			CancelProcessing();
 			if (UpdateQueued != null) UpdateQueued(this, EventArgs.Empty);
-			
-			switch (TheUIState)
-			{
-			case UIState.Processing:
-				// Already processing. Image processing needs to be interrupted, after 
-				// that we have to hit the update timer again
-				mCancelProcessingPending = true;
-				_UpdateQueued = true;
-				break;
-			
-			case UIState.Loading:
-				// The image is loading. No refresh allowed. Just ignoring the command
-				_UpdateQueued = true;
-				break;
-				
-			case UIState.Idle:
-				_UpdateQueued = true;
-				break;
-			default:
-				throw new Exception("Unhandled case occured: " + TheUIState);
-			}
+			_UpdateQueued = true;
 		}
 		
 		public StageOperationParameters FrozenAt
@@ -330,12 +317,7 @@ namespace CatEye
 							frozenfound = true;
 							if (viewedfound)
 							{
-								// If viewed wss before the frozen line, 
-								// changing viewed to the first after frozen  
-								if (_StageQueue.Count > i + 1)
-									EditingOperation = _StageQueue[i + 1];
-								else
-									EditingOperation = null;
+								EditingOperation = null;
 							}
 							_Holders[_StageQueue[i]].Freeze = true;
 							
@@ -409,6 +391,7 @@ namespace CatEye
 
 		protected virtual void OnOperationDefrozen()
 		{
+			mFrozenImage = null;
 			if (OperationDefrozen != null)
 				OperationDefrozen(this, EventArgs.Empty);
 		}
@@ -420,7 +403,6 @@ namespace CatEye
 
 		void HandleSohwOperationParametersEditorUserModified (object sender, EventArgs e)
 		{
-			CancelProcessing();
 			QueueUpdate();
 		}
 		
@@ -428,6 +410,7 @@ namespace CatEye
 		{
 			StageOperationParameters sop = StageOperationByHolder(sender as IStageOperationHolder);
 			Remove(sop);
+			
 		}
 	
 		void HandleSohwFreezeButtonClicked (object sender, EventArgs e)
