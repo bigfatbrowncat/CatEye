@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CatEye.UI.Gtk</RootNamespace>
+    <AssemblyName>CatEye</AssemblyName>
+    <ReleaseVersion>0.3</ReleaseVersion>
+    <Description>Raw images developing tool</Description>
+    <ApplicationIcon>res\cateye.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="res\cateye.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="res\cateye.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="res\cateye-small.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="gtk-gui\MainWindow.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="RawImportDialog.cs" />
+    <Compile Include="gtk-gui\CatEye.RawImportDialog.cs" />
+    <Compile Include="AboutBox.cs" />
+    <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
+    <Compile Include="RenderingProgressWindow.cs" />
+    <Compile Include="gtk-gui\CatEye.RenderingProgressWindow.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="default.cestage">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="res\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
+      <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
+      <Name>CatEye.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.UI.Base\CatEye.UI.Base.csproj">
+      <Project>{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}</Project>
+      <Name>CatEye.UI.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.Widgets\CatEye.UI.Gtk.Widgets.csproj">
+      <Project>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</Project>
+      <Name>CatEye.UI.Gtk.Widgets</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

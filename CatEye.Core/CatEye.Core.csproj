@@ -78,8 +78,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Stage.cs" />
-    <Compile Include="PPMLoader.cs" />
-    <Compile Include="DCRawConnection.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="StageOperations\StageOperation.cs" />
     <Compile Include="StageOperations\StageOperationParameters.cs" />
@@ -103,12 +101,10 @@
     <Compile Include="StageOperations\LimitSize\LimitSizeStageOperationParameters.cs" />
     <Compile Include="IStageOperationHolder.cs" />
     <Compile Include="IStageOperationParametersEditor.cs" />
-    <Compile Include="ExtendedStage.cs" />
     <Compile Include="IBitmapCore.cs" />
     <Compile Include="ProgressReporter.cs" />
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
-    <Compile Include="FloatBitmap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

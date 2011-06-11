@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CatEye.UI.Gtk.Widgets</RootNamespace>
+    <AssemblyName>CatEye.Widgets</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ReleaseVersion>0.3</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BrightnessSelectorWidget.cs" />
+    <Compile Include="FloatPixmapViewWidget.cs" />
+    <Compile Include="SaturationSelectorWidget.cs" />
+    <Compile Include="StageOperationTitleWidget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="ToneSelectorWidget.cs" />
+    <Compile Include="ZoomWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.StageOperationTitleWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.ZoomWidget.cs" />
+    <Compile Include="FloatBitmapGtk.cs" />
+    <Compile Include="StageOperations\Compression\CompressionStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Brightness\BrightnessStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\StageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Saturation\SaturationStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Tone\ToneStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Crotate\CrotateStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Scale\LimitSizeStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperationHolderWidget.cs" />
+    <Compile Include="FrozenPanel.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.CompressionStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.BrightnessStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.SaturationStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.UltraSharpStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.BlackPointStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.CrotateStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.LimitSizeStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.FrozenPanel.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.StageOperationHolderWidget.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
+      <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
+      <Name>CatEye.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.UI.Base\CatEye.UI.Base.csproj">
+      <Project>{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}</Project>
+      <Name>CatEye.UI.Base</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="res\snowflake.png" />
+    <EmbeddedResource Include="res\up.png" />
+    <EmbeddedResource Include="res\down.png" />
+    <EmbeddedResource Include="res\pen.png" />
+    <EmbeddedResource Include="res\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="res\" />
+    <Folder Include="StageOperations\Compression\" />
+    <Folder Include="StageOperations\Brightness\" />
+    <Folder Include="StageOperations\UltraSharp\" />
+    <Folder Include="StageOperations\Tone\" />
+    <Folder Include="StageOperations\Saturation\" />
+    <Folder Include="StageOperations\BlackPoint\" />
+    <Folder Include="StageOperations\Scale\" />
+    <Folder Include="StageOperations\Crotate\" />
+  </ItemGroup>
+</Project>

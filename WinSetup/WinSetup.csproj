@@ -41,17 +41,21 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\CatEye\CatEye.csproj">
-      <Project>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</Project>
-      <Name>CatEye</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
       <Project>{43B10E8A-1BE4-4638-93EB-DB150E3241A3}</Project>
       <Name>CatEye.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CatEye.Widgets\CatEye.Widgets.csproj">
+    <ProjectReference Include="..\CatEye.UI.Base\CatEye.UI.Base.csproj">
+      <Project>{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}</Project>
+      <Name>CatEye.UI.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye\CatEye.UI.Gtk.csproj">
+      <Project>{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}</Project>
+      <Name>CatEye.UI.Gtk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatEye.Widgets\CatEye.UI.Gtk.Widgets.csproj">
       <Project>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</Project>
-      <Name>CatEye.Widgets</Name>
+      <Name>CatEye.UI.Gtk.Widgets</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
