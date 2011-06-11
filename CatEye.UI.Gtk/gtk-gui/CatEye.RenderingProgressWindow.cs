@@ -15,7 +15,7 @@ namespace CatEye
 			// Widget CatEye.RenderingProgressWindow
 			this.Name = "CatEye.RenderingProgressWindow";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Rendering");
-			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.cateye-small.png");
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.UI.Gtk.res.cateye-small.png");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			this.AllowGrow = false;

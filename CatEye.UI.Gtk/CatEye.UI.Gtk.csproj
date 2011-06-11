@@ -97,10 +97,12 @@
     <ProjectReference Include="..\CatEye.UI.Base\CatEye.UI.Base.csproj">
       <Project>{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}</Project>
       <Name>CatEye.UI.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\CatEye.Widgets\CatEye.UI.Gtk.Widgets.csproj">
+    <ProjectReference Include="..\CatEye.UI.Gtk.Widgets\CatEye.UI.Gtk.Widgets.csproj">
       <Project>{73D616D6-3FB0-43D2-ADB1-753B766536B1}</Project>
       <Name>CatEye.UI.Gtk.Widgets</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>

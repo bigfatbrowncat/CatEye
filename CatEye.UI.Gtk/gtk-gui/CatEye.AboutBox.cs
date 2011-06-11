@@ -6,7 +6,7 @@ namespace CatEye
 	{
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Image image20;
+		private global::Gtk.Image icon_image;
 		private global::Gtk.Label title_label;
 		private global::Gtk.Fixed fixed1;
 		private global::Gtk.Label label2;
@@ -22,7 +22,7 @@ namespace CatEye
 			// Widget CatEye.AboutBox
 			this.Name = "CatEye.AboutBox";
 			this.Title = global::Mono.Unix.Catalog.GetString ("About CatEye");
-			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.cateye-small.png");
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.UI.Gtk.res.cateye-small.png");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
@@ -44,11 +44,11 @@ namespace CatEye
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.image20 = new global::Gtk.Image ();
-			this.image20.Name = "image20";
-			this.image20.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.cateye.png");
-			this.hbox1.Add (this.image20);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image20]));
+			this.icon_image = new global::Gtk.Image ();
+			this.icon_image.Name = "icon_image";
+			this.icon_image.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("CatEye.UI.Gtk.res.cateye.png");
+			this.hbox1.Add (this.icon_image);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.icon_image]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -156,8 +156,8 @@ namespace CatEye
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 424;
-			this.DefaultHeight = 275;
+			this.DefaultWidth = 437;
+			this.DefaultHeight = 280;
 			this.Show ();
 		}
 	}

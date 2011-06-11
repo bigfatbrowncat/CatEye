@@ -21,11 +21,12 @@ namespace CatEye
 			// Widget CatEye.RawImportDialog
 			this.Name = "CatEye.RawImportDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Import raw images");
-			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.res.cateye-small.png");
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.UI.Gtk.res.cateye-small.png");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			this.DestroyWithParent = true;
+			this.SkipPagerHint = true;
 			this.SkipTaskbarHint = true;
 			// Internal child CatEye.RawImportDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
