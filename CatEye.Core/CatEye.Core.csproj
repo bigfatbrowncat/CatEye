@@ -108,6 +108,7 @@
     <Compile Include="ProgressReporter.cs" />
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
+    <Compile Include="FloatBitmap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

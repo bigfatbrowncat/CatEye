@@ -45,7 +45,7 @@ public partial class MainWindow : Gtk.Window
 	}
 	
 
-	public FloatPixmap LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
+	public FloatBitmapGtk LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
 	{
 		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
 			if (callback != null) 
@@ -83,7 +83,7 @@ public partial class MainWindow : Gtk.Window
 				}
 			}
 
-			return FloatPixmap.FromPPM(ppl, 
+			return FloatBitmapGtk.FromPPM(ppl, 
 				delegate (double progress) {
 					if (callback != null) 
 					{
@@ -142,7 +142,7 @@ public partial class MainWindow : Gtk.Window
 			stageOperationAdding_hbox.Sensitive = true;
 		};
 		stages.ImageChanged += delegate {
-			view_widget.HDR = (FloatPixmap)stages.CurrentImage;
+			view_widget.HDR = (FloatBitmapGtk)stages.CurrentImage;
 		};
 		stages.ImageUpdatingCompleted += delegate {
 			view_widget.UpdatePicture();
@@ -306,7 +306,7 @@ public partial class MainWindow : Gtk.Window
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
 				if (view_widget.HDR != stages.CurrentImage)
-					view_widget.HDR = (FloatPixmap)stages.CurrentImage;
+					view_widget.HDR = (FloatBitmapGtk)stages.CurrentImage;
 				else
 					view_widget.UpdatePicture();
 
@@ -614,7 +614,7 @@ public partial class MainWindow : Gtk.Window
 		fcd.AddFilter(ffs[1]);
 		fcd.AddFilter(ffs[2]);
 		
-		string type = "", filename = "";
+		string type, filename;
 		bool accept = false;
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)

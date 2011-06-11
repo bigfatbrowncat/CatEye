@@ -125,7 +125,7 @@ namespace CatEye
 			base.OnExposeEvent (ev);
 			
 			int W = Allocation.Width, H = Allocation.Height;
-			int X = Allocation.Left, Y = Allocation.Top;
+
 			Gdk.Pixbuf pb = null;
 			Gdk.GC gc = null;
 			try

@@ -18,7 +18,7 @@ namespace CatEye
 		public event MouseButtonStateChangedHandler MouseButtonStateChanged;
 		
 		private bool _InstantUpdate = false;
-		private FloatPixmap _HDR;
+		private FloatBitmapGtk _HDR;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
 
@@ -43,7 +43,7 @@ namespace CatEye
 			}
 		}
 		
-		public FloatPixmap HDR
+		public FloatBitmapGtk HDR
 		{
 			get { return _HDR; }
 			set 

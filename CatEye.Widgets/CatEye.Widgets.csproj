@@ -51,7 +51,7 @@
     <Compile Include="ToneSelectorWidget.cs" />
     <Compile Include="ZoomWidget.cs" />
     <Compile Include="gtk-gui\CatEye.Widgets.ZoomWidget.cs" />
-    <Compile Include="FloatPixmap.cs" />
+    <Compile Include="FloatBitmapGtk.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

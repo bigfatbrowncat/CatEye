@@ -135,13 +135,7 @@ namespace CatEye
 		{
 			base.OnMotionNotifyEvent (evnt);
 			
-			int w, h, x, y;
-			w = Allocation.Width;
-			h = Allocation.Height;
-			x = Allocation.Left;
-			y = Allocation.Top;
-			
-			
+			int w = Allocation.Width;
 			int left_slider_pos = mSliderLength / 2 + mLeftSliderMargin;
 			int right_slider_pos = w - mRightSliderMargin - mSliderLength / 2;
 			
