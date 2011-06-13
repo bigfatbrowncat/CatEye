@@ -109,6 +109,16 @@ Function DotNetDownload
 FunctionEnd
 
 
+!macro RegisterExtension extenstion  
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} Stage Operations File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\${PRODUCT_NAME}.exe,0"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+  ; default application for current user (for NT6.0)
+  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
+!macroend
+
 ;--------------------------------
 
 Section "Installer section"
@@ -154,10 +164,16 @@ Section "Installer section"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayName" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayIcon" "$INSTDIR\CatEye.exe"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "UninstallString" "$INSTDIR\Uninstall.exe"
+  
+  ; Registering .cestage file
+  !insertmacro RegisterExtension "cestage"
+  
   WriteUninstaller $INSTDIR\Uninstall.exe
 
 SectionEnd
 
+
+;--------------------------------
 ;--------------------------------
 
 ;Function un.onInit
@@ -248,5 +264,11 @@ Section "un.Installer section"
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\DisplayName
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}\UninstallString
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}
+  
+  ; Delete .cestage file registration
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File"
+  DeleteRegKey HKLM "Software\Classes\.cestage"
+  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage"
+  
 SectionEnd
 
