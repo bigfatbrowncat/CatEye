@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Stages>
+<Stage>
   <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" Normalize="True" />
   <StageOperationParameters ID="CrotateStageOperation" Active="False" Angle="0" CropWidth="1" CropHeight="1" AspectRatio="0" AspectRatioPreset="0" AspectRatioCustom="False" Mode="1">
     <Point X="0.5" Y="0.5" Name="Center" />
@@ -10,4 +10,4 @@
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
   <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.4" DarkPreserving="0.01" />
   <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Power="10" Radius="0.1" LimitUp="0.1" LimitDown="1" SharpType="sharp" />
-</Stages>
+</Stage>

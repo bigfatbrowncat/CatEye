@@ -17,6 +17,21 @@ namespace CatEye.UI.Gtk.Widgets
 				return null;
 		}
 		
+		public FloatBitmapGtk (FloatBitmapGtk src)
+		{
+			CopyDataFrom(src);
+		}
+		
+		public override object Clone ()
+		{
+			return new FloatBitmapGtk(this);
+		}
+
+		protected FloatBitmapGtk ()
+		{
+			
+		}
+		
 		private byte cut(double val)
 		{
 			if (val > 255) return 255;

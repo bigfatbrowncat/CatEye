@@ -17,8 +17,6 @@ Global
 		Release-MinGW|x86 = Release-MinGW|x86
 		Debug-Unix|x86 = Debug-Unix|x86
 		Release-Unix|x86 = Release-Unix|x86
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Debug-MinGW|x86.ActiveCfg = Debug|Any CPU
@@ -27,18 +25,14 @@ Global
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.ActiveCfg = Release|Any CPU
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-MinGW|x86.Build.0 = Release|Any CPU
 		{1883E056-08CA-4325-A1EC-53F2D2E03128}.Release-Unix|x86.ActiveCfg = Debug|x86
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug-MinGW|x86.ActiveCfg = Debug|Any CPU
 		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug-MinGW|x86.Build.0 = Debug|Any CPU
 		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug-Unix|x86.ActiveCfg = Debug|Any CPU
 		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Debug-Unix|x86.Build.0 = Debug|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-MinGW|x86.ActiveCfg = Debug|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-MinGW|x86.Build.0 = Debug|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-Unix|x86.ActiveCfg = Debug|Any CPU
-		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-Unix|x86.Build.0 = Debug|Any CPU
+		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-MinGW|x86.ActiveCfg = Release|Any CPU
+		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-MinGW|x86.Build.0 = Release|Any CPU
+		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-Unix|x86.ActiveCfg = Release|Any CPU
+		{3979EF7E-A3B0-4987-9EE4-C2BA748EDB5A}.Release-Unix|x86.Build.0 = Release|Any CPU
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.ActiveCfg = Debug-MinGW|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-MinGW|x86.Build.0 = Debug-MinGW|x86
 		{43B10E8A-1BE4-4638-93EB-DB150E3241A3}.Debug-Unix|x86.ActiveCfg = Debug-Unix|x86
@@ -65,7 +59,7 @@ Global
 		{DDE9ADAE-05D1-4296-BB0B-8169A7EDEDD7}.Release-Unix|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = CatEye\CatEye.UI.Gtk.csproj
+		StartupItem = CatEye.UI.Gtk\CatEye.UI.Gtk.csproj
 		Policies = $0
 		$0.VersionControlPolicy = $1
 		$1.inheritsSet = Mono

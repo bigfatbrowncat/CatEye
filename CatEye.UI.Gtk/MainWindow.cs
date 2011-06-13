@@ -18,7 +18,6 @@ public partial class MainWindow : Gtk.Window
 	private ExtendedStage stages;
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
-	private PPMLoader ppl = null;
 	private Type[] mStageOperationTypes;
 	
 	private void UpdateTitle()
@@ -47,56 +46,6 @@ public partial class MainWindow : Gtk.Window
 	}
 	
 
-	public FloatBitmapGtk LoadRaw(System.IO.MemoryStream stream, int downscale_by, ProgressMessageReporter callback)
-	{
-		ppl = PPMLoader.FromStream(stream, delegate (double progress) {
-			if (callback != null) 
-			{
-				return callback(progress, "Parsing image...");
-			}
-			else 
-				return true; // If callback is not assigned, just continue
-		});
-
-		if (ppl == null)
-		{
-			return null;
-		}
-		else
-		{
-			if (downscale_by != 1)		
-			{
-				bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
-					if (callback != null) 
-					{
-						return callback(progress, "Downscaling...");
-					}
-					else 
-						return true; // If callback is not assigned, just continue
-				});
-				
-				if (dsres == false)
-				{
-					ppl = null;
-					if (callback != null)
-					{
-						return null;
-					}
-				}
-			}
-
-			return FloatBitmapGtk.FromPPM(ppl, 
-				delegate (double progress) {
-					if (callback != null) 
-					{
-						return callback(progress, "Loading source image...");
-					}
-				else
-					return true; // If callback is not assigned, just continue
-			});
-			
-		}
-	}
 
 	public MainWindow (ExtendedStage stage, Type[] stageOperationTypes) : base(Gtk.WindowType.Toplevel)
 	{
@@ -104,7 +53,6 @@ public partial class MainWindow : Gtk.Window
 
 		// Creating stage operations and stages
 		stages = stage;
-		stages.ImageLoader = ImageLoader;
 		
 		_FrozenPanel = new FrozenPanel();
 		_FrozenPanel.UnfreezeButtonClicked  += delegate {
@@ -146,16 +94,17 @@ public partial class MainWindow : Gtk.Window
 		stages.ImageChanged += delegate {
 			view_widget.HDR = (FloatBitmapGtk)stages.CurrentImage;
 		};
-		stages.ImageUpdatingCompleted += delegate {
-			view_widget.UpdatePicture();
-		};
 		stages.ItemAdded += HandleStagesOperationAddedToStage;
 		stages.ItemRemoved += HandleStagesOperationRemovedFromStage;
 		stages.ItemIndexChanged += delegate {
 			ArrangeVBoxes();
 		};
 		stages.UIStateChanged += HandleStagesUIStateChanged;
-		stages.ProgressMessagesReporter += HandleProgress;
+		stages.ProgressMessageReport += HandleProgress;
+
+		stages.ImageLoadingCompleted += HandleStagesImageLoadingCompleted;
+		stages.ImageUpdatingCompleted += HandleStagesImageUpdatingCompleted;
+		stage.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
 		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
@@ -184,6 +133,23 @@ public partial class MainWindow : Gtk.Window
 		zoomwidget1.ValueChanged += delegate {
 			stages.ZoomValue = zoomwidget1.Value;
 		};
+	}
+
+	void HandleStageImageLoadingCancelled (object sender, EventArgs e)
+	{
+		status_label.Text = "Image loading is cancelled";
+	}
+
+	void HandleStagesImageUpdatingCompleted (object sender, EventArgs e)
+	{
+		status_label.Text = "Image is updated successfully";
+		view_widget.UpdatePicture();
+	}
+
+	void HandleStagesImageLoadingCompleted (object sender, EventArgs e)
+	{
+		view_widget.CenterImagePanning();
+		status_label.Text = "Image is loaded successfully";
 	}
 	
 	protected void ArrangeVBoxes()
@@ -297,13 +263,14 @@ public partial class MainWindow : Gtk.Window
 		stages.DrawEditor(view_widget);
 	}
 
-	bool HandleProgress(double progress, string status)
+	void HandleProgress(bool showProgressBar, double progress, string status, bool update)
 	{
+		progressbar.Visible = showProgressBar;
 		progressbar.Fraction = progress;
 		progressbar.Text = (progress * 100).ToString("0") + "%";
 		status_label.Text = status;
 		
-		if (UpdateDuringProcessingAction.Active)
+		if (update && UpdateDuringProcessingAction.Active)
 		{
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
@@ -319,7 +286,6 @@ public partial class MainWindow : Gtk.Window
 		while (Gtk.Application.EventsPending())
 			Gtk.Application.RunIteration();
 		
-		return true;
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -351,80 +317,8 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 */	
-	/// <summary>
-	/// Launching dcraw to process the raw file, loads the result into a memory stream
-	/// </summary>
-	/// <returns>
-	/// A stream to read the decoded PPM data from. 
-	/// Should be closed by user.
-	/// </returns>
-	private System.IO.MemoryStream ImportRaw(string filename, ProgressMessageReporter callback)
-	{
-		if (callback != null)
-			if (!callback(0, "Waiting for dcraw...")) return null;
-		
-		System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -c \"" + filename + "\"");
-		
-		int cnt = 0;
-		if (prc != null)
-		{
-			if (prc.Start())
-			{
-				int readed = 0;
-				int readed_all = 0;
-				System.IO.MemoryStream ms = new System.IO.MemoryStream();
-				byte[] buf = new byte[1024 * 4];
-				do
-				{
-					cnt++;
-					if (cnt % 100 == 0)
-					{
-						if (callback != null)
-						{
-							if (!callback(0, "Reading data: " + (readed_all / (1024 * 1024)) + " M")) return null;
-						}
-					}
-					readed = prc.StandardOutput.BaseStream.Read(buf, 0, buf.Length);
-					ms.Write(buf, 0, readed);
-					readed_all += readed;
-				}
-				while (readed > 0);
-	
-				if (callback != null)
-				{
-					if (!callback(0, "Data reading complete.")) return null;
-				}
-				while (Application.EventsPending()) Application.RunIteration();
-				
-				prc.StandardOutput.Dispose();
-				prc.WaitForExit(-1);	// R.I.P.
-				prc.Close();
-				
-				ms.Seek(0, System.IO.SeekOrigin.Begin);
-				return ms;
-			}
-			else
-			{
-				Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
-				                                             MessageType.Error, ButtonsType.Ok, 
-				                                             "Can not start DCRaw process");
-				md.Title = "Error";
-				md.Run();
-				md.Destroy();
-			}
-		}
-		else
-		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
-			                                             MessageType.Error, ButtonsType.Ok, 
-			                                             "DCRaw executable not found");
-			md.Title = "Error";
-			md.Run();
-			md.Destroy();
-		}
-		return null;
-	}
-	
+
+/*	
 	private IBitmapCore ImageLoader(string filename, int downscale_by, ProgressMessageReporter callback)
 	{
 		MemoryStream ms = ImportRaw(filename, callback);
@@ -439,6 +333,7 @@ public partial class MainWindow : Gtk.Window
 		else
 			return null;
 	}
+*/
 	
 	protected void LoadRawImageActionPicked()
 	{

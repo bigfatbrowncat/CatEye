@@ -18,7 +18,8 @@ namespace CatEye.UI.Base
 		{
 			
 		}
-		public FloatBitmap (FloatBitmap src)
+		
+		protected void CopyDataFrom(FloatBitmap src)
 		{
 			mWidth = src.mWidth; mHeight = src.mHeight;
 			r_chan = new float[mWidth, mHeight];
@@ -32,10 +33,14 @@ namespace CatEye.UI.Base
 				g_chan[i, j] = src.g_chan[i, j];
 				b_chan[i, j] = src.b_chan[i, j];
 			}
-			
 		}
 		
-		public object Clone ()
+		public FloatBitmap (FloatBitmap src)
+		{
+			CopyDataFrom(src);
+		}
+		
+		public virtual object Clone ()
 		{
 			return new FloatBitmap(this);
 		}

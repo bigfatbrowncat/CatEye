@@ -13,7 +13,7 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-MinGW|x86' ">
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
@@ -25,10 +25,13 @@
         <Command type="BeforeClean" command="cmd /c &quot;del /f dcraw.exe&quot;" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
+    <DebugSymbols>true</DebugSymbols>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-MinGW|x86' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\bin\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -105,6 +108,8 @@
     <Compile Include="ProgressReporter.cs" />
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
+    <Compile Include="DCRawConnection.cs" />
+    <Compile Include="PPMLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

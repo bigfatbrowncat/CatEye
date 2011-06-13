@@ -1,8 +1,7 @@
 using System;
 using System.IO;
-using CatEye.Core;
 
-namespace CatEye.UI.Base
+namespace CatEye.Core
 {
 	public class PPMLoader
 	{

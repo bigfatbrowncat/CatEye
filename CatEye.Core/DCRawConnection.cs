@@ -1,7 +1,6 @@
-
 using System;
 
-namespace CatEye.UI.Base
+namespace CatEye.Core
 {
 	public static class DCRawConnection
 	{
@@ -20,19 +19,14 @@ namespace CatEye.UI.Base
 		public static System.Diagnostics.Process CreateDCRawProcess(string Arguments)
 		{
 			string dcraw_path = FindDCRaw();
-			if (System.IO.File.Exists(dcraw_path))
-			{
-				System.Diagnostics.Process prc = new System.Diagnostics.Process();
-				prc.StartInfo.UseShellExecute = false;
-				prc.StartInfo.FileName = dcraw_path;
-				prc.StartInfo.Arguments = Arguments;
-				prc.StartInfo.RedirectStandardOutput = true;
-				prc.StartInfo.RedirectStandardError = true;
-				prc.StartInfo.CreateNoWindow = true;
-				return prc;
-			}
-			else
-				return null;
+			System.Diagnostics.Process prc = new System.Diagnostics.Process();
+			prc.StartInfo.UseShellExecute = false;
+			prc.StartInfo.FileName = dcraw_path;
+			prc.StartInfo.Arguments = Arguments;
+			prc.StartInfo.RedirectStandardOutput = true;
+			prc.StartInfo.RedirectStandardError = true;
+			prc.StartInfo.CreateNoWindow = true;
+			return prc;
 		}
 	}
 }

@@ -89,6 +89,12 @@ namespace CatEye
 			return pwid;
 		}
 		
+		private static IBitmapCore ImageLoader(PPMLoader ppl, ProgressReporter callback)
+		{
+			return FloatBitmapGtk.FromPPM(ppl, callback);
+		}
+			
+		
 		private static bool mQuitFlag = false;
 		private static int mDelayBeforeUpdate = 100;
 		public static void Quit()
@@ -104,7 +110,8 @@ namespace CatEye
 				StageOperationFactory, 
 				StageOperationParametersFactoryFromID,
 				StageOperationParametersEditorFactory, 
-				StageOperationHolderFactory);
+				StageOperationHolderFactory, 
+				ImageLoader);
 			
 			DateTime lastUpdateQueuedTime = DateTime.Now;
 			

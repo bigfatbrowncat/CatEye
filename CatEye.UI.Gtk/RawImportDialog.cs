@@ -107,7 +107,7 @@ namespace CatEye
 			if (System.IO.File.Exists(filename))  // Selected item is a file
 			{
 				origsize_label.Markup = "";
-				System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-i -v \"" + filename + "\"");
+				System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-i -v \"" + filename.Replace("\"", "\\\"") + "\"");
 				if (prc.Start())
 				{
 					string err = prc.StandardError.ReadLine();
@@ -157,7 +157,7 @@ namespace CatEye
 							
 							// Reading thumbnail
 							System.IO.MemoryStream ms = null;
-							Process prc2 = DCRawConnection.CreateDCRawProcess("-e -c \"" + filename + "\"");
+							Process prc2 = DCRawConnection.CreateDCRawProcess("-e -c \"" + filename.Replace("\"", "\\\"") + "\"");
 							if (prc2.Start())
 							{
 								int readed = 0;
