@@ -51,7 +51,7 @@ BrandingText /TRIMLEFT " "
 !define MUI_UNICON "${PKGDIR}res\CatEyeRemove.ico"
 
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\win.bmp" ; optional
+!define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\win.bmp"
 
 ;--------------------------------
 ;Pages
@@ -138,7 +138,8 @@ Section "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.exe"
   File "${PKGDIR}CatEye.exe.config"
   File "..\${PKGDIR}bin\${config}\CatEye.Core.dll"
-  File "..\${PKGDIR}bin\${config}\CatEye.Widgets.dll"
+  File "..\${PKGDIR}bin\${config}\CatEye.UI.Base.dll"
+  File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
   File "..\${PKGDIR}bin\${config}\dcraw.exe"
   
@@ -227,7 +228,8 @@ Section "un.Installer section"
   
   Delete $INSTDIR\dcraw.exe
   Delete $INSTDIR\CatEye.Core.dll
-  Delete $INSTDIR\CatEye.Widgets.dll
+  Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
+  Delete $INSTDIR\CatEye.UI.Base.dll
   Delete $INSTDIR\default.cestage
   Delete $INSTDIR\CatEye.exe.config
   Delete $INSTDIR\CatEye.exe
