@@ -263,14 +263,14 @@ public partial class MainWindow : Gtk.Window
 		stages.DrawEditor(view_widget);
 	}
 
-	void HandleProgress(bool showProgressBar, double progress, string status, bool update)
+	void HandleProgress(object sender, ReportStageProgressMessageEventArgs ea)
 	{
-		progressbar.Visible = showProgressBar;
-		progressbar.Fraction = progress;
-		progressbar.Text = (progress * 100).ToString("0") + "%";
-		status_label.Text = status;
+		progressbar.Visible = ea.ShowProgressBar;
+		progressbar.Fraction = ea.Progress;
+		progressbar.Text = (ea.Progress * 100).ToString("0") + "%";
+		status_label.Text = ea.Status;
 		
-		if (update && UpdateDuringProcessingAction.Active)
+		if (ea.Update && UpdateDuringProcessingAction.Active)
 		{
 			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{

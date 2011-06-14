@@ -14,12 +14,36 @@ namespace CatEye.Core
 			_Target = target;
 		}
 	}
-	public delegate void ProgressMessageReporter(bool showProgressBar, double progress, string status, bool update);
+	public class ReportStageProgressMessageEventArgs : EventArgs
+	{
+		private bool mShowProgressBar;
+		private double mProgress;
+		private string mStatus;
+		private bool mUpdate;
+		
+		public bool ShowProgressBar { get { return mShowProgressBar; } }
+		public double Progress { get { return mProgress; } }
+		public string Status { get { return mStatus; } }
+		public bool Update { get { return mUpdate; } }		
+		
+		public ReportStageProgressMessageEventArgs(bool showProgressBar, double progress, string status, bool update)
+		{
+			mShowProgressBar = showProgressBar;
+			mProgress = progress;
+			mStatus = status;
+			mUpdate = update;
+		}
+	}
+	
+	//public delegate void ProgressMessageReporter(bool showProgressBar, double progress, string status, bool update);
 	
 	public class Stage
 	{
 		private bool mCancelLoadingPending = false;
+		private bool mCancelProcessingPending = false;
 		private ImageLoader mImageLoader;
+		private IBitmapCore mSourceImage = null;
+		private IBitmapCore mCurrentImage = null;
 		
 		protected StageOperationFactory _StageOperationFactory;
 		protected StageOperationParametersFactoryFromID _StageOperationParametersFactoryFromID;
@@ -27,11 +51,149 @@ namespace CatEye.Core
 		
 		public StageOperationParameters[] StageQueue { get { return _StageQueue.ToArray(); } }
 		
-		public event ProgressMessageReporter ProgressMessageReport;
+		public event EventHandler<ReportStageProgressMessageEventArgs> ProgressMessageReport;
 		public event EventHandler<StageOperationParametersEventArgs> ItemRemoved;
 		public event EventHandler<StageOperationParametersEventArgs> ItemAdded;
 		public event EventHandler<StageOperationParametersEventArgs> ItemIndexChanged;
 		public event EventHandler<StageOperationParametersEventArgs> ItemChanged;
+		public event EventHandler<EventArgs> ImageLoadingCompleted;
+		public event EventHandler<EventArgs> ImageLoadingCancelled;
+		public event EventHandler<EventArgs> ImageUpdatingCompleted;
+		
+		public virtual IBitmapCore SourceImage
+		{
+			get { return mSourceImage; }
+			protected set 
+			{
+				mCurrentImage = null;
+				mSourceImage = value;
+			}
+		}
+		public virtual IBitmapCore CurrentImage
+		{
+			get { return mCurrentImage; }
+			protected set 
+			{
+				mCurrentImage = value;
+			}
+		}
+		
+		public bool CancelProcessingPending
+		{
+			get { return mCancelProcessingPending; }
+			protected set { mCancelProcessingPending = value; }
+		}
+		
+		public bool CancelLoadingPending
+		{
+			get { return mCancelLoadingPending; }
+		}
+
+		public virtual void LoadStage(string filename)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.Load(filename);
+
+			DeserializeFromXML(xdoc.ChildNodes[1]);
+		}
+		
+		public void CancelProcessing()
+		{
+			mCancelProcessingPending = true;
+		}
+		
+		public void CancelAll()
+		{
+			CancelLoading();
+			CancelProcessing();
+		}
+
+		public int IndexOf(StageOperationParameters so)
+		{
+			return _StageQueue.IndexOf(so);
+		}
+		
+		public void Process()
+		{
+			DoProcess();
+		}
+		
+		protected virtual void DoProcess()
+		{
+			if (mSourceImage != null)
+			{
+				try
+				{
+					mCancelProcessingPending = false;
+
+					mCurrentImage = (IBitmapCore)mSourceImage.Clone();
+					
+					// Making the list of stage operations to apply
+					List<StageOperation> operationsToApply = new List<StageOperation>();
+					List<double> efforts = new List<double>();
+					double full_efforts = 0;
+
+					for (int i = 0; i < _StageQueue.Count; i++)
+					{
+						// Don't add inactives
+						if (_StageQueue[i].Active == false) continue;
+						
+						StageOperation newOperation = _StageOperationFactory(_StageQueue[i]);
+						operationsToApply.Add(newOperation);
+						efforts.Add(newOperation.CalculateEfforts(mCurrentImage));
+						full_efforts += efforts[efforts.Count - 1];
+						
+						newOperation.ReportProgress += delegate(object sender, ReportStageOperationProgressEventArgs e) {
+							double cur_eff = 0;
+							int j = 0;
+							while (operationsToApply[j] != (StageOperation)sender)
+							{
+								cur_eff += efforts[j];
+								j++;
+							}
+							cur_eff += e.Progress * efforts[j];
+							string desc = StageOperationDescriptionAttribute.GetSOName(sender.GetType());
+							
+							OnProgressMessageReport(true,
+								cur_eff / full_efforts, 
+								"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...", true);
+							
+							if (mCancelProcessingPending)
+								e.Cancel = true;
+						};
+
+					}
+					
+					// Executing
+					for (int k = 0; k < operationsToApply.Count; k++)
+					{
+						operationsToApply[k].OnDo(mCurrentImage);
+					}
+					OnImageUpdatingCompleted();
+				}
+				catch (UserCancelException)
+				{
+
+				}
+			}
+		}
+
+		public virtual void LoadImage(string filename, int downscale_by)
+		{
+			CancelProcessing();
+			
+			IBitmapCore ibc = ProcessRawFromDCRaw(filename, downscale_by);
+
+			if (ibc != null)
+			{
+				SourceImage = ibc;
+				if (ImageLoadingCompleted != null) ImageLoadingCompleted(this, EventArgs.Empty);
+			}
+			else
+			{
+				if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
+			}
+		}
 		
 		void HandleItemChanged(object sender, EventArgs e)
 		{
@@ -51,7 +213,11 @@ namespace CatEye.Core
 		protected virtual void OnProgressMessageReport(bool showProgressBar, double progress, string status, bool update)
 		{
 			if (ProgressMessageReport != null)
-				ProgressMessageReport(showProgressBar, progress, status, update);
+			{
+				ReportStageProgressMessageEventArgs ea = new ReportStageProgressMessageEventArgs(showProgressBar, 
+					progress, status, update);
+				ProgressMessageReport(this, ea);
+			}
 		}
 		
 		protected virtual void OnItemAdded(StageOperationParameters item)
@@ -74,7 +240,13 @@ namespace CatEye.Core
 			if (ItemChanged != null)
 				ItemChanged(this, new StageOperationParametersEventArgs(item));
 		}
+		protected virtual void OnImageUpdatingCompleted()
+		{
+			if (ImageUpdatingCompleted != null)
+				ImageUpdatingCompleted(this, EventArgs.Empty);
+		}
 		
+		/*
 		public void ApplyAllOperations(IBitmapCore hdp)
 		{
 			for (int j = 0; j < _StageQueue.Count; j++)
@@ -100,6 +272,7 @@ namespace CatEye.Core
 			}
 			return res;
 		}
+		*/
 
 		public void Add(StageOperationParameters newItem)
 		{
@@ -154,23 +327,6 @@ namespace CatEye.Core
 			return xn;
 		}
 
-		/*
-		protected Type FindTypeWithStageOperationIDEqualTo(Type[] types, string id)
-		{
-			for (int i = 0; i < types.Length; i++)
-			{
-				object[] attrs = types[i].GetCustomAttributes(typeof(StageOperationIDAttribute), true);
-				if (attrs.Length == 0)
-				{
-					continue;
-				}
-				if (((StageOperationIDAttribute)attrs[0]).ID == id)
-					return types[i];
-			}
-			return null;
-		}
-		*/
-		
 		protected virtual void OnItemDeserialized(StageOperationParameters sop)
 		{
 		}
