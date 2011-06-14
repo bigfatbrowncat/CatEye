@@ -10,10 +10,7 @@ namespace CatEye.UI.Base
 	public class ExtendedStage : Stage
 	{
 		private UIState _TheUIState = UIState.Idle;
-		private bool mCancelProcessingPending = false;
-		private IBitmapCore mSourceImage = null;
 		private	IBitmapCore mFrozenImage = null;
-		private IBitmapCore mCurrentImage = null;
 		private StageOperationParameters _EditingOperation = null;
 		private StageOperationParameters _FrozenAt = null;
 		private double mZoomValue = 0.5;
@@ -26,27 +23,20 @@ namespace CatEye.UI.Base
 		protected Dictionary<StageOperationParameters, IStageOperationHolder> _Holders = 
 			new Dictionary<StageOperationParameters, IStageOperationHolder>();
 
+		public event EventHandler<EventArgs> ImageChanged;
 		public event EventHandler<EventArgs> UIStateChanged;
 		public event EventHandler<EventArgs> EditingOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
-		public event EventHandler<EventArgs> ImageChanged;
-		public event EventHandler<EventArgs> ImageLoadingCompleted;
-		public event EventHandler<EventArgs> ImageLoadingCancelled;
-		public event EventHandler<EventArgs> ImageUpdatingCompleted;
 		public event EventHandler<EventArgs> UpdateQueued;
 		
-
-		public IBitmapCore SourceImage
+		public override IBitmapCore SourceImage
 		{
-			get { return mSourceImage; }
-			set 
-			{ 
-				mCurrentImage = null;
+			get { return base.SourceImage; }
+			protected set 
+			{
+				base.SourceImage = value;
 				mFrozenImage = null;
-				mSourceImage = value;
-				
-				//if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
 				QueueUpdate();
 			}
 		}
@@ -88,28 +78,11 @@ namespace CatEye.UI.Base
 		{
 			get { return new ReadOnlyDictionary<StageOperationParameters, IStageOperationHolder>(_Holders); }
 		}
-
-		public int IndexOf(StageOperationParameters so)
-		{
-			return _StageQueue.IndexOf(so);
-		}
 		
-		public void CancelProcessing()
-		{
-			if (_TheUIState == UIState.Processing)
-				mCancelProcessingPending = true;
-		}
-
 		public UIState TheUIState 
 		{ 
 			get { return _TheUIState; } 
 		}
-		
-		public IBitmapCore CurrentImage
-		{
-			get { return mCurrentImage; }
-		}
-		
 		
 		public StageOperationParameters EditingOperation
 		{
@@ -127,62 +100,46 @@ namespace CatEye.UI.Base
 				}
 			}
 		}
-		
-		public void CancelAll()
-		{
-			CancelLoading();
-			CancelProcessing();
-		}
-		
-/*		public bool CancelProcessingPending
-		{
-			get { return mCancelProcessingPending; }
-		}
-		public bool CancelLoadingPending
-		{
-			get { return mCancelLoadingPending; }
-		}
-*/		
-		public void LoadStage(string filename)
+
+		public override void LoadStage(string filename)
 		{
 			SetUIState(UIState.Loading);
-			XmlDocument xdoc = new XmlDocument();
-			xdoc.Load(filename);
-
 			FrozenAt = null;
-			DeserializeFromXML(xdoc.ChildNodes[1]);
+			
+			base.LoadStage(filename);
+			
 			SetUIState(UIState.Idle);
 		}
 		
-		private void DoUpdate()
+		protected override void DoProcess()
 		{
-			if (mSourceImage != null)
+			if (SourceImage != null)
 			{
 				try
 				{
 					SetUIState(UIState.Processing);
 
-					mCancelProcessingPending = false;
+					CancelProcessingPending = false;
 					// Removing updating queue flag
 					_UpdateQueued = false;
 					
 					// Checking if the stage is frozen or not and is there a frozen image.
 					if (FrozenAt == null || mFrozenImage == null)
 					{
-						mCurrentImage = (IBitmapCore)mSourceImage.Clone();
+						CurrentImage = (IBitmapCore)SourceImage.Clone();
 
 						if (mZoomValue < 0.999 || mZoomValue > 1.001)
 						{
-							mCurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
+							CurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
 								OnProgressMessageReport(true, progress, "Applying zoom (downscaling)...", false);
-								return !mCancelProcessingPending;			
+								return !CancelProcessingPending;			
 							});
 						}
 						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
 					}
 					else
 					{
-						mCurrentImage = (IBitmapCore)mFrozenImage.Clone();
+						CurrentImage = (IBitmapCore)mFrozenImage.Clone();
 						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
 
 					}
@@ -205,7 +162,7 @@ namespace CatEye.UI.Base
 							
 							StageOperation newOperation = _StageOperationFactory(_StageQueue[i]);
 							operationsToApply.Add(newOperation);
-							efforts.Add(newOperation.CalculateEfforts(mCurrentImage));
+							efforts.Add(newOperation.CalculateEfforts(CurrentImage));
 							full_efforts += efforts[efforts.Count - 1];
 							
 							newOperation.ReportProgress += delegate(object sender, ReportStageOperationProgressEventArgs e) {
@@ -223,7 +180,7 @@ namespace CatEye.UI.Base
 									cur_eff / full_efforts, 
 									"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...", true);
 								
-								if (mCancelProcessingPending)
+								if (CancelProcessingPending)
 									e.Cancel = true;
 							};
 						}
@@ -234,15 +191,15 @@ namespace CatEye.UI.Base
 					// Executing
 					for (int k = 0; k < operationsToApply.Count; k++)
 					{
-						operationsToApply[k].OnDo(mCurrentImage);
+						operationsToApply[k].OnDo(CurrentImage);
 						if (operationsToApply[k].Parameters == FrozenAt)
 						{
 							// After the frozen line is reached,
 							// setting the current frozen image
-							mFrozenImage = (IBitmapCore)mCurrentImage.Clone();
+							mFrozenImage = (IBitmapCore)CurrentImage.Clone();
 						}
 					}
-					if (ImageUpdatingCompleted != null) ImageUpdatingCompleted(this, EventArgs.Empty);
+					OnImageUpdatingCompleted();
 					SetUIState(UIState.Idle);
 				}
 				catch (UserCancelException)
@@ -260,7 +217,7 @@ namespace CatEye.UI.Base
 		{
 			if (_UpdateQueued)
 			{
-				DoUpdate();
+				DoProcess();
 			}
 		}
 		
@@ -369,7 +326,7 @@ namespace CatEye.UI.Base
 
 		void HandleOperationReportProgress (object sender, ReportStageOperationProgressEventArgs e)
 		{
-			e.Cancel = mCancelProcessingPending;
+			e.Cancel = CancelProcessingPending;
 		}
 
 		void HandleSohwOperationParametersEditorUserModified (object sender, EventArgs e)
@@ -529,25 +486,12 @@ namespace CatEye.UI.Base
 			}
 		}
 
-		public void LoadImage(string filename, int downscale_by)
+		public override void LoadImage(string filename, int downscale_by)
 		{
-			if (TheUIState == UIState.Processing)
-			{
-				CancelProcessing();
-			}
 			SetUIState(UIState.Loading);
 			
-			IBitmapCore ibc = ProcessRawFromDCRaw(filename, downscale_by);
-
-			if (ibc != null)
-			{
-				SourceImage = ibc;
-				if (ImageLoadingCompleted != null) ImageLoadingCompleted(this, EventArgs.Empty);
-			}
-			else
-			{
-				if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
-			}
+			base.LoadImage(filename, downscale_by);
+			
 			SetUIState(UIState.Idle);
 		}
 	}
