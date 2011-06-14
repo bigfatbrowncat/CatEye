@@ -529,6 +529,7 @@ public partial class MainWindow : Gtk.Window
 
 		if (accept)
 		{
+			MainClass.rqwin.Show();
 			/*
 			// Rendering
 			RenderingProgressWindow rpw = new RenderingProgressWindow();

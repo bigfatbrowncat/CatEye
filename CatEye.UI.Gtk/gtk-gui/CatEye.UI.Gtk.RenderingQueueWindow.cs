@@ -202,8 +202,6 @@ namespace CatEye.UI.Gtk
 			this.vbox2.Add (this.frame2);
 			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame2]));
 			w18.Position = 1;
-			w18.Expand = false;
-			w18.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

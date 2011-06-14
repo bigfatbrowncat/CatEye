@@ -2,12 +2,19 @@ using System;
 using Gtk;
 using CatEye.Core;
 using CatEye.UI.Base;
+using CatEye.UI.Gtk;
 using CatEye.UI.Gtk.Widgets;
 
 namespace CatEye
 {
 	class MainClass
 	{
+		public static ExtendedStage stage;
+		public static RenderingQueue rq;
+
+		public static MainWindow win;
+		public static RenderingQueueWindow rqwin;
+			
 		private static readonly Type[] mStageOperationTypes = new Type[]
 		{
 			typeof(CompressionStageOperation),
@@ -105,8 +112,15 @@ namespace CatEye
 		public static void Main (string[] args)
 		{
 			Application.Init ();
+			
+			// Initializing rendering queue and it's window
+			rq = new RenderingQueue();
+			
+			rqwin = new RenderingQueueWindow(rq);
+			rqwin.Visible = false;
 
-			ExtendedStage stage = new ExtendedStage(
+			// Initializing stage and main window
+			stage = new ExtendedStage(
 				StageOperationFactory, 
 				StageOperationParametersFactoryFromID,
 				StageOperationParametersEditorFactory, 
@@ -119,9 +133,8 @@ namespace CatEye
 				lastUpdateQueuedTime = DateTime.Now;
 			};
 			
-			MainWindow win = new MainWindow (stage, mStageOperationTypes);
+			win = new MainWindow (stage, mStageOperationTypes);
 			win.Show ();
-			
 			
 			while (!mQuitFlag)
 			{
