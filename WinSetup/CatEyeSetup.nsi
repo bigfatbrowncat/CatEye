@@ -27,7 +27,7 @@ OutFile "..\${PKGDIR}bin\${config}\${PRODUCT_NAME}-${VERSION_LONG}-setup.exe"
 InstallDir $ProgramFiles\${PRODUCT_NAME}
 
 ;Request application privileges for Windows Vista
-;RequestExecutionLevel user
+RequestExecutionLevel admin
 
 ; Properties of executable setup file
 VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
@@ -63,6 +63,8 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye.txt"
 
 ;Page custom IsGtkInstalled
+;!include DotNet.nsh
+;!insertmacro MUI_PAGE_DOTNET
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
