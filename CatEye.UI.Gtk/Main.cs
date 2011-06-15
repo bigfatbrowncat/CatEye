@@ -15,7 +15,7 @@ namespace CatEye
 		public static MainWindow win;
 		public static RenderingQueueWindow rqwin;
 			
-		private static readonly Type[] mStageOperationTypes = new Type[]
+		public static readonly Type[] mStageOperationTypes = new Type[]
 		{
 			typeof(CompressionStageOperation),
 			typeof(BrightnessStageOperation),
@@ -27,7 +27,7 @@ namespace CatEye
 			typeof(CrotateStageOperation)
 		};
 
-		private static readonly Type[] mStageOperationParametersTypes = new Type[]
+		public static readonly Type[] mStageOperationParametersTypes = new Type[]
 		{
 			typeof(CompressionStageOperationParameters),
 			typeof(BrightnessStageOperationParameters),
@@ -39,7 +39,7 @@ namespace CatEye
 			typeof(CrotateStageOperationParameters)
 		};
 				
-		private static readonly Type[] mStageOperationParametersWidgetTypes = new Type[]
+		public static readonly Type[] mStageOperationParametersWidgetTypes = new Type[]
 		{
 			typeof(CompressionStageOperationParametersWidget),
 			typeof(BrightnessStageOperationParametersWidget),
@@ -51,7 +51,7 @@ namespace CatEye
 			typeof(CrotateStageOperationParametersWidget)
 		};
 		
-		private static StageOperation StageOperationFactory(StageOperationParameters parameters)
+		public static StageOperation StageOperationFactory(StageOperationParameters parameters)
 		{
 			string id = StageOperationIDAttribute.GetTypeID(parameters.GetType());
 			Type sot = StageOperationIDAttribute.FindTypeByID(mStageOperationTypes, id);
@@ -65,7 +65,7 @@ namespace CatEye
 				).Invoke(new object[] {parameters});
 			return so;			
 		}
-		private static StageOperationParameters StageOperationParametersFactoryFromID(string id)
+		public static StageOperationParameters StageOperationParametersFactoryFromID(string id)
 		{
 			Type sopt = StageOperationIDAttribute.FindTypeByID(mStageOperationParametersTypes, id);
 				
@@ -79,11 +79,11 @@ namespace CatEye
 			return sop;			
 		}
 		
-		private static IStageOperationHolder StageOperationHolderFactory(IStageOperationParametersEditor editor)
+		public static IStageOperationHolder StageOperationHolderFactory(IStageOperationParametersEditor editor)
 		{
 			return new StageOperationHolderWidget((StageOperationParametersWidget)editor);
 		}
-		private static IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters sop)
+		public static IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters sop)
 		{
 			Type paramType = sop.GetType();
 			Type paramWidgetType = StageOperationIDAttribute.FindTypeByID(
@@ -96,11 +96,10 @@ namespace CatEye
 			return pwid;
 		}
 		
-		private static IBitmapCore ImageLoader(PPMLoader ppl, ProgressReporter callback)
+		public static IBitmapCore ImageLoader(PPMLoader ppl, ProgressReporter callback)
 		{
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
-			
 		
 		private static bool mQuitFlag = false;
 		private static int mDelayBeforeUpdate = 100;

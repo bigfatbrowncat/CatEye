@@ -51,7 +51,7 @@ namespace CatEye
 	public delegate StageOperationParameters StageOperationParametersFactoryFromID(string id);
 	
 	[StageOperationID("StageOperation")]
-	public abstract class StageOperationParameters
+	public class StageOperationParameters : ICloneable
 	{
 		private bool mActive;
 		
@@ -151,8 +151,17 @@ namespace CatEye
 		{
 		}
 		
-		public abstract Type GetSOType ();
+		public virtual Type GetSOType ()
+		{
+			return typeof(StageOperation);
+		}
 		
+		public virtual object Clone ()
+		{
+			StageOperationParameters target = new StageOperationParameters();
+			target.mActive = mActive;
+			return target;
+		}
 	}
 }
 

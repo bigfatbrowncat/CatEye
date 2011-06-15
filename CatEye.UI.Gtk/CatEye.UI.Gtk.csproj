@@ -74,8 +74,6 @@
     <Compile Include="gtk-gui\CatEye.RawImportDialog.cs" />
     <Compile Include="AboutBox.cs" />
     <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
-    <Compile Include="RenderingProgressWindow.cs" />
-    <Compile Include="gtk-gui\CatEye.RenderingProgressWindow.cs" />
     <Compile Include="RenderingQueueWindow.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.RenderingQueueWindow.cs" />
   </ItemGroup>
