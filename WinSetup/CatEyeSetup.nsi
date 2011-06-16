@@ -62,9 +62,8 @@ BrandingText /TRIMLEFT " "
 !define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye.txt"
 
-;Page custom IsGtkInstalled
-;!include DotNet.nsh
-;!insertmacro MUI_PAGE_DOTNET
+!include DotNet.nsh
+!insertmacro MUI_PAGE_DOTNET
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -88,30 +87,30 @@ BrandingText /TRIMLEFT " "
 ;  !insertmacro MUI_LANGDLL_DISPLAY
 ;FunctionEnd
 
-Function IsDotNETInstalled
-  ; Check .NET version
-  var /global dotnetset
-  ReadRegDWORD $dotnetset HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
-  IntCmp $dotnetset 1 go1 nonet
-    nonet:
-      call DotNetDownload
-  go1:
-FunctionEnd
+;Function IsDotNETInstalled
+;  ; Check .NET version
+;  var /global dotnetset
+;  ReadRegDWORD $dotnetset HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
+;  IntCmp $dotnetset 1 go1 nonet
+;    nonet:
+;      call DotNetDownload
+;  go1:
+;FunctionEnd
 
 
-Function DotNetDownload
-  MessageBox MB_YESNO "${PRODUCT_NAME} requires .NET Framework 2.0. Would You like downoad and install .NET Framework 2.0?" IDYES download IDNO notload
-    notload:
-      MessageBox MB_ICONINFORMATION "Installation aborted."
-      abort
-    download:
-      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${VERSION_LONG}-setup.exe again."
-      ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
-      quit
-FunctionEnd
+;Function DotNetDownload
+;  MessageBox MB_YESNO "${PRODUCT_NAME} requires .NET Framework 2.0. Would You like downoad and install .NET Framework 2.0?" IDYES download IDNO notload
+;    notload:
+;      MessageBox MB_ICONINFORMATION "Installation aborted."
+;      abort
+;    download:
+;      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${VERSION_LONG}-setup.exe again."
+;      ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
+;      quit
+;FunctionEnd
 
 
-!macro RegisterExtension extenstion  
+!macro RegisterExtension extenstion
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} Stage Operations File" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\${PRODUCT_NAME}.exe,0"
@@ -127,7 +126,7 @@ Section "Installer section"
   
   SetShellVarContext all
   
-  call IsDotNETInstalled
+  ;call IsDotNETInstalled
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
