@@ -175,6 +175,7 @@
     <None Include="readme.txt">
       <Visible>False</Visible>
     </None>
+    <None Include="DotNet.nsh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
