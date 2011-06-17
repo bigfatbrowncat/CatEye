@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="debug.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Build" command="debug.cmd" workingdir="${ProjectDir}" pauseExternalConsole="true" />
         <Command type="Execute" command="CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
         <Command type="Clean" command="del /f CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="release.cmd" workingdir="${ProjectDir}" externalConsole="true" pauseExternalConsole="true" />
+        <Command type="Build" command="release.cmd" workingdir="${ProjectDir}" pauseExternalConsole="true" />
         <Command type="Execute" command="CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
         <Command type="Clean" command="del /f CatEye-*.exe" workingdir="${SolutionDir}\bin\$(Configuration)" />
       </CustomCommands>
@@ -175,6 +175,7 @@
     <None Include="readme.txt">
       <Visible>False</Visible>
     </None>
+    <None Include="DotNet.nsh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
