@@ -71,6 +71,22 @@ namespace CatEye.Core
 			return typeof(ToneStageOperation);
 		}
 		
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			ToneStageOperationParameters t = (ToneStageOperationParameters)target;
+			t.mTone = (Tone)mTone.Clone();
+			t.mHighlightsInvariance = mHighlightsInvariance;
+			t.OnChanged();
+		}
+		
+		public override object Clone ()
+		{
+			ToneStageOperationParameters target = new ToneStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}
+		
 	}
 }
 

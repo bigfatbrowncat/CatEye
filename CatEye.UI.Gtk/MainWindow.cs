@@ -529,6 +529,16 @@ public partial class MainWindow : Gtk.Window
 
 		if (accept)
 		{
+			MainClass.rqwin.Show();
+			Stage stg = new Stage(MainClass.StageOperationFactory, 
+				MainClass.StageOperationParametersFactoryFromID,
+				MainClass.ImageLoader);
+			
+			for (int i = 0; i < stages.StageQueue.Length; i++)
+			{
+				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
+			}
+			
 			/*
 			// Rendering
 			RenderingProgressWindow rpw = new RenderingProgressWindow();

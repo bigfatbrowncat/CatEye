@@ -114,7 +114,24 @@ namespace CatEye.Core
 		{
 			return typeof(LimitSizeStageOperation);
 		}
+
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			LimitSizeStageOperationParameters t = (LimitSizeStageOperationParameters)target;
+			t.mNewWidth = mNewWidth;
+			t.mNewHeight = mNewHeight;
+			t.mLimitWidth = mLimitWidth;
+			t.mLimitHeight = mLimitHeight;
+			t.OnChanged();
+		}
 		
+		public override object Clone ()
+		{
+			LimitSizeStageOperationParameters target = new LimitSizeStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}		
 	}
 }
 

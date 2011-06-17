@@ -144,7 +144,25 @@ namespace CatEye.Core
 		{
 			return typeof(UltraSharpStageOperation);
 		}
+
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			UltraSharpStageOperationParameters t = (UltraSharpStageOperationParameters)target;
+			t.mLimitDown = mLimitDown;
+			t.mLimitUp = mLimitUp;
+			t.mPower = mPower;
+			t.mRadius = mRadius;
+			t.mType = mType;
+			t.OnChanged();
+		}
 		
+		public override object Clone ()
+		{
+			UltraSharpStageOperationParameters target = new UltraSharpStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}
 	}
 }
 

@@ -16,19 +16,21 @@ namespace CatEye.UI.Base
 	}
 	
 	public delegate void QueueProgressMessageReporter(string source, string destination, double progress, string status);
+	public delegate void ImageToFileSaver(IBitmapCore image, string filename, string type);
 	
 	public class RenderingTask
 	{
 		private Stage mStage;
-		private string mSource, mDestination;
+		private string mSource, mDestination, mFileType;
 		
 		public Stage Stage { get { return mStage; } }
 		public string Source { get { return mSource; } }
 		public string Destination { get { return mDestination; } }
+		public string FileType { get { return mFileType; } }
 		
-		public RenderingTask(Stage stage, string source, string destination)
+		public RenderingTask(Stage stage, string source, string destination, string fileType)
 		{
-			mStage = stage; mSource = source; mDestination = destination;
+			mStage = stage; mSource = source; mDestination = destination; mFileType = fileType;
 		}
 	}
 	
@@ -36,13 +38,14 @@ namespace CatEye.UI.Base
 	{
 		private List<RenderingTask> mQueue;
 		private RenderingTask mInProgress = null;
-		
 		private Thread mWorkingThread = null;
 		
 		public event EventHandler<RenderingTaskEventArgs> ItemRemoved;
 		public event EventHandler<RenderingTaskEventArgs> ItemAdded;
 		public event EventHandler<RenderingTaskEventArgs> ItemIndexChanged;
 		public event QueueProgressMessageReporter QueueProgressMessageReport; 
+		
+		public ImageToFileSaver ImageToFileSaver;
 
 		public RenderingQueue ()
 		{
@@ -70,10 +73,10 @@ namespace CatEye.UI.Base
 				QueueProgressMessageReport(source, destination, progress, status);
 		}
 		
-		public void Add(Stage stage, string source, string destination)
+		public void Add(Stage stage, string source, string destination, string fileType)
 		{
 			stage.ProgressMessageReport += HandleStageProgressMessageReport;
-			RenderingTask rt = new RenderingTask(stage, source, destination);
+			RenderingTask rt = new RenderingTask(stage, source, destination, fileType);
 			mQueue.Add(rt);
 			OnItemAdded(rt);
 		}
@@ -103,17 +106,24 @@ namespace CatEye.UI.Base
 		
 		private void ProcessingThread()
 		{
-			while (mQueue.Count > 0)
+			while (true)
 			{
-				mInProgress = mQueue[0];
-				mQueue.RemoveAt(0);
-				
-				mInProgress.Stage.LoadImage(mInProgress.Source, 2);
-				mInProgress.Stage.Process();
-//				mInProgress.Stage.
-				
-				mInProgress.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
-				OnItemRemoved(mInProgress);
+				if (mQueue.Count > 0)
+				{
+					mInProgress = mQueue[0];
+					mQueue.RemoveAt(0);
+					
+					mInProgress.Stage.LoadImage(mInProgress.Source, 2);
+					mInProgress.Stage.Process();
+					ImageToFileSaver(mInProgress.Stage.CurrentImage, mInProgress.Destination, mInProgress.FileType);
+					
+					mInProgress.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
+					OnItemRemoved(mInProgress);
+				}
+				else
+				{
+					Thread.Sleep(10);
+				}
 			}
 		
 		}

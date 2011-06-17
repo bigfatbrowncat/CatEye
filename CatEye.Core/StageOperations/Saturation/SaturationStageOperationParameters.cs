@@ -52,6 +52,20 @@ namespace CatEye.Core
 			return typeof(SaturationStageOperation);
 		}
 		
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			SaturationStageOperationParameters t = (SaturationStageOperationParameters)target;
+			t.mSaturation = mSaturation;
+			t.OnChanged();
+		}
+		
+		public override object Clone ()
+		{
+			ToneStageOperationParameters target = new ToneStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}
 	}
 }
 

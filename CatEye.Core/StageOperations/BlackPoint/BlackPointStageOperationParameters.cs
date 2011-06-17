@@ -51,6 +51,12 @@ namespace CatEye.Core
 		{
 			return typeof(BlackPointStageOperation);
 		}
-		
+
+		public override object Clone ()
+		{
+			BlackPointStageOperationParameters target = (BlackPointStageOperationParameters)base.Clone();
+			target.mBlack = mBlack;
+			return target;
+		}		
 	}
 }
