@@ -51,7 +51,7 @@ FunctionEnd
 Function DotNetDownload
   
   nsDialogs::Create 1018 
-  Pop $mui.DotNetPage
+  Pop $mui.DotNetPage  
   
   nsDialogs::CreateControl STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 0u 0u 300u 100u "${PRODUCT_NAME} requires .NET Framework 2.0. Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${VERSION_LONG}-setup.exe again.$\r$\n$\r$\nWould You like to download and install .NET Framework 2.0 from official Microsoft site?"
   Pop $mui.DotNetPage.Text
