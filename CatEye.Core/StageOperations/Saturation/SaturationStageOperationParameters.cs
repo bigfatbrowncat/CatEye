@@ -62,7 +62,7 @@ namespace CatEye.Core
 		
 		public override object Clone ()
 		{
-			ToneStageOperationParameters target = new ToneStageOperationParameters();
+			SaturationStageOperationParameters target = new SaturationStageOperationParameters();
 			CopyDataTo(target);
 			return target;
 		}

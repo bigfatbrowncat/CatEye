@@ -114,9 +114,10 @@ namespace CatEye
 			
 			// Initializing rendering queue and it's window
 			rq = new RenderingQueue();
+			rq.ItemRendering += HandleRqItemRendering;
 			
 			rqwin = new RenderingQueueWindow(rq);
-			rqwin.Visible = false;
+			//rqwin.Visible = false;
 
 			// Initializing stage and main window
 			stage = new ExtendedStage(
@@ -142,6 +143,31 @@ namespace CatEye
 				{
 					stage.ProcessQueued();
 				}
+			}
+		}
+
+		static void HandleRqItemRendering (object sender, RenderingTaskEventArgs e)
+		{
+			FloatBitmapGtk renderDest = (FloatBitmapGtk)e.Target.Stage.CurrentImage;
+			
+			// Drawing to pixbuf and saving to file
+			using (Gdk.Pixbuf rp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, renderDest.Width, renderDest.Height))
+			{
+	
+				renderDest.DrawToPixbuf(rp, 
+					delegate (double progress) {
+					
+						// TODO: report progress via RenderingTask (needed to create an event)
+						//rpw.SetStatusAndProgress(progress, "Saving image...");
+						while (Application.EventsPending()) Application.RunIteration();
+						return true;
+					}
+				);
+			
+				// TODO Can't be used currently cause of buggy Gtk#
+				//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
+		
+				rp.Save(e.Target.Destination, e.Target.FileType);
 			}
 		}
 	}

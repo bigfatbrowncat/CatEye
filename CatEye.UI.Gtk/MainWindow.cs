@@ -293,6 +293,7 @@ public partial class MainWindow : Gtk.Window
 		if (stages.TheUIState != UIState.Idle)
 		{
 			stages.CancelAll();
+			MainClass.rq.CancelAll();
 		}
 		//Main.Quit();
 		//Application.Quit ();
@@ -511,25 +512,24 @@ public partial class MainWindow : Gtk.Window
 		fcd.AddFilter(ffs[1]);
 		fcd.AddFilter(ffs[2]);
 		
-		string type, filename;
+		string dest_type = "", dest_filename = "";
 		bool accept = false;
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			if (fcd.Filter == ffs[0])
-				type = "jpeg";
+				dest_type = "jpeg";
 			if (fcd.Filter == ffs[1])
-				type = "png";
+				dest_type = "png";
 			if (fcd.Filter == ffs[2])
-				type = "bmp";
+				dest_type = "bmp";
 			accept = true;
-			filename = fcd.Filename;
+			dest_filename = fcd.Filename;
 		}
 		fcd.Destroy();
 
 		if (accept)
 		{
-			MainClass.rqwin.Show();
 			Stage stg = new Stage(MainClass.StageOperationFactory, 
 				MainClass.StageOperationParametersFactoryFromID,
 				MainClass.ImageLoader);
@@ -538,6 +538,11 @@ public partial class MainWindow : Gtk.Window
 			{
 				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
 			}
+			
+			MainClass.rq.Add(stg, this.FileName, dest_filename, dest_type);
+			
+			MainClass.rqwin.Show();
+			MainClass.rq.Process();
 			
 			/*
 			// Rendering

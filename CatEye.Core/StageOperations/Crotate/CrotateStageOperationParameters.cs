@@ -218,7 +218,8 @@ namespace CatEye.Core
 			bool bres;
 			if (node.Attributes["AspectRatioCustom"] != null)
 			{
-				if (bool.TryParse(node.Attributes["AspectRatioCustom"].Value, out bres))				{
+				if (bool.TryParse(node.Attributes["AspectRatioCustom"].Value, out bres))
+				{
 					mAspectRatioCustom = bres;
 				}
 				else

@@ -16,7 +16,6 @@ namespace CatEye.UI.Base
 	}
 	
 	public delegate void QueueProgressMessageReporter(string source, string destination, double progress, string status);
-	public delegate void ImageToFileSaver(IBitmapCore image, string filename, string type);
 	
 	public class RenderingTask
 	{
@@ -39,14 +38,26 @@ namespace CatEye.UI.Base
 		private List<RenderingTask> mQueue;
 		private RenderingTask mInProgress = null;
 		private Thread mWorkingThread = null;
+		private volatile bool mCancel = false, mCancelAll = false;
 		
 		public event EventHandler<RenderingTaskEventArgs> ItemRemoved;
 		public event EventHandler<RenderingTaskEventArgs> ItemAdded;
 		public event EventHandler<RenderingTaskEventArgs> ItemIndexChanged;
+		public event EventHandler<RenderingTaskEventArgs> BeforeItemProcessingStarted;
+		public event EventHandler<RenderingTaskEventArgs> AfterItemProcessingFinished;
+		
+		public event EventHandler<RenderingTaskEventArgs> ItemRendering;
+		
 		public event QueueProgressMessageReporter QueueProgressMessageReport; 
 		
-		public ImageToFileSaver ImageToFileSaver;
-
+		public RenderingTask[] Queue
+		{
+			get 
+			{ 
+				return mQueue.ToArray(); 
+			}
+		}
+		
 		public RenderingQueue ()
 		{
 			mQueue = new List<RenderingTask>();
@@ -67,10 +78,28 @@ namespace CatEye.UI.Base
 			if (ItemIndexChanged != null)
 				ItemIndexChanged(this, new RenderingTaskEventArgs(item));
 		}
+		protected virtual void OnItemRendering(RenderingTask item)
+		{
+			if (ItemRendering != null) 
+				ItemRendering(this, new RenderingTaskEventArgs(item));
+		}
+		protected virtual void OnBeforeItemProcessingStarted(RenderingTask item)
+		{
+			if (BeforeItemProcessingStarted != null)
+				BeforeItemProcessingStarted(this, new RenderingTaskEventArgs(item));
+		}
+		protected virtual void OnAfterItemProcessingFinished(RenderingTask item)
+		{
+			if (AfterItemProcessingFinished != null)
+				AfterItemProcessingFinished(this, new RenderingTaskEventArgs(item));
+		}
+
 		protected virtual void OnQueueProgressMessageReport(string source, string destination, double progress, string status)
 		{
 			if (QueueProgressMessageReport != null)
+			{
 				QueueProgressMessageReport(source, destination, progress, status);
+			}
 		}
 		
 		public void Add(Stage stage, string source, string destination, string fileType)
@@ -92,7 +121,15 @@ namespace CatEye.UI.Base
 		
 		void HandleStageProgressMessageReport (object sender, ReportStageProgressMessageEventArgs e)
 		{
-			RenderingTask rt = FindRenderingTaskByStage((Stage)sender);
+			RenderingTask rt = mInProgress;
+			if (mCancel == true)
+			{
+				throw new UserCancelException();
+			}
+			if (mCancelAll == true)
+			{
+				throw new UserCancelAllException();
+			}
 			
 			OnQueueProgressMessageReport(rt.Source, rt.Destination, e.Progress, e.Status);
 		}
@@ -106,25 +143,40 @@ namespace CatEye.UI.Base
 		
 		private void ProcessingThread()
 		{
-			while (true)
+			mCancel = false;
+			mCancelAll = false;
+			while (mQueue.Count > 0 && !mCancelAll)
 			{
-				if (mQueue.Count > 0)
+				try
 				{
 					mInProgress = mQueue[0];
 					mQueue.RemoveAt(0);
+					OnItemRemoved(mInProgress);
+					
+					OnBeforeItemProcessingStarted(mInProgress);
 					
 					mInProgress.Stage.LoadImage(mInProgress.Source, 2);
 					mInProgress.Stage.Process();
-					ImageToFileSaver(mInProgress.Stage.CurrentImage, mInProgress.Destination, mInProgress.FileType);
+					OnItemRendering(mInProgress);
 					
 					mInProgress.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
-					OnItemRemoved(mInProgress);
+					
+					OnAfterItemProcessingFinished(mInProgress);
 				}
-				else
+				catch (UserCancelException exp)
 				{
-					Thread.Sleep(10);
+#if DEBUG
+					Console.WriteLine("User has sent " + exp.GetType().Name + " exception.");
+#endif
+					if (mCancel) mCancel = false;
 				}
 			}
+#if DEBUG
+			if (mCancelAll)
+				Console.WriteLine("Processing cancelled.");
+			else
+				Console.WriteLine("Processing finished.");
+#endif
 		
 		}
 		
@@ -135,7 +187,14 @@ namespace CatEye.UI.Base
 				mWorkingThread = new Thread(ProcessingThread);
 				mWorkingThread.Start();
 			}
-			
+		}
+		public void CancelAll()
+		{
+			mCancelAll = true;
+		}
+		public void Cancel()
+		{
+			mCancel = true;
 		}
 	}
 }

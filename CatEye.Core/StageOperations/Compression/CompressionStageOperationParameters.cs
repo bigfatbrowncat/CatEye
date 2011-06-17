@@ -71,6 +71,21 @@ namespace CatEye.Core
 			return typeof(CompressionStageOperation);
 		}
 		
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			CompressionStageOperationParameters t = (CompressionStageOperationParameters)target;
+			t.mPower = mPower;
+			t.mDarkPreserving = mDarkPreserving;
+			t.OnChanged();
+		}
+		
+		public override object Clone ()
+		{
+			CompressionStageOperationParameters target = new CompressionStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}		
 	}
 }
 

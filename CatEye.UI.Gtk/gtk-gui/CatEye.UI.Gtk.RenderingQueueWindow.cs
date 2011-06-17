@@ -5,26 +5,29 @@ namespace CatEye.UI.Gtk
 	public partial class RenderingQueueWindow
 	{
 		private global::Gtk.VBox vbox2;
+		private global::Gtk.HBox hbox2;
 		private global::Gtk.Frame frame1;
-		private global::Gtk.Alignment GtkAlignment;
+		private global::Gtk.Alignment GtkAlignment4;
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.Table table1;
 		private global::Gtk.Label destination_label;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
 		private global::Gtk.Label source_label;
+		private global::Gtk.HBox hbox3;
 		private global::Gtk.ProgressBar processing_progressbar;
-		private global::Gtk.Label GtkLabel;
-		private global::Gtk.Frame frame2;
-		private global::Gtk.Alignment GtkAlignment1;
+		private global::Gtk.Button cancel_button;
+		private global::Gtk.Label GtkLabel5;
+		private global::Gtk.Expander expander1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.NodeView queue_nodeview;
 		private global::Gtk.VBox vbox4;
-		private global::Gtk.Button button211;
-		private global::Gtk.Button button212;
-		private global::Gtk.Button button213;
-		private global::Gtk.Label GtkLabel3;
+		private global::Gtk.Button cancelAll_button;
+		private global::Gtk.Button remove_button;
+		private global::Gtk.Button up_button;
+		private global::Gtk.Button down_button;
+		private global::Gtk.Label queue_GtkLabel;
 
 		protected virtual void Build ()
 		{
@@ -33,23 +36,27 @@ namespace CatEye.UI.Gtk
 			this.Name = "CatEye.UI.Gtk.RenderingQueueWindow";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Rendering queue");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+			this.AllowGrow = false;
 			// Container child CatEye.UI.Gtk.RenderingQueueWindow.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 2;
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
 			this.frame1 = new global::Gtk.Frame ();
 			this.frame1.Name = "frame1";
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment.Name = "GtkAlignment";
-			this.GtkAlignment.LeftPadding = ((uint)(3));
-			this.GtkAlignment.BorderWidth = ((uint)(6));
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			this.GtkAlignment4 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
+			this.GtkAlignment4.Name = "GtkAlignment4";
+			// Container child GtkAlignment4.Gtk.Container+ContainerChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
+			this.vbox3.BorderWidth = ((uint)(4));
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
 			this.table1.Name = "table1";
@@ -102,35 +109,60 @@ namespace CatEye.UI.Gtk
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
+			w5.Padding = ((uint)(6));
 			// Container child vbox3.Gtk.Box+BoxChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
 			this.processing_progressbar = new global::Gtk.ProgressBar ();
 			this.processing_progressbar.Name = "processing_progressbar";
-			this.vbox3.Add (this.processing_progressbar);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.processing_progressbar]));
-			w6.Position = 1;
-			w6.Expand = false;
-			w6.Fill = false;
-			this.GtkAlignment.Add (this.vbox3);
-			this.frame1.Add (this.GtkAlignment);
-			this.GtkLabel = new global::Gtk.Label ();
-			this.GtkLabel.Name = "GtkLabel";
-			this.GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Currently processing</b>");
-			this.GtkLabel.UseMarkup = true;
-			this.frame1.LabelWidget = this.GtkLabel;
-			this.vbox2.Add (this.frame1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame1]));
-			w9.Position = 0;
-			w9.Padding = ((uint)(2));
+			this.hbox3.Add (this.processing_progressbar);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.processing_progressbar]));
+			w6.Position = 0;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.cancel_button = new global::Gtk.Button ();
+			this.cancel_button.CanFocus = true;
+			this.cancel_button.Name = "cancel_button";
+			this.cancel_button.UseStock = true;
+			this.cancel_button.UseUnderline = true;
+			this.cancel_button.Label = "gtk-cancel";
+			this.hbox3.Add (this.cancel_button);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.cancel_button]));
+			w7.Position = 1;
+			w7.Expand = false;
+			w7.Fill = false;
+			this.vbox3.Add (this.hbox3);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox3]));
+			w8.Position = 1;
+			w8.Expand = false;
+			w8.Fill = false;
+			this.GtkAlignment4.Add (this.vbox3);
+			this.frame1.Add (this.GtkAlignment4);
+			this.GtkLabel5 = new global::Gtk.Label ();
+			this.GtkLabel5.HeightRequest = 25;
+			this.GtkLabel5.Name = "GtkLabel5";
+			this.GtkLabel5.Xalign = 0F;
+			this.GtkLabel5.Yalign = 1F;
+			this.GtkLabel5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Currently processing</b>");
+			this.GtkLabel5.UseMarkup = true;
+			this.frame1.LabelWidget = this.GtkLabel5;
+			this.hbox2.Add (this.frame1);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.frame1]));
+			w11.Position = 0;
+			w11.Padding = ((uint)(6));
+			this.vbox2.Add (this.hbox2);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
+			w12.Position = 0;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.frame2 = new global::Gtk.Frame ();
-			this.frame2.Name = "frame2";
-			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame2.Gtk.Container+ContainerChild
-			this.GtkAlignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment1.Name = "GtkAlignment1";
-			this.GtkAlignment1.LeftPadding = ((uint)(3));
-			this.GtkAlignment1.BorderWidth = ((uint)(6));
-			// Container child GtkAlignment1.Gtk.Container+ContainerChild
+			this.expander1 = new global::Gtk.Expander (null);
+			this.expander1.CanFocus = true;
+			this.expander1.Name = "expander1";
+			this.expander1.Expanded = true;
+			this.expander1.BorderWidth = ((uint)(6));
+			// Container child expander1.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
@@ -142,73 +174,104 @@ namespace CatEye.UI.Gtk
 			this.queue_nodeview = new global::Gtk.NodeView ();
 			this.queue_nodeview.CanFocus = true;
 			this.queue_nodeview.Name = "queue_nodeview";
-			this.queue_nodeview.HeadersVisible = false;
 			this.GtkScrolledWindow.Add (this.queue_nodeview);
 			this.hbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
-			w11.Position = 0;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
+			w14.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox4 = new global::Gtk.VBox ();
 			this.vbox4.Name = "vbox4";
 			this.vbox4.Spacing = 6;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.button211 = new global::Gtk.Button ();
-			this.button211.CanFocus = true;
-			this.button211.Name = "button211";
-			this.button211.UseStock = true;
-			this.button211.UseUnderline = true;
-			this.button211.Label = "gtk-remove";
-			this.vbox4.Add (this.button211);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.button211]));
-			w12.Position = 0;
-			w12.Expand = false;
-			w12.Fill = false;
+			this.cancelAll_button = new global::Gtk.Button ();
+			this.cancelAll_button.CanFocus = true;
+			this.cancelAll_button.Name = "cancelAll_button";
+			this.cancelAll_button.UseUnderline = true;
+			// Container child cancelAll_button.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w15 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w16 = new global::Gtk.HBox ();
+			w16.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w17 = new global::Gtk.Image ();
+			w17.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-cancel", global::Gtk.IconSize.Menu);
+			w16.Add (w17);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w19 = new global::Gtk.Label ();
+			w19.LabelProp = global::Mono.Unix.Catalog.GetString ("_Cancel all");
+			w19.UseUnderline = true;
+			w16.Add (w19);
+			w15.Add (w16);
+			this.cancelAll_button.Add (w15);
+			this.vbox4.Add (this.cancelAll_button);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.cancelAll_button]));
+			w23.Position = 0;
+			w23.Expand = false;
+			w23.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.button212 = new global::Gtk.Button ();
-			this.button212.CanFocus = true;
-			this.button212.Name = "button212";
-			this.button212.UseStock = true;
-			this.button212.UseUnderline = true;
-			this.button212.Label = "gtk-go-up";
-			this.vbox4.Add (this.button212);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.button212]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
+			this.remove_button = new global::Gtk.Button ();
+			this.remove_button.CanFocus = true;
+			this.remove_button.Name = "remove_button";
+			this.remove_button.UseStock = true;
+			this.remove_button.UseUnderline = true;
+			this.remove_button.Label = "gtk-remove";
+			this.vbox4.Add (this.remove_button);
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.remove_button]));
+			w24.Position = 1;
+			w24.Expand = false;
+			w24.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.button213 = new global::Gtk.Button ();
-			this.button213.CanFocus = true;
-			this.button213.Name = "button213";
-			this.button213.UseStock = true;
-			this.button213.UseUnderline = true;
-			this.button213.Label = "gtk-go-down";
-			this.vbox4.Add (this.button213);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.button213]));
-			w14.Position = 2;
-			w14.Expand = false;
-			w14.Fill = false;
+			this.up_button = new global::Gtk.Button ();
+			this.up_button.Sensitive = false;
+			this.up_button.CanFocus = true;
+			this.up_button.Name = "up_button";
+			this.up_button.UseStock = true;
+			this.up_button.UseUnderline = true;
+			this.up_button.Label = "gtk-go-up";
+			this.vbox4.Add (this.up_button);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.up_button]));
+			w25.Position = 2;
+			w25.Expand = false;
+			w25.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.down_button = new global::Gtk.Button ();
+			this.down_button.Sensitive = false;
+			this.down_button.CanFocus = true;
+			this.down_button.Name = "down_button";
+			this.down_button.UseStock = true;
+			this.down_button.UseUnderline = true;
+			this.down_button.Label = "gtk-go-down";
+			this.vbox4.Add (this.down_button);
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.down_button]));
+			w26.Position = 3;
+			w26.Expand = false;
+			w26.Fill = false;
 			this.hbox1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
-			w15.Position = 1;
-			w15.Expand = false;
-			w15.Fill = false;
-			this.GtkAlignment1.Add (this.hbox1);
-			this.frame2.Add (this.GtkAlignment1);
-			this.GtkLabel3 = new global::Gtk.Label ();
-			this.GtkLabel3.Name = "GtkLabel3";
-			this.GtkLabel3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Queue</b>");
-			this.GtkLabel3.UseMarkup = true;
-			this.frame2.LabelWidget = this.GtkLabel3;
-			this.vbox2.Add (this.frame2);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame2]));
-			w18.Position = 1;
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
+			w27.Position = 1;
+			w27.Expand = false;
+			w27.Fill = false;
+			this.expander1.Add (this.hbox1);
+			this.queue_GtkLabel = new global::Gtk.Label ();
+			this.queue_GtkLabel.Name = "queue_GtkLabel";
+			this.queue_GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Queue</b>");
+			this.queue_GtkLabel.UseMarkup = true;
+			this.queue_GtkLabel.UseUnderline = true;
+			this.expander1.LabelWidget = this.queue_GtkLabel;
+			this.vbox2.Add (this.expander1);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expander1]));
+			w29.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 400;
-			this.DefaultHeight = 300;
+			this.DefaultWidth = 429;
+			this.DefaultHeight = 308;
 			this.Show ();
+			this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
+			this.expander1.Activated += new global::System.EventHandler (this.OnExpander1Activated);
+			this.cancelAll_button.Clicked += new global::System.EventHandler (this.OnCancelAllButtonClicked);
+			this.remove_button.Clicked += new global::System.EventHandler (this.OnRemoveButtonClicked);
 		}
 	}
 }

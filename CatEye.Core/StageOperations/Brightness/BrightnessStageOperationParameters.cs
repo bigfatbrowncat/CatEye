@@ -84,6 +84,21 @@ namespace CatEye.Core
 			return typeof(BrightnessStageOperation);
 		}
 		
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			BrightnessStageOperationParameters t = (BrightnessStageOperationParameters)target;
+			t.mBrightness = mBrightness;
+			t.mNormalize = mNormalize;
+			t.OnChanged();
+		}
+		
+		public override object Clone ()
+		{
+			BrightnessStageOperationParameters target = new BrightnessStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}	
 	}
 }
 

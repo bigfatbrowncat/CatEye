@@ -7,7 +7,7 @@ namespace CatEye.Core
 	{
 		// TODO: There should be some quality configuration which should calculate
 		// points number value
-		int points = 260; 
+		int points = 150; // 260 is perfect
 
 		public UltraSharpStageOperation (StageOperationParameters parameters)
 			: base (parameters)
