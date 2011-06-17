@@ -231,6 +231,26 @@ namespace CatEye.Core
 			return typeof(CrotateStageOperation);
 		}
 		
+		public override void CopyDataTo (StageOperationParameters target)
+		{
+			base.CopyDataTo (target);
+			CrotateStageOperationParameters t = (CrotateStageOperationParameters)target;
+			t.mAngle = mAngle;
+			t.mAspectRatio = mAspectRatio;
+			t.mAspectRatioCustom = mAspectRatioCustom;
+			t.mAspectRatioPreset = mAspectRatioPreset;
+			t.mCenter = mCenter;
+			t.mCropWidth = mCropWidth;
+			t.mCropHeight = mCropHeight;
+			t.OnChanged();
+		}
+		
+		public override object Clone ()
+		{
+			CrotateStageOperationParameters target = new CrotateStageOperationParameters();
+			CopyDataTo(target);
+			return target;
+		}		
 	}
 }
 

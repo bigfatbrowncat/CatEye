@@ -536,7 +536,7 @@ public partial class MainWindow : Gtk.Window
 			
 			for (int i = 0; i < stages.StageQueue.Length; i++)
 			{
-				//stg.Add(stages.StageQueue[i].
+				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
 			}
 			
 			/*

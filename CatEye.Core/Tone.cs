@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace CatEye.Core
 {
-	public class Tone
+	public class Tone : ICloneable
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		
@@ -64,6 +64,11 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse B value");
 			}
+		}
+		
+		public object Clone ()
+		{
+			return new Tone(mR, mG, mB);
 		}
 	}
 }

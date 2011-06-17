@@ -156,10 +156,15 @@ namespace CatEye
 			return typeof(StageOperation);
 		}
 		
+		public virtual void CopyDataTo(StageOperationParameters target)
+		{
+			target.mActive = mActive;
+		}
+		
 		public virtual object Clone ()
 		{
 			StageOperationParameters target = new StageOperationParameters();
-			target.mActive = mActive;
+			CopyDataTo(target);
 			return target;
 		}
 	}
