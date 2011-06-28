@@ -269,10 +269,10 @@ namespace CatEye.Core
             {
                 throw new Exception("Error reading the stream! ", e);
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error reading the stream! ", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("Error reading the stream! ", ex);
+            //}
             finally
             {
                binReader.Close();

@@ -117,7 +117,7 @@ namespace CatEye
 			rq.ItemRendering += HandleRqItemRendering;
 			
 			rqwin = new RenderingQueueWindow(rq);
-			//rqwin.Visible = false;
+			rqwin.Visible = false;
 
 			// Initializing stage and main window
 			stage = new ExtendedStage(

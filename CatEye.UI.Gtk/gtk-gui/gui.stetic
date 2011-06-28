@@ -75,6 +75,7 @@
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">View</property>
         <property name="ShortLabel" translatable="yes">View</property>
+        <signal name="Activated" handler="OnViewActionActivated" />
       </action>
       <action id="UpdateDuringProcessingAction">
         <property name="Type">Toggle</property>
@@ -126,6 +127,14 @@
         <property name="Label" translatable="yes" />
         <property name="StockId">gtk-zoom-100</property>
       </action>
+      <action id="RenderingQueueAction">
+        <property name="Type">Toggle</property>
+        <property name="Label" translatable="yes">Rendering queue</property>
+        <property name="ShortLabel" translatable="yes">Rendering queue</property>
+        <property name="DrawAsRadio">False</property>
+        <property name="Active">False</property>
+        <signal name="Toggled" handler="OnRenderingQueueActionToggled" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
@@ -149,6 +158,8 @@
               </node>
               <node type="Menu" action="ViewAction">
                 <node type="Menuitem" action="UpdateDuringProcessingAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="RenderingQueueAction" />
               </node>
               <node type="Menu" action="HelpAction">
                 <node type="Menuitem" action="aboutAction" />
@@ -705,11 +716,12 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="429 308">
+  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="432 182">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Rendering queue</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="AllowGrow">False</property>
+    <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -900,7 +912,6 @@
           <widget class="Gtk.Expander" id="expander1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Expanded">True</property>
             <property name="BorderWidth">6</property>
             <signal name="Activated" handler="OnExpander1Activated" />
             <child>
@@ -929,40 +940,6 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Button" id="cancelAll_button">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-cancel Menu</property>
-                        <property name="Label" translatable="yes">_Cancel all</property>
-                        <property name="UseUnderline">True</property>
-                        <signal name="Clicked" handler="OnCancelAllButtonClicked" />
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Button" id="remove_button">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="UseStock">True</property>
-                        <property name="Type">StockItem</property>
-                        <property name="StockId">gtk-remove</property>
-                        <signal name="Clicked" handler="OnRemoveButtonClicked" />
-                        <property name="label">gtk-remove</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="Gtk.Button" id="up_button">
                         <property name="MemberName" />
                         <property name="Sensitive">False</property>
@@ -973,7 +950,7 @@
                         <property name="label">gtk-go-up</property>
                       </widget>
                       <packing>
-                        <property name="Position">2</property>
+                        <property name="Position">0</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
@@ -990,10 +967,45 @@
                         <property name="label">gtk-go-down</property>
                       </widget>
                       <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Button" id="remove_button">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="UseStock">True</property>
+                        <property name="Type">StockItem</property>
+                        <property name="StockId">gtk-remove</property>
+                        <signal name="Clicked" handler="OnRemoveButtonClicked" />
+                        <property name="label">gtk-remove</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Button" id="cancelAll_button">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-cancel Button</property>
+                        <property name="Label" translatable="yes">_Cancel all</property>
+                        <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnCancelAllButtonClicked" />
+                      </widget>
+                      <packing>
                         <property name="Position">3</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
+                        <property name="Padding">8</property>
                       </packing>
                     </child>
                   </widget>

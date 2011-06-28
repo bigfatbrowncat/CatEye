@@ -22,6 +22,7 @@ public partial class MainWindow
 	private global::Gtk.Action zoomInAction;
 	private global::Gtk.Action zoomOutAction;
 	private global::Gtk.Action zoom100Action;
+	private global::Gtk.ToggleAction RenderingQueueAction;
 	private global::Gtk.VBox vbox2;
 	private global::Gtk.MenuBar main_menubar;
 	private global::Gtk.VBox vbox1;
@@ -99,6 +100,9 @@ public partial class MainWindow
 		w1.Add (this.zoomOutAction, null);
 		this.zoom100Action = new global::Gtk.Action ("zoom100Action", null, null, "gtk-zoom-100");
 		w1.Add (this.zoom100Action, null);
+		this.RenderingQueueAction = new global::Gtk.ToggleAction ("RenderingQueueAction", global::Mono.Unix.Catalog.GetString ("Rendering queue"), null, null);
+		this.RenderingQueueAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Rendering queue");
+		w1.Add (this.RenderingQueueAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -108,7 +112,7 @@ public partial class MainWindow
 		this.vbox2 = new global::Gtk.VBox ();
 		this.vbox2.Name = "vbox2";
 		// Container child vbox2.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadStageAction' action='loadStageAction'/><menuitem name='saveStageAsAction' action='saveStageAsAction'/><separator/><menuitem name='loadRawAction' action='loadRawAction'/><menuitem name='renderToAction' action='renderToAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='UpdateDuringProcessingAction' action='UpdateDuringProcessingAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='main_menubar'><menu name='FileAction' action='FileAction'><menuitem name='loadStageAction' action='loadStageAction'/><menuitem name='saveStageAsAction' action='saveStageAsAction'/><separator/><menuitem name='loadRawAction' action='loadRawAction'/><menuitem name='renderToAction' action='renderToAction'/><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='UpdateDuringProcessingAction' action='UpdateDuringProcessingAction'/><separator/><menuitem name='RenderingQueueAction' action='RenderingQueueAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.main_menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/main_menubar")));
 		this.main_menubar.Name = "main_menubar";
 		this.vbox2.Add (this.main_menubar);
@@ -289,9 +293,11 @@ public partial class MainWindow
 		this.renderToAction.Activated += new global::System.EventHandler (this.OnRenderToActionActivated);
 		this.loadRawAction.Activated += new global::System.EventHandler (this.OnImportFromDCRawActionActivated);
 		this.aboutAction.Activated += new global::System.EventHandler (this.OnAboutActionActivated);
+		this.ViewAction.Activated += new global::System.EventHandler (this.OnViewActionActivated);
 		this.UpdateDuringProcessingAction.Toggled += new global::System.EventHandler (this.OnUpdateDuringProcessingActionToggled);
 		this.loadStageAction.Activated += new global::System.EventHandler (this.OnLoadStageActionActivated);
 		this.saveStageAsAction.Activated += new global::System.EventHandler (this.OnSaveStageAsActionActivated);
+		this.RenderingQueueAction.Toggled += new global::System.EventHandler (this.OnRenderingQueueActionToggled);
 		this.addStageOperation_button.Clicked += new global::System.EventHandler (this.OnAddStageOperationButtonClicked);
 		this.stage_vbox.ExposeEvent += new global::Gtk.ExposeEventHandler (this.OnStageVboxExposeEvent);
 		this.stage_vbox.SizeAllocated += new global::Gtk.SizeAllocatedHandler (this.OnStageVboxSizeAllocated);

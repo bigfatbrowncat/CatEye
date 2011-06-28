@@ -8,7 +8,7 @@ namespace CatEye.UI.Gtk.Widgets
 	public partial class CrotateStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		ListStore ls;
-		private int mDotRadius = 3;
+		private int mDotRadius = 5;
 		
 		private enum DragState { None, Center, Round, Corner };
 		private DragState mDragState = DragState.None;
@@ -271,7 +271,7 @@ namespace CatEye.UI.Gtk.Widgets
 				if (mDragState != DragState.None)
 				{
 					mDragState = DragState.None;
-					OnUserModified();
+					//OnUserModified();
 				}
 			}
 			return false;

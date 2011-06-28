@@ -69,6 +69,8 @@ namespace CatEye.UI.Gtk
 			mRenderingQueue.ItemRemoved += HandleRenderingQueueItemRemoved;
 			mRenderingQueue.BeforeItemProcessingStarted += HandleRenderingQueueBeforeItemProcessingStarted;
 			mRenderingQueue.AfterItemProcessingFinished += HandleRenderingQueueAfterItemProcessingFinished;
+			mRenderingQueue.BeforeProcessingStarted += HandleRenderingQueueBeforeProcessingStarted;
+			mRenderingQueue.AfterProcessingFinished += HandleRenderingQueueAfterProcessingFinished;
 			
 			this.Build ();
 			
@@ -81,6 +83,20 @@ namespace CatEye.UI.Gtk
 
 			expander1.Expanded = false;
 			queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
+		}
+
+		void HandleRenderingQueueAfterProcessingFinished (object sender, EventArgs e)
+		{
+			Application.Invoke(delegate {
+				Visible = false;
+			});
+		}
+
+		void HandleRenderingQueueBeforeProcessingStarted (object sender, EventArgs e)
+		{
+			Application.Invoke(delegate {
+				Visible = true;
+			});
 		}
 
 		void HandleRenderingQueueAfterItemProcessingFinished (object sender, RenderingTaskEventArgs e)
@@ -97,6 +113,8 @@ namespace CatEye.UI.Gtk
 		void HandleRenderingQueueBeforeItemProcessingStarted (object sender, RenderingTaskEventArgs e)
 		{
 			Application.Invoke(delegate {
+				cancel_button.Sensitive = true;
+				cancelAll_button.Sensitive = true;
 				source_label.Text = "";
 				destination_label.Text = "";
 				processing_progressbar.Fraction = 0;
@@ -160,21 +178,28 @@ namespace CatEye.UI.Gtk
 
 		protected void OnCancelButtonClicked (object sender, System.EventArgs e)
 		{
+			cancel_button.Sensitive = false;
 			mRenderingQueue.Cancel();
 		}
 
 		protected void OnCancelAllButtonClicked (object sender, System.EventArgs e)
 		{
+			cancelAll_button.Sensitive = false;
 			mRenderingQueue.CancelAll();
 		}
 
 		protected void OnRemoveButtonClicked (object sender, System.EventArgs e)
 		{
-			int i = 0;
 			ITreeNode[] selnodes = queue_nodeview.NodeSelection.SelectedNodes;
 			
 			foreach (ITreeNode itr in selnodes)
 				mRenderingQueue.Remove(((RenderingTaskTreeNode)itr).Task);
+		}
+
+		protected void OnDeleteEvent (object o, DeleteEventArgs args)
+		{
+			this.Hide();
+			args.RetVal = true;
 		}
 	}
 }

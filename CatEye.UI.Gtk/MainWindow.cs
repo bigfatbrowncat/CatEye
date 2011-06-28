@@ -6,6 +6,7 @@ using Gtk;
 using CatEye;
 using CatEye.Core;
 using CatEye.UI.Base;
+using CatEye.UI.Gtk;
 using CatEye.UI.Gtk.Widgets;
 
 public partial class MainWindow : Gtk.Window
@@ -19,6 +20,8 @@ public partial class MainWindow : Gtk.Window
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
 	private Type[] mStageOperationTypes;
+	
+	private RenderingQueueWindow mRenderingQueueWindow;
 	
 	private void UpdateTitle()
 	{
@@ -541,8 +544,7 @@ public partial class MainWindow : Gtk.Window
 			
 			MainClass.rq.Add(stg, this.FileName, dest_filename, dest_type);
 			
-			MainClass.rqwin.Show();
-			MainClass.rq.Process();
+			//MainClass.rqwin.Show();
 			
 			/*
 			// Rendering
@@ -579,5 +581,24 @@ public partial class MainWindow : Gtk.Window
 			*/
 		}
 	}
+	
+	
+	protected void OnRenderingQueueActionToggled (object sender, System.EventArgs e)
+	{
+		MainClass.rqwin.Visible = RenderingQueueAction.Active;
+	}
 
+	protected void OnViewActionActivated (object sender, System.EventArgs e)
+	{
+		if (MainClass.rq.IsProcessing)
+		{
+			RenderingQueueAction.Visible = true;
+			RenderingQueueAction.Active = MainClass.rqwin.Visible;
+		}
+		else
+		{
+			RenderingQueueAction.Visible = false;
+		}
+			
+	}
 }

@@ -45,6 +45,8 @@ namespace CatEye.UI.Base
 		public event EventHandler<RenderingTaskEventArgs> ItemIndexChanged;
 		public event EventHandler<RenderingTaskEventArgs> BeforeItemProcessingStarted;
 		public event EventHandler<RenderingTaskEventArgs> AfterItemProcessingFinished;
+		public event EventHandler<EventArgs> BeforeProcessingStarted;
+		public event EventHandler<EventArgs> AfterProcessingFinished;
 		
 		public event EventHandler<RenderingTaskEventArgs> ItemRendering;
 		
@@ -93,6 +95,16 @@ namespace CatEye.UI.Base
 			if (AfterItemProcessingFinished != null)
 				AfterItemProcessingFinished(this, new RenderingTaskEventArgs(item));
 		}
+		protected virtual void OnBeforeProcessingStarted()
+		{
+			if (BeforeProcessingStarted != null)
+				BeforeProcessingStarted(this, EventArgs.Empty);
+		}
+		protected virtual void OnAfterProcessingFinished()
+		{
+			if (AfterProcessingFinished != null)
+				AfterProcessingFinished(this, EventArgs.Empty);
+		}
 
 		protected virtual void OnQueueProgressMessageReport(string source, string destination, double progress, string status)
 		{
@@ -108,6 +120,7 @@ namespace CatEye.UI.Base
 			RenderingTask rt = new RenderingTask(stage, source, destination, fileType);
 			mQueue.Add(rt);
 			OnItemAdded(rt);
+			Process();
 		}
 		
 		private RenderingTask FindRenderingTaskByStage(Stage stg)
@@ -143,6 +156,7 @@ namespace CatEye.UI.Base
 		
 		private void ProcessingThread()
 		{
+			OnBeforeProcessingStarted();
 			mCancel = false;
 			mCancelAll = false;
 			while (mQueue.Count > 0 && !mCancelAll)
@@ -155,7 +169,7 @@ namespace CatEye.UI.Base
 					
 					OnBeforeItemProcessingStarted(mInProgress);
 					
-					mInProgress.Stage.LoadImage(mInProgress.Source, 2);
+					mInProgress.Stage.LoadImage(mInProgress.Source, 1);
 					mInProgress.Stage.Process();
 					OnItemRendering(mInProgress);
 					
@@ -177,12 +191,17 @@ namespace CatEye.UI.Base
 			else
 				Console.WriteLine("Processing finished.");
 #endif
-		
+			OnAfterProcessingFinished();
 		}
 		
-		public void Process()
+		public bool IsProcessing
 		{
-			if (mWorkingThread == null || !mWorkingThread.IsAlive)
+			get { return mWorkingThread != null && mWorkingThread.IsAlive; }
+		}
+		
+		protected void Process()
+		{
+			if (!IsProcessing)
 			{
 				mWorkingThread = new Thread(ProcessingThread);
 				mWorkingThread.Start();
