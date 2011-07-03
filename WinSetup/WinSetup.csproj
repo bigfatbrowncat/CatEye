@@ -176,6 +176,7 @@
       <Visible>False</Visible>
     </None>
     <None Include="DotNet.nsh" />
+    <None Include="gtk-embedded\jpeg62.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

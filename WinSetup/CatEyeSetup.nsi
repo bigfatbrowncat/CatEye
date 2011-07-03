@@ -1,4 +1,4 @@
-; CatEyeSetup-Debug.nsi
+; CatEyeSetup program for Windows
 
 ;--------------------------------
 ; Common settings
@@ -7,10 +7,7 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 ;--------------------------------
-;Include Modern UI
-!include "MUI2.nsh"
 
-;--------------------------------
 ;General
 
 !define PRODUCT_NAME "CatEye"
@@ -18,6 +15,9 @@ ShowUnInstDetails show
 !system "..\${PKGDIR}bin\${config}\GetVersion.exe"
 !include "..\${PKGDIR}bin\${config}\Version.txt"
 
+;Include files
+!include "MUI2.nsh"         ; Modern UI
+!include "DotNet.nsh"       ; my file for .NetFramework
 
 ;Name and file
 Name "${PRODUCT_NAME} ${VERSION_SHORT}"
@@ -39,6 +39,8 @@ VIAddVersionKey "FileDescription" "Software for developing raw photos"
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIProductVersion "${PRODUCT_VERSION}"
 
+; Variables
+var /global winver
 
 ;--------------------------------
 ;Interface Settings
@@ -62,8 +64,7 @@ BrandingText /TRIMLEFT " "
 !define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye.txt"
 
-!include DotNet.nsh
-!insertmacro MUI_PAGE_DOTNET
+!insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -115,9 +116,13 @@ BrandingText /TRIMLEFT " "
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} Stage Operations File" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\${PRODUCT_NAME}.exe,0"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
-  ; default application for current user (for NT6.0)
-  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
+  ; default application for current user (for NT6.0 and newer)
+  GetVersion::WindowsVersion
+  Pop $winver
+  ${If} $winver >= "6.0"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
+  ${EndIf}
 !macroend
 
 ;--------------------------------
@@ -127,6 +132,7 @@ Section "Installer section"
   SetShellVarContext all
   
   ;call IsDotNETInstalled
+  !insertmacro DotNetDownloadSetup
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
@@ -270,6 +276,12 @@ Section "un.Installer section"
   DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File"
   DeleteRegKey HKLM "Software\Classes\.cestage"
   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage"
+  ; default application for current user (for NT6.0 and newer)
+  GetVersion::WindowsVersion
+  Pop $winver
+  ${If} $winver >= "6.0"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage" 
+  ${EndIf}
   
 SectionEnd
 
