@@ -267,7 +267,7 @@ namespace CatEye.UI.Gtk
 			}
 			this.DefaultWidth = 432;
 			this.DefaultHeight = 182;
-			this.Show ();
+			this.Hide ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 			this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 			this.expander1.Activated += new global::System.EventHandler (this.OnExpander1Activated);

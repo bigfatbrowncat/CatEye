@@ -3,19 +3,25 @@ using System.Xml;
 
 namespace CatEye
 {
-	public class IncorrectValueException : Exception
+/*	public class IncorrectValueException : Exception
 	{
 		public IncorrectValueException() : base("Incorrect value") {}
-	}
+	}*/
 	public class MissingStageOperationIDException : Exception
 	{
 		public MissingStageOperationIDException(string message) : base(message) {}
 	}
-	public class IncorrectNodeException : Exception
+	
+	public class StageDeserializationException : Exception
+	{
+		public StageDeserializationException(string message) : base(message) {}
+	}
+	
+	public class IncorrectNodeException : StageDeserializationException
 	{
 		public IncorrectNodeException(string message) : base(message) {}
 	}
-	public class IncorrectNodeValueException : Exception
+	public class IncorrectNodeValueException : StageDeserializationException
 	{
 		public IncorrectNodeValueException(string message) : base(message) {}
 	}

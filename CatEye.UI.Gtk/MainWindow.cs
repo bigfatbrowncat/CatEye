@@ -14,8 +14,6 @@ public partial class MainWindow : Gtk.Window
 
 	private static string APP_NAME = "CatEye";
 
-	private string _FileName = null;
-	private int _PreScale = 0;
 	private ExtendedStage stages;
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
@@ -25,30 +23,18 @@ public partial class MainWindow : Gtk.Window
 	
 	private void UpdateTitle()
 	{
-		Title = System.IO.Path.GetFileName(_FileName) + " [prescaled by " + _PreScale + "] — " + APP_NAME;
-	}
-	
-	protected string FileName
-	{
-		get { return _FileName; }
-		set 
+		if (stages.FileName != null)
 		{
-			_FileName = value;
-			UpdateTitle();
+			string t = System.IO.Path.GetFileName(stages.FileName);
+			if (stages.PreScale != 1)
+				t += " [prescaled by " + stages.PreScale + "]";
+			t += " — " + APP_NAME;
+			Title = t;
 		}
+		else
+			Title = APP_NAME;
 	}
 	
-	protected int PreScale
-	{
-		get { return _PreScale; }
-		set 
-		{
-			_PreScale = value;
-			UpdateTitle();
-		}
-	}
-	
-
 
 	public MainWindow (ExtendedStage stage, Type[] stageOperationTypes) : base(Gtk.WindowType.Toplevel)
 	{
@@ -107,7 +93,14 @@ public partial class MainWindow : Gtk.Window
 
 		stages.ImageLoadingCompleted += HandleStagesImageLoadingCompleted;
 		stages.ImageUpdatingCompleted += HandleStagesImageUpdatingCompleted;
-		stage.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
+		stages.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
+		
+		stages.FileNameChanged += delegate {
+			UpdateTitle();
+		};
+		stages.PreScaleChanged += delegate {
+			UpdateTitle();
+		};
 		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
@@ -354,22 +347,23 @@ public partial class MainWindow : Gtk.Window
 		{
 			RawImportDialog rid = new RawImportDialog();
 			
-			if (FileName != null) rid.Filename = FileName;
-			if (PreScale != 0) rid.PreScale = PreScale;
+			if (stages.FileName != null) rid.Filename = stages.FileName;
+			if (stages.PreScale != 0) rid.PreScale = stages.PreScale;
 			
 			bool ok = false;
+			string fn = ""; int ps = 1;
 			
 			if (rid.Run() == (int)Gtk.ResponseType.Accept)
 			{
 				ok = true;
-				FileName = rid.Filename;
-				PreScale = rid.PreScale;
+				fn = rid.Filename;
+				ps = rid.PreScale;
 			}
 			rid.Destroy();
 			
 			if (ok)
 			{
-				stages.LoadImage(FileName, PreScale);
+				stages.LoadImage(fn, ps);
 			}
 		}
 	}
@@ -391,7 +385,9 @@ public partial class MainWindow : Gtk.Window
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
 		stages.CancelAll();
-		Application.Quit();
+		MainClass.rq.CancelAll();
+		Destroy();
+		MainClass.Quit();
 	}
 	
 	protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
@@ -420,6 +416,9 @@ public partial class MainWindow : Gtk.Window
 		ffs[0].Name = "CatEye Stage file";
 
 		fcd.AddFilter(ffs[0]);
+		
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.FileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
@@ -453,12 +452,34 @@ public partial class MainWindow : Gtk.Window
 		ffs[0].Name = "CatEye Stage file";
 
 		fcd.AddFilter(ffs[0]);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
 		
+		string fn = "";
+		bool ok = false;
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
-			stages.LoadStage(fcd.Filename);
+			ok = true;
+			fn = fcd.Filename;
 		}
 		fcd.Destroy();
+		if (ok)
+		{
+			try
+			{
+				stages.LoadStage(fn);
+			}
+			catch (StageDeserializationException sdex)
+			{
+				Gtk.MessageDialog md = new Gtk.MessageDialog(
+					this, DialogFlags.Modal,
+					MessageType.Error, ButtonsType.Ok, 
+					false, "Can't load stage from the file \"{0}\".\n{1}", fn, sdex.Message);
+				md.Title = APP_NAME;
+				
+				md.Run();
+				md.Destroy();
+			}
+		}
 	}
 	
 	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
@@ -502,32 +523,61 @@ public partial class MainWindow : Gtk.Window
 		
 		FileFilter[] ffs = new FileFilter[3];
 		ffs[0] = new FileFilter();
-		ffs[0].AddPattern("*.jpg");
 		ffs[0].Name = "JPEG image";
+		ffs[0].AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+			return (System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".jpg") ||
+				   (System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".jpeg");
+		});
+		
 		ffs[1] = new FileFilter();
-		ffs[1].AddPattern("*.png");
 		ffs[1].Name = "PNG image";
+		ffs[1].AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+			return System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".png";
+		});
+
 		ffs[2] = new FileFilter();
-		ffs[2].AddPattern("*.bmp");
 		ffs[2].Name = "Plain 24 bpp bitmap (BMP)";
+		ffs[2].AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+			return System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".bmp";
+		});
 
 		fcd.AddFilter(ffs[0]);
 		fcd.AddFilter(ffs[1]);
 		fcd.AddFilter(ffs[2]);
 		
-		string dest_type = "", dest_filename = "";
+		string dest_type = "", fn = "";
 		bool accept = false;
+
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.FileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
+			fn = fcd.Filename;
+
 			if (fcd.Filter == ffs[0])
+			{
+				if (System.IO.Path.GetExtension(fn).ToLower() != ".jpeg" &&
+					System.IO.Path.GetExtension(fn).ToLower() != ".jpg")
+					fn += ".jpeg";
+				
 				dest_type = "jpeg";
+			}
 			if (fcd.Filter == ffs[1])
+			{
+				if (System.IO.Path.GetExtension(fn).ToLower() != ".png")
+					fn += ".png";
+
 				dest_type = "png";
+			}
 			if (fcd.Filter == ffs[2])
+			{
+				if (System.IO.Path.GetExtension(fn).ToLower() != ".bmp")
+					fn += ".bmp";
+
 				dest_type = "bmp";
+			}
 			accept = true;
-			dest_filename = fcd.Filename;
 		}
 		fcd.Destroy();
 
@@ -542,7 +592,7 @@ public partial class MainWindow : Gtk.Window
 				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
 			}
 			
-			MainClass.rq.Add(stg, this.FileName, dest_filename, dest_type);
+			MainClass.rq.Add(stg, stages.FileName, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			

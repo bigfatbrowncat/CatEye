@@ -11,6 +11,13 @@ namespace CatEye
 		private global::Gtk.Fixed fixed1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label6;
+		private global::Gtk.Fixed fixed4;
+		private global::Gtk.Label label7;
+		private global::Gtk.Label label8;
+		private global::Gtk.Fixed fixed3;
+		private global::Gtk.Label label9;
+		private global::Gtk.Label label10;
+		private global::Gtk.Fixed fixed2;
 		private global::Gtk.Label label4;
 		private global::Gtk.Label label3;
 		private global::Gtk.Label label5;
@@ -80,17 +87,17 @@ namespace CatEye
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Idea, design and development:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Idea, design, project directing:");
 			this.label2.UseMarkup = true;
 			this.vbox2.Add (this.label2);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
-			w6.Padding = ((uint)(6));
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
+			this.label6.Yalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Ilya Mizus</b>");
 			this.label6.UseMarkup = true;
 			this.label6.Wrap = true;
@@ -100,14 +107,85 @@ namespace CatEye
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.fixed4 = new global::Gtk.Fixed ();
+			this.fixed4.HeightRequest = 10;
+			this.fixed4.Name = "fixed4";
+			this.fixed4.HasWindow = false;
+			this.vbox2.Add (this.fixed4);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.fixed4]));
+			w8.Position = 3;
+			w8.Expand = false;
+			w8.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label7 = new global::Gtk.Label ();
+			this.label7.Name = "label7";
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Code development and support:");
+			this.label7.UseMarkup = true;
+			this.vbox2.Add (this.label7);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label7]));
+			w9.Position = 4;
+			w9.Expand = false;
+			w9.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Ilya Mizus, Vasilij Litvinov</b>");
+			this.label8.UseMarkup = true;
+			this.label8.Wrap = true;
+			this.vbox2.Add (this.label8);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label8]));
+			w10.Position = 5;
+			w10.Expand = false;
+			w10.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.fixed3 = new global::Gtk.Fixed ();
+			this.fixed3.HeightRequest = 10;
+			this.fixed3.Name = "fixed3";
+			this.fixed3.HasWindow = false;
+			this.vbox2.Add (this.fixed3);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.fixed3]));
+			w11.Position = 6;
+			w11.Expand = false;
+			w11.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label9 = new global::Gtk.Label ();
+			this.label9.Name = "label9";
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Installer development and support:");
+			this.label9.UseMarkup = true;
+			this.vbox2.Add (this.label9);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label9]));
+			w12.Position = 7;
+			w12.Expand = false;
+			w12.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label10 = new global::Gtk.Label ();
+			this.label10.Name = "label10";
+			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Igor Lysakov</b>");
+			this.label10.UseMarkup = true;
+			this.label10.Wrap = true;
+			this.vbox2.Add (this.label10);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label10]));
+			w13.Position = 8;
+			w13.Expand = false;
+			w13.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.fixed2 = new global::Gtk.Fixed ();
+			this.fixed2.HeightRequest = 10;
+			this.fixed2.Name = "fixed2";
+			this.fixed2.HasWindow = false;
+			this.vbox2.Add (this.fixed2);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.fixed2]));
+			w14.Position = 9;
+			w14.Expand = false;
+			w14.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Special thanks to:");
 			this.vbox2.Add (this.label4);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label4]));
-			w8.Position = 3;
-			w8.Expand = false;
-			w8.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label4]));
+			w15.Position = 10;
+			w15.Expand = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
@@ -115,10 +193,10 @@ namespace CatEye
 			this.label3.UseMarkup = true;
 			this.label3.Wrap = true;
 			this.vbox2.Add (this.label3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
-			w9.Position = 4;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
+			w16.Position = 11;
+			w16.Expand = false;
+			w16.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
@@ -126,21 +204,21 @@ namespace CatEye
 			this.label5.UseMarkup = true;
 			this.label5.Wrap = true;
 			this.vbox2.Add (this.label5);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label5]));
-			w10.Position = 5;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label5]));
+			w17.Position = 12;
+			w17.Expand = false;
+			w17.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w18.Position = 0;
+			w18.Expand = false;
+			w18.Fill = false;
 			// Internal child CatEye.AboutBox.ActionArea
-			global::Gtk.HButtonBox w12 = this.ActionArea;
-			w12.Name = "dialog1_ActionArea";
-			w12.Spacing = 10;
-			w12.BorderWidth = ((uint)(5));
-			w12.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w19 = this.ActionArea;
+			w19.Name = "dialog1_ActionArea";
+			w19.Spacing = 10;
+			w19.BorderWidth = ((uint)(5));
+			w19.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.close_button = new global::Gtk.Button ();
 			this.close_button.CanDefault = true;
@@ -150,14 +228,14 @@ namespace CatEye
 			this.close_button.UseUnderline = true;
 			this.close_button.Label = "gtk-close";
 			this.AddActionWidget (this.close_button, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.close_button]));
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.close_button]));
+			w20.Expand = false;
+			w20.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 437;
-			this.DefaultHeight = 280;
+			this.DefaultWidth = 418;
+			this.DefaultHeight = 381;
 			this.Show ();
 		}
 	}

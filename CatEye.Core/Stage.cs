@@ -178,7 +178,7 @@ namespace CatEye.Core
 			}
 		}
 
-		public virtual void LoadImage(string filename, int downscale_by)
+		public virtual bool LoadImage(string filename, int downscale_by)
 		{
 			CancelProcessing();
 			
@@ -188,10 +188,12 @@ namespace CatEye.Core
 			{
 				SourceImage = ibc;
 				if (ImageLoadingCompleted != null) ImageLoadingCompleted(this, EventArgs.Empty);
+				return true;
 			}
 			else
 			{
 				if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
+				return false;
 			}
 		}
 		

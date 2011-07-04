@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1021 668">
     <action-group name="Default">
@@ -540,7 +540,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="437 280">
+  <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="418 381">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
     <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
@@ -615,7 +615,7 @@
             <child>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Idea, design and development:</property>
+                <property name="LabelProp" translatable="yes">Idea, design, project directing:</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -623,12 +623,12 @@
                 <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
-                <property name="Padding">6</property>
               </packing>
             </child>
             <child>
               <widget class="Gtk.Label" id="label6">
                 <property name="MemberName" />
+                <property name="Yalign">0</property>
                 <property name="LabelProp" translatable="yes">&lt;b&gt;Ilya Mizus&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
                 <property name="Wrap">True</property>
@@ -641,15 +641,107 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.Fixed" id="fixed4">
+                <property name="MemberName" />
+                <property name="HeightRequest">10</property>
+                <property name="HasWindow">False</property>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label7">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Code development and support:</property>
+                <property name="UseMarkup">True</property>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label8">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Ilya Mizus, Vasilij Litvinov&lt;/b&gt;</property>
+                <property name="UseMarkup">True</property>
+                <property name="Wrap">True</property>
+              </widget>
+              <packing>
+                <property name="Position">5</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Fixed" id="fixed3">
+                <property name="MemberName" />
+                <property name="HeightRequest">10</property>
+                <property name="HasWindow">False</property>
+              </widget>
+              <packing>
+                <property name="Position">6</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label9">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Installer development and support:</property>
+                <property name="UseMarkup">True</property>
+              </widget>
+              <packing>
+                <property name="Position">7</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label10">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Igor Lysakov&lt;/b&gt;</property>
+                <property name="UseMarkup">True</property>
+                <property name="Wrap">True</property>
+              </widget>
+              <packing>
+                <property name="Position">8</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Fixed" id="fixed2">
+                <property name="MemberName" />
+                <property name="HeightRequest">10</property>
+                <property name="HasWindow">False</property>
+              </widget>
+              <packing>
+                <property name="Position">9</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.Label" id="label4">
                 <property name="MemberName" />
                 <property name="LabelProp" translatable="yes">Special thanks to:</property>
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">10</property>
                 <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Padding">6</property>
               </packing>
             </child>
             <child>
@@ -660,7 +752,7 @@
                 <property name="Wrap">True</property>
               </widget>
               <packing>
-                <property name="Position">4</property>
+                <property name="Position">11</property>
                 <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -674,7 +766,7 @@
                 <property name="Wrap">True</property>
               </widget>
               <packing>
-                <property name="Position">5</property>
+                <property name="Position">12</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -718,6 +810,7 @@
   </widget>
   <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="432 182">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="AllowGrow">False</property>

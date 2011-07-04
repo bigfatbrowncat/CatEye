@@ -14,7 +14,8 @@ namespace CatEye.UI.Base
 		private StageOperationParameters _EditingOperation = null;
 		private StageOperationParameters _FrozenAt = null;
 		private double mZoomValue = 0.5;
-
+		private string _FileName = null;
+		private int _PreScale = 0;
 		
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
 		private StageOperationHolderFactory mSOHolderFactory;
@@ -29,7 +30,29 @@ namespace CatEye.UI.Base
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public event EventHandler<EventArgs> UpdateQueued;
+		public event EventHandler<EventArgs> FileNameChanged;
+		public event EventHandler<EventArgs> PreScaleChanged;
 		
+		public string FileName
+		{
+			get { return _FileName; }
+			protected set 
+			{
+				_FileName = value;
+				if (FileNameChanged != null) FileNameChanged(this, EventArgs.Empty);
+			}
+		}
+		
+		public int PreScale
+		{
+			get { return _PreScale; }
+			protected set 
+			{
+				_PreScale = value;
+				if (PreScaleChanged != null) PreScaleChanged(this, EventArgs.Empty);
+			}
+		}
+
 		public override IBitmapCore SourceImage
 		{
 			get { return base.SourceImage; }
@@ -103,12 +126,17 @@ namespace CatEye.UI.Base
 
 		public override void LoadStage(string filename)
 		{
-			SetUIState(UIState.Loading);
-			FrozenAt = null;
-			
-			base.LoadStage(filename);
-			
-			SetUIState(UIState.Idle);
+			try
+			{
+				SetUIState(UIState.Loading);
+				FrozenAt = null;
+				
+				base.LoadStage(filename);
+			}
+			finally
+			{
+				SetUIState(UIState.Idle);
+			}
 		}
 		
 		protected override void DoProcess()
@@ -486,13 +514,20 @@ namespace CatEye.UI.Base
 			}
 		}
 
-		public override void LoadImage(string filename, int downscale_by)
+		public override bool LoadImage(string filename, int downscale_by)
 		{
 			SetUIState(UIState.Loading);
 			
-			base.LoadImage(filename, downscale_by);
+			bool res = base.LoadImage(filename, downscale_by);
+			if (res)
+			{
+				FileName = filename;
+				PreScale = downscale_by;
+			}
 			
 			SetUIState(UIState.Idle);
+			
+			return res;
 		}
 	}
 }
