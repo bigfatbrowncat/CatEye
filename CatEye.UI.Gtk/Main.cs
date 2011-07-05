@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Gtk;
 using CatEye.Core;
 using CatEye.UI.Base;
@@ -9,6 +10,10 @@ namespace CatEye
 {
 	class MainClass
 	{
+		public static string APP_NAME = "CatEye";
+
+		private static int prescale = 4;	// TODO: option
+		
 		public static ExtendedStage stage;
 		public static RenderingQueue rq;
 
@@ -108,6 +113,30 @@ namespace CatEye
 			mQuitFlag = true;
 		}
 		
+		public static string[] FindRawsForCEStage(string cestage_filename)
+		{
+			List<string> res = new List<string>();
+			string cut_ext_low = System.IO.Path.GetFileNameWithoutExtension(cestage_filename).ToLower();
+			string dir = System.IO.Path.GetDirectoryName(cestage_filename);
+			
+			// "Empty" path points to current dir
+			if (dir == "") dir = System.IO.Directory.GetCurrentDirectory();
+			
+			string[] files = System.IO.Directory.GetFiles(dir);
+			for (int i = 0; i < files.Length; i++)
+			{
+				if (DCRawConnection.IsRaw(files[i]) &&
+					System.IO.Path.GetFileNameWithoutExtension(files[i]).ToLower() == cut_ext_low)
+				{
+					res.Add(files[i]);
+				}
+			}
+#if DEBUG
+			Console.WriteLine("Found " + res.Count + " RAW files");
+#endif
+			return res.ToArray();
+		}
+		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
@@ -127,6 +156,7 @@ namespace CatEye
 				StageOperationHolderFactory, 
 				ImageLoader);
 			
+			
 			DateTime lastUpdateQueuedTime = DateTime.Now;
 			
 			stage.UpdateQueued += delegate {
@@ -136,8 +166,72 @@ namespace CatEye
 			win = new MainWindow (stage, mStageOperationTypes);
 			win.Show ();
 			
+			bool just_started = true;
+			
 			while (!mQuitFlag)
 			{
+				if (just_started)
+				{
+					just_started = false;
+					// Parsing command line arguments
+					if (args.Length > 0)
+					{
+						if (args.Length == 1)
+						{
+							bool exists = System.IO.File.Exists(args[0]);
+							bool is_cestage = System.IO.Path.GetExtension(args[0]).ToLower() == ".cestage";
+							bool is_raw = DCRawConnection.IsRaw(args[0]);
+							if (!exists)
+							{
+								Gtk.MessageDialog md = new Gtk.MessageDialog(win, DialogFlags.Modal,
+								                                             MessageType.Error, ButtonsType.Ok, 
+								                                             "Can not find file \"{0}\".", args[0]);
+								md.Title = APP_NAME;
+								md.Run();
+								md.Destroy();
+							}
+							else if (is_cestage)
+							{
+								// Loading cestage
+								stage.LoadStage(args[0]);
+								
+								// Trying to find a proper RAW file
+								string[] raws = FindRawsForCEStage(args[0]);
+								
+								if (raws.Length > 0)
+								{
+									string raw_file = raws[0]; // TODO: support more than one found RAW file
+									
+									Gtk.MessageDialog ask_raw = new Gtk.MessageDialog(win, DialogFlags.Modal,
+									                                             MessageType.Question, ButtonsType.YesNo, 
+									                                             "The raw file \"{0}\" found in the same folder.\nWould you like to open it?", 
+																				 System.IO.Path.GetFileName(raw_file));
+									ask_raw.Title = APP_NAME;
+									bool yes = false;
+									if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
+									ask_raw.Destroy();
+									
+									if (yes) stage.LoadImage(raw_file, prescale);
+								}
+							}
+							else if (is_raw)
+							{
+								// TODO: handle raw file in command-line arguments
+							}
+							else // exists, but neither cestage nor raw
+							{
+								Gtk.MessageDialog md = new Gtk.MessageDialog(win, DialogFlags.Modal,
+								                                             MessageType.Error, ButtonsType.Ok, 
+								                                             "Incorrect file \"{0}\".", args[0]);
+								md.Title = APP_NAME;
+								md.Run();
+								md.Destroy();
+							}
+						}
+					}
+					
+				}
+				
 				Gtk.Application.RunIteration();
 				if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > mDelayBeforeUpdate)
 				{

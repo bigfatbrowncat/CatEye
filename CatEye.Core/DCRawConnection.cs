@@ -1,9 +1,31 @@
 using System;
+using System.Collections.Generic;
 
 namespace CatEye.Core
 {
 	public static class DCRawConnection
 	{
+		public static readonly string [] RAW_EXTENSIONS = {
+				".arw",
+				".crw",
+				".cr2",
+				".dng",
+				".mrw",
+				".nef",
+				".orf",
+				".pef",
+				".raw",
+				".raf",
+				".rw2"
+		};
+		
+		private static List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
+		
+		public static bool IsRaw(string filename)
+		{
+			return raw_exts.Contains(System.IO.Path.GetExtension(filename.ToLower()));
+		}
+		
 		public static string FindDCRaw()
 		{
 			string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);

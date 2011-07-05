@@ -10,20 +10,6 @@ namespace CatEye
 
 	public partial class RawImportDialog : Gtk.Dialog
 	{
-		string [] raw_extensions = {
-				".arw",
-				".crw",
-				".cr2",
-				".dng",
-				".mrw",
-				".nef",
-				".orf",
-				".pef",
-				".raw",
-				".raf",
-				".rw2",
-		};		
-		
 		private bool file_is_good = false;
 		
 		public string Filename 
@@ -82,11 +68,9 @@ namespace CatEye
 			
 			// Filter
 			FileFilter ff = new FileFilter();
-			List<string> exts = new List<string>(raw_extensions);
 			
 			ff.AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
-				return exts.Contains(System.IO.Path.GetExtension(ffi.Filename.ToLower()));
-				
+				return DCRawConnection.IsRaw(ffi.Filename);				
 			});
 			ff.Name = "RAW image";
 	

@@ -11,9 +11,6 @@ using CatEye.UI.Gtk.Widgets;
 
 public partial class MainWindow : Gtk.Window
 {
-
-	private static string APP_NAME = "CatEye";
-
 	private ExtendedStage stages;
 	private DateTime lastupdate;
 	private FrozenPanel _FrozenPanel;
@@ -23,16 +20,18 @@ public partial class MainWindow : Gtk.Window
 	
 	private void UpdateTitle()
 	{
-		if (stages.FileName != null)
+		if (stages.RawFileName != null || stages.StageFileName != null)
 		{
-			string t = System.IO.Path.GetFileName(stages.FileName);
-			if (stages.PreScale != 1)
-				t += " [prescaled by " + stages.PreScale + "]";
-			t += " — " + APP_NAME;
+			string t = "";
+			if (stages.StageFileName != null) t += System.IO.Path.GetFileName(stages.StageFileName);
+			if (stages.StageFileName != null && stages.RawFileName != null) t += " / ";
+			if (stages.RawFileName != null) t += System.IO.Path.GetFileName(stages.RawFileName);
+			
+			t += " — " + MainClass.APP_NAME;
 			Title = t;
 		}
 		else
-			Title = APP_NAME;
+			Title = MainClass.APP_NAME;
 	}
 	
 
@@ -95,7 +94,10 @@ public partial class MainWindow : Gtk.Window
 		stages.ImageUpdatingCompleted += HandleStagesImageUpdatingCompleted;
 		stages.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
 		
-		stages.FileNameChanged += delegate {
+		stages.RawFileNameChanged += delegate {
+			UpdateTitle();
+		};
+		stages.StageFileNameChanged += delegate {
 			UpdateTitle();
 		};
 		stages.PreScaleChanged += delegate {
@@ -107,14 +109,14 @@ public partial class MainWindow : Gtk.Window
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
 		if (System.IO.File.Exists(defaultstage))
 		{
-			stages.LoadStage(defaultstage);
+			stages.LoadStage(defaultstage, false);
 		}
 		else
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Warning, ButtonsType.Ok, 
 			                                             "Can not find default.cestage");
-			md.Title = "Warning";
+			md.Title = MainClass.APP_NAME;
 			md.Run();
 			md.Destroy();
 		}
@@ -339,7 +341,7 @@ public partial class MainWindow : Gtk.Window
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
 			                                             "Can not start DCRaw process");
-			md.Title = "Error";
+			md.Title = MainClass.APP_NAME;
 			md.Run();
 			md.Destroy();
 		}
@@ -347,7 +349,7 @@ public partial class MainWindow : Gtk.Window
 		{
 			RawImportDialog rid = new RawImportDialog();
 			
-			if (stages.FileName != null) rid.Filename = stages.FileName;
+			if (stages.RawFileName != null) rid.Filename = stages.RawFileName;
 			if (stages.PreScale != 0) rid.PreScale = stages.PreScale;
 			
 			bool ok = false;
@@ -417,8 +419,8 @@ public partial class MainWindow : Gtk.Window
 
 		fcd.AddFilter(ffs[0]);
 		
-		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.FileName);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.RawFileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
@@ -452,7 +454,7 @@ public partial class MainWindow : Gtk.Window
 		ffs[0].Name = "CatEye Stage file";
 
 		fcd.AddFilter(ffs[0]);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
 		
 		string fn = "";
 		bool ok = false;
@@ -474,7 +476,7 @@ public partial class MainWindow : Gtk.Window
 					this, DialogFlags.Modal,
 					MessageType.Error, ButtonsType.Ok, 
 					false, "Can't load stage from the file \"{0}\".\n{1}", fn, sdex.Message);
-				md.Title = APP_NAME;
+				md.Title = MainClass.APP_NAME;
 				
 				md.Run();
 				md.Destroy();
@@ -548,8 +550,8 @@ public partial class MainWindow : Gtk.Window
 		string dest_type = "", fn = "";
 		bool accept = false;
 
-		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.FileName);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.FileName));
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.RawFileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
@@ -592,7 +594,7 @@ public partial class MainWindow : Gtk.Window
 				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
 			}
 			
-			MainClass.rq.Add(stg, stages.FileName, fn, dest_type);
+			MainClass.rq.Add(stg, stages.RawFileName, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			

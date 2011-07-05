@@ -14,7 +14,8 @@ namespace CatEye.UI.Base
 		private StageOperationParameters _EditingOperation = null;
 		private StageOperationParameters _FrozenAt = null;
 		private double mZoomValue = 0.5;
-		private string _FileName = null;
+		private string _RawFileName = null;
+		private string _StageFileName = null;
 		private int _PreScale = 0;
 		
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
@@ -30,16 +31,27 @@ namespace CatEye.UI.Base
 		public event EventHandler<EventArgs> OperationFrozen;
 		public event EventHandler<EventArgs> OperationDefrozen;
 		public event EventHandler<EventArgs> UpdateQueued;
-		public event EventHandler<EventArgs> FileNameChanged;
+		public event EventHandler<EventArgs> RawFileNameChanged;
+		public event EventHandler<EventArgs> StageFileNameChanged;
 		public event EventHandler<EventArgs> PreScaleChanged;
 		
-		public string FileName
+		public string RawFileName
 		{
-			get { return _FileName; }
+			get { return _RawFileName; }
 			protected set 
 			{
-				_FileName = value;
-				if (FileNameChanged != null) FileNameChanged(this, EventArgs.Empty);
+				_RawFileName = value;
+				if (RawFileNameChanged != null) RawFileNameChanged(this, EventArgs.Empty);
+			}
+		}
+
+		public string StageFileName
+		{
+			get { return _StageFileName; }
+			protected set 
+			{
+				_StageFileName = value;
+				if (StageFileNameChanged != null) StageFileNameChanged(this, EventArgs.Empty);
 			}
 		}
 		
@@ -126,12 +138,18 @@ namespace CatEye.UI.Base
 
 		public override void LoadStage(string filename)
 		{
+			LoadStage(filename, true);
+		}
+
+		public void LoadStage(string filename, bool setStageFilename)
+		{
 			try
 			{
 				SetUIState(UIState.Loading);
 				FrozenAt = null;
 				
 				base.LoadStage(filename);
+				if (setStageFilename) StageFileName = filename;
 			}
 			finally
 			{
@@ -521,7 +539,7 @@ namespace CatEye.UI.Base
 			bool res = base.LoadImage(filename, downscale_by);
 			if (res)
 			{
-				FileName = filename;
+				RawFileName = filename;
 				PreScale = downscale_by;
 			}
 			

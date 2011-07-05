@@ -184,6 +184,7 @@ namespace CatEye.UI.Gtk
 			this.vbox4.Spacing = 6;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.up_button = new global::Gtk.Button ();
+			this.up_button.Sensitive = false;
 			this.up_button.CanFocus = true;
 			this.up_button.Name = "up_button";
 			this.up_button.UseStock = true;
@@ -196,6 +197,7 @@ namespace CatEye.UI.Gtk
 			w15.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.down_button = new global::Gtk.Button ();
+			this.down_button.Sensitive = false;
 			this.down_button.CanFocus = true;
 			this.down_button.Name = "down_button";
 			this.down_button.UseStock = true;
