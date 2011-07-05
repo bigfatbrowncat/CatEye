@@ -35,6 +35,8 @@ namespace CatEye.UI.Base
 	
 	public class RenderingQueue
 	{
+		private int prescale = 3;
+		
 		private List<RenderingTask> mQueue;
 		private RenderingTask mInProgress = null;
 		private Thread mWorkingThread = null;
@@ -146,12 +148,52 @@ namespace CatEye.UI.Base
 			
 			OnQueueProgressMessageReport(rt.Source, rt.Destination, e.Progress, e.Status);
 		}
+		
+		public bool StepDown(RenderingTask item)
+		{
+			int inx = mQueue.IndexOf(item);
+			if (inx < mQueue.Count - 1)
+			{
+				RenderingTask next = mQueue[inx + 1];
+				mQueue[inx + 1] = item;
+				mQueue[inx] = next;
+				OnItemIndexChanged(item);
+				OnItemIndexChanged(next);
+				return true;
+			}
+			else
+				return false;
+		}
 
+		public bool StepUp(RenderingTask item)
+		{
+			int inx = mQueue.IndexOf(item);
+			if (inx > 0)
+			{
+				RenderingTask prev = mQueue[inx - 1];
+				mQueue[inx - 1] = item;
+				mQueue[inx] = prev;
+				OnItemIndexChanged(item);
+				OnItemIndexChanged(prev);
+				return true;
+			}
+			else
+				return false;
+		}
+		
+		public int IndexOf(RenderingTask item)
+		{
+			return mQueue.IndexOf(item);
+		}
+		
 		public void Remove(RenderingTask item)
 		{
-			item.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
-			mQueue.Remove(item);
-			OnItemRemoved(item);
+			lock (item)
+			{
+				item.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
+				mQueue.Remove(item);
+				OnItemRemoved(item);
+			}
 		}
 		
 		private void ProcessingThread()
@@ -163,13 +205,20 @@ namespace CatEye.UI.Base
 			{
 				try
 				{
-					mInProgress = mQueue[0];
-					mQueue.RemoveAt(0);
-					OnItemRemoved(mInProgress);
+					RenderingTask cur_task = mQueue[0];
+					lock (cur_task)
+					{
+						if (mQueue.Contains(cur_task))
+						{
+							mInProgress = cur_task;
+							mQueue.Remove(cur_task);
+							OnItemRemoved(cur_task);
+						}
+					}
 					
 					OnBeforeItemProcessingStarted(mInProgress);
 					
-					mInProgress.Stage.LoadImage(mInProgress.Source, 1);
+					mInProgress.Stage.LoadImage(mInProgress.Source, prescale);
 					mInProgress.Stage.Process();
 					OnItemRendering(mInProgress);
 					
@@ -209,12 +258,17 @@ namespace CatEye.UI.Base
 		}
 		public void CancelAll()
 		{
+			for (int i = 0; i < mQueue.Count; i++)
+				OnItemRemoved(mQueue[i]);
+			mQueue.Clear();
+
 			mCancelAll = true;
 		}
 		public void Cancel()
 		{
 			mCancel = true;
 		}
+		public int Count { get { return mQueue.Count; } }
 	}
 }
 

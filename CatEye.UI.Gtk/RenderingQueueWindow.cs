@@ -201,6 +201,43 @@ namespace CatEye.UI.Gtk
 			this.Hide();
 			args.RetVal = true;
 		}
+
+		protected void OnQueueNodeviewCursorChanged (object sender, System.EventArgs e)
+		{
+			ITreeNode[] selnodes = queue_nodeview.NodeSelection.SelectedNodes;
+			if (selnodes.Length == 0)
+			{
+				up_button.Sensitive = false;
+				down_button.Sensitive = false;
+			}
+			else
+			{
+				RenderingTask seltask = ((RenderingTaskTreeNode)selnodes[0]).Task;
+				
+				up_button.Sensitive = mRenderingQueue.IndexOf(seltask) > 0;
+				down_button.Sensitive = mRenderingQueue.IndexOf(seltask) < mRenderingQueue.Count - 1;
+			}
+		}
+
+		protected void OnUpButtonClicked (object sender, System.EventArgs e)
+		{
+			ITreeNode[] selnodes = queue_nodeview.NodeSelection.SelectedNodes;
+			if (selnodes.Length > 0)
+			{
+				RenderingTask seltask = ((RenderingTaskTreeNode)selnodes[0]).Task;
+				mRenderingQueue.StepUp(seltask);
+			}
+		}
+
+		protected void OnDownButtonClicked (object sender, System.EventArgs e)
+		{
+			ITreeNode[] selnodes = queue_nodeview.NodeSelection.SelectedNodes;
+			if (selnodes.Length > 0)
+			{
+				RenderingTask seltask = ((RenderingTaskTreeNode)selnodes[0]).Task;
+				mRenderingQueue.StepDown(seltask);
+			}
+		}
 	}
 }
 

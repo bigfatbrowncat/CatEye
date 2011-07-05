@@ -160,6 +160,7 @@ namespace CatEye.UI.Gtk
 			this.expander1 = new global::Gtk.Expander (null);
 			this.expander1.CanFocus = true;
 			this.expander1.Name = "expander1";
+			this.expander1.Expanded = true;
 			this.expander1.BorderWidth = ((uint)(6));
 			// Container child expander1.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -183,7 +184,6 @@ namespace CatEye.UI.Gtk
 			this.vbox4.Spacing = 6;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.up_button = new global::Gtk.Button ();
-			this.up_button.Sensitive = false;
 			this.up_button.CanFocus = true;
 			this.up_button.Name = "up_button";
 			this.up_button.UseStock = true;
@@ -196,7 +196,6 @@ namespace CatEye.UI.Gtk
 			w15.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.down_button = new global::Gtk.Button ();
-			this.down_button.Sensitive = false;
 			this.down_button.CanFocus = true;
 			this.down_button.Name = "down_button";
 			this.down_button.UseStock = true;
@@ -266,11 +265,14 @@ namespace CatEye.UI.Gtk
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 432;
-			this.DefaultHeight = 182;
+			this.DefaultHeight = 324;
 			this.Hide ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 			this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 			this.expander1.Activated += new global::System.EventHandler (this.OnExpander1Activated);
+			this.queue_nodeview.CursorChanged += new global::System.EventHandler (this.OnQueueNodeviewCursorChanged);
+			this.up_button.Clicked += new global::System.EventHandler (this.OnUpButtonClicked);
+			this.down_button.Clicked += new global::System.EventHandler (this.OnDownButtonClicked);
 			this.remove_button.Clicked += new global::System.EventHandler (this.OnRemoveButtonClicked);
 			this.cancelAll_button.Clicked += new global::System.EventHandler (this.OnCancelAllButtonClicked);
 		}
