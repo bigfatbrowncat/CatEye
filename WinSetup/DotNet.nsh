@@ -27,13 +27,13 @@ Function WarningCreate
   ;  MessageBox MB_ICONINFORMATION ".NetFramework 2.0 already installed. Push <Ok> to quit."
   ;  quit
   ;${EndIf}
-  ${If} $dotnetset == 0
+  ${If} $dotnetset != 1
     nsDialogs::Create 1018
     Pop $mypage
     !insertmacro MUI_HEADER_TEXT ".NET Framework 2.0 Warning" "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0."
-    ${NSD_CreateLabel} 0u 0u 300u 120u "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0.$\r$\n$\r$\nNow you need to download .NET Framework from it's official site (about 20 - 50 MB depending on Your system) and install it to your system in order to use ${PRODUCT_NAME}. If you have the .NET Framework 2.0 redistributable already downloaded you may close the ${PRODUCT_NAME} ${VERSION_SHORT} Setup now, install it and then restart the ${PRODUCT_NAME} ${VERSION_SHORT} Setup.$\r$\n$\r$\nWould You like to download and setup .NetFramework 2.0 on your system during installation of ${PRODUCT_NAME}? If not close installer."
+    ${NSD_CreateLabel} 0u 0u 300u 120u "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0.$\r$\n$\r$\nNow You need to download Microsoft .NET Framework 2.0 from it's official site (about 20 - 50 MB depending on your system) and install it to your system in order to use ${PRODUCT_NAME}. If You have the Microsoft .NET Framework 2.0 redistributable already downloaded You may close the ${PRODUCT_NAME} ${VERSION_SHORT} Setup now, install it and then restart the ${PRODUCT_NAME} ${VERSION_SHORT} Setup.$\r$\n$\r$\nWould You like to download and setup Microsoft .NET Framework 2.0 on your system during installation of ${PRODUCT_NAME}? If not close installer."
     Pop $label
-    ${NSD_CreateCheckBox} 0u 130u 300u 10u "Yes, download and install .NetFramework 2.0."
+    ${NSD_CreateCheckBox} 0u 130u 300u 10u "Yes, download and install Microsoft .NET Framework 2.0."
     Pop $checkbox
     ${NSD_SetState} $checkbox $checkboxstate
     ${NSD_OnClick} $checkbox NextButtonChange
