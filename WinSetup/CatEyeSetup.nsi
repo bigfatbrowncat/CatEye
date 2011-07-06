@@ -3,8 +3,8 @@
 ;--------------------------------
 ; Common settings
 SetCompressor /SOLID lzma
-ShowInstDetails show
-ShowUnInstDetails show
+;ShowInstDetails show
+;ShowUnInstDetails show
 
 ;--------------------------------
 
