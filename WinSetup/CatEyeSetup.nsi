@@ -34,6 +34,8 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" "Software for developing raw photos"
 ;VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" ""
 ;VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" ""
+VIAddVersionKey "CompanyName" ""
+VIAddVersionKey "LegalTrademarks" ""
 VIAddVersionKey "LegalCopyright" "© Mizus Ilya & Lysakov Igor"
 VIAddVersionKey "FileDescription" "Software for developing raw photos"
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
@@ -41,6 +43,7 @@ VIProductVersion "${PRODUCT_VERSION}"
 
 ; Variables
 var /global winver
+;var /global license
 
 ;--------------------------------
 ;Interface Settings
@@ -56,59 +59,48 @@ BrandingText /TRIMLEFT " "
 !define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\win.bmp"
 
 ;--------------------------------
+
 ;Pages
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange.bmp"
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye.txt"
+!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye_en_US.txt"
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange-uninstall.bmp"
-!insertmacro MUI_UNPAGE_WELCOME
-!insertmacro MUI_UNPAGE_INSTFILES
-
 !define MUI_FINISHPAGE_RUN "$INSTDIR\CatEye.exe"
 !insertmacro MUI_PAGE_FINISH
 
+
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange-uninstall.bmp"
+!insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
+
 ;--------------------------------
+
 ;Languages
 
-!insertmacro MUI_LANGUAGE "English"
-;!insertmacro MUI_LANGUAGE "Russian"
+!insertmacro MUI_LANGUAGE "English"             ; first language is the default language
+!insertmacro MUI_LANGUAGE "Russian"
+
+;LicenseLangString license ${LANG_ENGLISH} "${PKGDIR}licenses\license_cateye_en_US.txt"
+;LicenseLangString license ${LANG_RUSSIAN} "${PKGDIR}licenses\license_cateye_ru_RU.txt"
+
+!include "messages\Messages_en_US.nsh"          ; messages for my pages
+!include "messages\Messages_ru_RU.nsh"
 
 ;--------------------------------
 
-;Function .onInit
-;  !insertmacro MUI_LANGDLL_DISPLAY
-;FunctionEnd
 
-;Function IsDotNETInstalled
-;  ; Check .NET version
-;  var /global dotnetset
-;  ReadRegDWORD $dotnetset HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
-;  IntCmp $dotnetset 1 go1 nonet
-;    nonet:
-;      call DotNetDownload
-;  go1:
-;FunctionEnd
-
-
-;Function DotNetDownload
-;  MessageBox MB_YESNO "${PRODUCT_NAME} requires .NET Framework 2.0. Would You like downoad and install .NET Framework 2.0?" IDYES download IDNO notload
-;    notload:
-;      MessageBox MB_ICONINFORMATION "Installation aborted."
-;      abort
-;    download:
-;      MessageBox MB_ICONINFORMATION "Download and setup .NET Framework 2.0 on your system from official Microsoft site. After it run ${PRODUCT_NAME}-${VERSION_LONG}-setup.exe again."
-;      ExecShell "" "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5b2c0358-915b-4eb5-9b1d-10e506da9d0f"
-;      quit
-;FunctionEnd
+Function .onInit
+  !insertmacro MUI_LANGDLL_DISPLAY
+FunctionEnd
 
 
 !macro RegisterExtension extenstion
@@ -183,9 +175,9 @@ SectionEnd
 ;--------------------------------
 ;--------------------------------
 
-;Function un.onInit
-;  !insertmacro MUI_UNGETLANGUAGE
-;FunctionEnd
+Function un.onInit
+  !insertmacro MUI_UNGETLANGUAGE
+FunctionEnd
 
 
 Function un.LicensesDel

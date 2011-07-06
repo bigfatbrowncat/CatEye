@@ -30,10 +30,10 @@ Function WarningCreate
   ${If} $dotnetset != 1
     nsDialogs::Create 1018
     Pop $mypage
-    !insertmacro MUI_HEADER_TEXT ".NET Framework 2.0 Warning" "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0."
-    ${NSD_CreateLabel} 0u 0u 300u 120u "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0.$\r$\n$\r$\nNow You need to download Microsoft .NET Framework 2.0 from it's official site (about 20 - 50 MB depending on your system) and install it to your system in order to use ${PRODUCT_NAME}. If You have the Microsoft .NET Framework 2.0 redistributable already downloaded You may close the ${PRODUCT_NAME} ${VERSION_SHORT} Setup now, install it and then restart the ${PRODUCT_NAME} ${VERSION_SHORT} Setup.$\r$\n$\r$\nWould You like to download and setup Microsoft .NET Framework 2.0 on your system during installation of ${PRODUCT_NAME}? If not close installer."
+    !insertmacro MUI_HEADER_TEXT $(DotNetPage_HeaderText) $(DotNetPage_SubHeaderText)
+    ${NSD_CreateLabel} 0u 0u 300u 120u $(DotNetPage_LabelText)
     Pop $label
-    ${NSD_CreateCheckBox} 0u 130u 300u 10u "Yes, download and install Microsoft .NET Framework 2.0."
+    ${NSD_CreateCheckBox} 0u 130u 300u 10u $(DotNetPage_CheckBoxText)
     Pop $checkbox
     ${NSD_SetState} $checkbox $checkboxstate
     ${NSD_OnClick} $checkbox NextButtonChange
@@ -69,7 +69,7 @@ FunctionEnd
 
 Function DotNetDownloadSetup
   ${If} $checkboxstate == ${BST_UNCHECKED}
-    MessageBox MB_ICONINFORMATION "Your need .NetFramework 2.0 install on Your system. Installation of .NetFramework 2.0 aborted."
+    MessageBox MB_ICONINFORMATION $(DotNetDownloadWarning)
     quit
   ${EndIf}
   ${If} $checkboxstate == ${BST_CHECKED}
@@ -88,12 +88,12 @@ Function DotNetDownloadSetup
     ;  StrCpy $address "http://www.microsoft.com/downloads/info.aspx?na=41&srcfamilyid=5b2c0358-915b-4eb5-9b1d-10e506da9d0f&srcdisplaylang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2fc%2f6%2fe%2fc6e88215-0178-4c6c-b5f3-158ff77b1f38%2fNetFx20SP2_ia64.exe"
     ;${EndIf}
     ;SetDetailsView hide
-    inetc::get /caption "Downloading .NET Framework 2.0" /canceltext "Cancel download" $address "$TEMP\dotnetfx.exe" /end
+    inetc::get /caption $(DotNetDownloadCaptionText) /canceltext $(DotNetDownloadCancelText) $address "$TEMP\dotnetfx.exe" /end
     ;SetDetailsView show
     Pop $download
     ${If} $download != "OK"
       Delete "$TEMP\dotnetfx.exe"
-      Abort "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0. Installation cancelled."
+      Abort $(DotNetDownloadCrashWarning)
     ${EndIf}
     ExecWait "$TEMP\dotnetfx.exe"
     Delete "$TEMP\dotnetfx.exe"
