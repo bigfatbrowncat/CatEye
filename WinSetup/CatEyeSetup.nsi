@@ -43,7 +43,6 @@ VIProductVersion "${PRODUCT_VERSION}"
 
 ; Variables
 var /global winver
-;var /global license
 
 ;--------------------------------
 ;Interface Settings
@@ -66,7 +65,8 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye_en_US.txt"
+;!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye_en_US.txt"
+!insertmacro MUI_PAGE_LICENSE $(license)
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 
@@ -89,8 +89,9 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_LANGUAGE "English"             ; first language is the default language
 !insertmacro MUI_LANGUAGE "Russian"
 
-;LicenseLangString license ${LANG_ENGLISH} "${PKGDIR}licenses\license_cateye_en_US.txt"
-;LicenseLangString license ${LANG_RUSSIAN} "${PKGDIR}licenses\license_cateye_ru_RU.txt"
+LicenseLangString license ${LANG_ENGLISH} "${PKGDIR}licenses\license_cateye_en_US.txt"
+LicenseLangString license ${LANG_RUSSIAN} "${PKGDIR}licenses\license_cateye_ru_RU.txt"
+LicenseData $(license)
 
 !include "messages\Messages_en_US.nsh"          ; messages for my pages
 !include "messages\Messages_ru_RU.nsh"
