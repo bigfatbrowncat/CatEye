@@ -39,6 +39,8 @@ namespace CatEye.Core
 	
 	public class Stage
 	{
+		public int PreScale = 1;  // TODO: option
+		
 		private bool mCancelLoadingPending = false;
 		private bool mCancelProcessingPending = false;
 		private ImageLoader mImageLoader;
@@ -95,6 +97,14 @@ namespace CatEye.Core
 			xdoc.Load(filename);
 
 			DeserializeFromXML(xdoc.ChildNodes[1]);
+		}
+		
+		public virtual void SaveStage(string filename)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.AppendChild(xdoc.CreateXmlDeclaration("1.0", null, null));
+			xdoc.AppendChild(SerializeToXML(xdoc));
+			xdoc.Save(filename);
 		}
 		
 		public void CancelProcessing()
@@ -423,6 +433,9 @@ namespace CatEye.Core
 						OnProgressMessageReport(false, 0, "Data reading complete.", false);
 						ms.Seek(0, System.IO.SeekOrigin.Begin);
 						
+#if DEBUG
+						Console.WriteLine("Loading raw from " + filename);
+#endif								
 						return LoadRaw(ms, downscale_by);
 					}
 					finally
@@ -452,8 +465,6 @@ namespace CatEye.Core
 				GC.Collect();
 				Console.WriteLine("Closing and disposing the dcraw process. I'm using " + System.GC.GetTotalMemory(true) / 1024 + " Kbytes of memory now");
 #endif
-				
-				
 			}
 		}
 		

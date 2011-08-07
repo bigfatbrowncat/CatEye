@@ -234,8 +234,8 @@ namespace CatEye
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 418;
-			this.DefaultHeight = 381;
+			this.DefaultWidth = 457;
+			this.DefaultHeight = 391;
 			this.Show ();
 		}
 	}

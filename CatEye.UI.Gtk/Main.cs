@@ -12,8 +12,6 @@ namespace CatEye
 	{
 		public static string APP_NAME = "CatEye";
 
-		private static int prescale = 4;	// TODO: option
-		
 		public static ExtendedStage stage;
 		public static RenderingQueue rq;
 
@@ -137,6 +135,20 @@ namespace CatEye
 			return res.ToArray();
 		}
 		
+		public static void AddToQueue(Stage stage, string src, string dest, string dest_type)
+		{
+			Stage stg = new Stage(StageOperationFactory, 
+				StageOperationParametersFactoryFromID,
+				ImageLoader);
+			
+			for (int i = 0; i < stage.StageQueue.Length; i++)
+			{
+				stg.Add((StageOperationParameters)stage.StageQueue[i].Clone());
+			}
+			
+			rq.Add(stg, src, dest, dest_type);
+		}
+		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
@@ -156,7 +168,7 @@ namespace CatEye
 				StageOperationHolderFactory, 
 				ImageLoader);
 			
-			
+		
 			DateTime lastUpdateQueuedTime = DateTime.Now;
 			
 			stage.UpdateQueued += delegate {
@@ -211,7 +223,7 @@ namespace CatEye
 									if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
 									ask_raw.Destroy();
 									
-									if (yes) stage.LoadImage(raw_file, prescale);
+									if (yes) stage.LoadImage(raw_file, PPMLoader.PreScale);
 								}
 							}
 							else if (is_raw)

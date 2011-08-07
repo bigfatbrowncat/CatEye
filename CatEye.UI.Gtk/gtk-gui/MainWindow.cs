@@ -208,7 +208,7 @@ public partial class MainWindow
 		this.view_widget.InstantUpdate = false;
 		this.vbox3.Add (this.view_widget);
 		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.view_widget]));
-		w19.Position = 1;
+		w19.Position = 0;
 		// Container child vbox3.Gtk.Box+BoxChild
 		this.hbox1 = new global::Gtk.HBox ();
 		this.hbox1.Name = "hbox1";
@@ -218,7 +218,7 @@ public partial class MainWindow
 		this.status_label = new global::Gtk.Label ();
 		this.status_label.Name = "status_label";
 		this.status_label.Xalign = 0F;
-		this.status_label.LabelProp = global::Mono.Unix.Catalog.GetString ("Parameters could be changed <b>during</b> processing. You are welcome!");
+		this.status_label.LabelProp = global::Mono.Unix.Catalog.GetString ("Parameters can be changed <b>during</b> processing. You are welcome!");
 		this.status_label.UseMarkup = true;
 		this.status_label.Ellipsize = ((global::Pango.EllipsizeMode)(3));
 		this.hbox1.Add (this.status_label);
@@ -269,7 +269,7 @@ public partial class MainWindow
 		w31.Expand = false;
 		this.vbox3.Add (this.hbox1);
 		global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
-		w32.Position = 2;
+		w32.Position = 1;
 		w32.Expand = false;
 		w32.Fill = false;
 		this.hpaned1.Add (this.vbox3);

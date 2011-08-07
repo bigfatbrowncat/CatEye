@@ -428,10 +428,7 @@ public partial class MainWindow : Gtk.Window
 			if (System.IO.Path.GetExtension(fn).ToLower() != ".cestage")
 				fn += ".cestage";
 			
-			XmlDocument xdoc = new XmlDocument();
-			xdoc.AppendChild(xdoc.CreateXmlDeclaration("1.0", null, null));
-			xdoc.AppendChild(stages.SerializeToXML(xdoc));
-			xdoc.Save(fn);
+			stages.SaveStage(fn);
 		}
 		fcd.Destroy();
 	}
@@ -585,6 +582,7 @@ public partial class MainWindow : Gtk.Window
 
 		if (accept)
 		{
+			/*
 			Stage stg = new Stage(MainClass.StageOperationFactory, 
 				MainClass.StageOperationParametersFactoryFromID,
 				MainClass.ImageLoader);
@@ -595,6 +593,8 @@ public partial class MainWindow : Gtk.Window
 			}
 			
 			MainClass.rq.Add(stg, stages.RawFileName, fn, dest_type);
+			*/
+			MainClass.AddToQueue(stages, stages.RawFileName, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			

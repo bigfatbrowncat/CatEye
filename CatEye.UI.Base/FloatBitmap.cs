@@ -321,9 +321,9 @@ namespace CatEye.UI.Base
 					                         g_chan[i, j] * g_chan[i, j] +
 					                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 					
-					r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
-					g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
-					b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / (light + dark_preserving), power));
+					r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
+					g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
+					b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
 		
 				}
 			}
@@ -416,10 +416,6 @@ namespace CatEye.UI.Base
 							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
 							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
 			
-							if (r_chan[i_back, j] > maxlight) r_chan[i_back, j] = (float)maxlight;
-							if (g_chan[i_back, j] > maxlight) g_chan[i_back, j] = (float)maxlight;
-							if (b_chan[i_back, j] > maxlight) b_chan[i_back, j] = (float)maxlight;
-							
 						}
 					}
 				}

@@ -140,7 +140,13 @@ namespace CatEye.UI.Base
 		{
 			LoadStage(filename, true);
 		}
-
+		
+		public override void SaveStage(string filename)
+		{
+			base.SaveStage(filename);
+			StageFileName = filename;
+		}
+		
 		public void LoadStage(string filename, bool setStageFilename)
 		{
 			try

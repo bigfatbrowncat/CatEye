@@ -35,8 +35,6 @@ namespace CatEye.UI.Base
 	
 	public class RenderingQueue
 	{
-		private int prescale = 3;
-		
 		private List<RenderingTask> mQueue;
 		private RenderingTask mInProgress = null;
 		private Thread mWorkingThread = null;
@@ -218,7 +216,7 @@ namespace CatEye.UI.Base
 					
 					OnBeforeItemProcessingStarted(mInProgress);
 					
-					mInProgress.Stage.LoadImage(mInProgress.Source, prescale);
+					mInProgress.Stage.LoadImage(mInProgress.Source, PPMLoader.PreScale);
 					mInProgress.Stage.Process();
 					OnItemRendering(mInProgress);
 					
