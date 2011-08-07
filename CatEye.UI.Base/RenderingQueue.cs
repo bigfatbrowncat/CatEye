@@ -216,7 +216,7 @@ namespace CatEye.UI.Base
 					
 					OnBeforeItemProcessingStarted(mInProgress);
 					
-					mInProgress.Stage.LoadImage(mInProgress.Source, PPMLoader.PreScale);
+					mInProgress.Stage.LoadImage(mInProgress.Source, Stage.PreScale);
 					mInProgress.Stage.Process();
 					OnItemRendering(mInProgress);
 					

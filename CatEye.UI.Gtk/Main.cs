@@ -223,7 +223,7 @@ namespace CatEye
 									if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
 									ask_raw.Destroy();
 									
-									if (yes) stage.LoadImage(raw_file, PPMLoader.PreScale);
+									if (yes) stage.LoadImage(raw_file, Stage.PreScale);
 								}
 							}
 							else if (is_raw)

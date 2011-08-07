@@ -39,7 +39,7 @@ namespace CatEye.Core
 	
 	public class Stage
 	{
-		public int PreScale = 1;  // TODO: option
+		public static int PreScale = 1;  // TODO: option
 		
 		private bool mCancelLoadingPending = false;
 		private bool mCancelProcessingPending = false;
@@ -437,6 +437,13 @@ namespace CatEye.Core
 						Console.WriteLine("Loading raw from " + filename);
 #endif								
 						return LoadRaw(ms, downscale_by);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Exception occured during loading process: " + ex.Message);
+						
+						Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
+						return null;
 					}
 					finally
 					{

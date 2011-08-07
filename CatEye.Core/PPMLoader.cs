@@ -5,8 +5,6 @@ namespace CatEye.Core
 {
 	public class PPMLoader
 	{
-		public static int PreScale = 4;	// TODO: option
-		
         private PixelMapHeader header;
         /// <summary>
         /// The header portion of the PixelMap.
