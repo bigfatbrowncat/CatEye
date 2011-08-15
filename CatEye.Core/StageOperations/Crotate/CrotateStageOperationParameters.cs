@@ -243,6 +243,7 @@ namespace CatEye.Core
 			t.mCenter = mCenter;
 			t.mCropWidth = mCropWidth;
 			t.mCropHeight = mCropHeight;
+			t.mMode = mMode;
 			t.OnChanged();
 		}
 		
