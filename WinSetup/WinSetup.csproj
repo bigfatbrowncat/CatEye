@@ -177,6 +177,18 @@
     </None>
     <None Include="DotNet.nsh" />
     <None Include="gtk-embedded\jpeg62.dll" />
+    <None Include="licenses\license_cateye_en_US.txt">
+      <Visible>False</Visible>
+    </None>
+    <None Include="licenses\license_cateye_ru_RU.txt">
+      <Visible>False</Visible>
+    </None>
+    <None Include="messages\Messages_en_US.nsh">
+      <Visible>False</Visible>
+    </None>
+    <None Include="messages\Messages_ru_RU.nsh">
+      <Visible>False</Visible>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
