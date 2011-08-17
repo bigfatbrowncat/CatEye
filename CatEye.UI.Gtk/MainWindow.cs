@@ -599,8 +599,9 @@ public partial class MainWindow : Gtk.Window
 				
 			}
 			
-			RemotingObject.AssureQueueServiceIsRunning();
-			RemotingObject.rob.AddToQueue(stages, stages.RawFileName, fn, dest_type);
+			//RemotingObject.AssureQueueServiceIsRunning();
+			RemotingObject.RunQueueServiceOrConnectToIt();
+			RemotingObject.rob.AddToQueue(stages.SaveStageToString(), stages.RawFileName, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			
@@ -643,12 +644,14 @@ public partial class MainWindow : Gtk.Window
 	
 	protected void OnRenderingQueueActionToggled (object sender, System.EventArgs e)
 	{
+		//RemotingObject.AssureQueueServiceIsRunning();
+		RemotingObject.RunQueueServiceOrConnectToIt();
 		RemotingObject.rob.rqwin.Visible = RenderingQueueAction.Active;
 	}
 
 	protected void OnViewActionActivated (object sender, System.EventArgs e)
 	{
-		if (RemotingObject.rob.rq.IsProcessing)
+		if (RemotingObject.rob != null && RemotingObject.rob.rq.IsProcessing)
 		{
 			RenderingQueueAction.Visible = true;
 			RenderingQueueAction.Active = RemotingObject.rob.rqwin.Visible;

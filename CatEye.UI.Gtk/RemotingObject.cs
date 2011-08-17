@@ -27,16 +27,13 @@ namespace CatEye.UI.Gtk
 			rqwin.Visible = true;
 			
 		}
-		public void AddToQueue(Stage stage, string src, string dest, string dest_type)
+		public void AddToQueue(string stage_data, string src, string dest, string dest_type)
 		{
 			Stage stg = new Stage(MainClass.StageOperationFactory, 
 				MainClass.StageOperationParametersFactoryFromID,
 				MainClass.ImageLoader);
 			
-			for (int i = 0; i < stage.StageQueue.Length; i++)
-			{
-				stg.Add((StageOperationParameters)stage.StageQueue[i].Clone());
-			}
+			stg.LoadStageFromString(stage_data);
 			
 			rq.Add(stg, src, dest, dest_type);
 		}
@@ -69,24 +66,10 @@ namespace CatEye.UI.Gtk
 		/// <summary>
 		/// Assures that the queue service is running.
 		/// </summary> 
-		public static void AssureQueueServiceIsRunning()
+		public static void ConnectToServer()
 		{
 			if (rob != null) return;
-			
-			System.Threading.Thread thr = new System.Threading.Thread(delegate () {
-				// Running queue server
-				AppDomain newDomain = AppDomain.CreateDomain("new_domain");
-				
-				newDomain.ExecuteAssembly(
-					System.Reflection.Assembly.GetEntryAssembly().CodeBase, 
-					AppDomain.CurrentDomain.Evidence,
-					new string[] { "--queue" } 
-				);
-			});
-			thr.Start();
-			
-			System.Threading.Thread.Sleep(1000);	// TODO This is a dirty hack to assure the assemply is loaded! Change it to something reasonable.
-			
+
 			IpcClientChannel icc = new IpcClientChannel();
 			ChannelServices.RegisterChannel(icc, false);
 			string objectUrl = "ipc://" + ChannelPort + "/" + RemotingObject.URI;
@@ -134,6 +117,7 @@ namespace CatEye.UI.Gtk
 			
 			if (server_is_running)
 			{
+				/*
 				IpcClientChannel icc = new IpcClientChannel();
 				ChannelServices.RegisterChannel(icc, false);
 				string objectUrl = "ipc://" + ChannelPort + "/" + RemotingObject.URI;
@@ -150,7 +134,7 @@ namespace CatEye.UI.Gtk
 				{
 					Console.WriteLine("Can't connect to the server.");
 					
-				}
+				}*/
 			}
 			
 			else
@@ -174,6 +158,8 @@ namespace CatEye.UI.Gtk
 				}
 				
 			}
+			
+			ConnectToServer();
 			
 			return !server_is_running;
 		}

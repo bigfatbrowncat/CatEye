@@ -98,6 +98,14 @@ namespace CatEye.Core
 
 			DeserializeFromXML(xdoc.ChildNodes[1]);
 		}
+
+		public virtual void LoadStageFromString(string data)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.InnerXml = data;
+
+			DeserializeFromXML(xdoc.ChildNodes[1]);
+		}
 		
 		public virtual void SaveStage(string filename)
 		{
@@ -105,6 +113,17 @@ namespace CatEye.Core
 			xdoc.AppendChild(xdoc.CreateXmlDeclaration("1.0", null, null));
 			xdoc.AppendChild(SerializeToXML(xdoc));
 			xdoc.Save(filename);
+		}
+		
+		public virtual string SaveStageToString()
+		{
+			XmlDocument xdoc = new XmlDocument();
+			xdoc.AppendChild(xdoc.CreateXmlDeclaration("1.0", null, null));
+			xdoc.AppendChild(SerializeToXML(xdoc));
+#if DEBUG
+			Console.WriteLine("Saved stage code: " + xdoc.InnerXml);
+#endif
+			return xdoc.InnerXml;
 		}
 		
 		public void CancelProcessing()

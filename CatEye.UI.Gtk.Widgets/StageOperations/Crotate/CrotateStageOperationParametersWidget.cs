@@ -67,7 +67,7 @@ namespace CatEye.UI.Gtk.Widgets
 			if (mDragState != DragState.Center)
 			{
 				StartChangingParameters();
-				((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
+				((CrotateStageOperationParameters)Parameters).Center.X = c_x_spinbutton.Value;
 				EndChangingParameters();
 				OnUserModified();
 			}
@@ -78,7 +78,7 @@ namespace CatEye.UI.Gtk.Widgets
 			if (mDragState != DragState.Center)
 			{
 				StartChangingParameters();
-				((CrotateStageOperationParameters)Parameters).Center = new Point(c_x_spinbutton.Value, c_y_spinbutton.Value);
+				((CrotateStageOperationParameters)Parameters).Center.Y = c_y_spinbutton.Value;
 				EndChangingParameters();
 				OnUserModified();
 			}
@@ -179,6 +179,7 @@ namespace CatEye.UI.Gtk.Widgets
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			angle_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).Angle;
+			
 			c_x_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).Center.X;
 			c_y_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).Center.Y;
 			crop_w_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).CropWidth;
