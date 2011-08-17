@@ -291,7 +291,7 @@ public partial class MainWindow : Gtk.Window
 		if (stages.TheUIState != UIState.Idle)
 		{
 			stages.CancelAll();
-			MainClass.rq.CancelAll();
+			//MainClass.rob.rq.CancelAll();
 		}
 		//Main.Quit();
 		//Application.Quit ();
@@ -387,7 +387,7 @@ public partial class MainWindow : Gtk.Window
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
 		stages.CancelAll();
-		MainClass.rq.CancelAll();
+		//MainClass.rq.CancelAll();
 		Destroy();
 		MainClass.Quit();
 	}
@@ -594,7 +594,13 @@ public partial class MainWindow : Gtk.Window
 			
 			MainClass.rq.Add(stg, stages.RawFileName, fn, dest_type);
 			*/
-			MainClass.AddToQueue(stages, stages.RawFileName, fn, dest_type);
+			if (RemotingObject.rob == null)
+			{
+				
+			}
+			
+			RemotingObject.AssureQueueServiceIsRunning();
+			RemotingObject.rob.AddToQueue(stages, stages.RawFileName, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			
@@ -637,15 +643,15 @@ public partial class MainWindow : Gtk.Window
 	
 	protected void OnRenderingQueueActionToggled (object sender, System.EventArgs e)
 	{
-		MainClass.rqwin.Visible = RenderingQueueAction.Active;
+		RemotingObject.rob.rqwin.Visible = RenderingQueueAction.Active;
 	}
 
 	protected void OnViewActionActivated (object sender, System.EventArgs e)
 	{
-		if (MainClass.rq.IsProcessing)
+		if (RemotingObject.rob.rq.IsProcessing)
 		{
 			RenderingQueueAction.Visible = true;
-			RenderingQueueAction.Active = MainClass.rqwin.Visible;
+			RenderingQueueAction.Active = RemotingObject.rob.rqwin.Visible;
 		}
 		else
 		{
