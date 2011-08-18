@@ -27,15 +27,15 @@ namespace CatEye.UI.Gtk
 			rqwin.Visible = true;
 			
 		}
-		public void AddToQueue(string stage_data, string src, string dest, string dest_type)
+		public void AddToQueue(string stage_data, string src, int prescale, string dest, string dest_type)
 		{
 			Stage stg = new Stage(MainClass.StageOperationFactory, 
 				MainClass.StageOperationParametersFactoryFromID,
-				MainClass.ImageLoader);
+				MainClass.FloatBitmapGtkFactory);
 			
 			stg.LoadStageFromString(stage_data);
 			
-			rq.Add(stg, src, dest, dest_type);
+			rq.Add(stg, src, prescale, dest, dest_type);
 		}
 		
 		void HandleRqItemRendering (object sender, RenderingTaskEventArgs e)

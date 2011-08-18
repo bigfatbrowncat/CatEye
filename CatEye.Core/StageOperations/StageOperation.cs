@@ -3,29 +3,6 @@ using CatEye.Core;
 
 namespace CatEye
 {
-	public class DoStageOperationEventArgs : EventArgs
-	{
-		IBitmapCore _hdp;
-		public IBitmapCore HDP { get { return _hdp; } }
-		public DoStageOperationEventArgs(IBitmapCore hdp) { _hdp = hdp; }
-	}
-	
-	public class ReportStageOperationProgressEventArgs : EventArgs
-	{
-		private double _Progress;
-		private bool _Cancel = false;
-		public double Progress { get { return _Progress; } }
-		public bool Cancel 
-		{ 
-			get { return _Cancel; }
-			set { _Cancel = value; }
-		}
-		public ReportStageOperationProgressEventArgs(double progress)
-		{
-			_Progress = progress;
-		}
-	}
-	
 	public class StageOperationDescriptionAttribute : Attribute
 	{
 		private string _Name;

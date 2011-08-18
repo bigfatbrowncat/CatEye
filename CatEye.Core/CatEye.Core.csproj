@@ -105,11 +105,12 @@
     <Compile Include="IStageOperationHolder.cs" />
     <Compile Include="IStageOperationParametersEditor.cs" />
     <Compile Include="IBitmapCore.cs" />
-    <Compile Include="ProgressReporter.cs" />
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
     <Compile Include="DCRawConnection.cs" />
     <Compile Include="PPMLoader.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="EventArgsTypes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

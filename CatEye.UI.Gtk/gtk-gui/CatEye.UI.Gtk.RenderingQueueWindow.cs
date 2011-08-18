@@ -66,7 +66,6 @@ namespace CatEye.UI.Gtk
 			this.destination_label = new global::Gtk.Label ();
 			this.destination_label.Name = "destination_label";
 			this.destination_label.Xalign = 0F;
-			this.destination_label.LabelProp = global::Mono.Unix.Catalog.GetString ("destination");
 			this.table1.Add (this.destination_label);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.destination_label]));
 			w1.TopAttach = ((uint)(1));
@@ -98,7 +97,6 @@ namespace CatEye.UI.Gtk
 			this.source_label = new global::Gtk.Label ();
 			this.source_label.Name = "source_label";
 			this.source_label.Xalign = 0F;
-			this.source_label.LabelProp = global::Mono.Unix.Catalog.GetString ("source");
 			this.table1.Add (this.source_label);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.source_label]));
 			w4.LeftAttach = ((uint)(1));

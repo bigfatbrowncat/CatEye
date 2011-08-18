@@ -53,9 +53,6 @@ namespace CatEye
 		}
 	}
 	
-	public delegate StageOperation StageOperationFactory(StageOperationParameters parameters);
-	public delegate StageOperationParameters StageOperationParametersFactoryFromID(string id);
-	
 	[StageOperationID("StageOperation")]
 	public class StageOperationParameters : ICloneable
 	{

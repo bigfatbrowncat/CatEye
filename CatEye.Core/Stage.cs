@@ -1,58 +1,27 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CatEye.Core
 {
-	public delegate IBitmapCore ImageLoader(PPMLoader ppl, ProgressReporter callback);
-	public class StageOperationParametersEventArgs : EventArgs
-	{
-		StageOperationParameters _Target;
-		public StageOperationParameters Target { get { return _Target; } }
-		public StageOperationParametersEventArgs(StageOperationParameters target)
-		{
-			_Target = target;
-		}
-	}
-	public class ReportStageProgressMessageEventArgs : EventArgs
-	{
-		private bool mShowProgressBar;
-		private double mProgress;
-		private string mStatus;
-		private bool mUpdate;
-		
-		public bool ShowProgressBar { get { return mShowProgressBar; } }
-		public double Progress { get { return mProgress; } }
-		public string Status { get { return mStatus; } }
-		public bool Update { get { return mUpdate; } }		
-		
-		public ReportStageProgressMessageEventArgs(bool showProgressBar, double progress, string status, bool update)
-		{
-			mShowProgressBar = showProgressBar;
-			mProgress = progress;
-			mStatus = status;
-			mUpdate = update;
-		}
-	}
-	
-	//public delegate void ProgressMessageReporter(bool showProgressBar, double progress, string status, bool update);
-	
 	public class Stage
 	{
-		public static int PreScale = 1;  // TODO: option
+		//public static int PreScale = 1;  // TODO: option
 		
+#region Private data
 		private bool mCancelLoadingPending = false;
 		private bool mCancelProcessingPending = false;
-		private ImageLoader mImageLoader;
 		private IBitmapCore mSourceImage = null;
 		private IBitmapCore mCurrentImage = null;
-		
-		protected StageOperationFactory _StageOperationFactory;
-		protected StageOperationParametersFactoryFromID _StageOperationParametersFactoryFromID;
-		protected List<StageOperationParameters> _StageQueue;
-		
-		public StageOperationParameters[] StageQueue { get { return _StageQueue.ToArray(); } }
-		
+		private List<StageOperationParameters> mStageQueue;
+#endregion
+#region Factory functions
+		private BitmapCoreFactory mBitmapCoreFactory;
+		private StageOperationFactory mStageOperationFactory;
+		private StageOperationParametersFactory mStageOperationParametersFactory;
+#endregion
+#region Events
 		public event EventHandler<ReportStageProgressMessageEventArgs> ProgressMessageReport;
 		public event EventHandler<StageOperationParametersEventArgs> ItemRemoved;
 		public event EventHandler<StageOperationParametersEventArgs> ItemAdded;
@@ -61,7 +30,62 @@ namespace CatEye.Core
 		public event EventHandler<EventArgs> ImageLoadingCompleted;
 		public event EventHandler<EventArgs> ImageLoadingCancelled;
 		public event EventHandler<EventArgs> ImageUpdatingCompleted;
+#endregion
+#region Protected factory methods
+		protected StageOperation CallStageOperationFactory(StageOperationParameters parameters)
+		{
+			return mStageOperationFactory(parameters);
+		}
+		protected StageOperationParameters CallStageOperationParametersFactory(string id)
+		{
+			return mStageOperationParametersFactory(id);
+		}
+#endregion
+#region Protected event callers
+		protected virtual void OnProgressMessageReport(bool showProgressBar, double progress, string status, bool update)
+		{
+			if (ProgressMessageReport != null)
+			{
+				ReportStageProgressMessageEventArgs ea = new ReportStageProgressMessageEventArgs(showProgressBar, 
+					progress, status, update);
+				ProgressMessageReport(this, ea);
+			}
+		}
 		
+		protected virtual void OnItemAdded(StageOperationParameters item)
+		{
+			if (ItemAdded != null) 
+				ItemAdded(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnItemRemoved(StageOperationParameters item)
+		{
+			if (ItemRemoved != null) 
+				ItemRemoved(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnItemIndexChanged(StageOperationParameters item)
+		{
+			if (ItemIndexChanged != null)
+				ItemIndexChanged(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnItemChanged(StageOperationParameters item)
+		{
+			if (ItemChanged != null)
+				ItemChanged(this, new StageOperationParametersEventArgs(item));
+		}
+		protected virtual void OnImageUpdatingCompleted()
+		{
+			if (ImageUpdatingCompleted != null)
+				ImageUpdatingCompleted(this, EventArgs.Empty);
+		}		
+#endregion
+#region Public properties
+		public ReadOnlyCollection<StageOperationParameters> StageQueue 
+		{ 
+			get 
+			{ 
+				return mStageQueue.AsReadOnly(); 
+			}
+		}
 		public virtual IBitmapCore SourceImage
 		{
 			get { return mSourceImage; }
@@ -79,6 +103,16 @@ namespace CatEye.Core
 				mCurrentImage = value;
 			}
 		}
+		public StageOperationFactory StageOperationFactory
+		{
+			get { return mStageOperationFactory; }
+			set { mStageOperationFactory = value; }
+		}
+		public StageOperationParametersFactory StageOperationParametersFactory
+		{
+			get { return mStageOperationParametersFactory; }
+			set { mStageOperationParametersFactory = value; }
+		}
 		
 		public bool CancelProcessingPending
 		{
@@ -90,6 +124,7 @@ namespace CatEye.Core
 		{
 			get { return mCancelLoadingPending; }
 		}
+#endregion
 
 		public virtual void LoadStage(string filename)
 		{
@@ -139,7 +174,7 @@ namespace CatEye.Core
 
 		public int IndexOf(StageOperationParameters so)
 		{
-			return _StageQueue.IndexOf(so);
+			return mStageQueue.IndexOf(so);
 		}
 		
 		public void Process()
@@ -162,12 +197,12 @@ namespace CatEye.Core
 					List<double> efforts = new List<double>();
 					double full_efforts = 0;
 
-					for (int i = 0; i < _StageQueue.Count; i++)
+					for (int i = 0; i < mStageQueue.Count; i++)
 					{
 						// Don't add inactives
-						if (_StageQueue[i].Active == false) continue;
+						if (mStageQueue[i].Active == false) continue;
 						
-						StageOperation newOperation = _StageOperationFactory(_StageQueue[i]);
+						StageOperation newOperation = CallStageOperationFactory(mStageQueue[i]);
 						operationsToApply.Add(newOperation);
 						efforts.Add(newOperation.CalculateEfforts(mCurrentImage));
 						full_efforts += efforts[efforts.Count - 1];
@@ -232,127 +267,72 @@ namespace CatEye.Core
 		}
 
 		public Stage(StageOperationFactory stageOperationFactory, 
-			StageOperationParametersFactoryFromID stageOperationParametersFactoryFromID,
-			ImageLoader imageLoader)
+			StageOperationParametersFactory stageOperationParametersFactory,
+			BitmapCoreFactory bitmapCoreFactory)
 		{
-			_StageQueue = new List<StageOperationParameters>();
-			_StageOperationFactory = stageOperationFactory;
-			_StageOperationParametersFactoryFromID = stageOperationParametersFactoryFromID;
-			mImageLoader = imageLoader;
+			mStageQueue = new List<StageOperationParameters>();
+			mStageOperationFactory = stageOperationFactory;
+			mStageOperationParametersFactory = stageOperationParametersFactory;
+			mBitmapCoreFactory = bitmapCoreFactory;
 		}
 		
-		protected virtual void OnProgressMessageReport(bool showProgressBar, double progress, string status, bool update)
+		public Stage(BitmapCoreFactory bitmapCoreFactory)
 		{
-			if (ProgressMessageReport != null)
-			{
-				ReportStageProgressMessageEventArgs ea = new ReportStageProgressMessageEventArgs(showProgressBar, 
-					progress, status, update);
-				ProgressMessageReport(this, ea);
-			}
+			mBitmapCoreFactory = bitmapCoreFactory;
 		}
 		
-		protected virtual void OnItemAdded(StageOperationParameters item)
+		public Stage()
 		{
-			if (ItemAdded != null) 
-				ItemAdded(this, new StageOperationParametersEventArgs(item));
-		}
-		protected virtual void OnItemRemoved(StageOperationParameters item)
-		{
-			if (ItemRemoved != null) 
-				ItemRemoved(this, new StageOperationParametersEventArgs(item));
-		}
-		protected virtual void OnItemIndexChanged(StageOperationParameters item)
-		{
-			if (ItemIndexChanged != null)
-				ItemIndexChanged(this, new StageOperationParametersEventArgs(item));
-		}
-		protected virtual void OnItemChanged(StageOperationParameters item)
-		{
-			if (ItemChanged != null)
-				ItemChanged(this, new StageOperationParametersEventArgs(item));
-		}
-		protected virtual void OnImageUpdatingCompleted()
-		{
-			if (ImageUpdatingCompleted != null)
-				ImageUpdatingCompleted(this, EventArgs.Empty);
 		}
 		
-		/*
-		public void ApplyAllOperations(IBitmapCore hdp)
-		{
-			for (int j = 0; j < _StageQueue.Count; j++)
-			{
-				if (_StageQueue[j].Active)
-				{
-					StageOperation so = _StageOperationFactory(_StageQueue[j]);
-					so.OnDo(hdp);
-				}
-			}
-		}
-		
-		public double CalculateAllEfforts(IBitmapCore hdp)
-		{
-			double res = 0;
-			for (int j = 0; j < _StageQueue.Count; j++)
-			{
-				if (_StageQueue[j].Active)
-				{
-					StageOperation so = _StageOperationFactory(_StageQueue[j]);
-					res += so.CalculateEfforts(hdp);
-				}
-			}
-			return res;
-		}
-		*/
-
 		public void Add(StageOperationParameters newItem)
 		{
-			_StageQueue.Add(newItem);
+			mStageQueue.Add(newItem);
 			newItem.Changed += HandleItemChanged;
 			OnItemAdded(newItem);
 		}
 
 		public void Remove(StageOperationParameters item)
 		{
-			_StageQueue.Remove(item);
+			mStageQueue.Remove(item);
 			item.Changed -= HandleItemChanged;
 			OnItemRemoved(item);
 		}
 
 		public void StepDown(StageOperationParameters item)
 		{
-			int index = _StageQueue.IndexOf(item);
-			if (index < _StageQueue.Count - 1)
+			int index = mStageQueue.IndexOf(item);
+			if (index < mStageQueue.Count - 1)
 			{
-				_StageQueue.Remove(item);
-				_StageQueue.Insert(index + 1, item);
+				mStageQueue.Remove(item);
+				mStageQueue.Insert(index + 1, item);
 				OnItemIndexChanged(item);
 			}
 		}
 
 		public void StepUp(StageOperationParameters item)
 		{
-			int index = _StageQueue.IndexOf(item);
+			int index = mStageQueue.IndexOf(item);
 			if (index > 0)
 			{
-				_StageQueue.Remove(item);
-				_StageQueue.Insert(index - 1, item);
+				mStageQueue.Remove(item);
+				mStageQueue.Insert(index - 1, item);
 				OnItemIndexChanged(item);
 			}
 		}
 		
 		public void Clear()
 		{
-			while (_StageQueue.Count > 0)
-				Remove(_StageQueue[0]);
+			while (mStageQueue.Count > 0)
+				Remove(mStageQueue[0]);
 		}
 		
 		public XmlNode SerializeToXML(XmlDocument xdoc)
 		{
 			XmlNode xn = xdoc.CreateElement("Stage");
-			for (int i = 0; i < _StageQueue.Count; i++)
+			for (int i = 0; i < mStageQueue.Count; i++)
 			{
-				XmlNode ch = _StageQueue[i].SerializeToXML(xdoc);
+				XmlNode ch = mStageQueue[i].SerializeToXML(xdoc);
 				xn.AppendChild(ch);
 			}
 			return xn;
@@ -377,7 +357,7 @@ namespace CatEye.Core
 					if (ch.Attributes["ID"] == null)
 						throw new IncorrectNodeException("StageOperationParameters node doesn't contain ID");
 					
-					StageOperationParameters sop = _StageOperationParametersFactoryFromID(ch.Attributes["ID"].Value);
+					StageOperationParameters sop = CallStageOperationParametersFactory(ch.Attributes["ID"].Value);
 					 
 					// Deserializing stage operation parameters
 					sop.DeserializeFromXML(ch);
@@ -522,7 +502,7 @@ namespace CatEye.Core
 					}
 				}
 				
-				return mImageLoader(ppl, 
+				return mBitmapCoreFactory(ppl, 
 					delegate (double progress) {
 						OnProgressMessageReport(true, 0.666 + progress / 3, "3 of 3: Converting to editable format...", false);
 						return !mCancelLoadingPending;

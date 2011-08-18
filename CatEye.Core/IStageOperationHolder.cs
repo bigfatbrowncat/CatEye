@@ -2,8 +2,6 @@ using System;
 
 namespace CatEye.Core
 {
-	public delegate IStageOperationHolder StageOperationHolderFactory(IStageOperationParametersEditor editor);
-	
 	public interface IStageOperationHolder
 	{
 		// Editing mode	is active/passive

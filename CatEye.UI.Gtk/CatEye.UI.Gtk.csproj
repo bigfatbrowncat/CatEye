@@ -24,6 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
+    <Commandlineparameters>/media/7A17-6E8D/IMG_0159.cestage</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -69,8 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MainWindow.cs" />
-    <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="RawImportDialog.cs" />
@@ -81,6 +80,11 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.RenderingQueueWindow.cs" />
     <Compile Include="RemotingObject.cs" />
     <Compile Include="RemoteControlService.cs" />
+    <Compile Include="EventArgsTypes.cs" />
+    <Compile Include="StageEditorWindow.cs" />
+    <Compile Include="gtk-gui\StageEditorWindow.cs" />
+    <Compile Include="AskToOpenRawDialog.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.AskToOpenRawDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

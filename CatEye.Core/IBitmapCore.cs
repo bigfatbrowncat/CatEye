@@ -2,8 +2,6 @@ using System;
 
 namespace CatEye.Core
 {
-	public delegate IBitmapCore BitmapCoreFactory();
-	
 	public interface IBitmapCore : ICloneable
 	{
 		int Width { get; }

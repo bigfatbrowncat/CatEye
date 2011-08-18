@@ -55,7 +55,7 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public int PreScale
+		public int Prescale
 		{
 			get { return _PreScale; }
 			protected set 
@@ -126,9 +126,9 @@ namespace CatEye.UI.Base
 			{
 				if (value != _EditingOperation)
 				{
-					for (int i = _StageQueue.Count - 1; i >= 0; i--)
+					for (int i = StageQueue.Count - 1; i >= 0; i--)
 					{
-						_Holders[_StageQueue[i]].Edit = (_StageQueue[i] == value);
+						_Holders[StageQueue[i]].Edit = (StageQueue[i] == value);
 					}
 					_EditingOperation = value;
 					OnEditingOperationChanged();
@@ -203,16 +203,16 @@ namespace CatEye.UI.Base
 
 					int start_index = 0;
 					if (FrozenAt != null && mFrozenImage != null)
-						start_index = _StageQueue.IndexOf(FrozenAt) + 1;
+						start_index = StageQueue.IndexOf(FrozenAt) + 1;
 					
-					for (int i = start_index; i < _StageQueue.Count; i++)
+					for (int i = start_index; i < StageQueue.Count; i++)
 					{
-						if (_StageQueue[i] != _EditingOperation) 
+						if (StageQueue[i] != _EditingOperation) 
 						{
 							// Don't add inactives
-							if (_StageQueue[i].Active == false) continue;
+							if (StageQueue[i].Active == false) continue;
 							
-							StageOperation newOperation = _StageOperationFactory(_StageQueue[i]);
+							StageOperation newOperation = CallStageOperationFactory(StageQueue[i]);
 							operationsToApply.Add(newOperation);
 							efforts.Add(newOperation.CalculateEfforts(CurrentImage));
 							full_efforts += efforts[efforts.Count - 1];
@@ -288,11 +288,11 @@ namespace CatEye.UI.Base
 				_FrozenAt = value;
 				if (value == null)
 				{
-					for (int i = 0; i < _StageQueue.Count; i++)
+					for (int i = 0; i < StageQueue.Count; i++)
 					{
-						_Holders[_StageQueue[i]].Sensitive = true;
-						_Holders[_StageQueue[i]].Freeze = false;
-						_Holders[_StageQueue[i]].FrozenButtonsState = false;
+						_Holders[StageQueue[i]].Sensitive = true;
+						_Holders[StageQueue[i]].Freeze = false;
+						_Holders[StageQueue[i]].FrozenButtonsState = false;
 					}
 					OnOperationDefrozen();
 				}
@@ -300,26 +300,26 @@ namespace CatEye.UI.Base
 				{
 					bool frozenfound = false;
 					bool viewedfound = false;
-					for (int i = 0; i < _StageQueue.Count; i++)
+					for (int i = 0; i < StageQueue.Count; i++)
 					{
-						_Holders[_StageQueue[i]].Sensitive = frozenfound;
-						if (_EditingOperation == _StageQueue[i]) viewedfound = true;
+						_Holders[StageQueue[i]].Sensitive = frozenfound;
+						if (_EditingOperation == StageQueue[i]) viewedfound = true;
 						
-						if (_StageQueue[i] == value) 
+						if (StageQueue[i] == value) 
 						{
 							frozenfound = true;
 							if (viewedfound)
 							{
 								EditingOperation = null;
 							}
-							_Holders[_StageQueue[i]].Freeze = true;
+							_Holders[StageQueue[i]].Freeze = true;
 							
 							OnOperationFrozen();
 						}
 						else
 						{
-							_Holders[_StageQueue[i]].Freeze = false;
-							_Holders[_StageQueue[i]].FrozenButtonsState = true;
+							_Holders[StageQueue[i]].Freeze = false;
+							_Holders[StageQueue[i]].FrozenButtonsState = true;
 						}
 					}
 					if (!frozenfound)
@@ -330,7 +330,7 @@ namespace CatEye.UI.Base
 		
 		public void ReportImageChanged(int image_width, int image_height)
 		{
-			foreach (StageOperationParameters sop in _StageQueue)
+			foreach (StageOperationParameters sop in StageQueue)
 			{
 				_Holders[sop].StageOperationParametersEditor.ReportImageChanged(image_width, image_height);
 			}
@@ -340,17 +340,17 @@ namespace CatEye.UI.Base
 		{
 			// Constructing so-sop-sopw structure
 			string id = StageOperationIDAttribute.GetTypeID(sot);
-			StageOperationParameters sop = _StageOperationParametersFactoryFromID(id);
+			StageOperationParameters sop = CallStageOperationParametersFactory(id);
 			Add(sop);
 			return sop;
 		}
 		
 		
 		public ExtendedStage (StageOperationFactory stageOperationFactory, 
-			StageOperationParametersFactoryFromID stageOperationParametersFactoryFromID,
+			StageOperationParametersFactory stageOperationParametersFactoryFromID,
 			StageOperationParametersEditorFactory SOParametersEditorFactory,
 			StageOperationHolderFactory SOHolderFactory,
-			ImageLoader imageLoader) : base(stageOperationFactory, stageOperationParametersFactoryFromID, imageLoader)
+			BitmapCoreFactory imageLoader) : base(stageOperationFactory, stageOperationParametersFactoryFromID, imageLoader)
 		{
 			mSOParametersEditorFactory = SOParametersEditorFactory;
 			mSOHolderFactory = SOHolderFactory;
@@ -546,7 +546,7 @@ namespace CatEye.UI.Base
 			if (res)
 			{
 				RawFileName = filename;
-				PreScale = downscale_by;
+				Prescale = downscale_by;
 			}
 			
 			SetUIState(UIState.Idle);

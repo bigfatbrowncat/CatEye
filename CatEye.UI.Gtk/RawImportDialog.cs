@@ -28,7 +28,7 @@ namespace CatEye
 			filechooserwidget.SetCurrentFolder(folder);
 		}
 		
-		public int PreScale 
+		public int Prescale 
 		{ 
 			get 
 			{
@@ -44,28 +44,6 @@ namespace CatEye
 		{
 			this.Build ();
 
-			// Adding prescale list
-			/*
-			Gtk.ListStore ls = new Gtk.ListStore(typeof(string), typeof(int));
-			ls.AppendValues("No downscaling", 1);
-			ls.AppendValues("Divide by 2", 2);
-			ls.AppendValues("Divide by 3", 3);
-			ls.AppendValues("Divide by 4", 4);
-			ls.AppendValues("Divide by 5", 5);
-			ls.AppendValues("Divide by 6", 6);
-			ls.AppendValues("Divide by 7", 7);
-			ls.AppendValues("Divide by 8", 8);
-			
-			Gtk.ComboBox pres_cb = prescale_combobox;
-			pres_cb.Model = ls;
-			
-			// Selecting "No downscale"
-			TreeIter ti;
-			ls.GetIterFirst(out ti);
-			ls.IterNext(ref ti);
-			pres_cb.SetActiveIter(ti);
-			*/
-			
 			// Filter
 			FileFilter ff = new FileFilter();
 			

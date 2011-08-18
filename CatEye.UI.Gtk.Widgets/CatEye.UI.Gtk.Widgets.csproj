@@ -75,6 +75,7 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.LimitSizeStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.FrozenPanel.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.StageOperationHolderWidget.cs" />
+    <Compile Include="Delegates.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

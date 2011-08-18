@@ -5,31 +5,25 @@ using CatEye.Core;
 
 namespace CatEye.UI.Base
 {
-	public class RenderingTaskEventArgs : EventArgs
-	{
-		RenderingTask _Target;
-		public RenderingTask Target { get { return _Target; } }
-		public RenderingTaskEventArgs(RenderingTask target)
-		{
-			_Target = target;
-		}
-	}
-	
-	public delegate void QueueProgressMessageReporter(string source, string destination, double progress, string status);
-	
 	public class RenderingTask
 	{
 		private Stage mStage;
+		private int mPrescale;
 		private string mSource, mDestination, mFileType;
 		
 		public Stage Stage { get { return mStage; } }
 		public string Source { get { return mSource; } }
 		public string Destination { get { return mDestination; } }
 		public string FileType { get { return mFileType; } }
+		public int Prescale { get { return mPrescale; } } 
 		
-		public RenderingTask(Stage stage, string source, string destination, string fileType)
+		public RenderingTask(Stage stage, string source, int prescale, string destination, string fileType)
 		{
-			mStage = stage; mSource = source; mDestination = destination; mFileType = fileType;
+			mStage = stage; 
+			mPrescale = prescale;
+			mSource = source; 
+			mDestination = destination; 
+			mFileType = fileType;
 		}
 	}
 	
@@ -114,10 +108,10 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public void Add(Stage stage, string source, string destination, string fileType)
+		public void Add(Stage stage, string source, int prescale, string destination, string fileType)
 		{
 			stage.ProgressMessageReport += HandleStageProgressMessageReport;
-			RenderingTask rt = new RenderingTask(stage, source, destination, fileType);
+			RenderingTask rt = new RenderingTask(stage, source, prescale, destination, fileType);
 			mQueue.Add(rt);
 			OnItemAdded(rt);
 			Process();
@@ -149,34 +143,40 @@ namespace CatEye.UI.Base
 		
 		public bool StepDown(RenderingTask item)
 		{
-			int inx = mQueue.IndexOf(item);
-			if (inx < mQueue.Count - 1)
+			lock (item)
 			{
-				RenderingTask next = mQueue[inx + 1];
-				mQueue[inx + 1] = item;
-				mQueue[inx] = next;
-				OnItemIndexChanged(item);
-				OnItemIndexChanged(next);
-				return true;
+				int inx = mQueue.IndexOf(item);
+				if (inx >= 0 && inx < mQueue.Count - 1)
+				{
+					RenderingTask next = mQueue[inx + 1];
+					mQueue[inx + 1] = item;
+					mQueue[inx] = next;
+					OnItemIndexChanged(item);
+					OnItemIndexChanged(next);
+					return true;
+				}
+				else
+					return false;
 			}
-			else
-				return false;
 		}
 
 		public bool StepUp(RenderingTask item)
 		{
-			int inx = mQueue.IndexOf(item);
-			if (inx > 0)
+			lock (item)
 			{
-				RenderingTask prev = mQueue[inx - 1];
-				mQueue[inx - 1] = item;
-				mQueue[inx] = prev;
-				OnItemIndexChanged(item);
-				OnItemIndexChanged(prev);
-				return true;
+				int inx = mQueue.IndexOf(item);
+				if (inx > 0 && inx < mQueue.Count)
+				{
+					RenderingTask prev = mQueue[inx - 1];
+					mQueue[inx - 1] = item;
+					mQueue[inx] = prev;
+					OnItemIndexChanged(item);
+					OnItemIndexChanged(prev);
+					return true;
+				}
+				else
+					return false;
 			}
-			else
-				return false;
 		}
 		
 		public int IndexOf(RenderingTask item)
@@ -188,9 +188,12 @@ namespace CatEye.UI.Base
 		{
 			lock (item)
 			{
-				item.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
-				mQueue.Remove(item);
-				OnItemRemoved(item);
+				if (mQueue.Contains(item))
+				{
+					item.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
+					mQueue.Remove(item);
+					OnItemRemoved(item);
+				}
 			}
 		}
 		
@@ -216,7 +219,7 @@ namespace CatEye.UI.Base
 					
 					OnBeforeItemProcessingStarted(mInProgress);
 					
-					mInProgress.Stage.LoadImage(mInProgress.Source, Stage.PreScale);
+					mInProgress.Stage.LoadImage(mInProgress.Source, mInProgress.Prescale);
 					mInProgress.Stage.Process();
 					OnItemRendering(mInProgress);
 					

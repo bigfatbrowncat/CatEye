@@ -9,23 +9,25 @@ using CatEye.UI.Base;
 using CatEye.UI.Gtk;
 using CatEye.UI.Gtk.Widgets;
 
-public partial class MainWindow : Gtk.Window
+public partial class StageEditorWindow : Gtk.Window
 {
-	private ExtendedStage stages;
-	private DateTime lastupdate;
-	private FrozenPanel _FrozenPanel;
+	private ExtendedStage mStage;
+	private DateTime mLastUpdate;
+	private FrozenPanel mFrozenPanel;
 	private Type[] mStageOperationTypes;
-	
-	private RenderingQueueWindow mRenderingQueueWindow;
 	
 	private void UpdateTitle()
 	{
-		if (stages.RawFileName != null || stages.StageFileName != null)
+		if (mStage.RawFileName != null || mStage.StageFileName != null)
 		{
 			string t = "";
-			if (stages.StageFileName != null) t += System.IO.Path.GetFileName(stages.StageFileName);
-			if (stages.StageFileName != null && stages.RawFileName != null) t += " / ";
-			if (stages.RawFileName != null) t += System.IO.Path.GetFileName(stages.RawFileName);
+			if (mStage.StageFileName != null) t += System.IO.Path.GetFileName(mStage.StageFileName);
+			if (mStage.StageFileName != null && mStage.RawFileName != null) t += " / ";
+			if (mStage.RawFileName != null) 
+			{
+				t += System.IO.Path.GetFileName(mStage.RawFileName);
+				if (mStage.Prescale > 1) t += " [%" + mStage.Prescale + "]";
+			}
 			
 			t += " — " + MainClass.APP_NAME;
 			Title = t;
@@ -35,20 +37,21 @@ public partial class MainWindow : Gtk.Window
 	}
 	
 
-	public MainWindow (ExtendedStage stage, Type[] stageOperationTypes) : base(Gtk.WindowType.Toplevel)
+	public StageEditorWindow (ExtendedStage stage, Type[] stageOperationTypes) : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
 
 		// Creating stage operations and stages
-		stages = stage;
+		mStage = stage;
 		
-		_FrozenPanel = new FrozenPanel();
-		_FrozenPanel.UnfreezeButtonClicked  += delegate {
-			stages.FrozenAt = null;
+		mFrozenPanel = new FrozenPanel();
+		mFrozenPanel.UnfreezeButtonClicked  += delegate {
+			mStage.FrozenAt = null;
 		};
-		stage_vbox.Add(_FrozenPanel);
+		stage_vbox.Add(mFrozenPanel);
 		
 		mStageOperationTypes = stageOperationTypes;
+		
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
 		for (int i = 0; i < mStageOperationTypes.Length; i++)
@@ -58,58 +61,36 @@ public partial class MainWindow : Gtk.Window
 		
 			ls.AppendValues(desc, i);
 		}
-		
 		stageOperationToAdd_combobox.Model = ls;
 		Gtk.TreeIter ti;
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
 		
-		// Setting stages events
+		// Setting stage events
+		mStage.OperationFrozen += HandleStageOperationFrozen;
+		mStage.OperationDefrozen += HandleStageOperationDefrozen;
+		mStage.ImageChanged += HandleStageImageChanged;
+		mStage.ItemAdded += HandleStageOperationAddedToStage;
+		mStage.ItemRemoved += HandleStageOperationRemovedFromStage;
+		mStage.ItemIndexChanged += HandleStageItemIndexChanged;
 		
-		stages.OperationFrozen += delegate {
-			int index = stages.IndexOf(stages.FrozenAt);
-			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Position = index + 1;
-			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Fill = true;
-			((Gtk.Box.BoxChild)stage_vbox[_FrozenPanel]).Expand = false;
-			_FrozenPanel.Show();
+		mStage.UIStateChanged += HandleStageUIStateChanged;
+		mStage.ProgressMessageReport += HandleProgress;
 
-			stageOperationAdding_hbox.Sensitive = false;
-		};
-		stages.OperationDefrozen += delegate {
-			_FrozenPanel.Hide();
-			stageOperationAdding_hbox.Sensitive = true;
-		};
-		stages.ImageChanged += delegate {
-			view_widget.HDR = (FloatBitmapGtk)stages.CurrentImage;
-		};
-		stages.ItemAdded += HandleStagesOperationAddedToStage;
-		stages.ItemRemoved += HandleStagesOperationRemovedFromStage;
-		stages.ItemIndexChanged += delegate {
-			ArrangeVBoxes();
-		};
-		stages.UIStateChanged += HandleStagesUIStateChanged;
-		stages.ProgressMessageReport += HandleProgress;
+		mStage.ImageLoadingCompleted += HandleStageImageLoadingCompleted;
+		mStage.ImageUpdatingCompleted += HandleStageImageUpdatingCompleted;
+		mStage.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
+		
+		mStage.RawFileNameChanged += HandleStageRawFileNameChanged;
+		mStage.StageFileNameChanged += HandleStageStageFileNameChanged;
+		mStage.PreScaleChanged += HandleStagePrescaleChanged;
 
-		stages.ImageLoadingCompleted += HandleStagesImageLoadingCompleted;
-		stages.ImageUpdatingCompleted += HandleStagesImageUpdatingCompleted;
-		stages.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
-		
-		stages.RawFileNameChanged += delegate {
-			UpdateTitle();
-		};
-		stages.StageFileNameChanged += delegate {
-			UpdateTitle();
-		};
-		stages.PreScaleChanged += delegate {
-			UpdateTitle();
-		};
-		
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
 		if (System.IO.File.Exists(defaultstage))
 		{
-			stages.LoadStage(defaultstage, false);
+			mStage.LoadStage(defaultstage, false);
 		}
 		else
 		{
@@ -127,42 +108,87 @@ public partial class MainWindow : Gtk.Window
 		view_widget.MouseButtonStateChanged += HandleView_widgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		stages.ZoomValue = zoomwidget1.Value;
-		zoomwidget1.ValueChanged += delegate {
-			stages.ZoomValue = zoomwidget1.Value;
+		mStage.ZoomValue = zoomWidget.Value;
+		zoomWidget.ValueChanged += delegate {
+			mStage.ZoomValue = zoomWidget.Value;
 		};
+	}
+	void HandleStageItemIndexChanged (object sender, EventArgs e)
+	{
+		ArrangeVBoxes();
+	}
+	void HandleStageRawFileNameChanged (object sender, EventArgs e)
+	{
+		UpdateTitle();
+	}
+	void HandleStageStageFileNameChanged (object sender, EventArgs e)
+	{
+		UpdateTitle();
+	}
+	void HandleStagePrescaleChanged (object sender, EventArgs e)
+	{
+		UpdateTitle();
+	}
+	void HandleStageImageChanged (object sender, EventArgs e)
+	{
+		view_widget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
+	}
+	void HandleStageOperationFrozen (object sender, EventArgs e)
+	{
+		Application.Invoke(delegate {
+			int index = mStage.IndexOf(mStage.FrozenAt);
+			((Gtk.Box.BoxChild)stage_vbox[mFrozenPanel]).Position = index + 1;
+			((Gtk.Box.BoxChild)stage_vbox[mFrozenPanel]).Fill = true;
+			((Gtk.Box.BoxChild)stage_vbox[mFrozenPanel]).Expand = false;
+			mFrozenPanel.Show();
+
+			stageOperationAdding_hbox.Sensitive = false;
+		});
+	}
+	void HandleStageOperationDefrozen (object sender, EventArgs e)
+	{
+		Application.Invoke(delegate {
+			mFrozenPanel.Hide();
+			stageOperationAdding_hbox.Sensitive = true;
+		});
 	}
 
 	void HandleStageImageLoadingCancelled (object sender, EventArgs e)
 	{
-		status_label.Text = "Image loading is cancelled";
+		Application.Invoke(delegate {
+			status_label.Text = "Image loading is cancelled";
+		});
 	}
 
-	void HandleStagesImageUpdatingCompleted (object sender, EventArgs e)
+	void HandleStageImageUpdatingCompleted (object sender, EventArgs e)
 	{
-		status_label.Text = "Image is updated successfully";
-		view_widget.UpdatePicture();
+		Application.Invoke(delegate {
+			status_label.Text = "Image is updated successfully";
+			view_widget.UpdatePicture();
+		});
 	}
 
-	void HandleStagesImageLoadingCompleted (object sender, EventArgs e)
+	void HandleStageImageLoadingCompleted (object sender, EventArgs e)
 	{
-		view_widget.CenterImagePanning();
-		status_label.Text = "Image is loaded successfully";
+		Application.Invoke(delegate {
+			view_widget.CenterImagePanning();
+			status_label.Text = "Image is loaded successfully";
+		});
 	}
 	
 	protected void ArrangeVBoxes()
 	{
 		// Arranging stage 2
-		for (int i = 0; i < stages.StageQueue.Length; i++)
+		for (int i = 0; i < mStage.StageQueue.Count; i++)
 		{
-			StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[stages.StageQueue[i]];
+			StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[mStage.StageQueue[i]];
 			((Gtk.Box.BoxChild)stage_vbox[sohw]).Position = i;
 		}
 	}
 	
-	void HandleStagesOperationAddedToStage (object sender, StageOperationParametersEventArgs e)
+	void HandleStageOperationAddedToStage (object sender, StageOperationParametersEventArgs e)
 	{
-		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Target];
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 
 		stage_vbox.Add(sohw);
 		((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
@@ -173,9 +199,9 @@ public partial class MainWindow : Gtk.Window
 		
 	}
 
-	void HandleStagesOperationRemovedFromStage (object sender, StageOperationParametersEventArgs e)
+	void HandleStageOperationRemovedFromStage (object sender, StageOperationParametersEventArgs e)
 	{
-		StageOperationHolderWidget sohw = (StageOperationHolderWidget)stages.Holders[e.Target];
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 		
 		stage_vbox.Remove(sohw);
 		sohw.Hide();
@@ -185,9 +211,9 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
-	void HandleStagesUIStateChanged (object sender, EventArgs e)
+	void HandleStageUIStateChanged (object sender, EventArgs e)
 	{
-		if (stages.TheUIState == UIState.Idle)
+		if (mStage.TheUIState == UIState.Idle)
 		{
 			loadRawAction.Sensitive = true;
 			loadStageAction.Sensitive = true;
@@ -197,7 +223,7 @@ public partial class MainWindow : Gtk.Window
 			progressbar.Visible = false;
 
 		}
-		else if (stages.TheUIState == UIState.Loading)
+		else if (mStage.TheUIState == UIState.Loading)
 		{
 			loadRawAction.Sensitive = false;
 			loadStageAction.Sensitive = false;
@@ -209,7 +235,7 @@ public partial class MainWindow : Gtk.Window
 			progressbar.Fraction = 0;
 			progressbar.Text = "";
 		}
-		else if (stages.TheUIState == UIState.Processing)
+		else if (mStage.TheUIState == UIState.Processing)
 		{
 			loadRawAction.Sensitive = true;
 			loadStageAction.Sensitive = true;
@@ -227,7 +253,7 @@ public partial class MainWindow : Gtk.Window
 		int x_rel = x - view_widget.CurrentImagePosition.X;
 		int y_rel = y - view_widget.CurrentImagePosition.Y;
 
-		if (stages.ReportEditorMouseButton(x_rel, 
+		if (mStage.ReportEditorMouseButton(x_rel, 
 									 y_rel, 
 									 view_widget.CurrentImagePosition.Width, 
 									 view_widget.CurrentImagePosition.Height, 
@@ -244,7 +270,7 @@ public partial class MainWindow : Gtk.Window
 		int x_rel = x - view_widget.CurrentImagePosition.X;
 		int y_rel = y - view_widget.CurrentImagePosition.Y;
 
-		if (stages.ReportEditorMousePosition(x_rel, 
+		if (mStage.ReportEditorMousePosition(x_rel, 
 									 y_rel, 
 									 view_widget.CurrentImagePosition.Width, 
 									 view_widget.CurrentImagePosition.Height))
@@ -258,7 +284,7 @@ public partial class MainWindow : Gtk.Window
 
 	void DrawCurrentStageOperationEditor (object o, ExposeEventArgs args)
 	{
-		stages.DrawEditor(view_widget);
+		mStage.DrawEditor(view_widget);
 	}
 
 	void HandleProgress(object sender, ReportStageProgressMessageEventArgs ea)
@@ -270,14 +296,14 @@ public partial class MainWindow : Gtk.Window
 		
 		if (ea.Update && UpdateDuringProcessingAction.Active)
 		{
-			if ((DateTime.Now - lastupdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
+			if ((DateTime.Now - mLastUpdate).TotalMilliseconds / view_widget.UpdateTimeSpan.TotalMilliseconds > 10)
 			{
-				if (view_widget.HDR != stages.CurrentImage)
-					view_widget.HDR = (FloatBitmapGtk)stages.CurrentImage;
+				if (view_widget.HDR != mStage.CurrentImage)
+					view_widget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
 				else
 					view_widget.UpdatePicture();
 
-				lastupdate = DateTime.Now;
+				mLastUpdate = DateTime.Now;
 			}
 		}
 		
@@ -288,9 +314,9 @@ public partial class MainWindow : Gtk.Window
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
-		if (stages.TheUIState != UIState.Idle)
+		if (mStage.TheUIState != UIState.Idle)
 		{
-			stages.CancelAll();
+			mStage.CancelAll();
 			//MainClass.rob.rq.CancelAll();
 		}
 		//Main.Quit();
@@ -336,7 +362,7 @@ public partial class MainWindow : Gtk.Window
 	
 	protected void LoadRawImageActionPicked()
 	{
-		if (stages.TheUIState == UIState.Loading)
+		if (mStage.TheUIState == UIState.Loading)
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
@@ -349,8 +375,8 @@ public partial class MainWindow : Gtk.Window
 		{
 			RawImportDialog rid = new RawImportDialog();
 			
-			if (stages.RawFileName != null) rid.Filename = stages.RawFileName;
-			if (stages.PreScale != 0) rid.PreScale = stages.PreScale;
+			if (mStage.RawFileName != null) rid.Filename = mStage.RawFileName;
+			if (mStage.Prescale != 0) rid.Prescale = mStage.Prescale;
 			
 			bool ok = false;
 			string fn = ""; int ps = 1;
@@ -359,13 +385,13 @@ public partial class MainWindow : Gtk.Window
 			{
 				ok = true;
 				fn = rid.Filename;
-				ps = rid.PreScale;
+				ps = rid.Prescale;
 			}
 			rid.Destroy();
 			
 			if (ok)
 			{
-				stages.LoadImage(fn, ps);
+				mStage.LoadImage(fn, ps);
 			}
 		}
 	}
@@ -381,12 +407,12 @@ public partial class MainWindow : Gtk.Window
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
 	{
-		stages.CancelLoading();
+		mStage.CancelLoading();
 	}
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		stages.CancelAll();
+		mStage.CancelAll();
 		//MainClass.rq.CancelAll();
 		Destroy();
 		MainClass.Quit();
@@ -419,8 +445,8 @@ public partial class MainWindow : Gtk.Window
 
 		fcd.AddFilter(ffs[0]);
 		
-		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.RawFileName);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
@@ -428,7 +454,7 @@ public partial class MainWindow : Gtk.Window
 			if (System.IO.Path.GetExtension(fn).ToLower() != ".cestage")
 				fn += ".cestage";
 			
-			stages.SaveStage(fn);
+			mStage.SaveStage(fn);
 		}
 		fcd.Destroy();
 	}
@@ -451,7 +477,7 @@ public partial class MainWindow : Gtk.Window
 		ffs[0].Name = "CatEye Stage file";
 
 		fcd.AddFilter(ffs[0]);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
 		string fn = "";
 		bool ok = false;
@@ -465,7 +491,7 @@ public partial class MainWindow : Gtk.Window
 		{
 			try
 			{
-				stages.LoadStage(fn);
+				mStage.LoadStage(fn);
 			}
 			catch (StageDeserializationException sdex)
 			{
@@ -478,17 +504,22 @@ public partial class MainWindow : Gtk.Window
 				md.Run();
 				md.Destroy();
 			}
+			string raw_filename; int prescale;
+			if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, out prescale))
+			{
+				mStage.LoadImage(raw_filename, prescale);
+			}
 		}
 	}
 	
 	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
 	{
-		if (stages.FrozenAt == null)
+		if (mStage.FrozenAt == null)
 		{
 			Gtk.TreeIter ti;
 			stageOperationToAdd_combobox.GetActiveIter(out ti);
 			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-			stages.CreateAndAddNewItem(mStageOperationTypes[index]);
+			mStage.CreateAndAddNewItem(mStageOperationTypes[index]);
 				
 			stage_vbox.CheckResize();
 		}
@@ -547,8 +578,8 @@ public partial class MainWindow : Gtk.Window
 		string dest_type = "", fn = "";
 		bool accept = false;
 
-		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(stages.RawFileName);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(stages.RawFileName));
+		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
+		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
@@ -601,7 +632,7 @@ public partial class MainWindow : Gtk.Window
 			
 			//RemotingObject.AssureQueueServiceIsRunning();
 			RemotingObject.RunQueueServiceOrConnectToIt();
-			RemotingObject.rob.AddToQueue(stages.SaveStageToString(), stages.RawFileName, fn, dest_type);
+			RemotingObject.rob.AddToQueue(mStage.SaveStageToString(), mStage.RawFileName, mStage.Prescale, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			

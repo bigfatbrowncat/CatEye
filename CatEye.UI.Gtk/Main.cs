@@ -12,9 +12,7 @@ namespace CatEye
 	{
 		public static string APP_NAME = "CatEye";
 
-		public static ExtendedStage stage;
-
-		public static MainWindow win;
+		public static StageEditorWindow win;
 
 		private static bool mQuitFlag = false;
 		private static int mDelayBeforeUpdate = 100;
@@ -100,7 +98,7 @@ namespace CatEye
 			return pwid;
 		}
 		
-		public static IBitmapCore ImageLoader(PPMLoader ppl, ProgressReporter callback)
+		public static IBitmapCore FloatBitmapGtkFactory(PPMLoader ppl, ProgressReporter callback)
 		{
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
@@ -134,6 +132,33 @@ namespace CatEye
 			return res.ToArray();
 		}
 		
+		public static bool FindRawsForCestageAndAskToOpen(string cestage_filename, out string raw_filename, out int prescale)
+		{
+			raw_filename = ""; prescale = 2;
+			// Trying to find a proper RAW file
+			string[] raws = FindRawsForCEStage(cestage_filename);
+			
+			if (raws.Length > 0)
+			{
+				raw_filename = raws[0]; // TODO: support more than one found RAW file
+				
+				AskToOpenRawDialog ask_raw = new AskToOpenRawDialog();
+				ask_raw.Filename = raw_filename;
+				
+				/*Gtk.MessageDialog ask_raw = new Gtk.MessageDialog(win, DialogFlags.Modal,
+				                                             MessageType.Question, ButtonsType.YesNo, 
+				                                             "The raw file \"{0}\" found in the same folder.\nWould you like to open it?", 
+															 System.IO.Path.GetFileName(raw_file));*/
+				//ask_raw.Title = APP_NAME;
+				bool yes = false;
+				if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
+				prescale = ask_raw.Prescale;
+				ask_raw.Destroy();
+				return yes;
+			}
+			return false;
+		}
+		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
@@ -147,7 +172,10 @@ namespace CatEye
 				{
 					// Trying to load something
 					
+					// Options
 					string cestage_filename = null, raw_filename = null, output_filename = null, type = "jpeg";
+					int prescale = 2;
+					
 					int inx = argslist.IndexOf("--cestage");
 					if (inx > -1)
 					{
@@ -200,6 +228,20 @@ namespace CatEye
 							return;
 						}
 					}
+					inx = argslist.IndexOf("--prescale");
+					if (inx > -1)
+					{
+						try
+						{
+							prescale = int.Parse(argslist[inx + 1]);
+							if (prescale < 1 || prescale > 10) throw new Exception();
+						}
+						catch (Exception)
+						{
+							Console.WriteLine("Incorrect prescale argument. It should be a positive integer lower or equal than 10");
+							return;
+						}
+					}
 					
 					// Guessing missed arguments
 					if (cestage_filename == null && raw_filename != null)
@@ -231,9 +273,9 @@ namespace CatEye
 
 					// Initializing rendering queue and it's window
 					
-					Stage stage = new Stage(StageOperationFactory, StageOperationParametersFactoryFromID, ImageLoader);
+					Stage stage = new Stage(StageOperationFactory, StageOperationParametersFactoryFromID, FloatBitmapGtkFactory);
 					stage.LoadStage(cestage_filename);
-					RemotingObject.rob.rq.Add(stage, raw_filename, output_filename, type);
+					RemotingObject.rob.rq.Add(stage, raw_filename, prescale, output_filename, type);
 				}
 				if (queue_server_created)
 				{
@@ -249,12 +291,12 @@ namespace CatEye
 				// ** Starting main editor window **
 				
 				// Initializing stage and main window
-				stage = new ExtendedStage(
+				ExtendedStage stage = new ExtendedStage(
 					StageOperationFactory, 
 					StageOperationParametersFactoryFromID,
 					StageOperationParametersEditorFactory, 
 					StageOperationHolderFactory, 
-					ImageLoader);
+					FloatBitmapGtkFactory);
 				
 			
 				DateTime lastUpdateQueuedTime = DateTime.Now;
@@ -263,7 +305,7 @@ namespace CatEye
 					lastUpdateQueuedTime = DateTime.Now;
 				};
 				
-				win = new MainWindow (stage, mStageOperationTypes);
+				win = new StageEditorWindow (stage, mStageOperationTypes);
 				win.Show ();
 				
 				bool just_started = true;
@@ -295,23 +337,10 @@ namespace CatEye
 									// Loading cestage
 									stage.LoadStage(args[0]);
 									
-									// Trying to find a proper RAW file
-									string[] raws = FindRawsForCEStage(args[0]);
-									
-									if (raws.Length > 0)
+									string raw_filename; int prescale;
+									if (FindRawsForCestageAndAskToOpen(args[0], out raw_filename, out prescale))
 									{
-										string raw_file = raws[0]; // TODO: support more than one found RAW file
-										
-										Gtk.MessageDialog ask_raw = new Gtk.MessageDialog(win, DialogFlags.Modal,
-										                                             MessageType.Question, ButtonsType.YesNo, 
-										                                             "The raw file \"{0}\" found in the same folder.\nWould you like to open it?", 
-																					 System.IO.Path.GetFileName(raw_file));
-										ask_raw.Title = APP_NAME;
-										bool yes = false;
-										if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
-										ask_raw.Destroy();
-										
-										if (yes) stage.LoadImage(raw_file, Stage.PreScale);
+										stage.LoadImage(raw_filename, prescale);
 									}
 								}
 								else if (is_raw)

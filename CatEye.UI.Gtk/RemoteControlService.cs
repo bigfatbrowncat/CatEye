@@ -5,16 +5,6 @@ using System.Text;
 
 namespace CatEye.UI.Gtk
 {
-	class RemoteCommandEventArgs : EventArgs
-	{
-		private string[] mArguments;
-		public string[] Arguments { get { return mArguments; } }
-		public RemoteCommandEventArgs(string[] arguments)
-		{
-			mArguments = arguments;
-		}
-	}
-	
 	class RemoteControlService
 	{
 		private static string PasswordCode = "\x001\x002LetTheForceBeWithYou\x002\x001";

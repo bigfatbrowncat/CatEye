@@ -2,8 +2,6 @@ using System;
 
 namespace CatEye.Core
 {
-	public delegate IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters so);
-
 	public interface IStageOperationParametersEditor
 	{
 		event EventHandler<EventArgs> UserModified;
