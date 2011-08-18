@@ -80,6 +80,7 @@
     <Compile Include="RenderingQueueWindow.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.RenderingQueueWindow.cs" />
     <Compile Include="RemotingObject.cs" />
+    <Compile Include="RemoteControlService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
