@@ -63,7 +63,8 @@ namespace CatEye.Core
 		
 		public override double CalculateEfforts (IBitmapCore hdp)
 		{
-			return hdp.Width * hdp.Height * quality * quality;
+			double k = 5;	// Some weight value
+			return hdp.Width * hdp.Height * quality * quality * k;
 		}
 		
 		public override void OnDo (IBitmapCore hdp)

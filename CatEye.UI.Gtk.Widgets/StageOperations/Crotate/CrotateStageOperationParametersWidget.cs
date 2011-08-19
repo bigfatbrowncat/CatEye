@@ -16,6 +16,8 @@ namespace CatEye.UI.Gtk.Widgets
 		private int mCenterDotStartX, mCenterDotStartY;
 		private double mCropWidthStart, mCropHeightStart;
 		
+		private bool mAspectComboboxSelfModifying = false;
+		
 		public CrotateStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
 		{
@@ -32,7 +34,9 @@ namespace CatEye.UI.Gtk.Widgets
 			TreeIter ti;
 			ls.GetIterFirst(out ti);
 			
+			mAspectComboboxSelfModifying = true;
 			aspect_combobox.SetActiveIter(ti);
+			mAspectComboboxSelfModifying = false;
 		}
 		
 		protected void UpdateSensitive()
@@ -108,15 +112,18 @@ namespace CatEye.UI.Gtk.Widgets
 
 		protected void OnAspectComboboxChanged (object sender, System.EventArgs e)
 		{
-			TreeIter ti;
-			aspect_combobox.GetActiveIter(out ti);
-			int val = (int)ls.GetValue(ti, 1);
-
-			StartChangingParameters();
-			aspect_spinbutton.Value = val;
-			((CrotateStageOperationParameters)Parameters).AspectRatioPreset = val;
-			EndChangingParameters();
-			OnUserModified();			
+			if (!mAspectComboboxSelfModifying)
+			{
+				TreeIter ti;
+				aspect_combobox.GetActiveIter(out ti);
+				int val = (int)ls.GetValue(ti, 1);
+	
+				StartChangingParameters();
+				aspect_spinbutton.Value = val;
+				((CrotateStageOperationParameters)Parameters).AspectRatioPreset = val;
+				EndChangingParameters();
+				OnUserModified();
+			}
 		}
 
 		protected void OnAspectSpinbuttonValueChanged (object sender, System.EventArgs e)

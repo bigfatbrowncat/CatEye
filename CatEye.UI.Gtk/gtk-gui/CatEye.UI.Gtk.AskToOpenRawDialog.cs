@@ -118,9 +118,9 @@ namespace CatEye.UI.Gtk
 			// Internal child CatEye.UI.Gtk.AskToOpenRawDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
 			w10.Name = "dialog1_ActionArea";
-			w10.Spacing = 10;
-			w10.BorderWidth = ((uint)(12));
-			w10.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(2));
+			w10.Spacing = 5;
+			w10.BorderWidth = ((uint)(7));
+			w10.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
