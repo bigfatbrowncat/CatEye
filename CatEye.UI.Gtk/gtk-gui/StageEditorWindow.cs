@@ -34,7 +34,7 @@ public partial class StageEditorWindow
 	private global::Gtk.ScrolledWindow GtkScrolledWindow1;
 	private global::Gtk.VBox stage_vbox;
 	private global::Gtk.VBox vbox3;
-	private global::CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget view_widget;
+	private global::CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget viewWidget;
 	private global::Gtk.HBox hbox1;
 	private global::Gtk.Label status_label;
 	private global::Gtk.ProgressBar progressbar;
@@ -201,13 +201,13 @@ public partial class StageEditorWindow
 		this.vbox3 = new global::Gtk.VBox ();
 		this.vbox3.Name = "vbox3";
 		// Container child vbox3.Gtk.Box+BoxChild
-		this.view_widget = new global::CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget ();
-		this.view_widget.Events = ((global::Gdk.EventMask)(1022));
-		this.view_widget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
-		this.view_widget.Name = "view_widget";
-		this.view_widget.InstantUpdate = false;
-		this.vbox3.Add (this.view_widget);
-		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.view_widget]));
+		this.viewWidget = new global::CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget ();
+		this.viewWidget.Events = ((global::Gdk.EventMask)(1022));
+		this.viewWidget.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
+		this.viewWidget.Name = "viewWidget";
+		this.viewWidget.InstantUpdate = false;
+		this.vbox3.Add (this.viewWidget);
+		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.viewWidget]));
 		w19.Position = 0;
 		// Container child vbox3.Gtk.Box+BoxChild
 		this.hbox1 = new global::Gtk.HBox ();

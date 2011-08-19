@@ -1034,7 +1034,7 @@
                   <widget class="Gtk.VBox" id="vbox3">
                     <property name="MemberName" />
                     <child>
-                      <widget class="CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget" id="view_widget">
+                      <widget class="CatEye.UI.Gtk.Widgets.FloatPixmapViewWidget" id="viewWidget">
                         <property name="MemberName" />
                         <property name="Events">ExposureMask, PointerMotionMask, PointerMotionHintMask, ButtonMotionMask, Button1MotionMask, Button2MotionMask, Button3MotionMask, ButtonPressMask, ButtonReleaseMask</property>
                         <property name="ExtensionEvents">All</property>

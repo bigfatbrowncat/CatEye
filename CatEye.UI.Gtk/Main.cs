@@ -67,7 +67,7 @@ namespace CatEye
 				).Invoke(new object[] {parameters});
 			return so;			
 		}
-		public static StageOperationParameters StageOperationParametersFactoryFromID(string id)
+		public static StageOperationParameters StageOperationParametersFactory(string id)
 		{
 			Type sopt = StageOperationIDAttribute.FindTypeByID(mStageOperationParametersTypes, id);
 				
@@ -159,6 +159,13 @@ namespace CatEye
 			return false;
 		}
 		
+		public static void Main(string[] args)
+		{
+			Application.Init ();
+			
+		}
+		
+/* OLD MAIN 		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
@@ -369,6 +376,7 @@ namespace CatEye
 				}
 			}
 		}
+*/
 
 	}
 }
