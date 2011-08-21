@@ -17,14 +17,16 @@ public partial class StageEditorWindow : Gtk.Window
 	private volatile bool mStageThreadStopFlag = false;
 	private DateTime mLastUpdate;
 	private FrozenPanel mFrozenPanel;
-	
+	private bool mIsDestroyed;
 	
 	private Type[] mStageOperationTypes;
 	private StageOperationFactory mStageOperationFactory;
 	private StageOperationParametersFactory mStageOperationParametersFactory;
 	private StageOperationParametersEditorFactory mStageOperationParametersEditorFactory;
 	private StageOperationHolderFactory mStageOperationHolderFactory;
-	private FloatBitmapGtkFactory mFloatBitmapGtkFactory;
+	private BitmapCoreFactory mFloatBitmapGtkFactory;
+	
+	private static int mDelayBeforeUpdate = 100;
 	
 	private void UpdateTitle()
 	{
@@ -50,16 +52,18 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 		DateTime lastUpdateQueuedTime = DateTime.Now;
 			
-		stage.UpdateQueued += delegate {
+		mStage.UpdateQueued += delegate {
 			lastUpdateQueuedTime = DateTime.Now;
 		};
 		
+		// Image processor cycle
 		while (!mStageThreadStopFlag)
 		{
 			if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > mDelayBeforeUpdate)
 			{
-				stage.ProcessQueued();
+				mStage.ProcessPending();
 			}
+			Thread.Sleep(10);
 		}
 	}
 
@@ -68,7 +72,7 @@ public partial class StageEditorWindow : Gtk.Window
 							  StageOperationParametersFactory stageOperationParametersFactory,
 							  StageOperationParametersEditorFactory stageOperationParametersEditorFactory, 
 							  StageOperationHolderFactory stageOperationHolderFactory, 
-							  FloatBitmapGtkFactory floatBitmapGtkFactory) : base(Gtk.WindowType.Toplevel)
+							  BitmapCoreFactory floatBitmapGtkFactory) : base(Gtk.WindowType.Toplevel)
 	{
 		mStageOperationTypes = stageOperationTypes;
 		mStageOperationFactory = stageOperationFactory;
@@ -106,17 +110,17 @@ public partial class StageEditorWindow : Gtk.Window
 		viewWidget.MouseButtonStateChanged += HandleViewWidgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		mStage.ZoomValue = zoomWidget.Value;
 		zoomWidget.ValueChanged += delegate {
 			mStage.ZoomValue = zoomWidget.Value;
 		};
 		
 		// ** Preparing stage and its thread **
 		mStageThread = new Thread(StageThreadStart);
+		mStageThread.Priority = ThreadPriority.BelowNormal;
 		
 		mStage = new ExtendedStage(
 			mStageOperationFactory, 
-			mStageOperationParametersFactoryFromID,
+			mStageOperationParametersFactory,
 			mStageOperationParametersEditorFactory, 
 			mStageOperationHolderFactory, 
 			mFloatBitmapGtkFactory);
@@ -136,6 +140,8 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.RawFileNameChanged += HandleStageRawFileNameChanged;
 		mStage.StageFileNameChanged += HandleStageStageFileNameChanged;
 		mStage.PreScaleChanged += HandleStagePrescaleChanged;
+
+		mStage.ZoomValue = zoomWidget.Value;
 		
 		mStageThread.Start();
 		
@@ -236,8 +242,8 @@ public partial class StageEditorWindow : Gtk.Window
 
 	void HandleStageOperationAddedToStage (object sender, StageOperationParametersEventArgs e)
 	{
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 		Application.Invoke(delegate {
-			StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 
 			stage_vbox.Add(sohw);
 			((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
@@ -250,8 +256,8 @@ public partial class StageEditorWindow : Gtk.Window
 
 	void HandleStageOperationRemovedFromStage (object sender, StageOperationParametersEventArgs e)
 	{
+		StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 		Application.Invoke(delegate {
-			StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[e.Target];
 			
 			stage_vbox.Remove(sohw);
 			sohw.Hide();
@@ -320,8 +326,8 @@ public partial class StageEditorWindow : Gtk.Window
 				}
 			}
 #warning This should be removed after multi threading added
-			while (Gtk.Application.EventsPending())
-				Gtk.Application.RunIteration();
+			/*while (Gtk.Application.EventsPending())
+				Gtk.Application.RunIteration();*/
 		});
 	}	
 #endregion	
@@ -368,23 +374,11 @@ public partial class StageEditorWindow : Gtk.Window
 		return false;
 	}
 
-
+	public bool IsDestroyed { get { return mIsDestroyed; } }
+	
 	void HandleViewWidgetExposeEvent (object o, ExposeEventArgs args)
 	{
 		mStage.DrawEditor(viewWidget);
-	}
-
-	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
-	{
-		if (mStage.TheUIState != UIState.Idle)
-		{
-			mStage.CancelAll();
-			//MainClass.rob.rq.CancelAll();
-		}
-		//Main.Quit();
-		//Application.Quit ();
-		MainClass.Quit();
-		a.RetVal = true;
 	}
 
 	protected void LoadRawImageActionPicked()
@@ -418,7 +412,7 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			if (ok)
 			{
-				mStage.LoadImage(fn, ps);
+				mStage.AskLoadImage(fn, ps);
 			}
 		}
 	}
@@ -437,12 +431,26 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.CancelLoading();
 	}
 	
+	private void CloseStageEditor()
+	{
+		// Stopping stage thread
+		mStageThreadStopFlag = true;
+		mStage.CancelAll();
+		
+		Destroy();
+
+		mIsDestroyed = true;
+	}
+	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
 	{
-		mStage.CancelAll();
-		//MainClass.rq.CancelAll();
-		Destroy();
-		MainClass.Quit();
+		CloseStageEditor();
+	}
+	
+	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
+	{
+		CloseStageEditor();
+		a.RetVal = true;
 	}
 	
 	protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
@@ -519,6 +527,12 @@ public partial class StageEditorWindow : Gtk.Window
 			try
 			{
 				mStage.LoadStage(fn);
+
+				string raw_filename; int prescale;
+				if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, out prescale))
+				{
+					mStage.AskLoadImage(raw_filename, prescale);
+				}
 			}
 			catch (StageDeserializationException sdex)
 			{
@@ -530,11 +544,6 @@ public partial class StageEditorWindow : Gtk.Window
 				
 				md.Run();
 				md.Destroy();
-			}
-			string raw_filename; int prescale;
-			if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, out prescale))
-			{
-				mStage.LoadImage(raw_filename, prescale);
 			}
 		}
 	}
@@ -658,8 +667,8 @@ public partial class StageEditorWindow : Gtk.Window
 			}
 			
 			//RemotingObject.AssureQueueServiceIsRunning();
-			RemotingObject.RunQueueServiceOrConnectToIt();
-			RemotingObject.rob.AddToQueue(mStage.SaveStageToString(), mStage.RawFileName, mStage.Prescale, fn, dest_type);
+			//RemotingObject.RunQueueServiceOrConnectToIt();
+			//RemotingObject.rob.AddToQueue(mStage.SaveStageToString(), mStage.RawFileName, mStage.Prescale, fn, dest_type);
 			
 			//MainClass.rqwin.Show();
 			

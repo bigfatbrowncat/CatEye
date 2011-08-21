@@ -20,7 +20,11 @@ namespace CatEye.UI.Base
 		
 		private StageOperationParametersEditorFactory mSOParametersEditorFactory;
 		private StageOperationHolderFactory mSOHolderFactory;
-		private bool _UpdateQueued = false;
+
+		private volatile bool mUpdatePending = false;
+		private volatile bool mLoadPending = false;
+		private volatile string mLoadPendingFilename;
+		private volatile int mLoadPendingDownscale;
 		
 		protected Dictionary<StageOperationParameters, IStageOperationHolder> _Holders = 
 			new Dictionary<StageOperationParameters, IStageOperationHolder>();
@@ -72,7 +76,7 @@ namespace CatEye.UI.Base
 			{
 				base.SourceImage = value;
 				mFrozenImage = null;
-				QueueUpdate();
+				AskUpdate();
 			}
 		}
 		
@@ -83,7 +87,7 @@ namespace CatEye.UI.Base
 			{
 				mZoomValue = value;
 				mFrozenImage = null;
-				QueueUpdate();
+				AskUpdate();
 			}
 		}
 		
@@ -100,13 +104,13 @@ namespace CatEye.UI.Base
 		protected override void OnItemChanged (StageOperationParameters item)
 		{
 			base.OnItemChanged (item);
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		protected override void OnItemIndexChanged(StageOperationParameters item)
 		{
 			base.OnItemIndexChanged (item);
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		public ReadOnlyDictionary<StageOperationParameters, IStageOperationHolder> Holders
@@ -165,6 +169,7 @@ namespace CatEye.UI.Base
 		
 		protected override void DoProcess()
 		{
+			mUpdatePending = false;
 			if (SourceImage != null)
 			{
 				try
@@ -173,7 +178,6 @@ namespace CatEye.UI.Base
 
 					CancelProcessingPending = false;
 					// Removing updating queue flag
-					_UpdateQueued = false;
 					
 					// Checking if the stage is frozen or not and is there a frozen image.
 					if (FrozenAt == null || mFrozenImage == null)
@@ -260,24 +264,29 @@ namespace CatEye.UI.Base
 					// Setting to idle state
 					SetUIState(UIState.Idle);
 					// Unset cancelling flag.
-					QueueUpdate();
+					AskUpdate();
 				}
 			}
 		}
 		
-		public void ProcessQueued()
+		public void ProcessPending()
 		{
-			if (_UpdateQueued)
+			if (mLoadPending)
+			{
+				DoLoading();
+			}
+			
+			if (mUpdatePending)
 			{
 				DoProcess();
 			}
 		}
 		
-		public void QueueUpdate()
+		public void AskUpdate()
 		{
 			CancelProcessing();
 			if (UpdateQueued != null) UpdateQueued(this, EventArgs.Empty);
-			_UpdateQueued = true;
+			mUpdatePending = true;
 		}
 		
 		public StageOperationParameters FrozenAt
@@ -360,13 +369,13 @@ namespace CatEye.UI.Base
 		{
 			if (EditingOperationChanged != null)
 				EditingOperationChanged(this, EventArgs.Empty);
-			QueueUpdate();
+			AskUpdate();
 		}
 		protected virtual void OnOperationFrozen()
 		{
 			if (OperationFrozen != null)
 				OperationFrozen(this, EventArgs.Empty);
-			QueueUpdate();
+			AskUpdate();
 		}
 
 		protected virtual void OnOperationDefrozen()
@@ -383,7 +392,7 @@ namespace CatEye.UI.Base
 
 		void HandleSohwOperationParametersEditorUserModified (object sender, EventArgs e)
 		{
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		void HandleSohwRemoveButtonClicked (object sender, EventArgs e)
@@ -427,7 +436,7 @@ namespace CatEye.UI.Base
 		
 		void HandleSohwStageActiveButtonClicked (object sender, EventArgs e)
 		{
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		protected override void OnItemAdded (StageOperationParameters item)
@@ -448,7 +457,7 @@ namespace CatEye.UI.Base
 
 			base.OnItemAdded(item);
 
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		protected override void OnItemRemoved (StageOperationParameters item)
@@ -469,7 +478,7 @@ namespace CatEye.UI.Base
 			_Holders[item].StageOperationParametersEditor.UserModified -= HandleSohwOperationParametersEditorUserModified;
 			_Holders.Remove(item);
 
-			QueueUpdate();
+			AskUpdate();
 		}
 		
 		protected StageOperationParameters StageOperationByHolder(IStageOperationHolder h)
@@ -537,21 +546,28 @@ namespace CatEye.UI.Base
 				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(target);
 			}
 		}
-
-		public override bool LoadImage(string filename, int downscale_by)
+		
+		private void DoLoading()
 		{
+			mLoadPending = false;
 			SetUIState(UIState.Loading);
 			
-			bool res = base.LoadImage(filename, downscale_by);
+			bool res = base.LoadImage(mLoadPendingFilename, mLoadPendingDownscale);
 			if (res)
 			{
-				RawFileName = filename;
-				Prescale = downscale_by;
+				RawFileName = mLoadPendingFilename;
+				Prescale = mLoadPendingDownscale;
 			}
 			
 			SetUIState(UIState.Idle);
-			
-			return res;
+		}
+		
+		public void AskLoadImage(string filename, int downscale_by)
+		{
+			CancelProcessing();
+			mLoadPendingFilename = filename;
+			mLoadPendingDownscale = downscale_by;
+			mLoadPending = true;
 		}
 	}
 }

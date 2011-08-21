@@ -24,7 +24,6 @@
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
-    <Commandlineparameters>/media/7A17-6E8D/IMG_0159.cestage</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>

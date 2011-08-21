@@ -85,7 +85,7 @@ namespace CatEye.UI.Gtk.Widgets
 				Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.Width, _HDR.Height);
 	
 				_HDR.DrawToPixbuf(newRenderedPicture, delegate {
-					while (Application.EventsPending()) Application.RunIteration();
+					//while (Application.EventsPending()) Application.RunIteration();
 					return true;
 				});
 				

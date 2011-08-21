@@ -49,6 +49,7 @@ namespace CatEye.Core
 				ReportStageProgressMessageEventArgs ea = new ReportStageProgressMessageEventArgs(showProgressBar, 
 					progress, status, update);
 				ProgressMessageReport(this, ea);
+				// Sleeping to wait for UI updating
 			}
 		}
 		

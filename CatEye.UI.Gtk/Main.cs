@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Gtk;
 using CatEye.Core;
 using CatEye.UI.Base;
@@ -11,11 +12,6 @@ namespace CatEye
 	class MainClass
 	{
 		public static string APP_NAME = "CatEye";
-
-		public static StageEditorWindow win;
-
-		private static bool mQuitFlag = false;
-		private static int mDelayBeforeUpdate = 100;
 
 		public static readonly Type[] mStageOperationTypes = new Type[]
 		{
@@ -103,11 +99,6 @@ namespace CatEye
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
 		
-		public static void Quit()
-		{
-			mQuitFlag = true;
-		}
-		
 		public static string[] FindRawsForCEStage(string cestage_filename)
 		{
 			List<string> res = new List<string>();
@@ -159,13 +150,80 @@ namespace CatEye
 			return false;
 		}
 		
-		public static void Main(string[] args)
+		private static List<StageEditorWindow> mStageEditorWindows = new List<StageEditorWindow>();
+		public static List<StageEditorWindow> StageEditorWindows
 		{
-			Application.Init ();
-			
+			get { return mStageEditorWindows; }
 		}
 		
-/* OLD MAIN 		
+		private static RemoteControlService mRemoteControlService;
+		public static RemoteControlService RemoteControlService
+		{
+			get { return mRemoteControlService; }
+		}
+		
+		static void HandleRemoteControlServiceRemoteCommandReceived (object sender, RemoteCommandEventArgs e)
+		{
+			if (e.Command == "StageEditor")
+			{
+				// No arguments
+				Application.Invoke(delegate
+				{
+					
+					StageEditorWindow sew = new StageEditorWindow(
+						mStageOperationTypes,
+						StageOperationFactory, 
+						StageOperationParametersFactory,
+						StageOperationParametersEditorFactory, 
+						StageOperationHolderFactory, 
+						FloatBitmapGtkFactory);
+					
+					mStageEditorWindows.Add(sew);
+					sew.Show();
+				});
+			}
+		}
+		
+		public static void Main(string[] args)
+		{
+			mRemoteControlService = new RemoteControlService("localhost", 21985);
+			mRemoteControlService.RemoteCommandReceived += HandleRemoteControlServiceRemoteCommandReceived;
+			
+			// Formulating command and it's arguments
+			string command = null;
+			List<string> arguments = new List<string>();
+			if (args.Length == 0)
+			{
+				command = "StageEditor";
+			}
+			
+			if (mRemoteControlService.Start(command, arguments.ToArray()))
+			{
+				Application.Init ();
+				GLib.Idle.Add(delegate {
+					// Cleaning the StageEditorWindows list
+					bool something_removed = false;
+					for (int i = 0; i < StageEditorWindows.Count; i++)
+					{
+						if (StageEditorWindows[i].IsDestroyed) 
+						{
+							StageEditorWindows.RemoveAt(i);
+							something_removed = true;
+							i--;
+						}
+					}
+					if (something_removed && StageEditorWindows.Count == 0) Application.Quit();
+					return true;
+				});
+				
+				Application.Run();
+			}
+			mRemoteControlService.Stop();
+		}
+
+		
+
+					/* OLD MAIN 		
 		public static void Main (string[] args)
 		{
 			Application.Init ();

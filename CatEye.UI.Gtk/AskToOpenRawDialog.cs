@@ -111,7 +111,7 @@ namespace CatEye.UI.Gtk
 							}
 							while (readed > 0);
 				
-							while (Application.EventsPending()) Application.RunIteration();
+							//while (Application.EventsPending()) Application.RunIteration();
 
 							prc2.WaitForExit(-1);	// R.I.P.
 							prc2.Close();

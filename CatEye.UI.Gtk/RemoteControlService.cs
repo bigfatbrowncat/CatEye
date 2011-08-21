@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
@@ -8,7 +9,6 @@ namespace CatEye.UI.Gtk
 	class RemoteControlService
 	{
 		private static string PasswordCode = "\x001\x002LetTheForceBeWithYou\x002\x001";
-		private static string PingCode = "\x001\x002IsThereAnybodyThere?\x002\x001";
 		
 		private string mAddress = "localhost";
 		private int mPort = 21985;
@@ -47,12 +47,6 @@ namespace CatEye.UI.Gtk
 			byte[] text_buf = Encoding.UTF8.GetBytes(str);
 			stream.Write(text_buf, 0, text_buf.Length);
 			stream.Flush();
-		}
-		
-		private void SendPing(NetworkStream stream)
-		{
-			string str = PingCode;
-			EncodeAndSendString(stream, str);
 		}
 		
 		private void StartServer()
@@ -102,25 +96,30 @@ namespace CatEye.UI.Gtk
 							while (stream.DataAvailable);
 						
 							string text = completeText.ToString();
+							
 							// Checking the result
-							if (text == PingCode)
-							{
-#if DEBUG
-								Console.WriteLine("[S] Ping ok");
-#endif
-							}
-							else if (text.Length >= PasswordCode.Length &&
+							if (text.Length >= PasswordCode.Length &&
 								text.Substring(0, PasswordCode.Length) == PasswordCode)
 							{
 								// Handling string
 								string s = text.Substring(PasswordCode.Length);
 								string[] args;
+								string command;
 								if (s != "")
+								{
 									args = s.Split('\x000');
+									List<string> argslist = new List<string>(args);
+									command = argslist[0];
+									argslist.RemoveAt(0);
+									args = argslist.ToArray();
+								}
 								else
+								{
+									command = null;
 									args = new string[] {};
+								}
 								
-								OnRemoteCommandReceived(args);
+								OnRemoteCommandReceived(command, args);
 							}
 							else 
 							{
@@ -161,38 +160,61 @@ namespace CatEye.UI.Gtk
 		{
 			mAddress = address; mPort = port;
 		}
-
-		public bool Start(string[] args)
+		
+		/// <summary>
+		/// Starts server if it's not started in other process. 
+		/// Then connects to it and sends command and arguments to it.
+		/// </summary>
+		/// <param name='command'>
+		/// Command to ask the server to execute
+		/// </param>
+		/// <param name='arguments'>
+		/// Command arguments to send
+		/// </param>
+		/// <returns>
+		/// <c>True</c> if server is actually started.
+		/// <c>False</c> if server had been started before.
+		/// </returns>
+		public bool Start(string command, string[] arguments)
 		{
+			bool result;
 			TcpClient client = TryConnectClient();
 			if (client == null)
 			{
 				StartServer();
 				client = TryConnectClient();
+				result = true;
 			}
+			else
+				result = false;
+			
 			if (client != null)
 			{
-				SendCommand(client, args);
-				return true;
+				SendCommand(client, command, arguments);
 			}
 			else
 			{
 #if DEBUG	
 				Console.WriteLine("[M] Can't connect client. It's strange");
 #endif				
-				return false;
+				throw new Exception("Can't connect client. It's strange");
 			}
+			return result;
 		}
 
-		private void SendCommand(TcpClient client, string[] args)
+		private void SendCommand(TcpClient client, string command, string[] args)
 		{
 			string str;
-			if (args.Length > 0)
+			List<string> cmd_and_args = new List<string>();
+			cmd_and_args.Add(command);
+			cmd_and_args.AddRange(args);
+			
+			if (cmd_and_args.Count > 0)
 			{
-				StringBuilder sb = new StringBuilder(args[0]);
-				for (int i = 1; i < args.Length; i++)
+				StringBuilder sb = new StringBuilder(cmd_and_args[0]);
+				for (int i = 1; i < cmd_and_args.Count; i++)
 				{
-					sb.Append("\x000" + args[i]);
+					sb.Append("\x000" + cmd_and_args[i]);
 				}
 				str = sb.ToString();
 			}
@@ -210,10 +232,10 @@ namespace CatEye.UI.Gtk
 		
 		public event EventHandler<RemoteCommandEventArgs> RemoteCommandReceived;
 		
-		protected virtual void OnRemoteCommandReceived(string[] args)
+		protected virtual void OnRemoteCommandReceived(string command, string[] args)
 		{
 			if (RemoteCommandReceived != null)
-				RemoteCommandReceived(this, new RemoteCommandEventArgs(args));
+				RemoteCommandReceived(this, new RemoteCommandEventArgs(command, args));
 		}
 		
 		public void Stop()
