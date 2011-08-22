@@ -221,6 +221,7 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 		Application.Invoke(delegate {
 			status_label.Text = "Image loading is cancelled";
+			enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 		});
 	}
 
@@ -228,6 +229,7 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 		Application.Invoke(delegate {
 			status_label.Text = "Image is updated successfully";
+			enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 			viewWidget.UpdatePicture();
 		});
 	}
@@ -274,7 +276,7 @@ public partial class StageEditorWindow : Gtk.Window
 				loadRawAction.Sensitive = true;
 				loadStageAction.Sensitive = true;
 				saveStageAsAction.Sensitive = true;
-				renderToAction.Sensitive = true;
+				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 				cancel_button.Visible = false;
 				progressbar.Visible = false;
 	
@@ -284,7 +286,7 @@ public partial class StageEditorWindow : Gtk.Window
 				loadRawAction.Sensitive = false;
 				loadStageAction.Sensitive = false;
 				saveStageAsAction.Sensitive = false;
-				renderToAction.Sensitive = false;
+				enqueueRenderAction.Sensitive = false;
 				cancel_button.Visible = true;
 				cancel_button.Sensitive = true;
 				progressbar.Visible = true;
@@ -296,34 +298,45 @@ public partial class StageEditorWindow : Gtk.Window
 				loadRawAction.Sensitive = true;
 				loadStageAction.Sensitive = true;
 				saveStageAsAction.Sensitive = true;
-				renderToAction.Sensitive = true;
+				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 				cancel_button.Visible = false;
 				progressbar.Visible = true;
 				progressbar.Fraction = 0;
 				progressbar.Text = "";
-			}		
+			}
+			
 		});
 	}
 
 	void HandleProgress(object sender, ReportStageProgressMessageEventArgs ea)
 	{
 		Application.Invoke(delegate {
-			progressbar.Visible = ea.ShowProgressBar;
-			progressbar.Fraction = ea.Progress;
-			progressbar.Text = (ea.Progress * 100).ToString("0") + "%";
-			status_label.Text = ea.Status;
-			
-			if (ea.Update && UpdateDuringProcessingAction.Active)
+			try
 			{
-				if ((DateTime.Now - mLastUpdate).TotalMilliseconds / viewWidget.UpdateTimeSpan.TotalMilliseconds > 5)
+				progressbar.Visible = ea.ShowProgressBar;
+				progressbar.Fraction = ea.Progress;
+				progressbar.Text = (ea.Progress * 100).ToString("0") + "%";
+				status_label.Text = ea.Status;
+				
+				if (ea.Update && UpdateDuringProcessingAction.Active)
 				{
-					if (viewWidget.HDR != mStage.CurrentImage)
-						viewWidget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
-					else
-						viewWidget.UpdatePicture();
-	
-					mLastUpdate = DateTime.Now;
+					if ((DateTime.Now - mLastUpdate).TotalMilliseconds / viewWidget.UpdateTimeSpan.TotalMilliseconds > 5)
+					{
+						if (viewWidget.HDR != mStage.CurrentImage)
+							viewWidget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
+						else
+							viewWidget.UpdatePicture();
+		
+						mLastUpdate = DateTime.Now;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				// Any exception is harmless here
+#if DEBUG
+				Console.WriteLine("Exception during HandleProgress: " + ex.Message + "\n" + ex.StackTrace);
+#endif
 			}
 		});
 	}	
@@ -425,6 +438,7 @@ public partial class StageEditorWindow : Gtk.Window
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
 	{
+		cancel_button.Sensitive = false;
 		mStage.CancelLoading();
 	}
 	
@@ -713,25 +727,15 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 	}
 	
-	
 	protected void OnRenderingQueueActionToggled (object sender, System.EventArgs e)
 	{
-		//RemotingObject.AssureQueueServiceIsRunning();
-		RemotingObject.RunQueueServiceOrConnectToIt();
-		RemotingObject.rob.rqwin.Visible = RenderingQueueAction.Active;
+		MainClass.RenderingQueueWindow.Visible = RenderingQueueAction.Active;
 	}
 
 	protected void OnViewActionActivated (object sender, System.EventArgs e)
 	{
-		if (RemotingObject.rob != null && RemotingObject.rob.rq.IsProcessing)
-		{
-			RenderingQueueAction.Visible = true;
-			RenderingQueueAction.Active = RemotingObject.rob.rqwin.Visible;
-		}
-		else
-		{
-			RenderingQueueAction.Visible = false;
-		}
-			
+		RenderingQueueAction.Visible = MainClass.RenderingQueue.IsProcessingItem;
+		RenderingQueueAction.Active = MainClass.RenderingQueueWindow.Visible;
 	}
+
 }

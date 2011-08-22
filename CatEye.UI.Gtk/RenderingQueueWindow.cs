@@ -10,6 +10,7 @@ namespace CatEye.UI.Gtk
 	{
 		private RenderingQueue mRenderingQueue;
 		private NodeStore mQueueNodeStore;
+		private bool mIsDestroyed;
 		
 		[TreeNode(ListOnly = true)]
 		private class RenderingTaskTreeNode : TreeNode
@@ -69,8 +70,10 @@ namespace CatEye.UI.Gtk
 			mRenderingQueue.ItemRemoved += HandleRenderingQueueItemRemoved;
 			mRenderingQueue.BeforeItemProcessingStarted += HandleRenderingQueueBeforeItemProcessingStarted;
 			mRenderingQueue.AfterItemProcessingFinished += HandleRenderingQueueAfterItemProcessingFinished;
-			mRenderingQueue.BeforeProcessingStarted += HandleRenderingQueueBeforeProcessingStarted;
+			mRenderingQueue.ThreadStarted += HandleRenderingQueueBeforeProcessingStarted;
+			mRenderingQueue.ThreadStopped += HandleRenderingQueueThreadStopped;
 			mRenderingQueue.AfterProcessingFinished += HandleRenderingQueueAfterProcessingFinished;
+			mRenderingQueue.ItemRendering += HandleRenderingQueueItemRendering;
 			
 			this.Build ();
 			
@@ -83,11 +86,51 @@ namespace CatEye.UI.Gtk
 
 			expander1.Expanded = false;
 			queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
+			
 		}
 
+		public bool IsDestroyed { get { return mIsDestroyed; } }
+		
 #region Handlers called from other thread. 
 	// Each handler here should contain Application.Invoke
 
+		void HandleRenderingQueueItemRendering (object sender, RenderingTaskEventArgs e)
+		{
+			Application.Invoke(delegate {
+				FloatBitmapGtk renderDest = (FloatBitmapGtk)e.Target.Stage.CurrentImage;
+				
+				// Drawing to pixbuf and saving to file
+				using (Gdk.Pixbuf rp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, renderDest.Width, renderDest.Height))
+				{
+		
+					renderDest.DrawToPixbuf(rp, 
+						delegate (double progress) {
+						
+							// TODO: report progress via RenderingTask (needed to create an event)
+							//rpw.SetStatusAndProgress(progress, "Saving image...");
+							return true;
+						}
+					);
+				
+					// TODO Can't be used currently cause of buggy Gtk#
+					//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
+			
+					rp.Save(e.Target.Destination, e.Target.FileType);
+				}
+			});
+			
+		}
+
+		void HandleRenderingQueueThreadStopped (object sender, EventArgs e)
+		{
+			Application.Invoke(delegate {
+				Visible = false;
+				Destroy();
+				mIsDestroyed = true;
+			});
+		}
+		
+		
 		void HandleRenderingQueueAfterProcessingFinished (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
@@ -98,7 +141,7 @@ namespace CatEye.UI.Gtk
 		void HandleRenderingQueueBeforeProcessingStarted (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
-				Visible = true;
+				//Visible = true;
 			});
 		}
 
@@ -109,7 +152,6 @@ namespace CatEye.UI.Gtk
 				destination_label.Text = "";
 				processing_progressbar.Fraction = 1;
 				processing_progressbar.Text = "Render process is completed";
-				
 			});
 		}
 
@@ -132,7 +174,7 @@ namespace CatEye.UI.Gtk
 				RefreshQueueList();
 				if (!expander1.Expanded)
 				{
-					queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
+					queue_GtkLabel.Markup = "<b>Tasks queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 				}
 			});
 		}
@@ -150,7 +192,7 @@ namespace CatEye.UI.Gtk
 				RefreshQueueList();
 				if (!expander1.Expanded)
 				{
-					queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
+					queue_GtkLabel.Markup = "<b>Tasks queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 				}
 			});
 		}
@@ -172,25 +214,25 @@ namespace CatEye.UI.Gtk
 			if (expander1.Expanded == false)
 			{
 				this.AllowGrow = false;
-				queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
+				queue_GtkLabel.Markup = "<b>Tasks queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 			}
 			else
 			{
 				this.AllowGrow = true;
-				queue_GtkLabel.Markup = "<b>Queue</b>";
+				queue_GtkLabel.Markup = "<b>Tasks queue</b>";
 			}
 		}
 
 		protected void OnCancelButtonClicked (object sender, System.EventArgs e)
 		{
 			cancel_button.Sensitive = false;
-			mRenderingQueue.Cancel();
+			mRenderingQueue.CancelItem();
 		}
 
 		protected void OnCancelAllButtonClicked (object sender, System.EventArgs e)
 		{
 			cancelAll_button.Sensitive = false;
-			mRenderingQueue.CancelAll();
+			mRenderingQueue.CancelAllItems();
 		}
 
 		protected void OnRemoveButtonClicked (object sender, System.EventArgs e)
@@ -242,6 +284,11 @@ namespace CatEye.UI.Gtk
 				RenderingTask seltask = ((RenderingTaskTreeNode)selnodes[0]).Task;
 				mRenderingQueue.StepDown(seltask);
 			}
+		}
+
+		protected void OnShown (object sender, System.EventArgs e)
+		{
+			titleGtkLabel.ModifyFont(Pango.FontDescription.FromString("12"));
 		}
 	}
 }

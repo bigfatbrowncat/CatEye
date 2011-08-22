@@ -165,6 +165,15 @@ namespace CatEye
 			get { return mRemoteControlService; }
 		}
 		
+		public static RenderingQueueWindow RenderingQueueWindow
+		{
+			get { return mRenderingQueueWindow; }
+		}
+		public static RenderingQueue RenderingQueue
+		{
+			get { return mRenderingQueue; }
+		}
+		
 		static void HandleRemoteControlServiceRemoteCommandReceived (object sender, RemoteCommandEventArgs e)
 		{
 			if (e.Command == "StageEditor")
@@ -202,12 +211,14 @@ namespace CatEye
 					
 					mRenderingQueue.Add(stage, rawFileName, Prescale, targetFileName, targetType);
 					mRenderingQueueWindow.Show();
-				});				
+				});
 			}
 		}
 		
+		private static bool mLoadedSomethingAlready = false;
 		public static void Main(string[] args)
 		{
+			// Initializing remote control
 			mRemoteControlService = new RemoteControlService("localhost", 21985);
 			mRemoteControlService.RemoteCommandReceived += HandleRemoteControlServiceRemoteCommandReceived;
 			
@@ -223,23 +234,30 @@ namespace CatEye
 			{
 				Application.Init ();
 				
-				// Creating queue window
+				// Creating queue and it's window
 				mRenderingQueue = new RenderingQueue();
 				mRenderingQueueWindow = new RenderingQueueWindow(mRenderingQueue);
+				mRenderingQueue.StartThread();
 				
 				GLib.Idle.Add(delegate {
-					// Cleaning the StageEditorWindows list
-					bool something_removed = false;
-					for (int i = 0; i < StageEditorWindows.Count; i++)
+					// Checking if something is already started
+					if (RenderingQueue.IsProcessingItem || StageEditorWindows.Count > 0) 
+						mLoadedSomethingAlready = true;
+					
+					// Removing all destroyed
+					StageEditorWindows.RemoveAll(delegate (StageEditorWindow wnd)
 					{
-						if (StageEditorWindows[i].IsDestroyed) 
-						{
-							StageEditorWindows.RemoveAt(i);
-							something_removed = true;
-							i--;
-						}
+						return wnd.IsDestroyed;
+					});
+					
+					// Checking is there any activity or no
+					if (mLoadedSomethingAlready && 
+						StageEditorWindows.Count == 0 &&
+						!RenderingQueue.IsProcessingItem) 
+					{
+						RenderingQueue.StopThread();
+						Application.Quit();
 					}
-					if (something_removed && StageEditorWindows.Count == 0) Application.Quit();
 					return true;
 				});
 				
@@ -247,6 +265,7 @@ namespace CatEye
 			}
 			mRemoteControlService.Stop();
 		}
+
 
 		
 

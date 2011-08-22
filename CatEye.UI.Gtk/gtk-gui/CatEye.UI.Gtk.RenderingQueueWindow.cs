@@ -17,7 +17,7 @@ namespace CatEye.UI.Gtk
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.ProgressBar processing_progressbar;
 		private global::Gtk.Button cancel_button;
-		private global::Gtk.Label GtkLabel5;
+		private global::Gtk.Label titleGtkLabel;
 		private global::Gtk.Expander expander1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
@@ -35,7 +35,8 @@ namespace CatEye.UI.Gtk
 			// Widget CatEye.UI.Gtk.RenderingQueueWindow
 			this.Name = "CatEye.UI.Gtk.RenderingQueueWindow";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Rendering queue");
-			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("CatEye.UI.Gtk.res.cateye-small.png");
+			this.WindowPosition = ((global::Gtk.WindowPosition)(1));
 			this.AllowGrow = false;
 			// Container child CatEye.UI.Gtk.RenderingQueueWindow.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -66,6 +67,9 @@ namespace CatEye.UI.Gtk
 			this.destination_label = new global::Gtk.Label ();
 			this.destination_label.Name = "destination_label";
 			this.destination_label.Xalign = 0F;
+			this.destination_label.Ellipsize = ((global::Pango.EllipsizeMode)(2));
+			this.destination_label.MaxWidthChars = 60;
+			this.destination_label.SingleLineMode = true;
 			this.table1.Add (this.destination_label);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.destination_label]));
 			w1.TopAttach = ((uint)(1));
@@ -78,7 +82,8 @@ namespace CatEye.UI.Gtk
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 1F;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Source:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Source:</b>");
+			this.label2.UseMarkup = true;
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -86,7 +91,8 @@ namespace CatEye.UI.Gtk
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Destination:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Destination:</b>");
+			this.label3.UseMarkup = true;
 			this.table1.Add (this.label3);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w3.TopAttach = ((uint)(1));
@@ -97,6 +103,9 @@ namespace CatEye.UI.Gtk
 			this.source_label = new global::Gtk.Label ();
 			this.source_label.Name = "source_label";
 			this.source_label.Xalign = 0F;
+			this.source_label.Ellipsize = ((global::Pango.EllipsizeMode)(2));
+			this.source_label.MaxWidthChars = 60;
+			this.source_label.SingleLineMode = true;
 			this.table1.Add (this.source_label);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.source_label]));
 			w4.LeftAttach = ((uint)(1));
@@ -137,14 +146,14 @@ namespace CatEye.UI.Gtk
 			w8.Fill = false;
 			this.GtkAlignment4.Add (this.vbox3);
 			this.frame1.Add (this.GtkAlignment4);
-			this.GtkLabel5 = new global::Gtk.Label ();
-			this.GtkLabel5.HeightRequest = 25;
-			this.GtkLabel5.Name = "GtkLabel5";
-			this.GtkLabel5.Xalign = 0F;
-			this.GtkLabel5.Yalign = 1F;
-			this.GtkLabel5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Currently processing</b>");
-			this.GtkLabel5.UseMarkup = true;
-			this.frame1.LabelWidget = this.GtkLabel5;
+			this.titleGtkLabel = new global::Gtk.Label ();
+			this.titleGtkLabel.HeightRequest = 28;
+			this.titleGtkLabel.Name = "titleGtkLabel";
+			this.titleGtkLabel.Xalign = 0F;
+			this.titleGtkLabel.Yalign = 1F;
+			this.titleGtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Currently processing</b>");
+			this.titleGtkLabel.UseMarkup = true;
+			this.frame1.LabelWidget = this.titleGtkLabel;
 			this.hbox2.Add (this.frame1);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.frame1]));
 			w11.Position = 0;
@@ -159,11 +168,12 @@ namespace CatEye.UI.Gtk
 			this.expander1.CanFocus = true;
 			this.expander1.Name = "expander1";
 			this.expander1.Expanded = true;
-			this.expander1.BorderWidth = ((uint)(6));
+			this.expander1.BorderWidth = ((uint)(9));
 			// Container child expander1.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
+			this.hbox1.BorderWidth = ((uint)(3));
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -253,7 +263,7 @@ namespace CatEye.UI.Gtk
 			this.expander1.Add (this.hbox1);
 			this.queue_GtkLabel = new global::Gtk.Label ();
 			this.queue_GtkLabel.Name = "queue_GtkLabel";
-			this.queue_GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Queue</b>");
+			this.queue_GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Tasks queue</b>");
 			this.queue_GtkLabel.UseMarkup = true;
 			this.queue_GtkLabel.UseUnderline = true;
 			this.expander1.LabelWidget = this.queue_GtkLabel;
@@ -268,6 +278,7 @@ namespace CatEye.UI.Gtk
 			this.DefaultHeight = 344;
 			this.Hide ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
+			this.Shown += new global::System.EventHandler (this.OnShown);
 			this.cancel_button.Clicked += new global::System.EventHandler (this.OnCancelButtonClicked);
 			this.expander1.Activated += new global::System.EventHandler (this.OnExpander1Activated);
 			this.queue_nodeview.CursorChanged += new global::System.EventHandler (this.OnQueueNodeviewCursorChanged);

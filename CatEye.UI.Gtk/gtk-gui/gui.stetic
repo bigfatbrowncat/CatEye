@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="CatEye.RawImportDialog" design-size="825 428">
     <property name="MemberName" />
@@ -449,9 +449,11 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
-    <property name="WindowPosition">CenterOnParent</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="WindowPosition">Center</property>
     <property name="AllowGrow">False</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
+    <signal name="Shown" handler="OnShown" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -485,6 +487,9 @@
                               <widget class="Gtk.Label" id="destination_label">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
+                                <property name="Ellipsize">Middle</property>
+                                <property name="MaxWidthChars">60</property>
+                                <property name="SingleLineMode">True</property>
                               </widget>
                               <packing>
                                 <property name="TopAttach">1</property>
@@ -506,7 +511,8 @@
                               <widget class="Gtk.Label" id="label2">
                                 <property name="MemberName" />
                                 <property name="Xalign">1</property>
-                                <property name="LabelProp" translatable="yes">Source:</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;Source:&lt;/b&gt;</property>
+                                <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
                                 <property name="AutoSize">True</property>
@@ -523,7 +529,8 @@
                             <child>
                               <widget class="Gtk.Label" id="label3">
                                 <property name="MemberName" />
-                                <property name="LabelProp" translatable="yes">Destination:</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;Destination:&lt;/b&gt;</property>
+                                <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
                                 <property name="TopAttach">1</property>
@@ -543,6 +550,9 @@
                               <widget class="Gtk.Label" id="source_label">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
+                                <property name="Ellipsize">Middle</property>
+                                <property name="MaxWidthChars">60</property>
+                                <property name="SingleLineMode">True</property>
                               </widget>
                               <packing>
                                 <property name="LeftAttach">1</property>
@@ -609,9 +619,9 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="GtkLabel5">
+                  <widget class="Gtk.Label" id="titleGtkLabel">
                     <property name="MemberName" />
-                    <property name="HeightRequest">25</property>
+                    <property name="HeightRequest">28</property>
                     <property name="Xalign">0</property>
                     <property name="Yalign">1</property>
                     <property name="LabelProp" translatable="yes">&lt;b&gt;Currently processing&lt;/b&gt;</property>
@@ -641,12 +651,13 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Expanded">True</property>
-            <property name="BorderWidth">6</property>
+            <property name="BorderWidth">9</property>
             <signal name="Activated" handler="OnExpander1Activated" />
             <child>
               <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
+                <property name="BorderWidth">3</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                     <property name="MemberName" />
@@ -753,7 +764,7 @@
             <child>
               <widget class="Gtk.Label" id="queue_GtkLabel">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Queue&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Tasks queue&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
                 <property name="UseUnderline">True</property>
               </widget>
@@ -799,11 +810,11 @@
         <property name="StockId">gtk-quit</property>
         <signal name="Activated" handler="OnQuitActionActivated" />
       </action>
-      <action id="renderToAction">
+      <action id="enqueueRenderAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Control&gt;r</property>
-        <property name="Label" translatable="yes">Render to...</property>
-        <property name="ShortLabel" translatable="yes">Render to...</property>
+        <property name="Label" translatable="yes">Enqueue render...</property>
+        <property name="ShortLabel" translatable="yes">Enqueue render...</property>
         <property name="StockId">gtk-execute</property>
         <signal name="Activated" handler="OnRenderToActionActivated" />
       </action>
@@ -893,7 +904,7 @@
         <property name="Label" translatable="yes">Rendering queue</property>
         <property name="ShortLabel" translatable="yes">Rendering queue</property>
         <property name="DrawAsRadio">False</property>
-        <property name="Active">False</property>
+        <property name="Active">True</property>
         <signal name="Toggled" handler="OnRenderingQueueActionToggled" />
       </action>
     </action-group>
@@ -913,7 +924,7 @@
                 <node type="Menuitem" action="saveStageAsAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="loadRawAction" />
-                <node type="Menuitem" action="renderToAction" />
+                <node type="Menuitem" action="enqueueRenderAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="quitAction" />
               </node>
