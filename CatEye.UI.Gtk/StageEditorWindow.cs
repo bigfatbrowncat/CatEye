@@ -315,7 +315,7 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			if (ea.Update && UpdateDuringProcessingAction.Active)
 			{
-				if ((DateTime.Now - mLastUpdate).TotalMilliseconds / viewWidget.UpdateTimeSpan.TotalMilliseconds > 10)
+				if ((DateTime.Now - mLastUpdate).TotalMilliseconds / viewWidget.UpdateTimeSpan.TotalMilliseconds > 5)
 				{
 					if (viewWidget.HDR != mStage.CurrentImage)
 						viewWidget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
@@ -325,9 +325,6 @@ public partial class StageEditorWindow : Gtk.Window
 					mLastUpdate = DateTime.Now;
 				}
 			}
-#warning This should be removed after multi threading added
-			/*while (Gtk.Application.EventsPending())
-				Gtk.Application.RunIteration();*/
 		});
 	}	
 #endregion	
@@ -661,10 +658,18 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			MainClass.rq.Add(stg, stages.RawFileName, fn, dest_type);
 			*/
-			if (RemotingObject.rob == null)
+			
+			// Sending remote command to add stage to queue
+			string command = "AddToQueue";
+			string[] arguments = new string[] 
 			{
-				
-			}
+				mStage.SaveStageToString(), 
+				mStage.RawFileName, 
+				fn, 
+				dest_type, 
+				mStage.Prescale.ToString()
+			};
+			MainClass.RemoteControlService.SendCommand(command, arguments);
 			
 			//RemotingObject.AssureQueueServiceIsRunning();
 			//RemotingObject.RunQueueServiceOrConnectToIt();

@@ -445,7 +445,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="432 324">
+  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="432 344">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>

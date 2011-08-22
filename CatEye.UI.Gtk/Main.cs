@@ -151,12 +151,15 @@ namespace CatEye
 		}
 		
 		private static List<StageEditorWindow> mStageEditorWindows = new List<StageEditorWindow>();
+		private static RenderingQueue mRenderingQueue;
+		private static RenderingQueueWindow mRenderingQueueWindow;
+		private static RemoteControlService mRemoteControlService;
+		
 		public static List<StageEditorWindow> StageEditorWindows
 		{
 			get { return mStageEditorWindows; }
 		}
-		
-		private static RemoteControlService mRemoteControlService;
+
 		public static RemoteControlService RemoteControlService
 		{
 			get { return mRemoteControlService; }
@@ -182,6 +185,25 @@ namespace CatEye
 					sew.Show();
 				});
 			}
+			if (e.Command == "AddToQueue")
+			{
+				string cestageData = e.Arguments[0];		// XML-serialized .cestage
+				string rawFileName = e.Arguments[1];		// Raw filename
+				string targetFileName = e.Arguments[2];		// target file name
+				string targetType = e.Arguments[3];			// target file type (jpeg, png, bmp)
+				int Prescale = int.Parse(e.Arguments[4]);	// prescale value
+				Application.Invoke(delegate
+				{
+					Stage stage = new Stage(StageOperationFactory, 
+						StageOperationParametersFactory,
+						FloatBitmapGtkFactory);
+					
+					stage.LoadStageFromString(cestageData);
+					
+					mRenderingQueue.Add(stage, rawFileName, Prescale, targetFileName, targetType);
+					mRenderingQueueWindow.Show();
+				});				
+			}
 		}
 		
 		public static void Main(string[] args)
@@ -200,6 +222,11 @@ namespace CatEye
 			if (mRemoteControlService.Start(command, arguments.ToArray()))
 			{
 				Application.Init ();
+				
+				// Creating queue window
+				mRenderingQueue = new RenderingQueue();
+				mRenderingQueueWindow = new RenderingQueueWindow(mRenderingQueue);
+				
 				GLib.Idle.Add(delegate {
 					// Cleaning the StageEditorWindows list
 					bool something_removed = false;

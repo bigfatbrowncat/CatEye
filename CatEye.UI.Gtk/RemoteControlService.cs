@@ -190,7 +190,7 @@ namespace CatEye.UI.Gtk
 			
 			if (client != null)
 			{
-				SendCommand(client, command, arguments);
+				InternalSendCommand(client, command, arguments);
 			}
 			else
 			{
@@ -201,8 +201,22 @@ namespace CatEye.UI.Gtk
 			}
 			return result;
 		}
+		
+		public bool SendCommand(string command, string[] arguments)
+		{
+			TcpClient client = TryConnectClient();
+			if (client == null)
+			{
+				return false;
+			}
+			else
+			{
+				InternalSendCommand(client, command, arguments);
+				return true;
+			}
+		}
 
-		private void SendCommand(TcpClient client, string command, string[] args)
+		private void InternalSendCommand(TcpClient client, string command, string[] args)
 		{
 			string str;
 			List<string> cmd_and_args = new List<string>();

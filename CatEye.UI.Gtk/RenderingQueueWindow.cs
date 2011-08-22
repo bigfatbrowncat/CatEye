@@ -85,6 +85,9 @@ namespace CatEye.UI.Gtk
 			queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 		}
 
+#region Handlers called from other thread. 
+	// Each handler here should contain Application.Invoke
+
 		void HandleRenderingQueueAfterProcessingFinished (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
@@ -161,7 +164,9 @@ namespace CatEye.UI.Gtk
 				processing_progressbar.Text = status;
 			});
 		}
-
+		
+#endregion
+		
 		protected void OnExpander1Activated (object sender, System.EventArgs e)
 		{
 			if (expander1.Expanded == false)
