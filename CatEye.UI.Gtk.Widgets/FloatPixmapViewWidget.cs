@@ -77,33 +77,40 @@ namespace CatEye.UI.Gtk.Widgets
 
 		public void UpdatePicture()
 		{
-			GdkWindow.Cursor = new Cursor(Gdk.CursorType.Watch);
-			
-			DateTime update_start = DateTime.Now;
-			if (_HDR != null)
+			try
 			{
-				Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.Width, _HDR.Height);
-	
-				_HDR.DrawToPixbuf(newRenderedPicture, delegate {
-					//while (Application.EventsPending()) Application.RunIteration();
-					return true;
-				});
+				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Watch);
 				
-				if (_RenderedPicture != null)
-					_RenderedPicture.Dispose();
-
-				_RenderedPicture = newRenderedPicture;
+				DateTime update_start = DateTime.Now;
+				if (_HDR != null)
+				{
+					Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.Width, _HDR.Height);
+		
+					_HDR.DrawToPixbuf(newRenderedPicture, delegate {
+						//while (Application.EventsPending()) Application.RunIteration();
+						return true;
+					});
 					
-			}
-			if (!mPanInProgress)
-				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Arrow);
-			else
-				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Hand1);
+					if (_RenderedPicture != null)
+						_RenderedPicture.Dispose();
+	
+					_RenderedPicture = newRenderedPicture;
+						
+				}
+				if (!mPanInProgress)
+					GdkWindow.Cursor = new Cursor(Gdk.CursorType.Arrow);
+				else
+					GdkWindow.Cursor = new Cursor(Gdk.CursorType.Hand1);
+					
 				
-			
-			_UpdateTimeSpan = DateTime.Now - update_start;
-			//QueueResizeNoRedraw();
-			QueueDraw();
+				_UpdateTimeSpan = DateTime.Now - update_start;
+				//QueueResizeNoRedraw();
+				QueueDraw();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Exception during redrawing: " + ex.Message + "No problem. Going on");
+			}
 		}
 		
 		protected override bool OnExposeEvent (EventExpose evnt)

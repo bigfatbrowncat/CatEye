@@ -81,7 +81,7 @@ namespace CatEye.UI.Gtk.Widgets
 			_PowerIsChanging = true;
 			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
 			{				
-				power_hscale.Value = Math.Sqrt(((UltraSharpStageOperationParameters)Parameters).Power);
+				power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
 			}
 			else
 			{				

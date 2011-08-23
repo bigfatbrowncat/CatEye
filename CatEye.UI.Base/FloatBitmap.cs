@@ -348,7 +348,8 @@ namespace CatEye.UI.Base
 						
 			double[,] scale_matrix = new double[mWidth, mHeight];
 			double[,] dispersion_matrix = new double[mWidth, mHeight];
-			
+			double dispersion_max = 0;
+				
 			int[,] scale_matrix_adds = new int[mWidth, mHeight];
 			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
@@ -375,6 +376,8 @@ namespace CatEye.UI.Base
 					}
 				}
 				dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / points);
+				if (dispersion_max < dispersion_matrix[i, j])
+					dispersion_max = dispersion_matrix[i, j];
 			}
 			
 			Console.WriteLine("Calculating scale factors...");
@@ -408,8 +411,8 @@ namespace CatEye.UI.Base
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									double limit = 1.0 / (Math.Pow(dispersion_matrix[i, j], 0.45) * 100 + 0.001);
-									
+									double limit = 1.0 / (Math.Pow(dispersion_matrix[i, j], 0.5) * 100 + 0.00001);
+
 									double f = Math.Log(Math.Abs(delta) + 1);
 									// Limiting f
 									f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
