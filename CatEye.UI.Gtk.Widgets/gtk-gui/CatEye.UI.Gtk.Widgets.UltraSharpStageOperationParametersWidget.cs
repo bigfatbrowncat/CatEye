@@ -42,7 +42,6 @@ namespace CatEye.UI.Gtk.Widgets
 			this.sharp_radiobutton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Sharp"));
 			this.sharp_radiobutton.CanFocus = true;
 			this.sharp_radiobutton.Name = "sharp_radiobutton";
-			this.sharp_radiobutton.Active = true;
 			this.sharp_radiobutton.DrawIndicator = false;
 			this.sharp_radiobutton.UseUnderline = true;
 			this.sharp_radiobutton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -91,7 +90,7 @@ namespace CatEye.UI.Gtk.Widgets
 			this.label15 = new global::Gtk.Label ();
 			this.label15.Name = "label15";
 			this.label15.Xalign = 1F;
-			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Lower Limit:");
+			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Disperse damper:");
 			this.table1.Add (this.label15);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label15]));
 			w6.TopAttach = ((uint)(4));
@@ -116,9 +115,8 @@ namespace CatEye.UI.Gtk.Widgets
 			this.limitdown_hscale.Name = "limitdown_hscale";
 			this.limitdown_hscale.Inverted = true;
 			this.limitdown_hscale.Adjustment.Upper = 1;
-			this.limitdown_hscale.Adjustment.PageIncrement = 0.01;
-			this.limitdown_hscale.Adjustment.StepIncrement = 0.01;
-			this.limitdown_hscale.Adjustment.Value = 0.5;
+			this.limitdown_hscale.Adjustment.PageIncrement = 10;
+			this.limitdown_hscale.Adjustment.StepIncrement = 1;
 			this.limitdown_hscale.DrawValue = false;
 			this.limitdown_hscale.Digits = 3;
 			this.limitdown_hscale.ValuePos = ((global::Gtk.PositionType)(1));
@@ -131,12 +129,12 @@ namespace CatEye.UI.Gtk.Widgets
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.limitdown_spinbutton = new global::Gtk.SpinButton (0, 1, 0.1);
+			this.limitdown_spinbutton = new global::Gtk.SpinButton (0, 1, 0.01);
 			this.limitdown_spinbutton.CanFocus = true;
 			this.limitdown_spinbutton.Name = "limitdown_spinbutton";
-			this.limitdown_spinbutton.Adjustment.PageIncrement = 10;
+			this.limitdown_spinbutton.Adjustment.PageIncrement = 0.01;
 			this.limitdown_spinbutton.ClimbRate = 1;
-			this.limitdown_spinbutton.Digits = ((uint)(2));
+			this.limitdown_spinbutton.Digits = ((uint)(3));
 			this.limitdown_spinbutton.Numeric = true;
 			this.limitdown_spinbutton.Value = 0.5;
 			this.table1.Add (this.limitdown_spinbutton);

@@ -331,6 +331,9 @@ namespace CatEye.UI.Base
 		
 		public void SharpenLight(double radius_part, double power, double limit_up, double limit_down, int points, ProgressReporter callback)
 		{
+			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
+			Random rnd = new Random();
+
 			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
 			unsafe {
@@ -342,11 +345,90 @@ namespace CatEye.UI.Base
 					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 								  			g_chan[i, j] * g_chan[i, j] + 
 							      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					if (light[i,j] > maxlight) maxlight = light[i,j];
+					if (light[i, j] > maxlight) maxlight = light[i,j];
+				}
+			}
+
+			// Calculating average
+			double[,] average_matrix = new double[mWidth, mHeight];
+			double[,] disperse_matrix = new double[mWidth, mHeight];
+
+			for (int i = 0; i < mWidth; i++)
+			{
+				if (callback != null)
+				{
+					if (!callback((double)i / mWidth))
+						throw new UserCancelException();
+				}
+				for (int j = 0; j < mHeight; j++)
+				{
+					int points_count = 0;
+					for (int k = 0; k < points; k++)
+					{
+						double phi = rnd.NextDouble() * 2 * Math.PI;
+						//double alpha = 3;
+						double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+					
+						int u = i + (int)(rad * Math.Cos(phi));
+						int v = j + (int)(rad * Math.Sin(phi));
+						
+						if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+						{
+							average_matrix[i, j] += light[u, v];
+							points_count ++;
+						}
+					}
+					average_matrix[i, j] /= points_count;
+				}
+
+				for (int j = 0; j < mHeight; j++)
+				{
+					int points_count = 0;
+					for (int k = 0; k < points; k++)
+					{
+						double phi = rnd.NextDouble() * 2 * Math.PI;
+						//double alpha = 3;
+						double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+					
+						int u = i + (int)(rad * Math.Cos(phi));
+						int v = j + (int)(rad * Math.Sin(phi));
+						
+						if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+						{
+							double delta = light[u, v] - average_matrix[i, j];
+							delta *= delta;
+							
+							disperse_matrix[i, j] += delta;
+							points_count ++;
+						}
+					}
+					disperse_matrix[i, j] = Math.Sqrt(disperse_matrix[i, j] / points_count);
+				}
+				
+				// Calculating disperse max
+				double disp_max = 0;
+				for (int j = 0; j < mHeight; j++)
+				{
+					if (disperse_matrix[i, j] > disp_max) disp_max = disperse_matrix[i, j];
+				}
+				
+				for (int j = 0; j < mHeight; j++)
+				{
+					double alpha = limit_down;		// Disperse damping parameter
+					
+					double delta = (light[i, j] - average_matrix[i, j]);
+					double sharper = power * Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta) ;
+					double damper = alpha * (disp_max - disperse_matrix[i, j]) * (disp_max - disperse_matrix[i, j]) / (disp_max * disp_max); 
+					
+					r_chan[i, j] *= (float)(1 + sharper * damper);
+					g_chan[i, j] *= (float)(1 + sharper * damper);
+					b_chan[i, j] *= (float)(1 + sharper * damper);
 				}
 			}
 			
+/*			
 			double[,] scale_matrix = new double[mWidth, mHeight];
+			
 			int[,] scale_matrix_adds = new int[mWidth, mHeight];
 			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
@@ -364,6 +446,7 @@ namespace CatEye.UI.Base
 							throw new UserCancelException();
 					}
 	
+
 					for (int j = 0; j < mHeight; j++)
 					{
 						if (i < mWidth)
@@ -398,6 +481,7 @@ namespace CatEye.UI.Base
 									double scale = f / 5;
 									
 									scale_matrix[u, v] += scale;
+									disperse_matrix[u, v] += 
 									scale_matrix_adds[u, v] ++;
 								}
 							}
@@ -420,6 +504,7 @@ namespace CatEye.UI.Base
 					}
 				}
 			}
+*/			
 		}
 		
 		public void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback)

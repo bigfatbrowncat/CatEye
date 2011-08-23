@@ -709,7 +709,7 @@
           <widget class="Gtk.Label" id="label15">
             <property name="MemberName" />
             <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Lower Limit:</property>
+            <property name="LabelProp" translatable="yes">Disperse damper:</property>
           </widget>
           <packing>
             <property name="TopAttach">4</property>
@@ -752,9 +752,8 @@
             <property name="CanFocus">True</property>
             <property name="Inverted">True</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">0.01</property>
-            <property name="StepIncrement">0.01</property>
-            <property name="Value">0.5</property>
+            <property name="PageIncrement">10</property>
+            <property name="StepIncrement">1</property>
             <property name="DrawValue">False</property>
             <property name="Digits">3</property>
             <property name="ValuePos">Right</property>
@@ -781,10 +780,10 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Upper">1</property>
-            <property name="PageIncrement">10</property>
-            <property name="StepIncrement">0.1</property>
+            <property name="PageIncrement">0.01</property>
+            <property name="StepIncrement">0.01</property>
             <property name="ClimbRate">1</property>
-            <property name="Digits">2</property>
+            <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
             <signal name="ValueChanged" handler="OnLimitdownSpinbuttonValueChanged" />
