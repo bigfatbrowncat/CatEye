@@ -552,8 +552,8 @@ namespace CatEye.UI.Base
 			mLoadPending = false;
 			SetUIState(UIState.Loading);
 			
-			bool res = base.LoadImage(mLoadPendingFilename, mLoadPendingDownscale);
-			if (res)
+			base.LoadImage(mLoadPendingFilename, mLoadPendingDownscale);
+			if (SourceImage != null)
 			{
 				RawFileName = mLoadPendingFilename;
 				Prescale = mLoadPendingDownscale;

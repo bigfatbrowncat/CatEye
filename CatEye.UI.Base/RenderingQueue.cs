@@ -143,7 +143,7 @@ namespace CatEye.UI.Base
 			}
 			if (mCancelAllItems == true)
 			{
-				throw new UserCancelAllException();
+				throw new UserCancelException();
 			}
 			
 			OnQueueProgressMessageReport(rt.Source, rt.Destination, e.Progress, e.Status);
@@ -241,18 +241,14 @@ namespace CatEye.UI.Base
 						
 						OnBeforeItemProcessingStarted(mInProgress);
 						
-						if (mInProgress.Stage.LoadImage(mInProgress.Source, mInProgress.Prescale))
-						{
-							mInProgress.Stage.Process();
-							OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Saving image to file...");
-							OnItemRendering(mInProgress);
-							OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Image saved");
-						}
-						else
-						{
-							throw new Exception("Loading error!");
-						}
-						
+						if (!mInProgress.Stage.LoadImage(mInProgress.Source, mInProgress.Prescale))
+							throw new UserCancelException();
+
+						mInProgress.Stage.Process();
+						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Saving image to file...");
+						OnItemRendering(mInProgress);
+						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Image saved");
+
 						mInProgress.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
 						
 						OnAfterItemProcessingFinished(mInProgress);

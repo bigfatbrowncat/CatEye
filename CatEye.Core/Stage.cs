@@ -248,16 +248,16 @@ namespace CatEye.Core
 			CancelProcessing();
 			
 			IBitmapCore ibc = ProcessRawFromDCRaw(filename, downscale_by);
-
 			if (ibc != null)
 			{
-				SourceImage = ibc;
 				if (ImageLoadingCompleted != null) ImageLoadingCompleted(this, EventArgs.Empty);
+				SourceImage = ibc;
 				return true;
 			}
 			else
 			{
 				if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
+				SourceImage = ibc;
 				return false;
 			}
 		}

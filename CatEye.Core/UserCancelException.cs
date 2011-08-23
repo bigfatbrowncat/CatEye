@@ -7,9 +7,9 @@ namespace CatEye.Core
 		public UserCancelException() : base("User has cancelled the operation") {}
 		public UserCancelException(string message): base(message) {}
 	}
-	public class UserCancelAllException : UserCancelException
-	{
-		public UserCancelAllException() : base("User has cancelled all operations") {}
-	}
+//	public class UserCancelAllException : UserCancelException
+//	{
+//		public UserCancelAllException() : base("User has cancelled all operations") {}
+//	}
 }
 
