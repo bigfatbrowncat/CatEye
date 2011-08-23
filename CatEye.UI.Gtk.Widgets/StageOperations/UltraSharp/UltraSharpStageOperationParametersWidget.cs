@@ -16,14 +16,10 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		private bool _PowerIsChanging = false;
 		private bool _RadiusIsChanging = false;
-		private bool _LimitUpIsChanging = false;
-		private bool _LimitDownIsChanging = false;
-		
+
 		protected enum PowerChanger { HScale, SpinButton }
 		protected enum RadiusChanger { HScale, SpinButton }
-		protected enum LimitUpChanger { HScale, SpinButton }
-		protected enum LimitDownChanger { HScale, SpinButton }
-		
+
 		protected void ChangePower(double new_value, PowerChanger changer)
 		{
 			if (!_PowerIsChanging)
@@ -36,7 +32,7 @@ namespace CatEye.UI.Gtk.Widgets
 				{
 					if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
 					{
-						power_hscale.Value = Math.Sqrt(new_value);
+						power_hscale.Value = new_value;
 					}
 					else
 					{
@@ -75,48 +71,6 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 		
-		protected void ChangeLimitUp(double new_value, LimitUpChanger changer)
-		{
-			if (!_LimitUpIsChanging)
-			{
-				_LimitUpIsChanging = true;
-				StartChangingParameters();
-				
-				// Setting all editors to the value
-				if (changer != LimitUpChanger.HScale)
-					limitup_hscale.Value = new_value;
-				
-				if (changer != LimitUpChanger.SpinButton)
-					limitup_spinbutton.Value = new_value;
-				
-				((UltraSharpStageOperationParameters)Parameters).LimitUp = new_value;
-				EndChangingParameters();
-				OnUserModified();
-				_LimitUpIsChanging = false;
-			}
-		}		
-
-		protected void ChangeLimitDown(double new_value, LimitDownChanger changer)
-		{
-			if (!_LimitDownIsChanging)
-			{
-				_LimitDownIsChanging = true;
-				StartChangingParameters();
-				
-				// Setting all editors to the value
-				if (changer != LimitDownChanger.HScale)
-					limitdown_hscale.Value = new_value;
-				
-				if (changer != LimitDownChanger.SpinButton)
-					limitdown_spinbutton.Value = new_value;
-				
-				((UltraSharpStageOperationParameters)Parameters).LimitDown = new_value;
-				EndChangingParameters();
-				OnUserModified();
-				_LimitDownIsChanging = false;
-			}
-		}		
-		
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
@@ -142,21 +96,12 @@ namespace CatEye.UI.Gtk.Widgets
 			radius_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
 			_RadiusIsChanging = false;
 			
-			_LimitUpIsChanging = true;
-			limitup_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).LimitUp;
-			limitup_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).LimitUp;
-			_LimitUpIsChanging = false;
-
-			_LimitDownIsChanging = true;
-			limitdown_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).LimitDown;
-			limitdown_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).LimitDown;
-			_LimitDownIsChanging = false;
 		}
 
 		protected void OnPowerHscaleChangeValue (object o, ChangeValueArgs args)
 		{
 			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
-				ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
+				ChangePower(power_hscale.Value, PowerChanger.HScale);
 			else
 				ChangePower(power_hscale.Value, PowerChanger.HScale);
 		}
@@ -176,38 +121,20 @@ namespace CatEye.UI.Gtk.Widgets
 			ChangeRadius(radius_spinbutton.Value, RadiusChanger.SpinButton);
 		}
 
-		protected void OnLimitupHscaleChangeValue (object o, ChangeValueArgs args)
-		{
-			ChangeLimitUp(limitup_hscale.Value, LimitUpChanger.HScale);
-		}
-
-		protected void OnLimitupSpinbuttonValueChanged (object sender, System.EventArgs e)
-		{
-			ChangeLimitUp(limitup_spinbutton.Value, LimitUpChanger.SpinButton);
-		}
-
-		protected void OnLimitdownHscaleChangeValue (object o, ChangeValueArgs args)
-		{
-			ChangeLimitDown(limitdown_hscale.Value, LimitDownChanger.HScale);
-		}
-
-		protected void OnLimitdownSpinbuttonValueChanged (object sender, System.EventArgs e)
-		{
-			ChangeLimitDown(limitdown_spinbutton.Value, LimitDownChanger.SpinButton);
-		}
-
 		protected void OnSharpSoftToggled (object sender, System.EventArgs e)
 		{
 			if (sharp_radiobutton.Active)
 			{
 				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Sharp;
 				power_spinbutton.Adjustment.Upper = 100;
-				ChangePower(power_hscale.Value * power_hscale.Value, PowerChanger.HScale);
+				power_hscale.Adjustment.Upper = 100;
+				ChangePower(power_hscale.Value, PowerChanger.HScale);
 			}
 			else
 			{
 				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Soft;
-				power_spinbutton.Adjustment.Upper = 10;
+				power_spinbutton.Adjustment.Upper = 20;
+				power_hscale.Adjustment.Upper = 20;
 				ChangePower(power_hscale.Value, PowerChanger.HScale);
 			}
 		}

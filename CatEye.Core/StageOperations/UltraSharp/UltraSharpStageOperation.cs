@@ -33,7 +33,7 @@ namespace CatEye.Core
 			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 
 				power *= -1;
 			
-			hdp.SharpenLight(pm.Radius, power, pm.LimitUp, pm.LimitDown, points, 
+			hdp.SharpenLight(pm.Radius, power, points, 
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

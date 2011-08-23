@@ -10,7 +10,7 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 10, mRadius = 0.1, mLimitUp = 0.1, mLimitDown = 1;
+		private double mPower = 10, mRadius = 0.1;
 		private SharpType mType = SharpType.Sharp;
 		
 		public double Power
@@ -32,24 +32,6 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
-		public double LimitUp
-		{
-			get { return mLimitUp; }
-			set 
-			{
-				mLimitUp = value;
-				OnChanged();
-			}
-		}
-		public double LimitDown
-		{
-			get { return mLimitDown; }
-			set 
-			{
-				mLimitDown = value;
-				OnChanged();
-			}
-		}
 		
 		public SharpType Type
 		{
@@ -66,8 +48,6 @@ namespace CatEye.Core
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("LimitUp")).Value = mLimitUp.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("LimitDown")).Value = mLimitDown.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
 				st = "sharp";
@@ -101,24 +81,6 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Radius value");
 			}
-			if (node.Attributes["LimitUp"] != null)
-			{
-				if (double.TryParse(node.Attributes["LimitUp"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mLimitUp = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse LimitUp value");
-			}
-			if (node.Attributes["LimitDown"] != null)
-			{
-				if (double.TryParse(node.Attributes["LimitDown"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mLimitDown = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse LimitDown value");
-			}
 			if (node.Attributes["SharpType"] != null)
 			{
 				
@@ -149,8 +111,6 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			UltraSharpStageOperationParameters t = (UltraSharpStageOperationParameters)target;
-			t.mLimitDown = mLimitDown;
-			t.mLimitUp = mLimitUp;
 			t.mPower = mPower;
 			t.mRadius = mRadius;
 			t.mType = mType;
