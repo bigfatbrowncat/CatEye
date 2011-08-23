@@ -12,6 +12,8 @@ namespace CatEye.UI.Gtk
 		private NodeStore mQueueNodeStore;
 		private bool mIsDestroyed;
 		
+		private StatusIcon mProcessingStatusIcon;
+		
 		[TreeNode(ListOnly = true)]
 		private class RenderingTaskTreeNode : TreeNode
 		{
@@ -63,6 +65,9 @@ namespace CatEye.UI.Gtk
 		public RenderingQueueWindow (RenderingQueue renderingQueue) : 
 				base(WindowType.Toplevel)
 		{
+			this.Build ();
+
+			// Adding queue event handlers
 			mRenderingQueue = renderingQueue;
 			mRenderingQueue.QueueProgressMessageReport += HandleRenderingQueueProgressMessageReport;
 			mRenderingQueue.ItemAdded += HandleRenderingQueueItemAdded;
@@ -70,12 +75,14 @@ namespace CatEye.UI.Gtk
 			mRenderingQueue.ItemRemoved += HandleRenderingQueueItemRemoved;
 			mRenderingQueue.BeforeItemProcessingStarted += HandleRenderingQueueBeforeItemProcessingStarted;
 			mRenderingQueue.AfterItemProcessingFinished += HandleRenderingQueueAfterItemProcessingFinished;
-			mRenderingQueue.ThreadStarted += HandleRenderingQueueBeforeProcessingStarted;
+			mRenderingQueue.ThreadStarted += HandleRenderingQueueThreadStarted;
 			mRenderingQueue.ThreadStopped += HandleRenderingQueueThreadStopped;
-			mRenderingQueue.AfterProcessingFinished += HandleRenderingQueueAfterProcessingFinished;
+			mRenderingQueue.QueueEmpty += HandleRenderingQueueQueueEmpty;
 			mRenderingQueue.ItemRendering += HandleRenderingQueueItemRendering;
 			
-			this.Build ();
+			// Creating status icon
+			mProcessingStatusIcon = new StatusIcon(Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.res.cateye.png"));
+			mProcessingStatusIcon.Activate += HandleProcessingStatusIconActivate; 
 			
 			// Preparing queue list
 			mQueueNodeStore = new NodeStore(typeof(RenderingTaskTreeNode));
@@ -131,18 +138,24 @@ namespace CatEye.UI.Gtk
 		}
 		
 		
-		void HandleRenderingQueueAfterProcessingFinished (object sender, EventArgs e)
+		void HandleRenderingQueueQueueEmpty (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
+				mProcessingStatusIcon.Visible = false;
 				Visible = false;
 			});
 		}
 
-		void HandleRenderingQueueBeforeProcessingStarted (object sender, EventArgs e)
+		void HandleRenderingQueueThreadStarted (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
 				//Visible = true;
 			});
+		}
+
+		void HandleProcessingStatusIconActivate (object sender, EventArgs e)
+		{
+			Visible = !Visible;
 		}
 
 		void HandleRenderingQueueAfterItemProcessingFinished (object sender, RenderingTaskEventArgs e)
@@ -164,6 +177,7 @@ namespace CatEye.UI.Gtk
 				destination_label.Text = "";
 				processing_progressbar.Fraction = 0;
 				processing_progressbar.Text = "Starting the render process...";
+				mProcessingStatusIcon.Visible = true;
 				
 			});
 		}
@@ -204,6 +218,8 @@ namespace CatEye.UI.Gtk
 				destination_label.Text = destination;
 				processing_progressbar.Fraction = progress;
 				processing_progressbar.Text = status;
+				
+				mProcessingStatusIcon.Tooltip = "Processing " + System.IO.Path.GetFileName(source) + ". " + status + " (" + ((int)(progress * 100)).ToString() + "%)";
 			});
 		}
 		

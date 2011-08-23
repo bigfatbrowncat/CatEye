@@ -40,7 +40,7 @@ namespace CatEye.UI.Base
 		public event EventHandler<RenderingTaskEventArgs> BeforeItemProcessingStarted;
 		public event EventHandler<RenderingTaskEventArgs> AfterItemProcessingFinished;
 		public event EventHandler<EventArgs> ThreadStarted;
-		public event EventHandler<EventArgs> AfterProcessingFinished;
+		public event EventHandler<EventArgs> QueueEmpty;
 		public event EventHandler<EventArgs> ThreadStopped;
 		
 		public event EventHandler<RenderingTaskEventArgs> ItemRendering;
@@ -100,10 +100,10 @@ namespace CatEye.UI.Base
 			if (ThreadStopped != null)
 				ThreadStopped(this, EventArgs.Empty);
 		}
-		protected virtual void OnAfterProcessingFinished()
+		protected virtual void OnQueueEmpty()
 		{
-			if (AfterProcessingFinished != null)
-				AfterProcessingFinished(this, EventArgs.Empty);
+			if (QueueEmpty != null)
+				QueueEmpty(this, EventArgs.Empty);
 		}
 
 		protected virtual void OnQueueProgressMessageReport(string source, string destination, double progress, string status)
@@ -265,7 +265,7 @@ namespace CatEye.UI.Base
 						mCancelItem = false;
 						mCancelAllItems = false;
 						if (mQueue.Count == 0)
-							OnAfterProcessingFinished();
+							OnQueueEmpty();
 					}
 				}
 				else
