@@ -348,37 +348,10 @@ namespace CatEye.UI.Base
 						
 			double[,] scale_matrix = new double[mWidth, mHeight];
 			double[,] dispersion_matrix = new double[mWidth, mHeight];
-			double dispersion_max = 0;
 				
-			int[,] scale_matrix_adds = new int[mWidth, mHeight];
-			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
 			
 			Random rnd = new Random();
-			
-			for (int i = 0; i < mWidth; i++)
-				for (int j = 0; j < mHeight; j++)
-			{
-				// Dispersion
-				for (int k = 0; k < points; k++)
-				{
-					double phi = rnd.NextDouble() * 2 * Math.PI;
-					//double alpha = 3;
-					double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-				
-					int u = i + (int)(rad * Math.Cos(phi));
-					int v = j + (int)(rad * Math.Sin(phi));
-					
-					if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
-					{
-						double delta = (light[u, v] - light[i, j]);
-						dispersion_matrix[i, j] += delta * delta;
-					}
-				}
-				dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / points);
-				if (dispersion_max < dispersion_matrix[i, j])
-					dispersion_max = dispersion_matrix[i, j];
-			}
 			
 			Console.WriteLine("Calculating scale factors...");
 			unsafe {
@@ -396,8 +369,8 @@ namespace CatEye.UI.Base
 					{
 						if (i < mWidth)
 						{
-
-							// Average
+							// Dispersion
+							int avg = 0;
 							for (int k = 0; k < points; k++)
 							{
 								double phi = rnd.NextDouble() * 2 * Math.PI;
@@ -409,7 +382,27 @@ namespace CatEye.UI.Base
 								
 								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 								{
-									double delta = (light[u, v] - light[i, j]);
+									double delta = (light[i, j] - light[u, v]);
+									dispersion_matrix[i, j] += delta * delta;
+									avg ++;
+								}
+							}
+							dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
+
+							// Average
+							avg = 0;
+							for (int k = 0; k < points; k++)
+							{
+								double phi = rnd.NextDouble() * 2 * Math.PI;
+								//double alpha = 3;
+								double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+							
+								int u = i + (int)(rad * Math.Cos(phi));
+								int v = j + (int)(rad * Math.Sin(phi));
+								
+								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+								{
+									double delta = (light[i, j] - light[u, v]);
 									double f = Math.Log(Math.Abs(delta) + 1);
 									
 									// Limiting f to remove white and dark "crowns" near contrast objects
@@ -421,21 +414,21 @@ namespace CatEye.UI.Base
 
 									double scale = f / 1.5;	// It was f / 5
 									
-									scale_matrix[u, v] += scale;
-									scale_matrix_adds[u, v] ++;
+									scale_matrix[i, j] += scale;
+									avg ++;
 								}
 							}
-							
+							scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
 						}
 							
 						if (i_back >= 0)
 						{
 							// Scaling amplitudes
 							double kcomp;
-							if (scale_matrix_adds[i_back, j] == 0)
+							/*if (scale_matrix_adds[i_back, j] == 0)
 								kcomp = 1;
-							else
-								kcomp = Math.Pow(scale_matrix[i_back, j] / scale_matrix_adds[i_back, j] + 1, power);
+							else*/
+							kcomp = Math.Pow(scale_matrix[i_back, j] + 1, power);
 
 							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
 							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;

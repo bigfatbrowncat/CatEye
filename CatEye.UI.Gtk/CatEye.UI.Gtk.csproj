@@ -77,7 +77,6 @@
     <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
     <Compile Include="RenderingQueueWindow.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.RenderingQueueWindow.cs" />
-    <Compile Include="RemotingObject.cs" />
     <Compile Include="RemoteControlService.cs" />
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="StageEditorWindow.cs" />
