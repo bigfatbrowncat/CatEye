@@ -411,7 +411,9 @@ namespace CatEye.UI.Base
 								{
 									double delta = (light[u, v] - light[i, j]);
 									
-									double limit = 1.0 / (Math.Pow(dispersion_matrix[i, j], 0.5) * 100 + 0.00001);
+									double a = 0.02;
+									
+									double limit = Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (a*a));
 
 									double f = Math.Log(Math.Abs(delta) + 1);
 									// Limiting f
