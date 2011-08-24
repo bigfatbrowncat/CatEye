@@ -329,7 +329,7 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public void SharpenLight(double radius_part, double power, int points, ProgressReporter callback)
+		public void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
 		{
 			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
@@ -406,13 +406,16 @@ namespace CatEye.UI.Base
 									double f = Math.Log(Math.Abs(delta) + 1);
 									
 									// Limiting f to remove white and dark "crowns" near contrast objects
-									double d = 0.2, K = 0.5;
-									double limit = 0.015 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (d*d)) * 
+									//double d = 2, K = 0.5; -- good
+									double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
+									//double denoise_delta = 0.05, denoise_min = 0.2;
+									//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
+									double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
 										(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
 
 									f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
 
-									double scale = f / 1.5;	// It was f / 5
+									double scale = f;	// It was f / 5
 									
 									scale_matrix[i, j] += scale;
 									avg ++;
@@ -428,7 +431,7 @@ namespace CatEye.UI.Base
 							/*if (scale_matrix_adds[i_back, j] == 0)
 								kcomp = 1;
 							else*/
-							kcomp = Math.Pow(scale_matrix[i_back, j] + 1, power);
+							kcomp = Math.Pow(scale_matrix[i_back, j] + 1, pressure);
 
 							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
 							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
@@ -436,16 +439,7 @@ namespace CatEye.UI.Base
 			
 						}
 					}
-/*					
-					// Printing array our
-					System.IO.TextWriter tw = new System.IO.StreamWriter("printout.csv");
-					int poX = (int)(mWidth * 0.58);
-					tw.WriteLine("Light\tDispersion\tScale");
-					for (int poY = (int)(0.3 * mHeight); poY < (int)(0.8 * mHeight); poY++)
-					{
-						tw.WriteLine(light[poX, poY].ToString("0.000000") + "\t" + dispersion_matrix[poX, poY].ToString("0.000000") + "\t" + (scale_matrix[poX, poY] / scale_matrix_adds[poX, poY]).ToString("0.000000"));
-					}
-					tw.Close();*/
+
 				}
 			}
 		}

@@ -29,11 +29,12 @@ namespace CatEye.Core
 			//double delta0 = Math.Pow(10, -pm.Base);
 			
 			
-			double power = pm.Power;
+			double pressure = pm.Pressure;
+			double contrast = pm.Contrast;
 			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 
-				power *= -1;
+				pressure *= -1;
 			
-			hdp.SharpenLight(pm.Radius, power, points, 
+			hdp.SharpenLight(pm.Radius, pressure, contrast, points, 
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

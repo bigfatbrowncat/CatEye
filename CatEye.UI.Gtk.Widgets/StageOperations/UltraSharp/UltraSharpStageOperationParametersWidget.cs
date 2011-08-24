@@ -14,39 +14,62 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Build ();
 		}
 		
-		private bool _PowerIsChanging = false;
+		private bool _PressureIsChanging = false;
+		private bool _ContrastIsChanging = false;
 		private bool _RadiusIsChanging = false;
 
-		protected enum PowerChanger { HScale, SpinButton }
+		protected enum PressureChanger { HScale, SpinButton }
+		protected enum ContrastChanger { HScale, SpinButton }
 		protected enum RadiusChanger { HScale, SpinButton }
 
-		protected void ChangePower(double new_value, PowerChanger changer)
+		protected void ChangePressure(double new_value, PressureChanger changer)
 		{
-			if (!_PowerIsChanging)
+			if (!_PressureIsChanging)
 			{
-				_PowerIsChanging = true;
+				_PressureIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != PowerChanger.HScale)
+				if (changer != PressureChanger.HScale)
 				{
 					if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
 					{
-						power_hscale.Value = new_value;
+						pressure_hscale.Value = new_value;
 					}
 					else
 					{
-						power_hscale.Value = new_value;
+						pressure_hscale.Value = new_value;
 					}
 				}
 				
-				if (changer != PowerChanger.SpinButton)
-					power_spinbutton.Value = new_value;
+				if (changer != PressureChanger.SpinButton)
+					pressure_spinbutton.Value = new_value;
 				
-				((UltraSharpStageOperationParameters)Parameters).Power = new_value;
+				((UltraSharpStageOperationParameters)Parameters).Pressure = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_PowerIsChanging = false;
+				_PressureIsChanging = false;
+			}
+		}
+
+		protected void ChangeContrast(double new_value, ContrastChanger changer)
+		{
+			if (!_ContrastIsChanging)
+			{
+				_ContrastIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != ContrastChanger.HScale)
+					contrast_hscale.Value = new_value;
+				
+				if (changer != ContrastChanger.SpinButton)
+					contrast_spinbutton.Value = new_value;
+				
+				((UltraSharpStageOperationParameters)Parameters).Contrast = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_ContrastIsChanging = false;
 			}
 		}
 
@@ -78,19 +101,24 @@ namespace CatEye.UI.Gtk.Widgets
 			else
 				soft_radiobutton.Active = true;
 			
-			_PowerIsChanging = true;
+			_PressureIsChanging = true;
 			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
 			{				
-				power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+				pressure_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Pressure;
 			}
 			else
 			{				
-				power_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
+				pressure_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Pressure;
 			}
 				
-			power_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Power;
-			_PowerIsChanging = false;
-
+			pressure_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Pressure;
+			_PressureIsChanging = false;
+			
+			_ContrastIsChanging = true;
+			contrast_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Contrast;
+			contrast_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Contrast;
+			_ContrastIsChanging = false;
+			
 			_RadiusIsChanging = true;
 			radius_hscale.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
 			radius_spinbutton.Value = ((UltraSharpStageOperationParameters)Parameters).Radius;
@@ -98,17 +126,17 @@ namespace CatEye.UI.Gtk.Widgets
 			
 		}
 
-		protected void OnPowerHscaleChangeValue (object o, ChangeValueArgs args)
+		protected void OnPressureHscaleChangeValue (object o, ChangeValueArgs args)
 		{
 			if (((UltraSharpStageOperationParameters)Parameters).Type == UltraSharpStageOperationParameters.SharpType.Sharp)
-				ChangePower(power_hscale.Value, PowerChanger.HScale);
+				ChangePressure(pressure_hscale.Value, PressureChanger.HScale);
 			else
-				ChangePower(power_hscale.Value, PowerChanger.HScale);
+				ChangePressure(pressure_hscale.Value, PressureChanger.HScale);
 		}
 
-		protected void OnPowerSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnPressureSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangePower(power_spinbutton.Value, PowerChanger.SpinButton);
+			ChangePressure(pressure_spinbutton.Value, PressureChanger.SpinButton);
 		}
 
 		protected void OnRadiusHscaleChangeValue (object o, ChangeValueArgs args)
@@ -126,17 +154,27 @@ namespace CatEye.UI.Gtk.Widgets
 			if (sharp_radiobutton.Active)
 			{
 				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Sharp;
-				power_spinbutton.Adjustment.Upper = 100;
-				power_hscale.Adjustment.Upper = 100;
-				ChangePower(power_hscale.Value, PowerChanger.HScale);
+				pressure_spinbutton.Adjustment.Upper = 100;
+				pressure_hscale.Adjustment.Upper = 100;
+				ChangePressure(pressure_hscale.Value, PressureChanger.HScale);
 			}
 			else
 			{
 				((UltraSharpStageOperationParameters)Parameters).Type = UltraSharpStageOperationParameters.SharpType.Soft;
-				power_spinbutton.Adjustment.Upper = 20;
-				power_hscale.Adjustment.Upper = 20;
-				ChangePower(power_hscale.Value, PowerChanger.HScale);
+				pressure_spinbutton.Adjustment.Upper = 20;
+				pressure_hscale.Adjustment.Upper = 20;
+				ChangePressure(pressure_hscale.Value, PressureChanger.HScale);
 			}
+		}
+
+		protected void OnContrastHscaleChangeValue (object o, ChangeValueArgs args)
+		{
+			ChangeContrast(contrast_hscale.Value, ContrastChanger.HScale);
+		}
+
+		protected void OnContrastSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeContrast(contrast_spinbutton.Value, ContrastChanger.SpinButton);
 		}
 	}
 }

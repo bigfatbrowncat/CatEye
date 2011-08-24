@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.StageOperationTitleWidget" design-size="328 28">
     <property name="MemberName" />
@@ -604,11 +604,71 @@
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">3</property>
+        <property name="NRows">4</property>
         <property name="NColumns">3</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
         <property name="BorderWidth">2</property>
+        <child>
+          <widget class="Gtk.HScale" id="contrast_hscale">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Lower">0.1</property>
+            <property name="Upper">1</property>
+            <property name="PageIncrement">0.01</property>
+            <property name="StepIncrement">0.1</property>
+            <property name="Value">0.50080971659919</property>
+            <property name="DrawValue">False</property>
+            <property name="Digits">3</property>
+            <property name="ValuePos">Right</property>
+            <signal name="ChangeValue" handler="OnContrastHscaleChangeValue" />
+          </widget>
+          <packing>
+            <property name="TopAttach">2</property>
+            <property name="BottomAttach">3</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.SpinButton" id="contrast_spinbutton">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Lower">0.1</property>
+            <property name="Upper">1</property>
+            <property name="PageIncrement">0.01</property>
+            <property name="StepIncrement">0.001</property>
+            <property name="ClimbRate">1</property>
+            <property name="Digits">3</property>
+            <property name="Numeric">True</property>
+            <property name="Value">0.1</property>
+            <signal name="ValueChanged" handler="OnContrastSpinbuttonValueChanged" />
+          </widget>
+          <packing>
+            <property name="TopAttach">2</property>
+            <property name="BottomAttach">3</property>
+            <property name="LeftAttach">2</property>
+            <property name="RightAttach">3</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
@@ -619,6 +679,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Sharp</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">False</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -669,8 +730,8 @@
             <property name="LabelProp" translatable="yes">Radius:</property>
           </widget>
           <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
+            <property name="TopAttach">3</property>
+            <property name="BottomAttach">4</property>
             <property name="XPadding">2</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
@@ -687,7 +748,7 @@
           <widget class="Gtk.Label" id="label7">
             <property name="MemberName" />
             <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Power:</property>
+            <property name="LabelProp" translatable="yes">Pressure:</property>
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -705,7 +766,27 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.HScale" id="power_hscale">
+          <widget class="Gtk.Label" id="label8">
+            <property name="MemberName" />
+            <property name="Xalign">1</property>
+            <property name="LabelProp" translatable="yes">Contrast:</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">2</property>
+            <property name="BottomAttach">3</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HScale" id="pressure_hscale">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Upper">100</property>
@@ -715,7 +796,7 @@
             <property name="DrawValue">False</property>
             <property name="Digits">3</property>
             <property name="ValuePos">Right</property>
-            <signal name="ChangeValue" handler="OnPowerHscaleChangeValue" />
+            <signal name="ChangeValue" handler="OnPressureHscaleChangeValue" />
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -733,7 +814,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.SpinButton" id="power_spinbutton">
+          <widget class="Gtk.SpinButton" id="pressure_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Upper">100</property>
@@ -742,7 +823,7 @@
             <property name="ClimbRate">1</property>
             <property name="Digits">1</property>
             <property name="Numeric">True</property>
-            <signal name="ValueChanged" handler="OnPowerSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnPressureSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -775,8 +856,8 @@
             <signal name="ChangeValue" handler="OnRadiusHscaleChangeValue" />
           </widget>
           <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
+            <property name="TopAttach">3</property>
+            <property name="BottomAttach">4</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
@@ -796,7 +877,7 @@
             <property name="Lower">0.001</property>
             <property name="Upper">1</property>
             <property name="PageIncrement">0.1</property>
-            <property name="StepIncrement">0.01</property>
+            <property name="StepIncrement">0.001</property>
             <property name="ClimbRate">1</property>
             <property name="Digits">3</property>
             <property name="Numeric">True</property>
@@ -804,8 +885,8 @@
             <signal name="ValueChanged" handler="OnRadiusSpinbuttonValueChanged" />
           </widget>
           <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
+            <property name="TopAttach">3</property>
+            <property name="BottomAttach">4</property>
             <property name="LeftAttach">2</property>
             <property name="RightAttach">3</property>
             <property name="AutoSize">True</property>

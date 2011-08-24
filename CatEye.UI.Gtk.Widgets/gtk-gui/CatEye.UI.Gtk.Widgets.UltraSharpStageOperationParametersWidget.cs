@@ -5,13 +5,16 @@ namespace CatEye.UI.Gtk.Widgets
 	public partial class UltraSharpStageOperationParametersWidget
 	{
 		private global::Gtk.Table table1;
+		private global::Gtk.HScale contrast_hscale;
+		private global::Gtk.SpinButton contrast_spinbutton;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.RadioButton sharp_radiobutton;
 		private global::Gtk.RadioButton soft_radiobutton;
 		private global::Gtk.Label label12;
 		private global::Gtk.Label label7;
-		private global::Gtk.HScale power_hscale;
-		private global::Gtk.SpinButton power_spinbutton;
+		private global::Gtk.Label label8;
+		private global::Gtk.HScale pressure_hscale;
+		private global::Gtk.SpinButton pressure_spinbutton;
 		private global::Gtk.HScale radius_hscale;
 		private global::Gtk.SpinButton radius_spinbutton;
 
@@ -22,11 +25,48 @@ namespace CatEye.UI.Gtk.Widgets
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "CatEye.UI.Gtk.Widgets.UltraSharpStageOperationParametersWidget";
 			// Container child CatEye.UI.Gtk.Widgets.UltraSharpStageOperationParametersWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), false);
+			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(3)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(2));
+			// Container child table1.Gtk.Table+TableChild
+			this.contrast_hscale = new global::Gtk.HScale (null);
+			this.contrast_hscale.CanFocus = true;
+			this.contrast_hscale.Name = "contrast_hscale";
+			this.contrast_hscale.Adjustment.Lower = 0.1;
+			this.contrast_hscale.Adjustment.Upper = 1;
+			this.contrast_hscale.Adjustment.PageIncrement = 0.01;
+			this.contrast_hscale.Adjustment.StepIncrement = 0.1;
+			this.contrast_hscale.Adjustment.Value = 0.50080971659919;
+			this.contrast_hscale.DrawValue = false;
+			this.contrast_hscale.Digits = 3;
+			this.contrast_hscale.ValuePos = ((global::Gtk.PositionType)(1));
+			this.table1.Add (this.contrast_hscale);
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.contrast_hscale]));
+			w1.TopAttach = ((uint)(2));
+			w1.BottomAttach = ((uint)(3));
+			w1.LeftAttach = ((uint)(1));
+			w1.RightAttach = ((uint)(2));
+			w1.XOptions = ((global::Gtk.AttachOptions)(4));
+			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.contrast_spinbutton = new global::Gtk.SpinButton (0.1, 1, 0.001);
+			this.contrast_spinbutton.CanFocus = true;
+			this.contrast_spinbutton.Name = "contrast_spinbutton";
+			this.contrast_spinbutton.Adjustment.PageIncrement = 0.01;
+			this.contrast_spinbutton.ClimbRate = 1;
+			this.contrast_spinbutton.Digits = ((uint)(3));
+			this.contrast_spinbutton.Numeric = true;
+			this.contrast_spinbutton.Value = 0.1;
+			this.table1.Add (this.contrast_spinbutton);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.contrast_spinbutton]));
+			w2.TopAttach = ((uint)(2));
+			w2.BottomAttach = ((uint)(3));
+			w2.LeftAttach = ((uint)(2));
+			w2.RightAttach = ((uint)(3));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
@@ -40,8 +80,8 @@ namespace CatEye.UI.Gtk.Widgets
 			this.sharp_radiobutton.UseUnderline = true;
 			this.sharp_radiobutton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.hbox1.Add (this.sharp_radiobutton);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.sharp_radiobutton]));
-			w1.Position = 0;
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.sharp_radiobutton]));
+			w3.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.soft_radiobutton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Soft"));
 			this.soft_radiobutton.CanFocus = true;
@@ -50,70 +90,81 @@ namespace CatEye.UI.Gtk.Widgets
 			this.soft_radiobutton.UseUnderline = true;
 			this.soft_radiobutton.Group = this.sharp_radiobutton.Group;
 			this.hbox1.Add (this.soft_radiobutton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.soft_radiobutton]));
-			w2.Position = 1;
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.soft_radiobutton]));
+			w4.Position = 1;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
-			w3.RightAttach = ((uint)(3));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
+			w5.RightAttach = ((uint)(3));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xalign = 1F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Radius:");
 			this.table1.Add (this.label12);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
-			w4.TopAttach = ((uint)(2));
-			w4.BottomAttach = ((uint)(3));
-			w4.XPadding = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label12]));
+			w6.TopAttach = ((uint)(3));
+			w6.BottomAttach = ((uint)(4));
+			w6.XPadding = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
 			this.label7.Xalign = 1F;
-			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Power:");
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Pressure:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.XPadding = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.power_hscale = new global::Gtk.HScale (null);
-			this.power_hscale.CanFocus = true;
-			this.power_hscale.Name = "power_hscale";
-			this.power_hscale.Adjustment.Upper = 100;
-			this.power_hscale.Adjustment.PageIncrement = 0.5;
-			this.power_hscale.Adjustment.StepIncrement = 0.1;
-			this.power_hscale.Adjustment.Value = 0.001;
-			this.power_hscale.DrawValue = false;
-			this.power_hscale.Digits = 3;
-			this.power_hscale.ValuePos = ((global::Gtk.PositionType)(1));
-			this.table1.Add (this.power_hscale);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_hscale]));
-			w6.TopAttach = ((uint)(1));
-			w6.BottomAttach = ((uint)(2));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.power_spinbutton = new global::Gtk.SpinButton (0, 100, 0.1);
-			this.power_spinbutton.CanFocus = true;
-			this.power_spinbutton.Name = "power_spinbutton";
-			this.power_spinbutton.Adjustment.PageIncrement = 5;
-			this.power_spinbutton.ClimbRate = 1;
-			this.power_spinbutton.Digits = ((uint)(1));
-			this.power_spinbutton.Numeric = true;
-			this.table1.Add (this.power_spinbutton);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.power_spinbutton]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
-			w7.LeftAttach = ((uint)(2));
-			w7.RightAttach = ((uint)(3));
+			w7.XPadding = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.Xalign = 1F;
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Contrast:");
+			this.table1.Add (this.label8);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
+			w8.TopAttach = ((uint)(2));
+			w8.BottomAttach = ((uint)(3));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.pressure_hscale = new global::Gtk.HScale (null);
+			this.pressure_hscale.CanFocus = true;
+			this.pressure_hscale.Name = "pressure_hscale";
+			this.pressure_hscale.Adjustment.Upper = 100;
+			this.pressure_hscale.Adjustment.PageIncrement = 0.5;
+			this.pressure_hscale.Adjustment.StepIncrement = 0.1;
+			this.pressure_hscale.Adjustment.Value = 0.001;
+			this.pressure_hscale.DrawValue = false;
+			this.pressure_hscale.Digits = 3;
+			this.pressure_hscale.ValuePos = ((global::Gtk.PositionType)(1));
+			this.table1.Add (this.pressure_hscale);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.pressure_hscale]));
+			w9.TopAttach = ((uint)(1));
+			w9.BottomAttach = ((uint)(2));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.pressure_spinbutton = new global::Gtk.SpinButton (0, 100, 0.1);
+			this.pressure_spinbutton.CanFocus = true;
+			this.pressure_spinbutton.Name = "pressure_spinbutton";
+			this.pressure_spinbutton.Adjustment.PageIncrement = 5;
+			this.pressure_spinbutton.ClimbRate = 1;
+			this.pressure_spinbutton.Digits = ((uint)(1));
+			this.pressure_spinbutton.Numeric = true;
+			this.table1.Add (this.pressure_spinbutton);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.pressure_spinbutton]));
+			w10.TopAttach = ((uint)(1));
+			w10.BottomAttach = ((uint)(2));
+			w10.LeftAttach = ((uint)(2));
+			w10.RightAttach = ((uint)(3));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.radius_hscale = new global::Gtk.HScale (null);
 			this.radius_hscale.CanFocus = true;
@@ -127,14 +178,14 @@ namespace CatEye.UI.Gtk.Widgets
 			this.radius_hscale.Digits = 3;
 			this.radius_hscale.ValuePos = ((global::Gtk.PositionType)(1));
 			this.table1.Add (this.radius_hscale);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_hscale]));
-			w8.TopAttach = ((uint)(2));
-			w8.BottomAttach = ((uint)(3));
-			w8.LeftAttach = ((uint)(1));
-			w8.RightAttach = ((uint)(2));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_hscale]));
+			w11.TopAttach = ((uint)(3));
+			w11.BottomAttach = ((uint)(4));
+			w11.LeftAttach = ((uint)(1));
+			w11.RightAttach = ((uint)(2));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.radius_spinbutton = new global::Gtk.SpinButton (0.001, 1, 0.01);
+			this.radius_spinbutton = new global::Gtk.SpinButton (0.001, 1, 0.001);
 			this.radius_spinbutton.CanFocus = true;
 			this.radius_spinbutton.Name = "radius_spinbutton";
 			this.radius_spinbutton.Adjustment.PageIncrement = 0.1;
@@ -143,13 +194,13 @@ namespace CatEye.UI.Gtk.Widgets
 			this.radius_spinbutton.Numeric = true;
 			this.radius_spinbutton.Value = 0.001;
 			this.table1.Add (this.radius_spinbutton);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_spinbutton]));
-			w9.TopAttach = ((uint)(2));
-			w9.BottomAttach = ((uint)(3));
-			w9.LeftAttach = ((uint)(2));
-			w9.RightAttach = ((uint)(3));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.radius_spinbutton]));
+			w12.TopAttach = ((uint)(3));
+			w12.BottomAttach = ((uint)(4));
+			w12.LeftAttach = ((uint)(2));
+			w12.RightAttach = ((uint)(3));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -157,10 +208,12 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Hide ();
 			this.radius_spinbutton.ValueChanged += new global::System.EventHandler (this.OnRadiusSpinbuttonValueChanged);
 			this.radius_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnRadiusHscaleChangeValue);
-			this.power_spinbutton.ValueChanged += new global::System.EventHandler (this.OnPowerSpinbuttonValueChanged);
-			this.power_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnPowerHscaleChangeValue);
+			this.pressure_spinbutton.ValueChanged += new global::System.EventHandler (this.OnPressureSpinbuttonValueChanged);
+			this.pressure_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnPressureHscaleChangeValue);
 			this.sharp_radiobutton.Toggled += new global::System.EventHandler (this.OnSharpSoftToggled);
 			this.soft_radiobutton.Toggled += new global::System.EventHandler (this.OnSharpSoftToggled);
+			this.contrast_spinbutton.ValueChanged += new global::System.EventHandler (this.OnContrastSpinbuttonValueChanged);
+			this.contrast_hscale.ChangeValue += new global::Gtk.ChangeValueHandler (this.OnContrastHscaleChangeValue);
 		}
 	}
 }

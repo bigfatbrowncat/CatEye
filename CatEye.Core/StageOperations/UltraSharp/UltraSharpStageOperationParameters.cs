@@ -10,15 +10,25 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 10, mRadius = 0.1;
+		private double mPressure = 10, mContrast = 0.5, mRadius = 0.1;
 		private SharpType mType = SharpType.Sharp;
-		
-		public double Power
+
+		public double Contrast
 		{
-			get { return mPower; }
+			get { return mContrast; }
 			set 
 			{
-				mPower = value;
+				mContrast = value;
+				OnChanged();
+			}
+		}
+		
+		public double Pressure
+		{
+			get { return mPressure; }
+			set 
+			{
+				mPressure = value;
 				OnChanged();
 			}
 		}
@@ -46,7 +56,8 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
@@ -63,14 +74,23 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			if (node.Attributes["Power"] != null)
+			if (node.Attributes["Pressure"] != null)
 			{
-				if (double.TryParse(node.Attributes["Power"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Pressure"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mPower = res;
+					mPressure = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Power value");
+					throw new IncorrectNodeValueException("Can't parse Pressure value");
+			}
+			if (node.Attributes["Contrast"] != null)
+			{
+				if (double.TryParse(node.Attributes["Contrast"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mContrast = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse Contrast value");
 			}
 			if (node.Attributes["Radius"] != null)
 			{
@@ -111,7 +131,8 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			UltraSharpStageOperationParameters t = (UltraSharpStageOperationParameters)target;
-			t.mPower = mPower;
+			t.mPressure = mPressure;
+			t.mContrast = mContrast;
 			t.mRadius = mRadius;
 			t.mType = mType;
 			t.OnChanged();
