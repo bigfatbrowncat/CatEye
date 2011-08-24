@@ -410,17 +410,16 @@ namespace CatEye.UI.Base
 								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 								{
 									double delta = (light[u, v] - light[i, j]);
-									
-									double a = 0.02;
-									
-									double limit = Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (a*a));
-
 									double f = Math.Log(Math.Abs(delta) + 1);
-									// Limiting f
+									
+									// Limiting f to remove white and dark "crowns" near contrast objects
+									double d = 0.2, K = 0.5;
+									double limit = 0.015 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (d*d)) * 
+										(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
+
 									f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
 
-									
-									double scale = f / 5;
+									double scale = f / 1.5;	// It was f / 5
 									
 									scale_matrix[u, v] += scale;
 									scale_matrix_adds[u, v] ++;
@@ -444,6 +443,16 @@ namespace CatEye.UI.Base
 			
 						}
 					}
+/*					
+					// Printing array our
+					System.IO.TextWriter tw = new System.IO.StreamWriter("printout.csv");
+					int poX = (int)(mWidth * 0.58);
+					tw.WriteLine("Light\tDispersion\tScale");
+					for (int poY = (int)(0.3 * mHeight); poY < (int)(0.8 * mHeight); poY++)
+					{
+						tw.WriteLine(light[poX, poY].ToString("0.000000") + "\t" + dispersion_matrix[poX, poY].ToString("0.000000") + "\t" + (scale_matrix[poX, poY] / scale_matrix_adds[poX, poY]).ToString("0.000000"));
+					}
+					tw.Close();*/
 				}
 			}
 		}
