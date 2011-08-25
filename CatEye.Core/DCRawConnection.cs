@@ -1,11 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace CatEye.Core
 {
 	public static class DCRawConnection
 	{
-		public static readonly string [] RAW_EXTENSIONS = {
+/*		public static readonly string [] RAW_EXTENSIONS = {
 				".arw",
 				".crw",
 				".cr2",
@@ -20,10 +21,21 @@ namespace CatEye.Core
 		};
 		
 		private static List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
-		
+*/		
 		public static bool IsRaw(string filename)
 		{
-			return raw_exts.Contains(System.IO.Path.GetExtension(filename.ToLower()));
+			// Verifies file with dcraw
+			Process dcproc = CreateDCRawProcess("-i \"" + filename.Replace("\"", "\\\"") + "\"");
+			bool res = false;
+			if (dcproc.Start())
+			{
+				dcproc.WaitForExit(-1);
+				if (dcproc.ExitCode == 0) 
+					res = true;
+				dcproc.Close();
+			}
+			
+			return res;
 		}
 		
 		public static string FindDCRaw()
@@ -38,7 +50,7 @@ namespace CatEye.Core
 			return dcraw_path;
 		}
 		
-		public static System.Diagnostics.Process CreateDCRawProcess(string Arguments)
+		public static Process CreateDCRawProcess(string Arguments)
 		{
 			string dcraw_path = FindDCRaw();
 			System.Diagnostics.Process prc = new System.Diagnostics.Process();

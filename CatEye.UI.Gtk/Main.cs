@@ -123,9 +123,9 @@ namespace CatEye
 			return res.ToArray();
 		}
 		
-		public static bool FindRawsForCestageAndAskToOpen(string cestage_filename, out string raw_filename, out int prescale)
+		public static bool FindRawsForCestageAndAskToOpen(string cestage_filename, out string raw_filename, ref int prescale)
 		{
-			raw_filename = ""; prescale = 2;
+			raw_filename = "";
 			// Trying to find a proper RAW file
 			string[] raws = FindRawsForCEStage(cestage_filename);
 			
@@ -135,15 +135,11 @@ namespace CatEye
 				
 				AskToOpenRawDialog ask_raw = new AskToOpenRawDialog();
 				ask_raw.Filename = raw_filename;
+				ask_raw.PreScale = prescale;
 				
-				/*Gtk.MessageDialog ask_raw = new Gtk.MessageDialog(win, DialogFlags.Modal,
-				                                             MessageType.Question, ButtonsType.YesNo, 
-				                                             "The raw file \"{0}\" found in the same folder.\nWould you like to open it?", 
-															 System.IO.Path.GetFileName(raw_file));*/
-				//ask_raw.Title = APP_NAME;
 				bool yes = false;
-				if (ask_raw.Run() == (int)Gtk.ResponseType.Yes) yes = true;
-				prescale = ask_raw.Prescale;
+				if (ask_raw.Run() == (int)Gtk.ResponseType.Accept) yes = true;
+				prescale = ask_raw.PreScale;
 				ask_raw.Destroy();
 				return yes;
 			}

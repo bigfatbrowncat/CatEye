@@ -404,6 +404,60 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 		else
 		{
+			Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Open RAW image", 
+			                                                      this, 
+			                                                      FileChooserAction.Open,
+			                                                      "Cancel", ResponseType.Cancel,
+			                                                      "Open", ResponseType.Accept);
+
+			if (mStage.RawFileName != null) fcd.SetFilename(mStage.RawFileName);
+			
+			// Filter for RAWs
+			FileFilter ff = new FileFilter();
+			
+			ff.AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
+				return DCRawConnection.IsRaw(ffi.Filename);				
+			});
+			ff.Name = "RAW image";
+	
+			fcd.AddFilter(ff);
+			
+			// Setting current folder to stage file folder or to RAW file folder
+			if (mStage.StageFileName != null && mStage.StageFileName != "" 
+					&& !fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.StageFileName)))
+				fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
+	
+			
+			
+			// Adding preview widget
+			RawPreviewWidget rpw = new RawPreviewWidget();
+			fcd.PreviewWidget = rpw;
+			fcd.UpdatePreview += delegate {
+				rpw.Filename = fcd.Filename;
+				fcd.PreviewWidgetActive = rpw.FileIsGood;
+			};
+			
+			// Adding prescale widget
+			PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
+			pssw.Value = 2;
+			if (mStage.Prescale != 0) pssw.Value = mStage.Prescale;
+			fcd.ExtraWidget = pssw;
+			
+			string filename = ""; int prescale = 2;
+			bool ok = false;
+			if (fcd.Run() == (int)Gtk.ResponseType.Accept)
+			{
+				ok = true;
+				filename = fcd.Filename;
+				prescale = pssw.Value;
+			}
+			fcd.Destroy();
+			if (ok)
+			{
+				mStage.AskLoadImage(filename, prescale);
+			}
+			
+			/*
 			RawImportDialog rid = new RawImportDialog();
 			
 			if (mStage.RawFileName != null) rid.Filename = mStage.RawFileName;
@@ -424,6 +478,7 @@ public partial class StageEditorWindow : Gtk.Window
 			{
 				mStage.AskLoadImage(fn, ps);
 			}
+			*/
 		}
 	}
 
@@ -539,8 +594,10 @@ public partial class StageEditorWindow : Gtk.Window
 			{
 				mStage.LoadStage(fn);
 
-				string raw_filename; int prescale;
-				if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, out prescale))
+				string raw_filename; int prescale = 2;
+				if (mStage.Prescale != 0) prescale = mStage.Prescale;
+				
+				if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, ref prescale))
 				{
 					mStage.AskLoadImage(raw_filename, prescale);
 				}
@@ -598,6 +655,7 @@ public partial class StageEditorWindow : Gtk.Window
 		                                                      "Cancel", ResponseType.Cancel,
 		                                                      "Render", ResponseType.Accept);
 		
+		// Adding image filters
 		FileFilter[] ffs = new FileFilter[3];
 		ffs[0] = new FileFilter();
 		ffs[0].Name = "JPEG image";
@@ -622,6 +680,12 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.AddFilter(ffs[1]);
 		fcd.AddFilter(ffs[2]);
 		
+		// Adding prescaling widget
+		PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
+		pssw.Value = mStage.Prescale;
+		fcd.ExtraWidget = pssw;
+		
+		int prescale = 2;
 		string dest_type = "", fn = "";
 		bool accept = false;
 
@@ -631,7 +695,7 @@ public partial class StageEditorWindow : Gtk.Window
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			fn = fcd.Filename;
-
+			prescale = pssw.Value;
 			if (fcd.Filter == ffs[0])
 			{
 				if (System.IO.Path.GetExtension(fn).ToLower() != ".jpeg" &&
@@ -681,15 +745,9 @@ public partial class StageEditorWindow : Gtk.Window
 				mStage.RawFileName, 
 				fn, 
 				dest_type, 
-				mStage.Prescale.ToString()
+				prescale.ToString()
 			};
 			MainClass.RemoteControlService.SendCommand(command, arguments);
-			
-			//RemotingObject.AssureQueueServiceIsRunning();
-			//RemotingObject.RunQueueServiceOrConnectToIt();
-			//RemotingObject.rob.AddToQueue(mStage.SaveStageToString(), mStage.RawFileName, mStage.Prescale, fn, dest_type);
-			
-			//MainClass.rqwin.Show();
 			
 			/*
 			// Rendering
@@ -714,7 +772,7 @@ public partial class StageEditorWindow : Gtk.Window
 			);
 		
 			// TODO Can't be used currently cause of buggy Gtk#
-			//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
+		//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
 	
 			rp.Save(filename, type);
 				

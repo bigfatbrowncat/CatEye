@@ -71,8 +71,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="RawImportDialog.cs" />
-    <Compile Include="gtk-gui\CatEye.RawImportDialog.cs" />
     <Compile Include="AboutBox.cs" />
     <Compile Include="gtk-gui\CatEye.AboutBox.cs" />
     <Compile Include="RenderingQueueWindow.cs" />
