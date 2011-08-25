@@ -8,6 +8,6 @@
     <Tone R="1.00094476412756" G="0.999987548333831" B="0.999066805745698" />
   </StageOperationParameters>
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
-  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.4" DarkPreserving="0.01" />
-  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Power="10" Radius="0.1" LimitUp="0.1" LimitDown="1" SharpType="sharp" />
+  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.60" DarkPreserving="0.01" />
+  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
 </Stage>
