@@ -1893,14 +1893,6 @@
         <property name="Spacing">4</property>
         <property name="BorderWidth">7</property>
         <child>
-          <widget class="CatEye.UI.Gtk.Widgets.StageOperationTitleWidget" id="_TitleWidget">
-            <property name="MemberName">_TitleWidget</property>
-            <property name="Events">ButtonPressMask</property>
-            <property name="Active">False</property>
-            <property name="Edit">False</property>
-            <property name="Freeze">False</property>
-            <property name="FrozenButtonsState">False</property>
-          </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
