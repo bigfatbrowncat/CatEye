@@ -6,7 +6,7 @@ namespace CatEye.Core
 {
 	public static class DCRawConnection
 	{
-/*		public static readonly string [] RAW_EXTENSIONS = {
+		private static readonly string [] RAW_EXTENSIONS = {
 				".arw",
 				".crw",
 				".cr2",
@@ -20,19 +20,22 @@ namespace CatEye.Core
 				".rw2"
 		};
 		
-		private static List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
-*/		
+		private static readonly List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
+		
 		public static bool IsRaw(string filename)
 		{
 			// Verifies file with dcraw
-			Process dcproc = CreateDCRawProcess("-i \"" + filename.Replace("\"", "\\\"") + "\"");
 			bool res = false;
-			if (dcproc.Start())
+			if (raw_exts.Contains(System.IO.Path.GetExtension(filename).ToLower()))
 			{
-				dcproc.WaitForExit(-1);
-				if (dcproc.ExitCode == 0) 
-					res = true;
-				dcproc.Close();
+				Process dcproc = CreateDCRawProcess("-i \"" + filename.Replace("\"", "\\\"") + "\"");
+				if (dcproc.Start())
+				{
+					dcproc.WaitForExit(-1);
+					if (dcproc.ExitCode == 0) 
+						res = true;
+					dcproc.Close();
+				}
 			}
 			
 			return res;

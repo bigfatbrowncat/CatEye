@@ -236,9 +236,9 @@ namespace CatEye.Core
 					}
 					OnImageUpdatingCompleted();
 				}
-				catch (UserCancelException)
+				catch (UserCancelException ex)
 				{
-
+					throw ex;
 				}
 			}
 		}

@@ -410,8 +410,6 @@ public partial class StageEditorWindow : Gtk.Window
 			                                                      "Cancel", ResponseType.Cancel,
 			                                                      "Open", ResponseType.Accept);
 
-			if (mStage.RawFileName != null) fcd.SetFilename(mStage.RawFileName);
-			
 			// Filter for RAWs
 			FileFilter ff = new FileFilter();
 			
@@ -436,6 +434,17 @@ public partial class StageEditorWindow : Gtk.Window
 				rpw.Filename = fcd.Filename;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
 			};
+			fcd.SelectionChanged += delegate {
+				rpw.Filename = fcd.Filename;
+				fcd.PreviewWidgetActive = rpw.FileIsGood;
+			};
+
+			if (mStage.RawFileName != null)
+			{
+				fcd.SetFilename(mStage.RawFileName);
+				rpw.Filename = mStage.RawFileName;
+				fcd.PreviewWidgetActive = rpw.FileIsGood;
+			}
 			
 			// Adding prescale widget
 			PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
