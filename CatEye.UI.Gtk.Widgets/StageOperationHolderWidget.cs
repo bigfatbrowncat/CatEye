@@ -7,6 +7,7 @@ namespace CatEye.UI.Gtk.Widgets
 	public partial class StageOperationHolderWidget : Bin, IStageOperationHolder
 	{
 		private StageOperationParametersWidget _OperationParametersWidget;
+		private StageOperationTitleWidget _TitleWidget;
 		
 		public IStageOperationParametersEditor StageOperationParametersEditor 
 		{
@@ -80,6 +81,10 @@ namespace CatEye.UI.Gtk.Widgets
 		public StageOperationHolderWidget (StageOperationParametersWidget operationParametersWidget)
 		{
 			this.Build ();
+			
+			_TitleWidget = new StageOperationTitleWidget();
+			vbox.Add(_TitleWidget);
+			_TitleWidget.Show();
 			
 			_OperationParametersWidget = operationParametersWidget;
 			
