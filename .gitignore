@@ -1,4 +1,4 @@
 *.userprefs
 *.pidb
 bin
-
+*/gtk-gui/*.cs
