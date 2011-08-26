@@ -1893,12 +1893,7 @@
         <property name="Spacing">4</property>
         <property name="BorderWidth">7</property>
         <child>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
+          <placeholder />
         </child>
         <child>
           <placeholder />
