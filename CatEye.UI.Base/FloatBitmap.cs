@@ -304,8 +304,23 @@ namespace CatEye.UI.Base
 			return Max;
 		}
 		
-		public void CompressLight(double power, double dark_preserving, ProgressReporter callback)
+		public void CompressLight(double curve, ProgressReporter callback)
 		{
+			double a, b;
+
+			if (curve > 0)
+			{
+				a = Math.Log(2);
+				b = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			else
+			{
+				b = Math.Log(2);
+				a = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			
+			double p = Math.Pow(100, curve * 1.5);
+
 			for (int i = 0; i < mWidth; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
@@ -321,10 +336,11 @@ namespace CatEye.UI.Base
 					                         g_chan[i, j] * g_chan[i, j] +
 					                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 					
-					r_chan[i, j] = r_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
-					g_chan[i, j] = g_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
-					b_chan[i, j] = b_chan[i, j] * (float)(Math.Pow(1.0 / ((double)light + dark_preserving), power));
-		
+					double light_new = Math.Log(p * (Math.Exp(a * light) - 1.0) + 1.0) / b;
+						
+					r_chan[i,j] *= (float)(light_new / light); 
+					g_chan[i,j] *= (float)(light_new / light); 
+					b_chan[i,j] *= (float)(light_new / light); 
 				}
 			}
 		}

@@ -13,7 +13,7 @@ namespace CatEye.Core
 		void ScaleFast(double k, ProgressReporter callback);
 		void AmplitudeMultiply(double Amplitude, ProgressReporter callback);
 		void AmplitudeAdd (double delta);
-		void CompressLight(double power, double dark_preserving, ProgressReporter callback);
+		void CompressLight(double curve, ProgressReporter callback);
 		void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback);
 		void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback);
 		void ApplySaturation(double satur_factor, ProgressReporter callback);

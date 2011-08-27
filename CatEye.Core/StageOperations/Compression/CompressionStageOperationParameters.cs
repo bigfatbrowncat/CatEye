@@ -8,23 +8,14 @@ namespace CatEye.Core
 	public class CompressionStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPower = 0.7, mDarkPreserving = 0.01;
+		private double mCurve = 0.5;
 
-		public double Power
+		public double Curve
 		{
-			get { return mPower; }
+			get { return mCurve; }
 			set 
 			{
-				mPower = value;
-				OnChanged();
-			}
-		}
-		public double DarkPreserving
-		{
-			get { return mDarkPreserving; }
-			set 
-			{
-				mDarkPreserving = value;
+				mCurve = value;
 				OnChanged();
 			}
 		}
@@ -32,8 +23,7 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Power")).Value = mPower.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("DarkPreserving")).Value = mDarkPreserving.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Curve")).Value = mCurve.ToString(nfi);
 			return xn;
 		}
 
@@ -41,23 +31,14 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			if (node.Attributes["Power"] != null)
+			if (node.Attributes["Curve"] != null)
 			{
-				if (double.TryParse(node.Attributes["Power"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Curve"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mPower = res;
+					mCurve = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Brightness value");
-			}
-			if (node.Attributes["DarkPreserving"] != null)
-			{
-				if (double.TryParse(node.Attributes["DarkPreserving"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mDarkPreserving = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse DarkPreserving value");
+					throw new IncorrectNodeValueException("Can't parse Curve value");
 			}
 			OnChanged();
 		}
@@ -75,8 +56,7 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			CompressionStageOperationParameters t = (CompressionStageOperationParameters)target;
-			t.mPower = mPower;
-			t.mDarkPreserving = mDarkPreserving;
+			t.mCurve = mCurve;
 			t.OnChanged();
 		}
 		
