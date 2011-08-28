@@ -321,198 +321,24 @@ namespace CatEye.Core
 			return true;
 		}
 		
-		public Point[] Cross(Segment s, out Segment[] sides)
+		public double CalcProjectionToPixel(int i, int j, double quality)
 		{
-			int k = 0;
-			Point[] ps = new Point[2];
-			Segment[] seg = new Segment[2];
-			for (int i = 0; i < mSides.Length; i++)
+			double bloha = 0.00001;
+			double part = 0;
+			for (int qx = 0; qx < quality; qx++)
+				for (int qy = 0; qy < quality; qy++)
 			{
-				Point cr = Segment.GetCrossing(s, mSides[i]);
-				if (cr != null) 
-				{ 
-					ps[k] = cr; 
-					seg[k] = mSides[i];
-					k++; 
-				}
-			}
-			if (k == 0) 
-			{
-				sides = new Segment[] {};
-				return new Point[] {};
-			}
-			else if (k == 1) 
-			{
-				sides = new Segment[] { seg[0] };
-				return new Point[] { ps[0] };
-			}
-			else 
-			{
-				if (new Vector(s.A.X - ps[0].X, s.A.Y - ps[0].Y).Length <
-					new Vector(s.A.X - ps[1].X, s.A.Y - ps[1].Y).Length)
+				double px = i + bloha + (double)qx / quality;
+				double py = j + bloha + (double)qy / quality;
+				if (Contains(new Point(px, py)))
 				{
-					sides = seg;
-					return ps;
+					part += 1.0;
 				}
-				else
-				{
-					sides = new Segment[] { seg[1], seg[0] };
-					return new Point[] { ps[1], ps[0] };
-				}
-			}			
+			}
+			part /= quality * quality;
+			return part;
 		}
 		
-		
-		public static ConvexPolygon Cross(ConvexPolygon p1, ConvexPolygon p2)
-		{
-			// Checking bounding boxes
-			if (!BoundingBoxesAreCrossed(p1, p2))
-			{
-				return null;
-			}
-			
-			Point cur_point = null;
-			// Searching for first outer point
-			for (int i = 0; i < p2.mVertex.Length; i++)
-			{
-				if (!p1.Contains(p2.mVertex[i])) 
-				{
-					cur_point = p2.mVertex[i];
-					break;
-				}
-			}
-			if (cur_point == null) 
-			{
-				// This case means that p2 is fully contained inside p1,
-				// so p2 is the crossing of p1 and p2 itself.
-				return p2;
-			}
-			
-			// Ok. The point is found. Now we start to trace path from it.
-			List<Point> trace = new List<Point>();
-			ConvexPolygon cur_p = p2;
-			ConvexPolygon other_p = p1;
-			int start_point_index = cur_p.IndexOfSideWithAEnd(cur_point);
-			int cur_point_index = start_point_index;
-			bool start = true;
-			do
-			{
-				Segment[] segs;
-				Point[] crs = other_p.Cross(cur_p.mSides[cur_point_index], out segs);
-				// Ok. Now let's cross the possible cases out:
-				
-				if (other_p.Contains(cur_p.mSides[cur_point_index].A))
-				{
-					// 1. No crossings
-					if (crs.Length == 0)
-					{
-						// Add B end to the trace. (A is already there)
-						trace.Add(cur_p.mSides[cur_point_index].B);
-					}
-					// 2. One crossing.
-					if (crs.Length == 1)
-					{
-						// The other (B) end is outside. 
-						// At first we should add the crossing to trace.
-						trace.Add(crs[0]);
-						
-						// Now we should calculate the new current tracing side
-						// Searching for the side of other containing current crossing
-						
-						Segment other_side = segs[0];
-						//if (!other_p.HasCrossing(crs[0], out other_side, out cur_side))
-						//	throw new Exception("Something strange occured!");
-						
-						// Adding it's B point to trace
-						//trace.Add(other_side.B);
-						
-						// Welcome, new cur_point_index (we subtract 1 which would be added automatically later)
-						cur_point_index = other_p.IndexOfSide(other_side) - 1; //.IndexOfSideWithAEnd(other_side.B) - 1;
-						
-						// We don't care about start_point_index anymore cause at least one
-						// point is already in the trace.
-						
-						// After that we should swap tracing polygons
-						ConvexPolygon tmp = cur_p;
-						cur_p = other_p;
-						other_p = tmp;
-						
-						// Now we continue tracing with other polygon as the current.
-						
-					}
-					// 3. Two crossings
-					if (crs.Length == 2)
-					{
-						// Aaaa!!! It couldn't be! The polygons have to be convex.
-						throw new PolygonNotConvexException("Not convex polygon found during tracing");
-					}
-				}
-				else
-				{
-					if (crs.Length == 0)
-					{
-						// Do nothing. The whole side is outside the other_p
-					}
-					if (crs.Length == 1)
-					{
-						if (start)
-						{
-							trace.Add(crs[0]);
-							start = false;
-						}
-						// The other (B) end is inside. 
-						// We should add the crossing and the B end to trace.
-						trace.Add(cur_p.mSides[cur_point_index].B);
-					}
-					if (crs.Length == 2)
-					{
-						if (start)
-						{
-							trace.Add(crs[0]);
-							start = false;
-						}
-						// Both ends are outside. 
-						// At first we should add first crossing to trace.
-						trace.Add(crs[1]);
-					
-						// Now we should calculate the new current tracing side
-						// Searching for the side of other containing current second crossing 
-						// (the crossing where we get out)
-						Segment other_side = segs[1];
-						//if (!other_p.HasCrossing(crs[1], out other_side, out cur_side))
-						//	throw new Exception("Something strange occured!");
-						
-						// Welcome, new cur_point_index (we subtract 1 which would be added automatically later)
-						cur_point_index = other_p.IndexOfSide(other_side) - 1;
-						
-						// We don't care about start_point_index anymore cause at least one
-						// point is already in the trace.
-						
-						// After that we should swap tracing polygons
-						ConvexPolygon tmp = cur_p;
-						cur_p = other_p;
-						other_p = tmp;
-						
-						// Now we continue tracing with other polygon as the current.
-					}
-				}
-				
-				cur_point_index++;
-				if (cur_point_index > cur_p.mSides.Length - 1) cur_point_index = 0;
-			}
-			while (!((trace.Count == 0 && cur_point_index == start_point_index) || 
-				   (trace.Count > 1 && trace[0] == trace[trace.Count - 1])));
-			
-			if (trace.Count > 0)
-			{
-				trace.RemoveAt(trace.Count - 1);
-				
-				return new ConvexPolygon(trace.ToArray());
-			}
-			else
-				return null;
-			
-		}
 	}
 	
     public class Vector

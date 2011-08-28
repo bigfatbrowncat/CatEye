@@ -623,18 +623,7 @@ namespace CatEye.UI.Base
 					{
 						for (int i = xmin; i < xmax; i++)
 						{
-							double part = 0;
-							for (int qx = 0; qx < quality; qx++)
-								for (int qy = 0; qy < quality; qy++)
-							{
-								double px = i + bloha + (double)qx / quality;
-								double py = j + bloha + (double)qy / quality;
-								if (cp_src_tr.Contains(new Point(px, py)))
-								{
-									part += 1.0;
-								}
-							}
-							part /= quality * quality;
+							double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
 							
 							// Adding colors part
 							newr[i, j] += (float)(r_chan[m, n] * part);
@@ -664,9 +653,9 @@ namespace CatEye.UI.Base
 			ky = (double)targetHeight / mHeight;
 
 			// Creating new image
-			float[,] newr = new float[targetWidth, targetWidth];
-			float[,] newg = new float[targetWidth, targetWidth];
-			float[,] newb = new float[targetWidth, targetWidth];
+			float[,] newr = new float[targetWidth, targetHeight];
+			float[,] newg = new float[targetWidth, targetHeight];
+			float[,] newb = new float[targetWidth, targetHeight];
 			
 			
 			// Going thru new pixels. Calculating influence from source pixel
@@ -700,17 +689,7 @@ namespace CatEye.UI.Base
 					{
 						for (int i = xmin; i < xmax; i++)
 						{
-							double part = 0;
-							for (int qx = 0; qx < quality; qx++)
-								for (int qy = 0; qy < quality; qy++)
-							{
-								double px = i + qx / quality;
-								double py = j + qy / quality;
-								if (cp_src_tr.Contains(new Point(px, py)))
-								{
-									part += 1.0 / quality / quality;
-								}
-							}
+							double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
 							
 							// Adding colors part
 							newr[i, j] += (float)(r_chan[m, n] * part);
