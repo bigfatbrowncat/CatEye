@@ -163,19 +163,12 @@ namespace CatEye.UI.Gtk
 		
 		/// <summary>
 		/// Starts server if it's not started in other process. 
-		/// Then connects to it and sends command and arguments to it.
 		/// </summary>
-		/// <param name='command'>
-		/// Command to ask the server to execute
-		/// </param>
-		/// <param name='arguments'>
-		/// Command arguments to send
-		/// </param>
 		/// <returns>
 		/// <c>True</c> if server is actually started.
 		/// <c>False</c> if server had been started before.
 		/// </returns>
-		public bool Start(string command, string[] arguments)
+		public bool Start()
 		{
 			bool result;
 			TcpClient client = TryConnectClient();
@@ -188,17 +181,6 @@ namespace CatEye.UI.Gtk
 			else
 				result = false;
 			
-			if (client != null)
-			{
-				InternalSendCommand(client, command, arguments);
-			}
-			else
-			{
-#if DEBUG	
-				Console.WriteLine("[M] Can't connect client. It's strange");
-#endif				
-				throw new Exception("Can't connect client. It's strange");
-			}
 			return result;
 		}
 		

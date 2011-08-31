@@ -747,7 +747,7 @@ public partial class StageEditorWindow : Gtk.Window
 			*/
 			
 			// Sending remote command to add stage to queue
-			string command = "AddToQueue";
+			string command = "AddToQueue_StageData";
 			string[] arguments = new string[] 
 			{
 				mStage.SaveStageToString(), 

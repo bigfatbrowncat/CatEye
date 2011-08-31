@@ -99,6 +99,35 @@ namespace CatEye
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
 		
+		public static string[] FindCEStagesForRaw(string raw_filename)
+		{
+			List<string> res = new List<string>();
+			string cut_ext_low = System.IO.Path.GetFileNameWithoutExtension(raw_filename).ToLower();
+			string dir = System.IO.Path.GetDirectoryName(raw_filename);
+			
+			// "Empty" path points to current dir
+			if (dir == "") dir = System.IO.Directory.GetCurrentDirectory();
+			
+			string[] files = System.IO.Directory.GetFiles(dir);
+			for (int i = 0; i < files.Length; i++)
+			{
+				if (IsCEStageFile(files[i]) &&
+					System.IO.Path.GetFileNameWithoutExtension(files[i]).ToLower() == cut_ext_low)
+				{
+					res.Add(files[i]);
+				}
+			}
+#if DEBUG
+			Console.WriteLine("Found " + res.Count + " cestage files");
+#endif
+			return res.ToArray();
+		}
+		
+		public static bool IsCEStageFile(string filename)
+		{
+			return System.IO.Path.GetExtension(filename).ToLower() == "cestage";
+		}
+		
 		public static string[] FindRawsForCEStage(string cestage_filename)
 		{
 			List<string> res = new List<string>();
@@ -170,6 +199,21 @@ namespace CatEye
 			get { return mRenderingQueue; }
 		}
 		
+		static string CheckIfFileExistsAndAddIndex(string filename)
+		{
+			if (System.IO.File.Exists(filename))
+			{
+				string base_name = System.IO.Path.GetFileNameWithoutExtension(filename);
+				string ext = System.IO.Path.GetExtension(filename);
+				int i;
+				for (i = 1; System.IO.File.Exists(base_name + "[" + i.ToString() + "]." + ext); i++) {}
+				return base_name + "[" + i.ToString() + "]." + ext;
+			}
+			else
+				return filename;
+				
+		}
+		
 		static void HandleRemoteControlServiceRemoteCommandReceived (object sender, RemoteCommandEventArgs e)
 		{
 			if (e.Command == "StageEditor")
@@ -190,7 +234,7 @@ namespace CatEye
 					sew.Show();
 				});
 			}
-			if (e.Command == "AddToQueue")
+			if (e.Command == "AddToQueue_StageData")
 			{
 				string cestageData = e.Arguments[0];		// XML-serialized .cestage
 				string rawFileName = e.Arguments[1];		// Raw filename
@@ -218,15 +262,343 @@ namespace CatEye
 			mRemoteControlService = new RemoteControlService("localhost", 21985);
 			mRemoteControlService.RemoteCommandReceived += HandleRemoteControlServiceRemoteCommandReceived;
 			
-			// Formulating command and it's arguments
-			string command = null;
-			List<string> arguments = new List<string>();
-			if (args.Length == 0)
-			{
-				command = "StageEditor";
-			}
+			// Parsing command line. Formulating command and it's arguments
+			List<string> argslist = new List<string>(args);
 			
-			if (mRemoteControlService.Start(command, arguments.ToArray()))
+			List<string> command = new List<string>();
+			List<List<string>> commands_arguments = new List<List<string>>();
+
+			if (argslist.Count == 0)
+			{
+				// No command line arguments passed. 
+				// Sending the "StageEditor" command with no arguments
+				command.Add("StageEditor");
+				commands_arguments.Add(new List<string>());
+			}
+			else if (argslist.Contains("-q") || argslist.Contains("--queue"))
+			{
+				// Queue launch mode
+				
+				// Searching for "--default" option
+				int d_inx = -1;
+				d_inx = argslist.IndexOf("-d") >= 0 ? argslist.IndexOf("-d") : d_inx;
+				d_inx = argslist.IndexOf("--default") >= 0 ? argslist.IndexOf("--default") : d_inx;
+				string d_cestage_name = "";
+				
+				if (d_inx >= 0)
+				{
+					if (d_inx < argslist.Count - 1)
+					{
+						d_cestage_name = argslist[d_inx + 1];
+						// Removing readed "-d"
+						argslist.RemoveRange(d_inx, 2);
+						
+						if (!IsCEStageFile(d_cestage_name))
+						{
+							Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
+							d_cestage_name = "";
+						}
+						
+					}
+					if (d_inx == argslist.Count - 1)
+					{
+						Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
+						argslist.RemoveAt(d_inx);
+					}
+				}
+				
+				// Searching for "--target-type"
+				int tt_inx = -1;
+				tt_inx = argslist.IndexOf("-t") >= 0 ? argslist.IndexOf("-t") : tt_inx;
+				tt_inx = argslist.IndexOf("--target-type") >= 0 ? argslist.IndexOf("--target-type") : tt_inx;
+				string target_type = "";
+				
+				if (tt_inx >= 0)
+				{
+					if (tt_inx < argslist.Count - 1)
+					{
+						target_type = argslist[d_inx + 1];
+						// Removing readed "-t"
+						argslist.RemoveRange(d_inx, 2);
+						
+						if (target_type != "jpeg" && target_type != "png" && target_type != "bmp")
+						{
+							Console.WriteLine("Incorrect target type specified: " + target_type + ". It should be \"jpeg\", \"png\" or \"bmp\".");
+							target_type = "";
+						}
+						
+					}
+					if (d_inx == argslist.Count - 1)
+					{
+						Console.WriteLine("Incorrect argument: target type should be provided after --target-type or -t");
+						argslist.RemoveAt(d_inx);
+					}
+				}
+				
+				// Searching for "--prescale"
+				int p_inx = -1;
+				p_inx = argslist.IndexOf("-p") >= 0 ? argslist.IndexOf("-p") : p_inx;
+				p_inx = argslist.IndexOf("--prescale") >= 0 ? argslist.IndexOf("--prescale") : p_inx;
+				int prescale = 2;
+				
+				if (p_inx >= 0)
+				{
+					if (p_inx < argslist.Count - 1)
+					{
+						// Removing readed "-t"
+						argslist.RemoveRange(d_inx, 2);
+						
+						if (!int.TryParse(argslist[d_inx + 1], out prescale) || prescale < 1 || prescale > 8)
+						{
+							Console.WriteLine("Incorrect prescale value specified: " + argslist[d_inx + 1] + ". It should be an integer value from 1 to 8.");
+						}
+						
+					}
+					if (d_inx == argslist.Count - 1)
+					{
+						Console.WriteLine("Incorrect argument: prescale should be provided after --prescale or -p");
+						argslist.RemoveAt(d_inx);
+					}
+				}
+				
+				// Now when all the additional parameters are parsed and removed, 
+				// we're analysing, what's left. The options:
+				if (argslist.Count == 2 && (IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1])) ||
+										   (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0])))
+				{
+					// Two file names: one cestage and one raw
+
+					string cestage_filename = "";
+					string raw_filename = "";
+					if (IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
+					{
+						cestage_filename = argslist[0];
+						raw_filename = argslist[1];
+					}
+					else if (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
+					{
+						cestage_filename = argslist[1];
+						raw_filename = argslist[0];
+					}
+					
+					// Guessing target filename
+					if (target_type == "") target_type = "jpeg";
+					string target_name = System.IO.Path.ChangeExtension(argslist[1], target_type);
+					target_name = CheckIfFileExistsAndAddIndex(target_name);
+					
+					// Launching StageEditor with the cestage file and the raw file
+					command.Add("AddToQueue");
+					commands_arguments.Add(new List<string>(new string[] 
+					{
+						argslist[0], 
+						argslist[1], 
+						target_name, 
+						target_type, 
+						prescale.ToString()
+					}));
+				}
+				else
+				{
+					// Searching for cestage for each raw and for raws for each cestage
+					for (int i = 0; i < argslist.Count; i++)
+					{
+						if (DCRawConnection.IsRaw(argslist[i]))
+						{
+							// The current file is a raw
+
+							// Guessing target filename
+							if (target_type == "") target_type = "jpeg";
+							string target_name = System.IO.Path.ChangeExtension(argslist[i], target_type);
+							target_name = CheckIfFileExistsAndAddIndex(target_name);
+							
+							string[] cestages = FindCEStagesForRaw(argslist[i]);
+							if (cestages.Length > 0)
+							{
+								// At least one found
+
+								// Launching StageEditor with the cestage file and the raw file
+								command.Add("AddToQueue");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									cestages[0], 
+									argslist[i], 
+									target_name, 
+									target_type, 
+									prescale.ToString()
+								}));
+							}
+							else if (d_cestage_name != "")
+							{
+								// Nothing found, but default name is present
+								command.Add("AddToQueue");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									d_cestage_name,
+									argslist[i], 
+									target_name, 
+									target_type, 
+									prescale.ToString()
+								}));
+							}
+							else
+							{
+								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's .cestage file");
+							}
+						} 
+						else if (IsCEStageFile(argslist[i]))
+						{
+							// The current file is a cestage
+
+							// Guessing target filename
+							if (target_type == "") target_type = "jpeg";
+							string target_name = System.IO.Path.ChangeExtension(argslist[i], target_type);
+							target_name = CheckIfFileExistsAndAddIndex(target_name);
+							
+							string[] raws = FindRawsForCEStage(argslist[i]);
+							if (raws.Length > 0)
+							{
+								// At least one found
+
+								command.Add("AddToQueue");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									argslist[i],
+									raws[0], 
+									target_name, 
+									target_type, 
+									prescale.ToString()
+								}));
+
+							}
+							else
+							{
+								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's raw file");
+							}
+						}
+
+					}
+					
+				}
+				
+			}
+			else
+			{
+				// Not a queue launch mode
+				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
+				{
+					// Launching StageEditor with the cestage file and the raw file
+					command.Add("StageEditor_CEStage_RAW");
+					commands_arguments.Add(new List<string>(new string[] 
+					{ 
+						argslist[0], 
+						argslist[1]
+					}));
+				}
+				else
+				if (argslist.Count == 2 && IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
+				{
+					// Launching StageEditor with the cestage file and the raw file
+					command.Add("StageEditor_CEStage_RAW");
+					commands_arguments.Add(new List<string>(new string[] 
+					{ 
+						argslist[1], 
+						argslist[0]
+					}));
+				}
+				else
+				{
+					// If we don't have 1 cestage and 1 raw, let's open as many windows as possible.
+					// But, at first, trying to find "--default" option
+					int d_inx = -1;
+					d_inx = argslist.IndexOf("-d") >= 0 ? argslist.IndexOf("-d") : d_inx;
+					d_inx = argslist.IndexOf("--default") >= 0 ? argslist.IndexOf("--default") : d_inx;
+					string d_cestage_name = "";
+					
+					if (d_inx >= 0)
+					{
+						if (d_inx < argslist.Count - 1)
+						{
+							d_cestage_name = argslist[d_inx + 1];
+							// Removing readed "-d"
+							argslist.RemoveRange(d_inx, 2);
+							
+							if (!IsCEStageFile(d_cestage_name))
+							{
+								Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
+								d_cestage_name = "";
+							}
+							
+						}
+						if (d_inx == argslist.Count - 1)
+						{
+							Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
+							argslist.RemoveAt(d_inx);
+						}
+					}
+					
+					// Searching for cestage for each raw and for raws for each cestage
+					for (int i = 0; i < argslist.Count; i++)
+					{
+						if (DCRawConnection.IsRaw(argslist[i]))
+						{
+							// The current file is a raw
+							
+							string[] cestages = FindCEStagesForRaw(argslist[i]);
+							if (cestages.Length > 0)
+							{
+								// At least one found
+								// Launching StageEditor with the cestage file and the raw file
+								command.Add("StageEditor_CEStage_RAW");
+								commands_arguments.Add(new List<string>(new string[] 
+								{ 								
+									cestages[0],
+									argslist[i]
+								}));
+							}
+							else if (d_cestage_name != "")
+							{
+								// Nothing found, but default name is present
+								command.Add("StageEditor_CEStage_RAW");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									d_cestage_name,
+									argslist[i]
+								}));
+							}
+							else
+							{
+								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's .cestage file");
+							}
+						} 
+						else if (IsCEStageFile(argslist[i]))
+						{
+							// The current file is a cestage
+							
+							string[] raws = FindRawsForCEStage(argslist[i]);
+							if (raws.Length > 0)
+							{
+								// At least one found
+								// Launching StageEditor with the cestage file and the raw file
+								command.Add("StageEditor_CEStage_RAW");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									argslist[i],
+									raws[0]
+								}));
+							}
+							else
+							{
+								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's raw file");
+							}
+						}
+
+					}
+				}
+			}
+				
+			
+			
+			if (mRemoteControlService.Start())
 			{
 				Application.Init ();
 				
