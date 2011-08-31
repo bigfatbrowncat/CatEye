@@ -21,7 +21,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
         <Command type="BeforeClean" command="cmd /c &quot;del /f dcraw.exe&quot;" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
@@ -38,7 +38,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
         <Command type="BeforeClean" command="cmd /c &quot;del /f dcraw.exe&quot;" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
@@ -52,7 +52,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
         <Command type="BeforeClean" command="rm -f dcraw" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
@@ -69,7 +69,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
         <Command type="BeforeClean" command="rm -f dcraw" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
