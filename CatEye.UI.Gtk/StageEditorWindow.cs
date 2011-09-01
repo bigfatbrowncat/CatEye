@@ -390,7 +390,17 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 		mStage.DrawEditor(viewWidget);
 	}
-
+	
+	public void LoadRaw(string filename, int prescale)
+	{
+		mStage.AskLoadImage(filename, prescale);
+	}
+	
+	public void LoadCEStage(string filename)
+	{
+		mStage.LoadStage(filename);
+	}
+	
 	protected void LoadRawImageActionPicked()
 	{
 		if (mStage.TheUIState == UIState.Loading)

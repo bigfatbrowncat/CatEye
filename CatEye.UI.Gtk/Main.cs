@@ -233,8 +233,26 @@ namespace CatEye
 					mStageEditorWindows.Add(sew);
 					sew.Show();
 				});
+			} 
+			else if (e.Command == "StageEditor_CEStage_RAW")
+			{
+				string cestageFileName = e.Arguments[0];		// .cestage filename
+				string rawFileName = e.Arguments[1];			// Raw filename
+				
+
+				StageEditorWindow sew = new StageEditorWindow(
+					mStageOperationTypes,
+					StageOperationFactory, 
+					StageOperationParametersFactory,
+					StageOperationParametersEditorFactory, 
+					StageOperationHolderFactory, 
+					FloatBitmapGtkFactory);
+					
+				mStageEditorWindows.Add(sew);
+				//sew.LoadRaw(
+				sew.Show();
 			}
-			if (e.Command == "AddToQueue_StageData")
+			else if (e.Command == "AddToQueue_StageData")
 			{
 				string cestageData = e.Arguments[0];		// XML-serialized .cestage
 				string rawFileName = e.Arguments[1];		// Raw filename
@@ -484,6 +502,62 @@ namespace CatEye
 			else
 			{
 				// Not a queue launch mode
+						
+				// If we don't have 1 cestage and 1 raw, let's open as many windows as possible.
+				// But, at first, trying to find "--default" option
+				int d_inx = -1;
+				d_inx = argslist.IndexOf("-d") >= 0 ? argslist.IndexOf("-d") : d_inx;
+				d_inx = argslist.IndexOf("--default") >= 0 ? argslist.IndexOf("--default") : d_inx;
+				string d_cestage_name = "";
+				
+				if (d_inx >= 0)
+				{
+					if (d_inx < argslist.Count - 1)
+					{
+						d_cestage_name = argslist[d_inx + 1];
+						// Removing readed "-d"
+						argslist.RemoveRange(d_inx, 2);
+						
+						if (!IsCEStageFile(d_cestage_name))
+						{
+							Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
+							d_cestage_name = "";
+						}
+						
+					}
+					if (d_inx == argslist.Count - 1)
+					{
+						Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
+						argslist.RemoveAt(d_inx);
+					}
+				}
+						
+				// Searching for "--prescale"
+				int p_inx = -1;
+				p_inx = argslist.IndexOf("-p") >= 0 ? argslist.IndexOf("-p") : p_inx;
+				p_inx = argslist.IndexOf("--prescale") >= 0 ? argslist.IndexOf("--prescale") : p_inx;
+				int prescale = 2;
+				
+				if (p_inx >= 0)
+				{
+					if (p_inx < argslist.Count - 1)
+					{
+						// Removing readed "-p"
+						argslist.RemoveRange(d_inx, 2);
+						
+						if (!int.TryParse(argslist[d_inx + 1], out prescale) || prescale < 1 || prescale > 8)
+						{
+							Console.WriteLine("Incorrect prescale value specified: " + argslist[d_inx + 1] + ". It should be an integer value from 1 to 8.");
+						}
+						
+					}
+					if (d_inx == argslist.Count - 1)
+					{
+						Console.WriteLine("Incorrect argument: prescale should be provided after --prescale or -p");
+						argslist.RemoveAt(d_inx);
+					}
+				}
+						
 				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
@@ -491,7 +565,8 @@ namespace CatEye
 					commands_arguments.Add(new List<string>(new string[] 
 					{ 
 						argslist[0], 
-						argslist[1]
+						argslist[1],
+						prescale
 					}));
 				}
 				else
@@ -502,40 +577,12 @@ namespace CatEye
 					commands_arguments.Add(new List<string>(new string[] 
 					{ 
 						argslist[1], 
-						argslist[0]
+						argslist[0],
+						prescale
 					}));
 				}
 				else
 				{
-					// If we don't have 1 cestage and 1 raw, let's open as many windows as possible.
-					// But, at first, trying to find "--default" option
-					int d_inx = -1;
-					d_inx = argslist.IndexOf("-d") >= 0 ? argslist.IndexOf("-d") : d_inx;
-					d_inx = argslist.IndexOf("--default") >= 0 ? argslist.IndexOf("--default") : d_inx;
-					string d_cestage_name = "";
-					
-					if (d_inx >= 0)
-					{
-						if (d_inx < argslist.Count - 1)
-						{
-							d_cestage_name = argslist[d_inx + 1];
-							// Removing readed "-d"
-							argslist.RemoveRange(d_inx, 2);
-							
-							if (!IsCEStageFile(d_cestage_name))
-							{
-								Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
-								d_cestage_name = "";
-							}
-							
-						}
-						if (d_inx == argslist.Count - 1)
-						{
-							Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
-							argslist.RemoveAt(d_inx);
-						}
-					}
-					
 					// Searching for cestage for each raw and for raws for each cestage
 					for (int i = 0; i < argslist.Count; i++)
 					{
@@ -552,7 +599,8 @@ namespace CatEye
 								commands_arguments.Add(new List<string>(new string[] 
 								{ 								
 									cestages[0],
-									argslist[i]
+									argslist[i],
+									prescale
 								}));
 							}
 							else if (d_cestage_name != "")
@@ -562,12 +610,18 @@ namespace CatEye
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									d_cestage_name,
-									argslist[i]
+									argslist[i],
+									prescale
 								}));
 							}
 							else
 							{
-								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's .cestage file");
+								Console.WriteLine("Can't find .cestage file for " + argslist[i]);
+								command.Add("StageEditor_RAW");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									argslist[i]
+								}));
 							}
 						} 
 						else if (IsCEStageFile(argslist[i]))
@@ -588,7 +642,12 @@ namespace CatEye
 							}
 							else
 							{
-								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's raw file");
+								Console.WriteLine("Can't find raw file for " + argslist[i]);
+								command.Add("StageEditor_CEStage");
+								commands_arguments.Add(new List<string>(new string[] 
+								{
+									argslist[i]
+								}));
 							}
 						}
 
@@ -600,6 +659,12 @@ namespace CatEye
 			
 			if (mRemoteControlService.Start())
 			{
+				// Sending the commands
+				for (int i = 0; i < command.Count; i++)
+				{
+					mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
+				}
+				
 				Application.Init ();
 				
 				// Creating queue and it's window
