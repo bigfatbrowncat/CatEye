@@ -217,12 +217,12 @@ namespace CatEye.UI.Gtk
 			else
 				str = "";
 #if DEBUG
-			Console.WriteLine("[M] Sending string \"" + str + "\"");
+			Console.WriteLine("[M] Sending string \"" + str.Replace("\x000", "(char #0)") + "\"");
 #endif
 			string str2 = PasswordCode + str;
 			EncodeAndSendString(client.GetStream(), str2);
 #if DEBUG
-			Console.WriteLine("[M] String \"" + str + "\" sent");
+			Console.WriteLine("[M] String \"" + str.Replace("\x000", "(char #0)") + "\" sent");
 #endif
 		}
 		

@@ -125,7 +125,7 @@ namespace CatEye
 		
 		public static bool IsCEStageFile(string filename)
 		{
-			return System.IO.Path.GetExtension(filename).ToLower() == "cestage";
+			return System.IO.Path.GetExtension(filename).ToLower() == ".cestage";
 		}
 		
 		public static string[] FindRawsForCEStage(string cestage_filename)
@@ -238,19 +238,66 @@ namespace CatEye
 			{
 				string cestageFileName = e.Arguments[0];		// .cestage filename
 				string rawFileName = e.Arguments[1];			// Raw filename
-				
+				int prescale = int.Parse(e.Arguments[2]);		// Prescale
 
-				StageEditorWindow sew = new StageEditorWindow(
-					mStageOperationTypes,
-					StageOperationFactory, 
-					StageOperationParametersFactory,
-					StageOperationParametersEditorFactory, 
-					StageOperationHolderFactory, 
-					FloatBitmapGtkFactory);
+				Application.Invoke(delegate
+				{
+					StageEditorWindow sew = new StageEditorWindow(
+						mStageOperationTypes,
+						StageOperationFactory, 
+						StageOperationParametersFactory,
+						StageOperationParametersEditorFactory, 
+						StageOperationHolderFactory, 
+						FloatBitmapGtkFactory);
+						
+					mStageEditorWindows.Add(sew);
 					
-				mStageEditorWindows.Add(sew);
-				//sew.LoadRaw(
-				sew.Show();
+					sew.Show();
+					sew.LoadRaw(rawFileName, prescale);
+					sew.LoadCEStage(cestageFileName);
+				});
+			}
+			else if (e.Command == "StageEditor_CEStage")
+			{
+				string cestageFileName = e.Arguments[0];		// .cestage filename
+
+				Application.Invoke(delegate
+				{
+					StageEditorWindow sew = new StageEditorWindow(
+						mStageOperationTypes,
+						StageOperationFactory, 
+						StageOperationParametersFactory,
+						StageOperationParametersEditorFactory, 
+						StageOperationHolderFactory, 
+						FloatBitmapGtkFactory);
+						
+					mStageEditorWindows.Add(sew);
+					
+					sew.Show();
+					sew.LoadCEStage(cestageFileName);
+				});
+			}
+			else if (e.Command == "StageEditor_RAW")
+			{
+				string rawFileName = e.Arguments[0];			// Raw filename
+				int prescale = int.Parse(e.Arguments[1]);		// Prescale
+				
+				Application.Invoke(delegate
+				{
+					StageEditorWindow sew = new StageEditorWindow(
+						mStageOperationTypes,
+						StageOperationFactory, 
+						StageOperationParametersFactory,
+						StageOperationParametersEditorFactory, 
+						StageOperationHolderFactory, 
+						FloatBitmapGtkFactory);
+					
+					Console.WriteLine("raw here");
+					mStageEditorWindows.Add(sew);
+					
+					sew.Show();
+					sew.LoadRaw(rawFileName, prescale);
+				});
 			}
 			else if (e.Command == "AddToQueue_StageData")
 			{
@@ -504,6 +551,7 @@ namespace CatEye
 				// Not a queue launch mode
 						
 				// If we don't have 1 cestage and 1 raw, let's open as many windows as possible.
+				
 				// But, at first, trying to find "--default" option
 				int d_inx = -1;
 				d_inx = argslist.IndexOf("-d") >= 0 ? argslist.IndexOf("-d") : d_inx;
@@ -566,7 +614,7 @@ namespace CatEye
 					{ 
 						argslist[0], 
 						argslist[1],
-						prescale
+						prescale.ToString()
 					}));
 				}
 				else
@@ -578,7 +626,7 @@ namespace CatEye
 					{ 
 						argslist[1], 
 						argslist[0],
-						prescale
+						prescale.ToString()
 					}));
 				}
 				else
@@ -600,7 +648,7 @@ namespace CatEye
 								{ 								
 									cestages[0],
 									argslist[i],
-									prescale
+									prescale.ToString()
 								}));
 							}
 							else if (d_cestage_name != "")
@@ -611,7 +659,7 @@ namespace CatEye
 								{
 									d_cestage_name,
 									argslist[i],
-									prescale
+									prescale.ToString()
 								}));
 							}
 							else
@@ -620,7 +668,8 @@ namespace CatEye
 								command.Add("StageEditor_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
-									argslist[i]
+									argslist[i],
+									prescale.ToString()
 								}));
 							}
 						} 
@@ -659,18 +708,18 @@ namespace CatEye
 			
 			if (mRemoteControlService.Start())
 			{
-				// Sending the commands
-				for (int i = 0; i < command.Count; i++)
-				{
-					mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
-				}
-				
 				Application.Init ();
 				
 				// Creating queue and it's window
 				mRenderingQueue = new RenderingQueue();
 				mRenderingQueueWindow = new RenderingQueueWindow(mRenderingQueue);
 				mRenderingQueue.StartThread();
+
+				// Sending the commands
+				for (int i = 0; i < command.Count; i++)
+				{
+					mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
+				}
 				
 				GLib.Idle.Add(delegate {
 					// Checking if something is already started
