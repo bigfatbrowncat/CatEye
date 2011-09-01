@@ -216,8 +216,14 @@ namespace CatEye
 		
 		static void HandleRemoteControlServiceRemoteCommandReceived (object sender, RemoteCommandEventArgs e)
 		{
+#if DEBUG
+			Console.WriteLine("[S] Remote command arrived. Handling it:");
+#endif
 			if (e.Command == "StageEditor")
 			{
+#if DEBUG
+				Console.WriteLine("Command: StageEditor ( no arguments )");
+#endif
 				// No arguments
 				Application.Invoke(delegate
 				{
@@ -240,6 +246,12 @@ namespace CatEye
 				string rawFileName = e.Arguments[1];			// Raw filename
 				int prescale = int.Parse(e.Arguments[2]);		// Prescale
 
+#if DEBUG
+				Console.WriteLine("Command: StageEditor_CEStage_RAW ( " + 
+					"cestageFileName = " + cestageFileName + ", " +
+					"rawFileName = " + rawFileName + ", " + 
+					"prescale = " + prescale.ToString() + " )");
+#endif
 				Application.Invoke(delegate
 				{
 					StageEditorWindow sew = new StageEditorWindow(
@@ -261,6 +273,11 @@ namespace CatEye
 			{
 				string cestageFileName = e.Arguments[0];		// .cestage filename
 
+#if DEBUG
+				Console.WriteLine("Command: StageEditor_CEStage ( " + 
+					"cestageFileName = " + cestageFileName + " )");
+#endif
+				
 				Application.Invoke(delegate
 				{
 					StageEditorWindow sew = new StageEditorWindow(
@@ -281,6 +298,12 @@ namespace CatEye
 			{
 				string rawFileName = e.Arguments[0];			// Raw filename
 				int prescale = int.Parse(e.Arguments[1]);		// Prescale
+
+#if DEBUG
+				Console.WriteLine("Command: StageEditor_RAW ( " + 
+					"rawFileName = " + rawFileName + ", " + 
+					"prescale = " + prescale.ToString() + " )");
+#endif
 				
 				Application.Invoke(delegate
 				{
@@ -292,7 +315,6 @@ namespace CatEye
 						StageOperationHolderFactory, 
 						FloatBitmapGtkFactory);
 					
-					Console.WriteLine("raw here");
 					mStageEditorWindows.Add(sew);
 					
 					sew.Show();
@@ -305,7 +327,17 @@ namespace CatEye
 				string rawFileName = e.Arguments[1];		// Raw filename
 				string targetFileName = e.Arguments[2];		// target file name
 				string targetType = e.Arguments[3];			// target file type (jpeg, png, bmp)
-				int Prescale = int.Parse(e.Arguments[4]);	// prescale value
+				int prescale = int.Parse(e.Arguments[4]);	// prescale value
+
+#if DEBUG
+				Console.WriteLine("Command: AddToQueue_StageData ( " + 
+					"cestageData = " + cestageData + ", " +
+					"rawFileName = " + rawFileName + ", " + 
+					"targetFileName = " + targetFileName + ", " + 
+					"targetType = " + targetType + ", " + 
+					"prescale = " + prescale.ToString() + " )");
+#endif
+				
 				Application.Invoke(delegate
 				{
 					Stage stage = new Stage(StageOperationFactory, 
@@ -314,9 +346,51 @@ namespace CatEye
 					
 					stage.LoadStageFromString(cestageData);
 					
-					mRenderingQueue.Add(stage, rawFileName, Prescale, targetFileName, targetType);
+					mRenderingQueue.Add(stage, rawFileName, prescale, targetFileName, targetType);
 					mRenderingQueueWindow.Show();
 				});
+			}
+			else if (e.Command == "AddToQueue")
+			{
+				string cestageFileName = e.Arguments[0];		// .cestage filename
+				string rawFileName = e.Arguments[1];		// Raw filename
+				string targetFileName = e.Arguments[2];		// target file name
+				string targetType = e.Arguments[3];			// target file type (jpeg, png, bmp)
+				int prescale = int.Parse(e.Arguments[4]);	// prescale value
+
+#if DEBUG
+				Console.WriteLine("Command: AddToQueue ( " + 
+					"cestageFileName = " + cestageFileName + ", " +
+					"rawFileName = " + rawFileName + ", " + 
+					"targetFileName = " + targetFileName + ", " + 
+					"targetType = " + targetType + ", " + 
+					"prescale = " + prescale.ToString() + " )");
+#endif
+				
+				Application.Invoke(delegate
+				{
+					Stage stage = new Stage(StageOperationFactory, 
+						StageOperationParametersFactory,
+						FloatBitmapGtkFactory);
+					
+					stage.LoadStage(cestageFileName);
+					
+					mRenderingQueue.Add(stage, rawFileName, prescale, targetFileName, targetType);
+					mRenderingQueueWindow.Show();
+				});
+			}
+			else
+			{
+#if DEBUG
+				Console.Write("Command: " + e.Command + " ( ");
+				for (int i = 0; i < e.Arguments.Length - 1; i++)
+				{
+					Console.Write("\"" + e.Arguments[i] + "\", ");
+				}
+				if (e.Arguments.Length > 0) 
+					Console.Write("\"" + e.Arguments[e.Arguments.Length - 1] + "\"");
+				Console.WriteLine(" )");
+#endif
 			}
 		}
 		
@@ -704,23 +778,26 @@ namespace CatEye
 				}
 			}
 				
-			
-			
-			if (mRemoteControlService.Start())
+			bool ownServerStarted = mRemoteControlService.Start();
+
+			if (ownServerStarted)
 			{
 				Application.Init ();
 				
-				// Creating queue and it's window
+				// Creating render queue and its window
 				mRenderingQueue = new RenderingQueue();
 				mRenderingQueueWindow = new RenderingQueueWindow(mRenderingQueue);
 				mRenderingQueue.StartThread();
-
-				// Sending the commands
-				for (int i = 0; i < command.Count; i++)
-				{
-					mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
-				}
-				
+			}
+			
+			// Sending the commands
+			for (int i = 0; i < command.Count; i++)
+			{
+				mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
+			}
+			
+			if (ownServerStarted)
+			{
 				GLib.Idle.Add(delegate {
 					// Checking if something is already started
 					if (RenderingQueue.IsProcessingItem || StageEditorWindows.Count > 0) 

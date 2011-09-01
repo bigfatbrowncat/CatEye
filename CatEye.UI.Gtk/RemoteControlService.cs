@@ -63,6 +63,7 @@ namespace CatEye.UI.Gtk
 			}
 			
 			TcpClient client;
+			bool client_opened = false;
 			mListener = new TcpListener(mPort);
 			
 			mListeningThread = new Thread(delegate () {
@@ -74,10 +75,16 @@ namespace CatEye.UI.Gtk
 				{
 					while (!mListeningThreadStopPending)
 					{
+						while (!mListener.Pending()) 
+						{
+							Thread.Sleep(10);
+							if (mListeningThreadStopPending) 
+								throw new CatEye.Core.UserCancelException();
+						}
 						client = mListener.AcceptTcpClient();
-						if (mListeningThreadStopPending) break;
+						client_opened = true;
 #if DEBUG
-						Console.WriteLine("[S] Client connected. Reading the message...");
+						Console.WriteLine("[S] Client connected.");
 #endif						
 						NetworkStream stream = client.GetStream();
 
@@ -88,12 +95,25 @@ namespace CatEye.UI.Gtk
 							int bytesRead = 0;
 						
 							// Reading string
-							do
+							stream.ReadTimeout = 1000;	// Wait a second to connect...
+#if DEBUG
+							Console.WriteLine("[S] Reading the message. Wait a second...");
+#endif						
+							try
 							{
-								bytesRead = stream.Read(text_buf, 0, text_buf.Length);
-								completeText.Append(Encoding.UTF8.GetString(text_buf, 0, bytesRead));
+								do
+								{
+									bytesRead = stream.Read(text_buf, 0, text_buf.Length);
+									completeText.Append(Encoding.UTF8.GetString(text_buf, 0, bytesRead));
+								}
+								while (stream.DataAvailable);
 							}
-							while (stream.DataAvailable);
+							catch (Exception e)
+							{
+#if DEBUG
+								Console.WriteLine("[S] Exception during reading: " + e.Message);
+#endif						
+							}
 						
 							string text = completeText.ToString();
 							
@@ -127,11 +147,26 @@ namespace CatEye.UI.Gtk
 							}
 						}
 						client.Close();
+						client_opened = false;
 					}
 				}
 				catch (SocketException sex)
 				{
 					// Sorry, it's interrupted, yeah...
+#if DEBUG
+					Console.WriteLine("[S] Socket exception occured: " + sex.Message + "\n" +
+						sex.StackTrace);
+#endif	
+				}
+				catch (CatEye.Core.UserCancelException ucex)
+				{
+#if DEBUG
+					Console.WriteLine("[S] User interrupted the server listening cycle");
+#endif	
+				}
+				finally 
+				{
+					if (client_opened) client.Close();
 				}
 #if DEBUG
 				Console.WriteLine("[S] Server stopped");
@@ -217,12 +252,12 @@ namespace CatEye.UI.Gtk
 			else
 				str = "";
 #if DEBUG
-			Console.WriteLine("[M] Sending string \"" + str.Replace("\x000", "(char #0)") + "\"");
+			Console.WriteLine("[M] Sending command \"" + command + "\"");
 #endif
 			string str2 = PasswordCode + str;
 			EncodeAndSendString(client.GetStream(), str2);
 #if DEBUG
-			Console.WriteLine("[M] String \"" + str.Replace("\x000", "(char #0)") + "\" sent");
+			Console.WriteLine("[M] Command \"" + command + "\" has sent");
 #endif
 		}
 		
@@ -237,7 +272,9 @@ namespace CatEye.UI.Gtk
 		public void Stop()
 		{
 			if (mListener != null)
+			{
 				mListener.Stop();
+			}
 			mListeningThreadStopPending = true;
 		}
 	}
