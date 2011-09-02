@@ -203,11 +203,12 @@ namespace CatEye
 		{
 			if (System.IO.File.Exists(filename))
 			{
+				string path = System.IO.Path.GetDirectoryName(filename);
 				string base_name = System.IO.Path.GetFileNameWithoutExtension(filename);
 				string ext = System.IO.Path.GetExtension(filename);
 				int i;
-				for (i = 1; System.IO.File.Exists(base_name + "[" + i.ToString() + "]." + ext); i++) {}
-				return base_name + "[" + i.ToString() + "]." + ext;
+				for (i = 1; System.IO.File.Exists(path + base_name + "[" + i.ToString() + "]" + ext); i++) {}
+				return path + System.IO.Path.DirectorySeparatorChar + base_name + "[" + i.ToString() + "]" + ext;
 			}
 			else
 				return filename;

@@ -24,7 +24,6 @@
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
-    <Commandlineparameters>-q -d /home/imizus/test-photos/new/sepia.cestage /home/imizus/test-photos/new/IMG_0159.CR2 /home/imizus/test-photos/new/IMG_3884.CR2 /home/imizus/test-photos/new/IMG_4484.CR2 /home/imizus/test-photos/new/IMG_4489.CR2 -p 8</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -88,10 +87,12 @@
     <None Include="default.cestage">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="res\cateye.ico">
+      <DeployService-Deploy>true</DeployService-Deploy>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StageOperations\BlackPoint\" />
-    <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="res\" />
   </ItemGroup>
   <ItemGroup>

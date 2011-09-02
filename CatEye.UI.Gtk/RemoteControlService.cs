@@ -108,7 +108,11 @@ namespace CatEye.UI.Gtk
 								}
 								while (stream.DataAvailable);
 							}
-							catch (Exception e)
+							catch (Exception
+#if DEBUG
+								e
+#endif						
+								)
 							{
 #if DEBUG
 								Console.WriteLine("[S] Exception during reading: " + e.Message);
