@@ -407,15 +407,9 @@ namespace CatEye
 			List<string> command = new List<string>();
 			List<List<string>> commands_arguments = new List<List<string>>();
 
-			if (argslist.Count == 0)
+			if (argslist.Contains("-q") || argslist.Contains("--queue"))
 			{
-				// No command line arguments passed. 
-				// Sending the "StageEditor" command with no arguments
-				command.Add("StageEditor");
-				commands_arguments.Add(new List<string>());
-			}
-			else if (argslist.Contains("-q") || argslist.Contains("--queue"))
-			{
+				argslist.Remove("-q"); argslist.Remove("--queue");
 				// Queue launch mode
 				
 				// Searching for "--default" option
@@ -438,8 +432,7 @@ namespace CatEye
 							d_cestage_name = "";
 						}
 						
-					}
-					if (d_inx == argslist.Count - 1)
+					} else if (d_inx == argslist.Count - 1)
 					{
 						Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
 						argslist.RemoveAt(d_inx);
@@ -456,9 +449,9 @@ namespace CatEye
 				{
 					if (tt_inx < argslist.Count - 1)
 					{
-						target_type = argslist[d_inx + 1];
+						target_type = argslist[tt_inx + 1];
 						// Removing readed "-t"
-						argslist.RemoveRange(d_inx, 2);
+						argslist.RemoveRange(tt_inx, 2);
 						
 						if (target_type != "jpeg" && target_type != "png" && target_type != "bmp")
 						{
@@ -466,11 +459,10 @@ namespace CatEye
 							target_type = "";
 						}
 						
-					}
-					if (d_inx == argslist.Count - 1)
+					} else if (tt_inx == argslist.Count - 1)
 					{
 						Console.WriteLine("Incorrect argument: target type should be provided after --target-type or -t");
-						argslist.RemoveAt(d_inx);
+						argslist.RemoveAt(tt_inx);
 					}
 				}
 				
@@ -484,19 +476,18 @@ namespace CatEye
 				{
 					if (p_inx < argslist.Count - 1)
 					{
-						// Removing readed "-t"
-						argslist.RemoveRange(d_inx, 2);
-						
-						if (!int.TryParse(argslist[d_inx + 1], out prescale) || prescale < 1 || prescale > 8)
+						if (!int.TryParse(argslist[p_inx + 1], out prescale) || prescale < 1 || prescale > 8)
 						{
-							Console.WriteLine("Incorrect prescale value specified: " + argslist[d_inx + 1] + ". It should be an integer value from 1 to 8.");
+							Console.WriteLine("Incorrect prescale value specified: " + argslist[p_inx + 1] + ". It should be an integer value from 1 to 8.");
 						}
+
+						// Removing readed "-t"
+						argslist.RemoveRange(p_inx, 2);
 						
-					}
-					if (d_inx == argslist.Count - 1)
+					} else if (p_inx == argslist.Count - 1)
 					{
 						Console.WriteLine("Incorrect argument: prescale should be provided after --prescale or -p");
-						argslist.RemoveAt(d_inx);
+						argslist.RemoveAt(p_inx);
 					}
 				}
 				
@@ -646,8 +637,7 @@ namespace CatEye
 							d_cestage_name = "";
 						}
 						
-					}
-					if (d_inx == argslist.Count - 1)
+					} else if (d_inx == argslist.Count - 1)
 					{
 						Console.WriteLine("Incorrect argument: .cestage file name should be provided after --default or -d");
 						argslist.RemoveAt(d_inx);
@@ -664,19 +654,18 @@ namespace CatEye
 				{
 					if (p_inx < argslist.Count - 1)
 					{
-						// Removing readed "-p"
-						argslist.RemoveRange(d_inx, 2);
-						
-						if (!int.TryParse(argslist[d_inx + 1], out prescale) || prescale < 1 || prescale > 8)
+						if (!int.TryParse(argslist[p_inx + 1], out prescale) || prescale < 1 || prescale > 8)
 						{
-							Console.WriteLine("Incorrect prescale value specified: " + argslist[d_inx + 1] + ". It should be an integer value from 1 to 8.");
+							Console.WriteLine("Incorrect prescale value specified: " + argslist[p_inx + 1] + ". It should be an integer value from 1 to 8.");
 						}
+
+						// Removing readed "-p"
+						argslist.RemoveRange(p_inx, 2);
 						
-					}
-					if (d_inx == argslist.Count - 1)
+					} else if (p_inx == argslist.Count - 1)
 					{
 						Console.WriteLine("Incorrect argument: prescale should be provided after --prescale or -p");
-						argslist.RemoveAt(d_inx);
+						argslist.RemoveAt(p_inx);
 					}
 				}
 						
@@ -760,7 +749,8 @@ namespace CatEye
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									argslist[i],
-									raws[0]
+									raws[0],
+									prescale.ToString()
 								}));
 							}
 							else
@@ -789,12 +779,22 @@ namespace CatEye
 				mRenderingQueueWindow = new RenderingQueueWindow(mRenderingQueue);
 				mRenderingQueue.StartThread();
 			}
-			
+
+			// No files asked
+			if (command.Count == 0)
+			{
+				// No command line arguments passed. 
+				// Sending the "StageEditor" command with no arguments
+				command.Add("StageEditor");
+				commands_arguments.Add(new List<string>());
+			}
+						
 			// Sending the commands
 			for (int i = 0; i < command.Count; i++)
 			{
 				mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
 			}
+			
 			
 			if (ownServerStarted)
 			{

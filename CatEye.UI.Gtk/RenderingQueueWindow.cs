@@ -248,6 +248,7 @@ namespace CatEye.UI.Gtk
 
 		protected void OnCancelAllButtonClicked (object sender, System.EventArgs e)
 		{
+			cancel_button.Sensitive = false;
 			cancelAll_button.Sensitive = false;
 			mRenderingQueue.CancelAllItems();
 		}
@@ -273,11 +274,13 @@ namespace CatEye.UI.Gtk
 			{
 				up_button.Sensitive = false;
 				down_button.Sensitive = false;
+				remove_button.Sensitive = false;
 			}
 			else
 			{
 				RenderingTask seltask = ((RenderingTaskTreeNode)selnodes[0]).Task;
 				
+				remove_button.Sensitive = true;
 				up_button.Sensitive = mRenderingQueue.IndexOf(seltask) > 0;
 				down_button.Sensitive = mRenderingQueue.IndexOf(seltask) < mRenderingQueue.Count - 1;
 			}
