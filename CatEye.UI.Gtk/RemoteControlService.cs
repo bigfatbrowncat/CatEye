@@ -253,9 +253,10 @@ namespace CatEye.UI.Gtk
 				Console.WriteLine("[M] Sending " + packed_commands.Length + " commands");
 #endif
 				EncodeAndSendString(client.GetStream(), sb.ToString());
+				client.Close();
 #if DEBUG
 				Console.WriteLine("[M] Commands sent");
-#endif				
+#endif			
 				return true;
 			}
 
