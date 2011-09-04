@@ -349,17 +349,15 @@ namespace CatEye.UI.Base
 		{
 			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
-			unsafe {
 	
-				// Сalculating light
-				for (int i = 0; i < mWidth; i++)
-				for (int j = 0; j < mHeight; j++)
-				{
-					light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-								  			g_chan[i, j] * g_chan[i, j] + 
-							      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					if (light[i,j] > maxlight) maxlight = light[i,j];
-				}
+			// Сalculating light
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
+			{
+				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+							  			g_chan[i, j] * g_chan[i, j] + 
+						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+				if (light[i,j] > maxlight) maxlight = light[i,j];
 			}
 						
 			double[,] scale_matrix = new double[mWidth, mHeight];
@@ -370,92 +368,90 @@ namespace CatEye.UI.Base
 			Random rnd = new Random();
 			
 			Console.WriteLine("Calculating scale factors...");
-			unsafe {
-				for (int i = 0; i < mWidth + radius; i++)	// "radius" added to process all "i_back" values
+
+			for (int i = 0; i < mWidth + radius; i++)	// "radius" added to process all "i_back" values
+			{
+				int i_back = i - radius;
+				if (callback != null)
 				{
-					int i_back = i - radius;
-					if (callback != null)
+					if (!callback((double)i / (mWidth + radius)))
+						throw new UserCancelException();
+				}
+
+
+				for (int j = 0; j < mHeight; j++)
+				{
+					if (i < mWidth)
 					{
-						if (!callback((double)i / (mWidth + radius)))
-							throw new UserCancelException();
-					}
-	
+						// Dispersion
+						int avg = 0;
+						for (int k = 0; k < points; k++)
+						{
+							double phi = rnd.NextDouble() * 2 * Math.PI;
+							//double alpha = 3;
+							double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+						
+							int u = i + (int)(rad * Math.Cos(phi));
+							int v = j + (int)(rad * Math.Sin(phi));
+							
+							if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+							{
+								double delta = (light[i, j] - light[u, v]);
+								dispersion_matrix[i, j] += delta * delta;
+								avg ++;
+							}
+						}
+						dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
 
-					for (int j = 0; j < mHeight; j++)
+						// Average
+						avg = 0;
+						for (int k = 0; k < points; k++)
+						{
+							double phi = rnd.NextDouble() * 2 * Math.PI;
+							//double alpha = 3;
+							double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+						
+							int u = i + (int)(rad * Math.Cos(phi));
+							int v = j + (int)(rad * Math.Sin(phi));
+							
+							if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+							{
+								double delta = (light[i, j] - light[u, v]);
+								double f = Math.Log(Math.Abs(delta) + 1);
+								
+								// Limiting f to remove white and dark "crowns" near contrast objects
+								//double d = 2, K = 0.5; -- good
+								double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
+								//double denoise_delta = 0.05, denoise_min = 0.2;
+								//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
+								double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
+									(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
+
+								f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
+
+								double scale = f;	// It was f / 5
+								
+								scale_matrix[i, j] += scale;
+								avg ++;
+							}
+						}
+						scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
+					}
+						
+					if (i_back >= 0)
 					{
-						if (i < mWidth)
-						{
-							// Dispersion
-							int avg = 0;
-							for (int k = 0; k < points; k++)
-							{
-								double phi = rnd.NextDouble() * 2 * Math.PI;
-								//double alpha = 3;
-								double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-							
-								int u = i + (int)(rad * Math.Cos(phi));
-								int v = j + (int)(rad * Math.Sin(phi));
-								
-								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
-								{
-									double delta = (light[i, j] - light[u, v]);
-									dispersion_matrix[i, j] += delta * delta;
-									avg ++;
-								}
-							}
-							dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
+						// Scaling amplitudes
+						double kcomp;
+						/*if (scale_matrix_adds[i_back, j] == 0)
+							kcomp = 1;
+						else*/
+						kcomp = Math.Pow(scale_matrix[i_back, j] + 1, pressure);
 
-							// Average
-							avg = 0;
-							for (int k = 0; k < points; k++)
-							{
-								double phi = rnd.NextDouble() * 2 * Math.PI;
-								//double alpha = 3;
-								double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-							
-								int u = i + (int)(rad * Math.Cos(phi));
-								int v = j + (int)(rad * Math.Sin(phi));
-								
-								if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
-								{
-									double delta = (light[i, j] - light[u, v]);
-									double f = Math.Log(Math.Abs(delta) + 1);
-									
-									// Limiting f to remove white and dark "crowns" near contrast objects
-									//double d = 2, K = 0.5; -- good
-									double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
-									//double denoise_delta = 0.05, denoise_min = 0.2;
-									//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
-									double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
-										(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
-
-									f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
-
-									double scale = f;	// It was f / 5
-									
-									scale_matrix[i, j] += scale;
-									avg ++;
-								}
-							}
-							scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
-						}
-							
-						if (i_back >= 0)
-						{
-							// Scaling amplitudes
-							double kcomp;
-							/*if (scale_matrix_adds[i_back, j] == 0)
-								kcomp = 1;
-							else*/
-							kcomp = Math.Pow(scale_matrix[i_back, j] + 1, pressure);
-
-							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
-							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
-							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
-			
-						}
+						r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
+						g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
+						b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
+		
 					}
-
 				}
 			}
 		}

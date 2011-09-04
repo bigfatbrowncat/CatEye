@@ -43,8 +43,8 @@ namespace CatEye.UI.Gtk
 		
 		private void EncodeAndSendString(NetworkStream stream, string str)
 		{
-			while (!stream.CanWrite) { Thread.Sleep(10); }
 			byte[] text_buf = Encoding.UTF8.GetBytes(str);
+			while (!stream.CanWrite) { Thread.Sleep(10); }
 			stream.Write(text_buf, 0, text_buf.Length);
 			stream.Flush();
 		}
@@ -62,7 +62,7 @@ namespace CatEye.UI.Gtk
 				return;
 			}
 			
-			TcpClient client;
+			TcpClient client = null;
 			bool client_opened = false;
 			mListener = new TcpListener(mPort);
 			
@@ -75,6 +75,7 @@ namespace CatEye.UI.Gtk
 				{
 					while (!mListeningThreadStopPending)
 					{
+						string text = "";
 						while (!mListener.Pending()) 
 						{
 							Thread.Sleep(10);
@@ -119,19 +120,28 @@ namespace CatEye.UI.Gtk
 #endif						
 							}
 						
-							string text = completeText.ToString();
+							text = completeText.ToString();
 							
-							// Checking the result
-							if (text.Length >= PasswordCode.Length &&
-								text.Substring(0, PasswordCode.Length) == PasswordCode)
+						}
+						client.Close();
+						client_opened = false;
+						
+						// Dividing command lines
+						List<string> command_lines = new List<string>(text.Split('\x000'));
+						for (int i = 0; i < command_lines.Count; i++)
+						{
+							if (command_lines[i] == "") continue;
+							// Parsing the incoming commands
+							else if (command_lines[i].Length >= PasswordCode.Length &&
+								command_lines[i].Substring(0, PasswordCode.Length) == PasswordCode)
 							{
 								// Handling string
-								string s = text.Substring(PasswordCode.Length);
+								string s = command_lines[i].Substring(PasswordCode.Length);
 								string[] args;
 								string command;
 								if (s != "")
 								{
-									args = s.Split('\x000');
+									args = s.Split('\x001');
 									List<string> argslist = new List<string>(args);
 									command = argslist[0];
 									argslist.RemoveAt(0);
@@ -147,11 +157,9 @@ namespace CatEye.UI.Gtk
 							}
 							else 
 							{
-								Console.WriteLine("[S] Unsupported message \"" + text + "\"");
+								Console.WriteLine("[S] Unsupported command \"" + text + "\"");
 							}
 						}
-						client.Close();
-						client_opened = false;
 					}
 				}
 				catch (SocketException sex)
@@ -170,7 +178,7 @@ namespace CatEye.UI.Gtk
 				}
 				finally 
 				{
-					if (client_opened) client.Close();
+					if (client_opened && client != null) client.Close();
 				}
 #if DEBUG
 				Console.WriteLine("[S] Server stopped");
@@ -223,7 +231,12 @@ namespace CatEye.UI.Gtk
 			return result;
 		}
 		
-		public bool SendCommand(string command, string[] arguments)
+		public bool SendCommand(string packed_command)
+		{
+			return SendCommands(new string[] { packed_command });
+		}
+		
+		public bool SendCommands(string[] packed_commands)
 		{
 			TcpClient client = TryConnectClient();
 			if (client == null)
@@ -232,12 +245,23 @@ namespace CatEye.UI.Gtk
 			}
 			else
 			{
-				InternalSendCommand(client, command, arguments);
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < packed_commands.Length; i++)
+					sb.Append("\x000" + packed_commands[i]);
+				
+#if DEBUG
+				Console.WriteLine("[M] Sending " + packed_commands.Length + " commands");
+#endif
+				EncodeAndSendString(client.GetStream(), sb.ToString());
+#if DEBUG
+				Console.WriteLine("[M] Commands sent");
+#endif				
 				return true;
 			}
+
 		}
 
-		private void InternalSendCommand(TcpClient client, string command, string[] args)
+		public static string PackCommand(string command, string[] args)
 		{
 			string str;
 			List<string> cmd_and_args = new List<string>();
@@ -249,20 +273,13 @@ namespace CatEye.UI.Gtk
 				StringBuilder sb = new StringBuilder(cmd_and_args[0]);
 				for (int i = 1; i < cmd_and_args.Count; i++)
 				{
-					sb.Append("\x000" + cmd_and_args[i]);
+					sb.Append("\x001" + cmd_and_args[i]);
 				}
 				str = sb.ToString();
 			}
 			else
 				str = "";
-#if DEBUG
-			Console.WriteLine("[M] Sending command \"" + command + "\"");
-#endif
-			string str2 = PasswordCode + str;
-			EncodeAndSendString(client.GetStream(), str2);
-#if DEBUG
-			Console.WriteLine("[M] Command \"" + command + "\" has sent");
-#endif
+			return PasswordCode + str;
 		}
 		
 		public event EventHandler<RemoteCommandEventArgs> RemoteCommandReceived;

@@ -259,6 +259,8 @@ namespace CatEye.UI.Gtk
 			
 			foreach (ITreeNode itr in selnodes)
 				mRenderingQueue.Remove(((RenderingTaskTreeNode)itr).Task);
+			
+			remove_button.Sensitive = false;
 		}
 
 		protected void OnDeleteEvent (object o, DeleteEventArgs args)

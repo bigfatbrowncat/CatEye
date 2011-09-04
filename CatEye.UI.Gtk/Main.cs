@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Gtk;
@@ -207,7 +208,7 @@ namespace CatEye
 				string base_name = System.IO.Path.GetFileNameWithoutExtension(filename);
 				string ext = System.IO.Path.GetExtension(filename);
 				int i;
-				for (i = 1; System.IO.File.Exists(path + base_name + "[" + i.ToString() + "]" + ext); i++) {}
+				for (i = 1; System.IO.File.Exists(path + System.IO.Path.DirectorySeparatorChar + base_name + "[" + i.ToString() + "]" + ext); i++) {}
 				return path + System.IO.Path.DirectorySeparatorChar + base_name + "[" + i.ToString() + "]" + ext;
 			}
 			else
@@ -367,7 +368,6 @@ namespace CatEye
 					"targetType = " + targetType + ", " + 
 					"prescale = " + prescale.ToString() + " )");
 #endif
-				
 				Application.Invoke(delegate
 				{
 					Stage stage = new Stage(StageOperationFactory, 
@@ -405,7 +405,7 @@ namespace CatEye
 			// Parsing command line. Formulating command and it's arguments
 			List<string> argslist = new List<string>(args);
 			
-			List<string> command = new List<string>();
+			List<string> commands = new List<string>();
 			List<List<string>> commands_arguments = new List<List<string>>();
 
 			if (argslist.Contains("-q") || argslist.Contains("--queue"))
@@ -494,8 +494,8 @@ namespace CatEye
 				
 				// Now when all the additional parameters are parsed and removed, 
 				// we're analysing, what's left. The options:
-				if (argslist.Count == 2 && (IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1])) ||
-										   (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0])))
+				if (argslist.Count == 2 && ((IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1])) ||
+										   (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))))
 				{
 					// Two file names: one cestage and one raw
 
@@ -518,7 +518,7 @@ namespace CatEye
 					target_name = CheckIfFileExistsAndAddIndex(target_name);
 					
 					// Launching StageEditor with the cestage file and the raw file
-					command.Add("AddToQueue");
+					commands.Add("AddToQueue");
 					commands_arguments.Add(new List<string>(new string[] 
 					{
 						argslist[0], 
@@ -548,7 +548,7 @@ namespace CatEye
 								// At least one found
 
 								// Launching StageEditor with the cestage file and the raw file
-								command.Add("AddToQueue");
+								commands.Add("AddToQueue");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									cestages[0], 
@@ -561,7 +561,7 @@ namespace CatEye
 							else if (d_cestage_name != "")
 							{
 								// Nothing found, but default name is present
-								command.Add("AddToQueue");
+								commands.Add("AddToQueue");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									d_cestage_name,
@@ -590,7 +590,7 @@ namespace CatEye
 							{
 								// At least one found
 
-								command.Add("AddToQueue");
+								commands.Add("AddToQueue");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									argslist[i],
@@ -673,7 +673,7 @@ namespace CatEye
 				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
-					command.Add("StageEditor_CEStage_RAW");
+					commands.Add("StageEditor_CEStage_RAW");
 					commands_arguments.Add(new List<string>(new string[] 
 					{ 
 						argslist[0], 
@@ -685,9 +685,9 @@ namespace CatEye
 				if (argslist.Count == 2 && IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
-					command.Add("StageEditor_CEStage_RAW");
+					commands.Add("StageEditor_CEStage_RAW");
 					commands_arguments.Add(new List<string>(new string[] 
-					{ 
+					{
 						argslist[1], 
 						argslist[0],
 						prescale.ToString()
@@ -707,7 +707,7 @@ namespace CatEye
 							{
 								// At least one found
 								// Launching StageEditor with the cestage file and the raw file
-								command.Add("StageEditor_CEStage_RAW");
+								commands.Add("StageEditor_CEStage_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{ 								
 									cestages[0],
@@ -718,7 +718,7 @@ namespace CatEye
 							else if (d_cestage_name != "")
 							{
 								// Nothing found, but default name is present
-								command.Add("StageEditor_CEStage_RAW");
+								commands.Add("StageEditor_CEStage_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									d_cestage_name,
@@ -729,7 +729,7 @@ namespace CatEye
 							else
 							{
 								Console.WriteLine("Can't find .cestage file for " + argslist[i]);
-								command.Add("StageEditor_RAW");
+								commands.Add("StageEditor_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									argslist[i],
@@ -746,7 +746,7 @@ namespace CatEye
 							{
 								// At least one found
 								// Launching StageEditor with the cestage file and the raw file
-								command.Add("StageEditor_CEStage_RAW");
+								commands.Add("StageEditor_CEStage_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									argslist[i],
@@ -757,7 +757,7 @@ namespace CatEye
 							else
 							{
 								Console.WriteLine("Can't find raw file for " + argslist[i]);
-								command.Add("StageEditor_CEStage");
+								commands.Add("StageEditor_CEStage");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
 									argslist[i]
@@ -782,19 +782,21 @@ namespace CatEye
 			}
 
 			// No files asked
-			if (command.Count == 0)
+			if (commands.Count == 0)
 			{
 				// No command line arguments passed. 
 				// Sending the "StageEditor" command with no arguments
-				command.Add("StageEditor");
+				commands.Add("StageEditor");
 				commands_arguments.Add(new List<string>());
 			}
 						
 			// Sending the commands
-			for (int i = 0; i < command.Count; i++)
+			List<string> packed_commands = new List<string>();
+			for (int i = 0; i < commands.Count; i++)
 			{
-				mRemoteControlService.SendCommand(command[i], commands_arguments[i].ToArray());
+				packed_commands.Add(RemoteControlService.PackCommand(commands[i], commands_arguments[i].ToArray()));
 			}
+			mRemoteControlService.SendCommands(packed_commands.ToArray());
 			
 			
 			if (ownServerStarted)

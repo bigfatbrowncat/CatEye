@@ -766,7 +766,7 @@ public partial class StageEditorWindow : Gtk.Window
 				dest_type, 
 				prescale.ToString()
 			};
-			MainClass.RemoteControlService.SendCommand(command, arguments);
+			MainClass.RemoteControlService.SendCommand(RemoteControlService.PackCommand(command, arguments));
 			
 			/*
 			// Rendering

@@ -270,7 +270,7 @@ namespace CatEye.UI.Base
 				}
 				else
 				{
-					Thread.Sleep(10);
+					Thread.Sleep(30);
 				}
 			}
 			
