@@ -5,7 +5,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("BlackPointStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("BlackPointStageOperation")]
 	public partial class BlackPointStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		public BlackPointStageOperationParametersWidget (StageOperationParameters parameters) :

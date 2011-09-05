@@ -5,7 +5,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("CompressionStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("CompressionStageOperation")]
 	public partial class CompressionStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		public CompressionStageOperationParametersWidget (StageOperationParameters parameters) :

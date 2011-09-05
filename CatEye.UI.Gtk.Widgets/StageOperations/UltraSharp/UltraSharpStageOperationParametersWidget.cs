@@ -5,7 +5,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("UltraSharpStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("UltraSharpStageOperation")]
 	public partial class UltraSharpStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		public UltraSharpStageOperationParametersWidget (StageOperationParameters parameters) :

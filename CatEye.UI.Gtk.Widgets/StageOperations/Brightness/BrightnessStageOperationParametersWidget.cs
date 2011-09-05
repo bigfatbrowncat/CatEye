@@ -5,7 +5,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("BrightnessStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("BrightnessStageOperation")]
 	public partial class BrightnessStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		public BrightnessStageOperationParametersWidget (StageOperationParameters parameters) :

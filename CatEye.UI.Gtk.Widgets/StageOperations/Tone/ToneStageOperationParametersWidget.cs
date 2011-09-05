@@ -5,7 +5,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("ToneStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("ToneStageOperation")]
 	public partial class ToneStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private int mDotRadius = 6;

@@ -4,7 +4,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("CrotateStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("CrotateStageOperation")]
 	public partial class CrotateStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		ListStore ls;
