@@ -12,7 +12,7 @@
   <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="457 391">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.ico.cateye.ico</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
