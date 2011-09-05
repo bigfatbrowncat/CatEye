@@ -8,14 +8,14 @@ namespace CatEye.Core
 	public class BlackPointStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mBlack = 0.05;
+		private double mCut = 0.0;
 		
-		public double Black
+		public double Cut
 		{
-			get { return mBlack; }
+			get { return mCut; }
 			set 
 			{
-				mBlack = value;
+				mCut = value;
 				OnChanged();
 			}
 		}
@@ -27,7 +27,7 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("Black")).Value = mBlack.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Cut")).Value = mCut.ToString(nfi);
 			return xn;
 		}
 
@@ -35,14 +35,14 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			if (node.Attributes["Black"] != null)
+			if (node.Attributes["Cut"] != null)
 			{
-				if (double.TryParse(node.Attributes["Black"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Cut"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mBlack = res;
+					mCut = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Black value");
+					throw new IncorrectNodeValueException("Can't parse Cut value");
 			}
 			OnChanged();
 		}
@@ -56,7 +56,7 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			BlackPointStageOperationParameters t = (BlackPointStageOperationParameters)target;
-			t.mBlack = mBlack;
+			t.mCut = mCut;
 			t.OnChanged();
 		}
 		

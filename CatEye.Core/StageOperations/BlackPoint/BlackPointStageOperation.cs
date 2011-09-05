@@ -19,7 +19,7 @@ namespace CatEye.Core
 		{
 			BlackPointStageOperationParameters pm = (BlackPointStageOperationParameters)Parameters;
 			
-			hdp.CutBlackPoint(pm.Black,
+			hdp.CutBlackPoint(pm.Cut,
 			         delegate (double progress) {
 				return OnReportProgress(progress);
 			});

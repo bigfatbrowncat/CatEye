@@ -17,7 +17,7 @@ namespace CatEye.Core
 		void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback);
 		void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback);
 		void ApplySaturation(double satur_factor, ProgressReporter callback);
-		void CutBlackPoint(double black, ProgressReporter callback);
+		void CutBlackPoint(double cut, ProgressReporter callback);
 		
 		/// <summary>
 		/// Crop and rotate the image
