@@ -81,7 +81,7 @@ namespace CatEye.UI.Gtk
 			mRenderingQueue.ItemRendering += HandleRenderingQueueItemRendering;
 			
 			// Creating status icon
-			mProcessingStatusIcon = new StatusIcon(Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg"));
+			mProcessingStatusIcon = new StatusIcon(Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.res.ico.cateye.ico"));
 			mProcessingStatusIcon.Visible = false;	// In Windows status icon appears visible by default
 			mProcessingStatusIcon.Activate += HandleProcessingStatusIconActivate; 
 			

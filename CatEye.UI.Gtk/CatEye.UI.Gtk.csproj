@@ -55,8 +55,11 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="res\svg-inkscape\cateye-small.svg" />
-    <EmbeddedResource Include="res\svg-inkscape\cateye.svg" />
+    <EmbeddedResource Include="res\png\cateye-48x48.png" />
+    <EmbeddedResource Include="res\ico\cateye.ico">
+      <DeployService-Deploy>true</DeployService-Deploy>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -81,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
+    <Folder Include="res\ico\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatEye.Core\CatEye.Core.csproj">
@@ -98,11 +102,5 @@
       <Name>CatEye.UI.Gtk.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="res\cateye.ico">
-      <DeployService-Deploy>true</DeployService-Deploy>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>
