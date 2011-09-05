@@ -281,7 +281,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.ico.cateye.ico</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="WindowPosition">Center</property>
     <property name="AllowGrow">False</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
@@ -743,7 +743,7 @@
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.ico.cateye.ico</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -978,7 +978,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">RAW file found</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye.ico</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
