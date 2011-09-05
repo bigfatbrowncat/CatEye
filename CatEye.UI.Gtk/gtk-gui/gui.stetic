@@ -6,13 +6,13 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="457 391">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -38,7 +38,7 @@
                 <child>
                   <widget class="Gtk.Image" id="icon_image">
                     <property name="MemberName" />
-                    <property name="Pixbuf">resource:CatEye.UI.Gtk.res.cateye.png</property>
+                    <property name="Pixbuf">resource:CatEye.UI.Gtk.res.svg-inkscape.cateye.svg</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -281,7 +281,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg</property>
     <property name="WindowPosition">Center</property>
     <property name="AllowGrow">False</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
@@ -743,7 +743,7 @@
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -978,7 +978,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">RAW file found</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
