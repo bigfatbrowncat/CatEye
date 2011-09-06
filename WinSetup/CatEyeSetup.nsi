@@ -18,6 +18,7 @@ SetCompressor /SOLID lzma
 ;Include files
 !include "MUI2.nsh"         ; Modern UI
 !include "DotNet.nsh"       ; my file for .NetFramework
+!include "Extensions.nsh"   ; my file for extensions registration
 
 ;Name and file
 Name "${PRODUCT_NAME} ${VERSION_SHORT}"
@@ -69,6 +70,7 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_LICENSE $(license)
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
+!insertmacro MUI_PAGE_EXTENSIONS    ; my page for extensions registration
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES

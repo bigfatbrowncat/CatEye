@@ -12,3 +12,5 @@ LangString DotNetDownloadCaptionText ${LANG_RUSSIAN} "Загрузка .NET Framework 2.
 LangString DotNetDownloadCancelText ${LANG_RUSSIAN} "Отменить загрузку"
 LangString DotNetDownloadCrashWarning ${LANG_RUSSIAN} "Для работы ${PRODUCT_NAME} требуется Microsoft .NET Framework 2.0. Установка прекращена."
 
+LangString ExtensionsPage_HeaderText ${LANG_RUSSIAN} "Ассоциация расширений файлов"
+LangString ExtensionsPage_SubHeaderText ${LANG_RUSSIAN} "Выберите типы файлов, которые будут открываться с помощью ${PRODUCT_NAME}"
