@@ -6,13 +6,25 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
+  <icon-factory>
+    <icon-set id="CatEyeIcon">
+      <source>
+        <property name="Image">resource:CatEye.UI.Gtk.res.ico.cateye.ico</property>
+      </source>
+    </icon-set>
+    <icon-set id="CEStageIcon">
+      <source>
+        <property name="Image">resource:CatEye.UI.Gtk.res.ico.cestage.ico</property>
+      </source>
+    </icon-set>
+  </icon-factory>
   <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="457 391">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -38,7 +50,7 @@
                 <child>
                   <widget class="Gtk.Image" id="icon_image">
                     <property name="MemberName" />
-                    <property name="Pixbuf">resource:CatEye.UI.Gtk.res.cateye.png</property>
+                    <property name="Pixbuf">resource:CatEye.UI.Gtk.res.png.cateye-48x48.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -277,11 +289,11 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="432 361">
+  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="283 579">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="WindowPosition">Center</property>
     <property name="AllowGrow">False</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
@@ -306,8 +318,21 @@
                     <child>
                       <widget class="Gtk.VBox" id="vbox3">
                         <property name="MemberName" />
-                        <property name="Spacing">6</property>
+                        <property name="Spacing">4</property>
                         <property name="BorderWidth">4</property>
+                        <child>
+                          <widget class="Gtk.Image" id="thumb_image">
+                            <property name="MemberName" />
+                            <property name="WidthRequest">230</property>
+                            <property name="HeightRequest">230</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
                         <child>
                           <widget class="Gtk.Table" id="table1">
                             <property name="MemberName" />
@@ -401,7 +426,7 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="Position">0</property>
+                            <property name="Position">1</property>
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -440,7 +465,7 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="Position">1</property>
+                            <property name="Position">2</property>
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -453,9 +478,9 @@
                 <child>
                   <widget class="Gtk.Label" id="titleGtkLabel">
                     <property name="MemberName" />
-                    <property name="HeightRequest">28</property>
+                    <property name="HeightRequest">32</property>
                     <property name="Xalign">0</property>
-                    <property name="Yalign">1</property>
+                    <property name="Yalign">0.7</property>
                     <property name="LabelProp" translatable="yes">&lt;b&gt;Currently processing&lt;/b&gt;</property>
                     <property name="UseMarkup">True</property>
                   </widget>
@@ -743,7 +768,7 @@
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -978,7 +1003,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">RAW file found</property>
-    <property name="Icon">resource:CatEye.UI.Gtk.res.cateye-small.png</property>
+    <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>

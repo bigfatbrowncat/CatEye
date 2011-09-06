@@ -4,7 +4,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("SaturationStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("SaturationStageOperation")]
 	public partial class SaturationStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private bool mChangingValue = false;

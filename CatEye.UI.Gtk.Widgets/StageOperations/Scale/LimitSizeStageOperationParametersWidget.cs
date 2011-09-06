@@ -3,7 +3,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
-	[System.ComponentModel.ToolboxItem(true), StageOperationID("LimitSizeStageOperation")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[StageOperationID("LimitSizeStageOperation")]
 	public partial class LimitSizeStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		public LimitSizeStageOperationParametersWidget (StageOperationParameters parameters) : 

@@ -11,6 +11,8 @@ namespace CatEye.UI.Gtk
 		private RenderingQueue mRenderingQueue;
 		private NodeStore mQueueNodeStore;
 		private bool mIsDestroyed;
+		DateTime updateMoment;
+		TimeSpan drawingTimeSpan;
 		
 		private StatusIcon mProcessingStatusIcon;
 		
@@ -81,7 +83,17 @@ namespace CatEye.UI.Gtk
 			mRenderingQueue.ItemRendering += HandleRenderingQueueItemRendering;
 			
 			// Creating status icon
-			mProcessingStatusIcon = new StatusIcon(Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.res.cateye-small.png"));
+			
+			string icon_res;
+			if (System.Environment.OSVersion.Platform == PlatformID.Unix)
+				icon_res = "CatEye.UI.Gtk.res.svg-inkscape.cateye-small.svg";
+			else
+			{
+				// Windows, I hope.
+				icon_res = "CatEye.UI.Gtk.res.png.cateye-small-16x16.png";
+			}
+			
+			mProcessingStatusIcon = new StatusIcon(Gdk.Pixbuf.LoadFromResource(icon_res));
 			mProcessingStatusIcon.Visible = false;	// In Windows status icon appears visible by default
 			mProcessingStatusIcon.Activate += HandleProcessingStatusIconActivate; 
 			
@@ -150,7 +162,6 @@ namespace CatEye.UI.Gtk
 		void HandleRenderingQueueThreadStarted (object sender, EventArgs e)
 		{
 			Application.Invoke(delegate {
-				//Visible = true;
 			});
 		}
 
@@ -166,6 +177,7 @@ namespace CatEye.UI.Gtk
 				destination_label.Text = "";
 				processing_progressbar.Fraction = 1;
 				processing_progressbar.Text = "Render process is completed";
+				thumb_image.Clear();
 			});
 		}
 
@@ -179,6 +191,7 @@ namespace CatEye.UI.Gtk
 				processing_progressbar.Fraction = 0;
 				processing_progressbar.Text = "Starting the render process...";
 				mProcessingStatusIcon.Visible = true;
+				updateMoment = DateTime.Now;
 				
 			});
 		}
@@ -211,8 +224,8 @@ namespace CatEye.UI.Gtk
 				}
 			});
 		}
-
-		private void HandleRenderingQueueProgressMessageReport (string source, string destination, double progress, string status)
+		
+		private void HandleRenderingQueueProgressMessageReport (string source, string destination, double progress, string status, IBitmapCore image)
 		{
 			Application.Invoke(delegate {
 				source_label.Text = source;
@@ -221,6 +234,46 @@ namespace CatEye.UI.Gtk
 				processing_progressbar.Text = status;
 				
 				mProcessingStatusIcon.Tooltip = "Processing " + System.IO.Path.GetFileName(source) + ". " + status + " (" + ((int)(progress * 100)).ToString() + "%)";
+				
+				thumb_image.Visible = (image != null);
+				
+				if ((DateTime.Now - updateMoment).TotalMilliseconds > drawingTimeSpan.TotalMilliseconds * 5 && image != null && this.Visible)
+				{
+					updateMoment = DateTime.Now;
+					// Drawing
+					int size = 200, margins = 30;
+					
+					thumb_image.SetSizeRequest(size + margins, size + margins);
+					using (Gdk.Pixmap pm = new Gdk.Pixmap(thumb_image.GdkWindow, size + margins, size + margins, -1))
+					{
+						using (Gdk.Pixbuf pb = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, image.Width, image.Height))
+						{
+							using (Gdk.GC gc = new Gdk.GC(thumb_image.GdkWindow))
+							{
+								((FloatBitmapGtk)image).DrawToPixbuf(pb, null);
+								
+								Gdk.Pixbuf pb2;
+	
+								if (pb.Width > pb.Height)
+									pb2 = pb.ScaleSimple(size, (int)((double)pb.Height / pb.Width * size), Gdk.InterpType.Bilinear);
+								else
+									pb2 = pb.ScaleSimple((int)((double)pb.Width / pb.Height * size), size, Gdk.InterpType.Bilinear);
+							
+								pm.DrawRectangle(gc, true, new Gdk.Rectangle(0, 0, size + margins, size + margins));
+								
+								pm.DrawPixbuf(gc, pb2, 0, 0, 
+								              (size + margins) / 2 - pb2.Width / 2, 
+								              (size + margins) / 2 - pb2.Height / 2, 
+								              pb2.Width, pb2.Height, Gdk.RgbDither.Max, 0, 0);
+								
+								pb2.Dispose();
+								
+								thumb_image.SetFromPixmap(pm, null);
+							}
+						}
+					}
+					drawingTimeSpan = DateTime.Now - updateMoment;
+				}
 			});
 		}
 		
