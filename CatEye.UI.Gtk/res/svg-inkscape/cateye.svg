@@ -51,24 +51,28 @@
     <linearGradient
        id="linearGradient5212">
       <stop
-         style="stop-color:#c7ea00;stop-opacity:1;"
+         id="stop3793"
          offset="0"
-         id="stop5214" />
+         style="stop-color:#fff30d;stop-opacity:1;" />
       <stop
-         id="stop5220"
+         style="stop-color:#e7d407;stop-opacity:1;"
          offset="0.5"
-         style="stop-color:#c8c800;stop-opacity:1;" />
+         id="stop3797" />
       <stop
-         style="stop-color:#c3a600;stop-opacity:1;"
+         style="stop-color:#a68d00;stop-opacity:1;"
          offset="1"
          id="stop5216" />
     </linearGradient>
     <linearGradient
        id="linearGradient5173">
       <stop
-         style="stop-color:#b5fa7c;stop-opacity:1;"
+         style="stop-color:#4fa806;stop-opacity:1;"
          offset="0"
          id="stop5175" />
+      <stop
+         id="stop3795"
+         offset="0.5"
+         style="stop-color:#b5fc4b;stop-opacity:1;" />
       <stop
          style="stop-color:#b5ff1a;stop-opacity:0;"
          offset="1"
@@ -178,10 +182,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1313709"
-     inkscape:cx="-200.88286"
-     inkscape:cy="-123.93102"
+     inkscape:cx="-31.587653"
+     inkscape:cy="-90.014802"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer3"
      showgrid="false"
      inkscape:window-width="1280"
      inkscape:window-height="949"
@@ -226,8 +230,7 @@
      id="layer3"
      inkscape:label="lines"
      style="opacity:0.93999999;display:inline;filter:url(#filter5181)"
-     transform="translate(0,-1004.3622)"
-     sodipodi:insensitive="true">
+     transform="translate(0,-1004.3622)">
     <path
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
        d="m 6.4443762,1011.9723 c -2.6335847,0.3139 -4.6149111,0.2052 -4.6149111,0.2052 l -0.2199926,-0.039 c -0.3206879,0.4067 -0.67032906,0.9961 -0.70396738,1.9165 l 0.0864203,0.5745 c 0.61986338,2.5902 -0.6290409,8.7377 1.23352448,15.3625 2.2147796,7.8775 9.0258301,12.5539 14.5340391,14.2603 3.30022,1.0225 6.706484,1.8379 11.688835,1.8137 5.529527,-0.027 14.850716,-2.3064 14.850716,-2.3064 0,0 -9.365506,0.9913 -14.860494,0.742 -5.565294,-0.2526 -8.434847,-1.034 -11.88768,-2.3857 -6.456955,-2.5275 -11.2955914,-7.7936 -12.6519014,-12.6764 -1.6038217,-5.7739 -2.3742819,-15.022 -2.3677096,-15.2232 l 0.4204291,-1.0853 c 0.3016629,0.046 2.0454673,0.6878 4.5415821,0.4798 2.4464848,-0.2039 3.3900327,-0.3026 6.0668508,0.018 5.055363,0.6056 11.841932,2.2109 17.956118,4.8503 6.114183,2.6394 11.546359,6.2156 13.937624,10.452 2.496233,4.4223 3.166791,8.4299 3.166791,8.4299 0,0 -0.08591,-5.4927 -2.624149,-9.9894 -2.515134,-4.4559 -8.052745,-8.2877 -14.230944,-10.9548 -6.1782,-2.667 -13.001055,-4.0271 -18.132111,-4.6141 -2.045815,-0.234 -4.4721914,-0.035 -6.1890694,0.1695 z"
@@ -246,15 +249,14 @@
      id="layer5"
      inkscape:label="Center"
      style="display:inline"
-     transform="translate(0,-1004.3622)"
-     sodipodi:insensitive="true">
+     transform="translate(0,-1004.3622)">
     <path
        style="opacity:0.51152074;fill:url(#linearGradient5249);fill-opacity:1;stroke:none;display:inline;filter:url(#filter5396)"
        d="m 339.29888,453.09501 c 32.73358,-45.53885 22.60565,-82.43152 5.25692,-120.37638 -28.09178,36.05156 -21.92727,76.72753 -5.25692,120.37638 z"
        id="path5144-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
-       transform="matrix(0.28457736,0,0,0.17086658,-72.825321,960.32615)" />
+       transform="matrix(0.41056725,0,0,0.19898633,-116.62574,949.42339)" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -267,7 +269,8 @@
      id="layer6"
      inkscape:label="Center-black"
      style="display:inline"
-     transform="translate(0,-1004.3622)">
+     transform="translate(0,-1004.3622)"
+     sodipodi:insensitive="true">
     <path
        style="opacity:0.93999999;fill:#000000;stroke:#000000;stroke-width:6.39231968;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter5181-0)"
        d="m 153.51878,930.86029 c 25.52805,-34.40715 28.91728,-73.59622 10.71429,-121.42857 -23.40572,33.08256 -28.86488,73.65542 -10.71429,121.42857 z"

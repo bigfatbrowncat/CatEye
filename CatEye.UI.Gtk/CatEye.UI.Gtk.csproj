@@ -56,6 +56,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="res\png\cateye-small-16x16.png" />
     <EmbeddedResource Include="res\svg-inkscape\cateye-small.svg" />
+    <EmbeddedResource Include="res\png\cateye-32x32.png" />
+    <EmbeddedResource Include="res\png\cateye-small-24x24.png" />
+    <EmbeddedResource Include="res\svg-inkscape\cateye.svg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
