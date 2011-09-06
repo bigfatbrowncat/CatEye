@@ -106,11 +106,11 @@ namespace CatEye.UI.Base
 				QueueEmpty(this, EventArgs.Empty);
 		}
 
-		protected virtual void OnQueueProgressMessageReport(string source, string destination, double progress, string status)
+		protected virtual void OnQueueProgressMessageReport(string source, string destination, double progress, string status, IBitmapCore image)
 		{
 			if (QueueProgressMessageReport != null)
 			{
-				QueueProgressMessageReport(source, destination, progress, status);
+				QueueProgressMessageReport(source, destination, progress, status, image);
 			}
 		}
 		
@@ -146,7 +146,7 @@ namespace CatEye.UI.Base
 				throw new UserCancelException();
 			}
 			
-			OnQueueProgressMessageReport(rt.Source, rt.Destination, e.Progress, e.Status);
+			OnQueueProgressMessageReport(rt.Source, rt.Destination, e.Progress, e.Status, rt.Stage.CurrentImage);
 		}
 		
 		public bool StepDown(RenderingTask item)
@@ -245,9 +245,9 @@ namespace CatEye.UI.Base
 							throw new UserCancelException();
 
 						mInProgress.Stage.Process();
-						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Saving image to file...");
+						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Saving image to file...", mInProgress.Stage.CurrentImage);
 						OnItemRendering(mInProgress);
-						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Image saved");
+						OnQueueProgressMessageReport(mInProgress.Source, mInProgress.Destination, 1, "Image saved", mInProgress.Stage.CurrentImage);
 
 						mInProgress.Stage.ProgressMessageReport -= HandleStageProgressMessageReport;
 						
