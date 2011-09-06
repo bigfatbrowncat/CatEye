@@ -50,10 +50,6 @@
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="res\png\cateye-48x48.png" />
-    <EmbeddedResource Include="res\ico\cateye.ico">
-      <DeployService-Deploy>true</DeployService-Deploy>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="res\png\cateye-small-16x16.png" />
     <EmbeddedResource Include="res\svg-inkscape\cateye-small.svg" />
     <EmbeddedResource Include="res\png\cateye-32x32.png" />
@@ -86,6 +82,10 @@
     <None Include="default.cestage">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="res\ico\cateye.ico">
+      <DeployService-Deploy>true</DeployService-Deploy>
+    </None>
+    <None Include="res\ico\cestage.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
@@ -107,10 +107,5 @@
       <Name>CatEye.UI.Gtk.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="res\ico\cestage.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
 </Project>

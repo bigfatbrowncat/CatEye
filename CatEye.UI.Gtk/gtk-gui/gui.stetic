@@ -9,6 +9,18 @@
     <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
     <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
+  <icon-factory>
+    <icon-set id="CatEyeIcon">
+      <source>
+        <property name="Image">resource:CatEye.UI.Gtk.res.ico.cateye.ico</property>
+      </source>
+    </icon-set>
+    <icon-set id="CEStageIcon">
+      <source>
+        <property name="Image">resource:CatEye.UI.Gtk.res.ico.cestage.ico</property>
+      </source>
+    </icon-set>
+  </icon-factory>
   <widget class="Gtk.Dialog" id="CatEye.AboutBox" design-size="457 391">
     <property name="MemberName" />
     <property name="Title" translatable="yes">About CatEye</property>
