@@ -59,6 +59,12 @@
     <EmbeddedResource Include="res\png\cateye-32x32.png" />
     <EmbeddedResource Include="res\png\cateye-small-24x24.png" />
     <EmbeddedResource Include="res\svg-inkscape\cateye.svg" />
+    <EmbeddedResource Include="res\png\cestage-32x32.png" />
+    <EmbeddedResource Include="res\png\cestage-48x48.png" />
+    <EmbeddedResource Include="res\png\cestage-small-16x16.png" />
+    <EmbeddedResource Include="res\png\cestage-small-24x24.png" />
+    <EmbeddedResource Include="res\svg-inkscape\cestage.svg" />
+    <EmbeddedResource Include="res\svg-inkscape\cestage-small.svg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -101,5 +107,10 @@
       <Name>CatEye.UI.Gtk.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="res\ico\cestage.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>
