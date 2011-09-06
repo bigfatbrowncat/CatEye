@@ -534,11 +534,20 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public void CutBlackPoint(double black, ProgressReporter callback)
+		public void CutBlackPoint(double cut, ProgressReporter callback)
 		{
 			double max_light = CalcMaxLight();
+			double min_light = AmplitudeFindBlackPoint();
 			
-			black *= max_light;
+			if (cut < 0.00001)
+			{
+				cut = (cut + 1) * min_light;	
+			}
+			else 
+			{
+				cut = min_light + (max_light - min_light) * cut;
+			}
+			
 			
 			for (int j = 0; j < mHeight; j++)
 			{
@@ -556,7 +565,7 @@ namespace CatEye.UI.Base
 					
 					Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
 					
-					double newlight = light - black;
+					double newlight = light - cut;
 					if (newlight < 0) newlight = 0;
 					
 					r_chan[i, j] = (float)(curtone.R * newlight);

@@ -15,50 +15,50 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Build ();
 		}
 
-		private bool _BlackIsChanging = false;
+		private bool _CutIsChanging = false;
 		
-		protected enum BlackChanger { HScale, SpinButton }
+		protected enum CutChanger { HScale, SpinButton }
 		
-		protected void ChangeBlack(double new_value, BlackChanger changer)
+		protected void ChangeCut(double new_value, CutChanger changer)
 		{
-			if (!_BlackIsChanging)
+			if (!_CutIsChanging)
 			{
-				_BlackIsChanging = true;
+				_CutIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != BlackChanger.HScale)
-					black_hscale.Value = new_value;
+				if (changer != CutChanger.HScale)
+					cut_hscale.Value = new_value;
 				
-				if (changer != BlackChanger.SpinButton)
-					black_spinbutton.Value = new_value;
+				if (changer != CutChanger.SpinButton)
+					cut_spinbutton.Value = new_value;
 				
-				((BlackPointStageOperationParameters)Parameters).Black = new_value;
+				((BlackPointStageOperationParameters)Parameters).Cut = new_value;
 				
 				EndChangingParameters();
 				OnUserModified();
-				_BlackIsChanging = false;
+				_CutIsChanging = false;
 			}
 		}
 
 
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			_BlackIsChanging = true;
-			black_hscale.Value = ((BlackPointStageOperationParameters)Parameters).Black;
-			black_spinbutton.Value = ((BlackPointStageOperationParameters)Parameters).Black;
-			_BlackIsChanging = false;
+			_CutIsChanging = true;
+			cut_hscale.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
+			cut_spinbutton.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
+			_CutIsChanging = false;
 			
 		}
 		
-		protected void OnBlackHscaleChangeValue (object o, ChangeValueArgs args)
+		protected void OnCutHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeBlack(black_hscale.Value, BlackChanger.HScale);
+			ChangeCut(cut_hscale.Value, CutChanger.HScale);
 		}
 
-		protected void OnBlackSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnCutSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeBlack(black_spinbutton.Value, BlackChanger.SpinButton);
+			ChangeCut(cut_spinbutton.Value, CutChanger.SpinButton);
 		}
 
 	}
