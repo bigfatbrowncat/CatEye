@@ -93,6 +93,52 @@ namespace CatEye.UI.Gtk.Widgets
 		public StageOperationTitleWidget ()
 		{
 			this.Build ();
+			
+			// Edit
+			ForeColoredSymbol edit_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.pen.png"))
+			{
+				edit_symbol.Symbol = buf;
+			}
+			edit_symbol.Show();
+			edit_togglebutton.Image = edit_symbol;
+			
+			// Freeze
+			ForeColoredSymbol freeze_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.snowflake.png"))
+			{
+				freeze_symbol.Symbol = buf;
+			}
+			freeze_symbol.Show();
+			freeze_togglebutton.Image = freeze_symbol;
+
+			// Up
+			ForeColoredSymbol up_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.up.png"))
+			{
+				up_symbol.Symbol = buf;
+			}
+			up_symbol.Show();
+			up_button.Image = up_symbol;
+			
+			// Down
+			ForeColoredSymbol down_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.down.png"))
+			{
+				down_symbol.Symbol = buf;
+			}
+			down_symbol.Show();
+			down_button.Image = down_symbol;
+
+			// Remove
+			ForeColoredSymbol remove_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.remove.png"))
+			{
+				remove_symbol.Symbol = buf;
+			}
+			remove_symbol.Show();
+			remove_button.Image = remove_symbol;
+			
 		}
 
 		protected virtual void OnUpButtonClicked (object sender, System.EventArgs e)
@@ -140,7 +186,7 @@ namespace CatEye.UI.Gtk.Widgets
 		protected void OnDownIconImageExposeEvent (object o, ExposeEventArgs args)
 		{
 		}
-		
+		/*
 		unsafe void UpdateImageOn(Button btn, string res)
 		{
 			Gdk.Color new_clr = btn.Style.Foreground(btn.State);
@@ -185,59 +231,59 @@ namespace CatEye.UI.Gtk.Widgets
 			btn.Add(img);
 			img.Show();
 		}
-		
+		*/
 		protected void OnShown (object sender, System.EventArgs e)
 		{
 		}
 
 		protected void OnEditTogglebuttonStateChanged (object o, StateChangedArgs args)
 		{
-			UpdateImageOn(edit_togglebutton, "CatEye.UI.Gtk.Widgets.res.pen.png");
+			//UpdateImageOn(edit_togglebutton, "CatEye.UI.Gtk.Widgets.res.pen.png");
 		}
 
 		protected void OnEditTogglebuttonStyleSet (object o, StyleSetArgs args)
 		{
-			UpdateImageOn(edit_togglebutton, "CatEye.UI.Gtk.Widgets.res.pen.png");
+			//UpdateImageOn(edit_togglebutton, "CatEye.UI.Gtk.Widgets.res.pen.png");
 		}
 
 		protected void OnFreezeTogglebuttonStateChanged (object o, StateChangedArgs args)
 		{
-			UpdateImageOn(freeze_togglebutton, "CatEye.UI.Gtk.Widgets.res.snowflake.png");
+			//UpdateImageOn(freeze_togglebutton, "");
 		}
 
 		protected void OnFreezeTogglebuttonStyleSet (object o, StyleSetArgs args)
 		{
-			UpdateImageOn(freeze_togglebutton, "CatEye.UI.Gtk.Widgets.res.snowflake.png");
+			//UpdateImageOn(freeze_togglebutton, "CatEye.UI.Gtk.Widgets.res.snowflake.png");
 		}
 
 		protected void OnUpButtonStyleSet (object o, StyleSetArgs args)
 		{
-			UpdateImageOn(up_button, "CatEye.UI.Gtk.Widgets.res.up.png");
+			//UpdateImageOn(up_button, "");
 		}
 
 		protected void OnUpButtonStateChanged (object o, StateChangedArgs args)
 		{
-			UpdateImageOn(up_button, "CatEye.UI.Gtk.Widgets.res.up.png");
+			//UpdateImageOn(up_button, "CatEye.UI.Gtk.Widgets.res.up.png");
 		}
 
 		protected void OnDownButtonStyleSet (object o, StyleSetArgs args)
 		{
-			UpdateImageOn(down_button, "CatEye.UI.Gtk.Widgets.res.down.png");
+			//UpdateImageOn(down_button, "CatEye.UI.Gtk.Widgets.res.down.png");
 		}
 
 		protected void OnDownButtonStateChanged (object o, StateChangedArgs args)
 		{
-			UpdateImageOn(down_button, "CatEye.UI.Gtk.Widgets.res.down.png");
+			//UpdateImageOn(down_button, "CatEye.UI.Gtk.Widgets.res.down.png");
 		}
 
 		protected void OnRemoveButtonStyleSet (object o, StyleSetArgs args)
 		{
-			UpdateImageOn(remove_button, "CatEye.UI.Gtk.Widgets.res.remove.png");
+			//UpdateImageOn(remove_button, "CatEye.UI.Gtk.Widgets.res.remove.png");
 		}
 
 		protected void OnRemoveButtonStateChanged (object o, StateChangedArgs args)
 		{
-			UpdateImageOn(remove_button, "CatEye.UI.Gtk.Widgets.res.remove.png");
+			//UpdateImageOn(remove_button, "CatEye.UI.Gtk.Widgets.res.remove.png");
 		}
 	}
 }

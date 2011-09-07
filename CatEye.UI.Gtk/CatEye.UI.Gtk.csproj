@@ -24,7 +24,6 @@
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
-    <Commandlineparameters>-q /home/imizus/test-photos/IMG_1534.CR2</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
