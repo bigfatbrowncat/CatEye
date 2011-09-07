@@ -22,6 +22,21 @@ namespace CatEye.UI.Gtk.Widgets
 		public FrozenPanel ()
 		{
 			this.Build ();
+			
+			ForeColoredSymbol freeze_symbol = new ForeColoredSymbol();
+			int pic_width;
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.snowflake.png"))
+			{
+				freeze_symbol.Symbol = buf;
+				pic_width = buf.Width;
+			}
+			
+			hbox.Add (freeze_symbol);
+			((HBox.BoxChild)(hbox[freeze_symbol])).Position = 0;
+			((HBox.BoxChild)(hbox[freeze_symbol])).Expand = false;
+			freeze_symbol.SetSizeRequest(pic_width + 4, 0);
+			freeze_symbol.Show();
+			
 		}
 		
 		protected virtual void OnUnfreezeButtonClicked (object sender, System.EventArgs e)

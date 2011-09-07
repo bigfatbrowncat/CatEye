@@ -18,6 +18,7 @@ SetCompressor /SOLID lzma
 ;Include files
 !include "MUI2.nsh"         ; Modern UI
 !include "DotNet.nsh"       ; my file for .NetFramework
+!include "Extensions.nsh"   ; my file for extensions registration
 
 ;Name and file
 Name "${PRODUCT_NAME} ${VERSION_SHORT}"
@@ -55,13 +56,13 @@ BrandingText /TRIMLEFT " "
 !define MUI_UNICON "${PKGDIR}res\CatEyeRemove.ico"
 
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\win.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${PKGDIR}res\top_left.bmp"
 
 ;--------------------------------
 
 ;Pages
 
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\install_left.bmp"
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
@@ -69,6 +70,7 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_LICENSE $(license)
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
+!insertmacro MUI_PAGE_EXTENSIONS    ; my page for extensions registration
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -77,7 +79,7 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_FINISH
 
 
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\orange-uninstall.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PKGDIR}res\uninstall_left.bmp"
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH

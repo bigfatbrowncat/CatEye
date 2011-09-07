@@ -189,6 +189,7 @@
     <None Include="messages\Messages_ru_RU.nsh">
       <Visible>False</Visible>
     </None>
+    <None Include="Extensions.nsh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

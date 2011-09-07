@@ -12,3 +12,5 @@ LangString DotNetDownloadCaptionText ${LANG_ENGLISH} "Downloading .NET Framework
 LAngString DotNetDownloadCancelText ${LANG_ENGLISH} "Cancel download"
 LAngString DotNetDownloadCrashWarning ${LANG_ENGLISH} "${PRODUCT_NAME} requires Microsoft .NET Framework 2.0. Installation cancelled."
 
+LangString ExtensionsPage_HeaderText ${LANG_ENGLISH} "File types associations"
+LangString ExtensionsPage_SubHeaderText ${LANG_ENGLISH} "Please select file types for opening with ${PRODUCT_NAME}"
