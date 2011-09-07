@@ -76,7 +76,9 @@ namespace CatEye.UI.Gtk
 					while (!mListeningThreadStopPending)
 					{
 						string text = "";
-						while (!mListener.Pending()) 
+						while (mListener.Server != null && 
+							   mListener.Server.IsBound && 
+							  !mListener.Pending()) 
 						{
 							Thread.Sleep(10);
 							if (mListeningThreadStopPending) 
