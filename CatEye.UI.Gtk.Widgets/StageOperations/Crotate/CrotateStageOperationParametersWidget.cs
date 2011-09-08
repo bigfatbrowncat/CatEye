@@ -24,6 +24,25 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			this.Build ();
 
+			// Link to height (chain)
+			ForeColoredSymbol link_w_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.chain.png"))
+			{
+				link_w_symbol.Symbol = buf;
+			}
+			link_w_symbol.Show();
+			link_w_togglebutton.Image = link_w_symbol;
+
+			// Link to width (chain)
+			ForeColoredSymbol link_h_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.chain.png"))
+			{
+				link_h_symbol.Symbol = buf;
+			}
+			link_h_symbol.Show();
+			link_h_togglebutton.Image = link_h_symbol;
+
+			
 			ls = new ListStore(typeof(string), typeof(int));
 			string[] ratioNames = ((CrotateStageOperationParameters)Parameters).PresetAspectRatioNames;
 			for (int i = 0; i < ratioNames.Length; i++)
@@ -42,8 +61,15 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected void UpdateSensitive()
 		{
-			crop_w_spinbutton.Sensitive = !link_w_togglebutton.Active;
-			crop_h_spinbutton.Sensitive = !link_h_togglebutton.Active;
+			crop_w_spinbutton.Visible = !link_w_togglebutton.Active;
+			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Expand = !crop_w_spinbutton.Visible;
+			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Fill = !crop_w_spinbutton.Visible;
+			link_w_togglebutton.Label = link_w_togglebutton.Active ? "Link to height" : "";
+				
+			crop_h_spinbutton.Visible = !link_h_togglebutton.Active;
+			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Expand = !crop_h_spinbutton.Visible;
+			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Fill = !crop_h_spinbutton.Visible;
+			link_h_togglebutton.Label = link_h_togglebutton.Active ? "Link to width" : "";
 			
 			aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
 			aspect_combobox.Visible = !custom_checkbutton.Active;
@@ -160,6 +186,7 @@ namespace CatEye.UI.Gtk.Widgets
 			if (link_h_togglebutton.Active)
 			{
 				link_w_togglebutton.Active = false;
+				
 				StartChangingParameters();
 				((CrotateStageOperationParameters)Parameters).Mode = CrotateStageOperation.Mode.ProportionalWidthFixed;
 				EndChangingParameters();

@@ -35,17 +35,7 @@ namespace CatEye.Core
 		/// </returns>
 		bool ReportMouseButton(int x, int y, int width, int height, uint button_id, bool is_down);
 		
-		/// <summary>
-		/// Handles that the image is changed. Should be called from the outside.
-		/// Override it to do some recalculations.
-		/// </summary>
-		/// <param name='image_width'>
-		/// New image width.
-		/// </param>
-		/// <param name='image_height'>
-		/// New image height.
-		/// </param>
-		void ReportImageChanged(int image_width, int image_height);
+		void AnalyzeImage(IBitmapCore image);
 		
 		/// <summary>
 		/// Adds editor modifications to picture. For example, some handlers to

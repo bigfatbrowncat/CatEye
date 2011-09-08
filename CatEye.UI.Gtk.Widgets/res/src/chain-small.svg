@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="chain-small.svg"
+   inkscape:export-filename="/home/imizus/Projects/CatEye/CatEye.UI.Gtk.Widgets/res/chain.png"
+   inkscape:export-xdpi="67.5"
+   inkscape:export-ydpi="67.5">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.2"
+     inkscape:cx="-9.142589"
+     inkscape:cy="20.040566"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="949"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1036.3622)">
+    <path
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       d="m 1.5377499,1037.8733 c -1.57875531,1.5787 -1.5787891,4.1551 0,5.7338 l 2.4979402,2.4979 c -0.1059581,-0.8233 -0.034905,-1.6842 0.2554712,-2.4695 l -1.3908986,-1.3909 c -0.8475738,-0.8476 -0.8474908,-2.1613 0,-3.0088 l 0.028386,-0.028 c 0.847491,-0.8476 2.1896946,-0.876 3.0372684,-0.028 l 2.6398682,2.6398 c 0.8474835,0.8475 0.8191056,2.1897 -0.028389,3.0373 l -0.02839,0.028 c -0.1700809,0.17 -0.3675981,0.2956 -0.5677127,0.3973 -0.047915,0.3174 0.01756,0.642 0.2838557,0.9083 l 0.7096432,0.7098 c 0.3340896,-0.1813 0.6548773,-0.3712 0.9367268,-0.653 l 0.02839,-0.028 c 1.5787547,-1.5787 1.6071737,-4.1834 0.02839,-5.7622 l -2.6398691,-2.6399 c -1.5787897,-1.5787 -4.1835393,-1.5503 -5.7622946,0.028 l -0.028386,0.028 z"
+       id="rect4403"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       d="m 14.558468,1050.7804 c 1.578755,-1.5787 1.578744,-4.1551 -4.6e-5,-5.7339 l -2.49794,-2.498 c 0.10603,0.8234 0.03498,1.6844 -0.255426,2.4696 l 1.390853,1.3909 c 0.847574,0.8475 0.847536,2.1614 4.5e-5,3.0089 l -0.02839,0.028 c -0.84749,0.8476 -2.18974,0.876 -3.037313,0.028 l -2.6398235,-2.6399 c -0.8474835,-0.8474 -0.8191505,-2.1898 0.028338,-3.0372 l 0.028389,-0.028 c 0.1700809,-0.1701 0.367927,-0.2953 0.5679401,-0.3972 0.047915,-0.3173 -0.017573,-0.642 -0.2839019,-0.9083 l -0.709597,-0.7096 c -0.3339521,0.1812 -0.6549235,0.371 -0.9367726,0.6528 l -0.028386,0.028 c -1.5787554,1.5787 -1.6071293,4.1835 -0.028341,5.7622 l 2.6398233,2.6399 c 1.5787886,1.5787 4.1835846,1.5503 5.7623396,-0.028 l 0.02839,-0.028 z"
+       id="rect4403-9" />
+  </g>
+</svg>

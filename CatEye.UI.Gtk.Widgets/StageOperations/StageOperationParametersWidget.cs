@@ -126,13 +126,7 @@ namespace CatEye
 		/// Handles that the image is changed. Should be called from the outside.
 		/// Override it to do some recalculations.
 		/// </summary>
-		/// <param name='image_width'>
-		/// New image width.
-		/// </param>
-		/// <param name='image_height'>
-		/// New image height.
-		/// </param>
-		public virtual void ReportImageChanged(int image_width, int image_height)
+		public virtual void AnalyzeImage(IBitmapCore image)
 		{
 		}
 		

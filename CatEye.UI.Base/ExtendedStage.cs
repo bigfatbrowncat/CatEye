@@ -247,6 +247,7 @@ namespace CatEye.UI.Base
 					// Executing
 					for (int k = 0; k < operationsToApply.Count; k++)
 					{
+						_Holders[operationsToApply[k].Parameters].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
 						operationsToApply[k].OnDo(CurrentImage);
 						if (operationsToApply[k].Parameters == FrozenAt)
 						{
@@ -337,6 +338,7 @@ namespace CatEye.UI.Base
 			}
 		}
 		
+		/*
 		public void ReportImageChanged(int image_width, int image_height)
 		{
 			foreach (StageOperationParameters sop in StageQueue)
@@ -344,6 +346,7 @@ namespace CatEye.UI.Base
 				_Holders[sop].StageOperationParametersEditor.ReportImageChanged(image_width, image_height);
 			}
 		}
+		*/
 
 		public StageOperationParameters CreateAndAddNewItem(Type sot)
 		{

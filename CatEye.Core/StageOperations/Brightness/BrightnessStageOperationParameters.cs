@@ -10,7 +10,6 @@ namespace CatEye.Core
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 		private double mBrightness = 1;
 		private bool mNormalize = false;
-		private double mMedian = 0;			// Don't save it.
 		
 		public double Brightness
 		{
@@ -22,15 +21,6 @@ namespace CatEye.Core
 			}
 		}
 
-		public double Median
-		{
-			get { return mMedian; }
-			internal set
-			{
-				mMedian = value;
-			}
-		}
-		
 		public bool Normalize
 		{
 			get { return mNormalize; }

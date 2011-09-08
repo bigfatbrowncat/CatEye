@@ -13,7 +13,6 @@ namespace CatEye.UI.Gtk.Widgets
 			base(parameters)
 		{
 			this.Build ();
-			//HandleParametersChangedNotByUI();
 		}
 
 		protected override void HandleParametersChangedNotByUI ()
@@ -24,10 +23,16 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			normalize_togglebutton.Active = ((BrightnessStageOperationParameters)Parameters).Normalize;
 			
-			double med = ((BrightnessStageOperationParameters)Parameters).Median;
-			median_label.Text = med.ToString("0.00");
 		}
-
+		
+		public override void AnalyzeImage (IBitmapCore image)
+		{
+			double median = image.AmplitudeFindMedian();
+			Application.Invoke(delegate {
+				median_label.Text = median.ToString("0.00");
+			});			
+		}
+		
 		protected void OnLogbrightnessHscaleChangeValue (object o, ChangeValueArgs args)
 		{
 			StartChangingParameters();

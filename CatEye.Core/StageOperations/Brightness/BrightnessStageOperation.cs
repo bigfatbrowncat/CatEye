@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Brightness"), StageOperationID("BrightnessStageOperation")]
+	[StageOperationDescription("Brightness")]
+	[StageOperationID("BrightnessStageOperation")]
 	public class BrightnessStageOperation : StageOperation
 	{
 		public BrightnessStageOperation (StageOperationParameters parameters)
@@ -21,13 +22,13 @@ namespace CatEye.Core
 			
 			
 			Console.WriteLine("Calculating current median...");
-			pm.Median = hdp.AmplitudeFindMedian();
+			double median = hdp.AmplitudeFindMedian();
 
 			Console.WriteLine("Setting brightness...");
-			hdp.AmplitudeAdd(-hdp.AmplitudeFindBlackPoint());
+
 			if (pm.Normalize)
 			{
-				hdp.AmplitudeMultiply(pm.Brightness * 0.5 / pm.Median, 
+				hdp.AmplitudeMultiply(pm.Brightness * 0.5 / median, 
 					delegate (double progress) {
 						return OnReportProgress(progress);
 					}

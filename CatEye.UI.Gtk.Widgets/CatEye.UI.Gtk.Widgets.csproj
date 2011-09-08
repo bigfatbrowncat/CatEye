@@ -102,6 +102,7 @@
     <EmbeddedResource Include="res\down.png" />
     <EmbeddedResource Include="res\pen.png" />
     <EmbeddedResource Include="res\remove.png" />
+    <EmbeddedResource Include="res\chain.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
