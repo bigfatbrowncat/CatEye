@@ -41,7 +41,16 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 			link_h_symbol.Show();
 			link_h_togglebutton.Image = link_h_symbol;
-
+			
+			// Custom (line)
+			ForeColoredSymbol custom_symbol = new ForeColoredSymbol();
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.line.png"))
+			{
+				custom_symbol.Symbol = buf;
+			}
+			custom_symbol.Show();
+			custom_togglebutton.Image = custom_symbol;
+			
 			
 			ls = new ListStore(typeof(string), typeof(int));
 			string[] ratioNames = ((CrotateStageOperationParameters)Parameters).PresetAspectRatioNames;
@@ -72,12 +81,12 @@ namespace CatEye.UI.Gtk.Widgets
 			link_h_togglebutton.Label = link_h_togglebutton.Active ? "Link to width" : "";
 			
 			aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
-			aspect_combobox.Visible = !custom_checkbutton.Active;
+			aspect_combobox.Visible = !custom_togglebutton.Active;
 			
 			aspect_spinbutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
-			aspect_spinbutton.Visible = custom_checkbutton.Active;
+			aspect_spinbutton.Visible = custom_togglebutton.Active;
 			
-			custom_checkbutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
+			custom_togglebutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
 			
 			aspect_combobox.CheckResize();
 		}
@@ -205,7 +214,7 @@ namespace CatEye.UI.Gtk.Widgets
 		protected void OnCustomCheckbuttonToggled (object sender, System.EventArgs e)
 		{
 			StartChangingParameters();
-			((CrotateStageOperationParameters)Parameters).AspectRatioCustom = custom_checkbutton.Active;
+			((CrotateStageOperationParameters)Parameters).AspectRatioCustom = custom_togglebutton.Active;
 			EndChangingParameters();
 			OnUserModified();			
 			UpdateSensitive();
@@ -220,7 +229,7 @@ namespace CatEye.UI.Gtk.Widgets
 			crop_w_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).CropWidth;
 			crop_h_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).CropHeight;
 			aspect_spinbutton.Value = ((CrotateStageOperationParameters)Parameters).AspectRatio;
-			custom_checkbutton.Active = ((CrotateStageOperationParameters)Parameters).AspectRatioCustom;
+			custom_togglebutton.Active = ((CrotateStageOperationParameters)Parameters).AspectRatioCustom;
 			
 			TreeIter ti;
 			if (ls.GetIterFirst(out ti))

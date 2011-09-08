@@ -113,6 +113,7 @@
             <child>
               <widget class="Gtk.Label" id="title_label">
                 <property name="MemberName" />
+                <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">&lt;b&gt;Title&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
                 <property name="SingleLineMode">True</property>
@@ -129,6 +130,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
+            <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Toggled" handler="OnViewTogglebuttonToggled" />
             <signal name="StateChanged" handler="OnEditTogglebuttonStateChanged" />
@@ -149,6 +151,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
+            <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Toggled" handler="OnFreezeTogglebuttonToggled" />
             <signal name="StateChanged" handler="OnFreezeTogglebuttonStateChanged" />
@@ -169,6 +172,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
+            <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnUpButtonClicked" />
             <signal name="StateChanged" handler="OnUpButtonStateChanged" />
@@ -189,6 +193,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
+            <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnDownButtonClicked" />
             <signal name="StateChanged" handler="OnDownButtonStateChanged" />
@@ -209,6 +214,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">Custom</property>
+            <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="OnRemoveButtonClicked" />
             <signal name="StateChanged" handler="OnRemoveButtonStateChanged" />
@@ -1207,6 +1213,9 @@
           <placeholder />
         </child>
         <child>
+          <placeholder />
+        </child>
+        <child>
           <widget class="Gtk.SpinButton" id="angle_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
@@ -1269,17 +1278,32 @@
               </packing>
             </child>
             <child>
-              <placeholder />
+              <widget class="Gtk.CheckButton" id="custom_togglebutton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes" />
+                <property name="DrawIndicator">False</property>
+                <property name="HasLabel">True</property>
+                <property name="UseUnderline">True</property>
+                <signal name="Toggled" handler="OnCustomCheckbuttonToggled" />
+              </widget>
+              <packing>
+                <property name="PackType">End</property>
+                <property name="Position">2</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
-            <property name="TopAttach">6</property>
-            <property name="BottomAttach">7</property>
+            <property name="TopAttach">5</property>
+            <property name="BottomAttach">6</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
-            <property name="AutoSize">False</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
-            <property name="XExpand">True</property>
+            <property name="XExpand">False</property>
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
@@ -1334,32 +1358,6 @@
           <packing>
             <property name="TopAttach">2</property>
             <property name="BottomAttach">3</property>
-            <property name="LeftAttach">1</property>
-            <property name="RightAttach">2</property>
-            <property name="AutoSize">True</property>
-            <property name="XOptions">Fill</property>
-            <property name="YOptions">Fill</property>
-            <property name="XExpand">False</property>
-            <property name="XFill">True</property>
-            <property name="XShrink">False</property>
-            <property name="YExpand">False</property>
-            <property name="YFill">True</property>
-            <property name="YShrink">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.CheckButton" id="custom_checkbutton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Custom</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">True</property>
-            <property name="UseUnderline">True</property>
-            <signal name="Toggled" handler="OnCustomCheckbuttonToggled" />
-          </widget>
-          <packing>
-            <property name="TopAttach">5</property>
-            <property name="BottomAttach">6</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>
