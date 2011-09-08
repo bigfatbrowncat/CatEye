@@ -47,64 +47,67 @@ namespace CatEye.UI.Gtk.Widgets
 		/// </param>
 		public unsafe void DrawToPixbuf(Gdk.Pixbuf buf, ProgressReporter callback)
 		{
-			// Locking self on drawing to avoid "dirty" drawing
-			lock (this)
+			double N = 1;	// This is the norm. It should be equal to the
+							// value which means the lightest point of 
+							// the screen
+			
+			int chan = buf.NChannels;
+			int w = buf.Width, h = buf.Height, stride = buf.Rowstride;
+			
+			// counting the maximum light value
+			double max = 0;
+			for (int i = 0; i < mWidth; i++)
 			{
-				double N = 1;	// This is the norm. It should be equal to the
-								// value which means the lightest point of 
-								// the screen
-				
-				int chan = buf.NChannels;
-				int w = buf.Width, h = buf.Height, stride = buf.Rowstride;
-				
-				// counting the maximum light value
-				double max = 0;
-				for (int i = 0; i < mWidth; i++)
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
-					double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
-					double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
+					for (int j = 0; j < mHeight; j++)
+					{
+						// Locking self on drawing to avoid "dirty" drawing
+						double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
+						double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
+						double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
 	
-					double light = Math.Sqrt(r*r + g*g + b*b) / Math.Sqrt(3);
-					if (light > max) max = light;
+						double light = Math.Sqrt(r*r + g*g + b*b) / Math.Sqrt(3);
+						if (light > max) max = light;
+					}
 				}
-				if (max > 1) max = 1;
-				
-				byte *cur_row = (byte *)buf.Pixels;
-				for (int j = 0; j < h; j++)
+			}
+			if (max > 1) max = 1;
+			
+			byte *cur_row = (byte *)buf.Pixels;
+			for (int j = 0; j < h; j++)
+			{
+				if (j >= this.mHeight)
 				{
-					if (j >= this.mHeight)
+					break;
+				}
+				
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / this.mHeight)) return;
+				}
+				
+				
+				byte *cur_pixel = cur_row;
+				for (int i = 0; i < w; i++)
+				{
+					if (i >= this.mWidth)
 					{
 						break;
 					}
 					
-					if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
-					{
-						if (!callback((double)j / this.mHeight)) return;
-					}
+					double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
+					double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
+					double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
 					
-					
-					byte *cur_pixel = cur_row;
-					for (int i = 0; i < w; i++)
-					{
-						if (i >= this.mWidth)
-						{
-							break;
-						}
-						
-						double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
-						double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
-						double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
-						
-						cur_pixel[0] = cut(r / max * 255);      // Red
-						cur_pixel[1] = cut(g / max * 255);      // Green
-						cur_pixel[2] = cut(b / max * 255);      // Blue
-						cur_pixel += chan;
-					}
-					cur_row += stride;
+					cur_pixel[0] = cut(r / max * 255);      // Red
+					cur_pixel[1] = cut(g / max * 255);      // Green
+					cur_pixel[2] = cut(b / max * 255);      // Blue
+					cur_pixel += chan;
 				}
+				cur_row += stride;
 			}
+
 		}
 		
 	}

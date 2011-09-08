@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace CatEye.Core
 {
@@ -354,12 +355,18 @@ namespace CatEye.Core
 						
 						double light_new = Math.Log(p * (Math.Exp(a * light) - 1.0) + 1.0) / b;
 							
-						r_chan[i,j] *= (float)(light_new / light); 
-						g_chan[i,j] *= (float)(light_new / light); 
-						b_chan[i,j] *= (float)(light_new / light); 
+						double bloha = 0.00001;
+						r_chan[i,j] *= (float)(light_new / (light + bloha)); 
+						g_chan[i,j] *= (float)(light_new / (light + bloha)); 
+						b_chan[i,j] *= (float)(light_new / (light + bloha)); 
 					}
 				}
 			}
+		}
+		
+		class thread_data 
+		{
+			public int i1, i2;
 		}
 		
 		public void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
@@ -382,97 +389,136 @@ namespace CatEye.Core
 				
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
 			
-			Random rnd = new Random();
-			
 			Console.WriteLine("Calculating scale factors...");
-
-			for (int i = 0; i < mWidth + radius; i++)	// "radius" added to process all "i_back" values
+			
+			// Full progress
+			int full_i = 0;
+			object full_i_lock = new object();
+			
+			// Initializing threads
+			int threads_num = 6;
+			Thread[] threads = new Thread[threads_num];
+			
+			bool user_cancel = false;
+			
+			for (int q = 0; q < threads_num; q++)
 			{
-				int i_back = i - radius;
-				if (callback != null)
+				threads[q] = new Thread(delegate (object obj)
 				{
-					if (!callback((double)i / (mWidth + radius)))
-						throw new UserCancelException();
-				}
-
-				for (int j = 0; j < mHeight; j++)
-				{
-					if (i < mWidth)
+					try
 					{
-						// Dispersion
-						int avg = 0;
-						for (int k = 0; k < points; k++)
+						Random rnd = new Random();
+			
+						int i1 = ((thread_data)obj).i1;
+						int i2 = ((thread_data)obj).i2;
+									
+						for (int i = i1; i < i2; i++)
 						{
-							double phi = rnd.NextDouble() * 2 * Math.PI;
-							//double alpha = 3;
-							double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-						
-							int u = i + (int)(rad * Math.Cos(phi));
-							int v = j + (int)(rad * Math.Sin(phi));
-							
-							if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+							if (callback != null)
 							{
-								double delta = (light[i, j] - light[u, v]);
-								dispersion_matrix[i, j] += delta * delta;
-								avg ++;
+								if (!callback((double)full_i / (mWidth)))
+									throw new UserCancelException();
 							}
-						}
-						dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
-
-						// Average
-						avg = 0;
-						for (int k = 0; k < points; k++)
-						{
-							double phi = rnd.NextDouble() * 2 * Math.PI;
-							//double alpha = 3;
-							double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-						
-							int u = i + (int)(rad * Math.Cos(phi));
-							int v = j + (int)(rad * Math.Sin(phi));
-							
-							if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+			
+							for (int j = 0; j < mHeight; j++)
 							{
-								double delta = (light[i, j] - light[u, v]);
-								double f = Math.Log(Math.Abs(delta) + 1);
+								if (i < mWidth)
+								{
+									// Dispersion
+									int avg = 0;
+									for (int k = 0; k < points; k++)
+									{
+										double phi = rnd.NextDouble() * 2 * Math.PI;
+										//double alpha = 3;
+										double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+									
+										int u = i + (int)(rad * Math.Cos(phi));
+										int v = j + (int)(rad * Math.Sin(phi));
+										
+										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+										{
+											double delta = (light[i, j] - light[u, v]);
+											dispersion_matrix[i, j] += delta * delta;
+											avg ++;
+										}
+									}
+									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
+			
+									// Average
+									avg = 0;
+									for (int k = 0; k < points; k++)
+									{
+										double phi = rnd.NextDouble() * 2 * Math.PI;
+										//double alpha = 3;
+										double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
+									
+										int u = i + (int)(rad * Math.Cos(phi));
+										int v = j + (int)(rad * Math.Sin(phi));
+										
+										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+										{
+											double delta = (light[i, j] - light[u, v]);
+											double f = Math.Log(Math.Abs(delta) + 1);
+											
+											// Limiting f to remove white and dark "crowns" near contrast objects
+											//double d = 2, K = 0.5; -- good
+											double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
+											//double denoise_delta = 0.05, denoise_min = 0.2;
+											//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
+											double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
+												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
+			
+											f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
+			
+											double scale = f;	// It was f / 5
+											
+											scale_matrix[i, j] += scale;
+											avg ++;
+										}
+									}
+									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
+								}
 								
-								// Limiting f to remove white and dark "crowns" near contrast objects
-								//double d = 2, K = 0.5; -- good
-								double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
-								//double denoise_delta = 0.05, denoise_min = 0.2;
-								//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
-								double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
-									(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
-
-								f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
-
-								double scale = f;	// It was f / 5
+								// Scaling amplitudes
+								double kcomp;
+								kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
+			
+								lock (this)
+								{
+									r_chan[i, j] = r_chan[i, j] * (float)kcomp;
+									g_chan[i, j] = g_chan[i, j] * (float)kcomp;
+									b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+								}
 								
-								scale_matrix[i, j] += scale;
-								avg ++;
 							}
+							lock (full_i_lock) full_i ++;						
 						}
-						scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
 					}
-					
-					if (i_back >= 0)
+					catch (UserCancelException)
 					{
-						// Scaling amplitudes
-						double kcomp;
-						/*if (scale_matrix_adds[i_back, j] == 0)
-							kcomp = 1;
-						else*/
-						kcomp = Math.Pow(scale_matrix[i_back, j] + 1, pressure);
-
-						lock (this)
-						{
-							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
-							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
-							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
-						}
-		
-					}
-				}
+						user_cancel = true;
+					}						
+				});
 			}
+			
+			// Starting threads
+			for (int q = 0; q < threads_num; q++)
+			{
+				thread_data td = new thread_data();
+				td.i1 = (mWidth / threads_num) * q;
+				td.i2 = (mWidth / threads_num) * (q + 1);
+				
+				threads[q].Start(td);
+			}
+			
+			// Waiting for threads
+			for (int q = 0; q < threads_num; q++)
+			{
+				threads[q].Join();
+			}
+			
+			if (user_cancel) throw new UserCancelException();
+			
 		}
 		
 		public void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback)
@@ -489,37 +535,36 @@ namespace CatEye.Core
 					}
 				}
 				
-				lock (this)
+				for (int j = 0; j < mHeight; j++)
 				{
-				
-					for (int j = 0; j < mHeight; j++)
+					// calculating current norm
+					double light_before = Math.Sqrt(
+								  r_chan[i, j] * r_chan[i, j] + 
+								  g_chan[i, j] * g_chan[i, j] + 
+								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					
+					// Calculating color coefficients
+					// R2, G2, B2 values depend on light value.
+					// For highlights it should exponentially approach 1.
+					double kappa = Math.Pow(10, HighlightsInvariance);
+					
+					double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
+					double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
+					double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
+					
+					// Applying toning
+					r_chan[i, j] *= (float)(R2);
+					g_chan[i, j] *= (float)(G2);
+					b_chan[i, j] *= (float)(B2);
+					
+					// calculating norm after
+					double light_after = Math.Sqrt(
+								  r_chan[i, j] * r_chan[i, j] + 
+								  g_chan[i, j] * g_chan[i, j] + 
+								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
+					
+					lock (this)
 					{
-						// calculating current norm
-						double light_before = Math.Sqrt(
-									  r_chan[i, j] * r_chan[i, j] + 
-									  g_chan[i, j] * g_chan[i, j] + 
-									  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-						
-						// Calculating color coefficients
-						// R2, G2, B2 values depend on light value.
-						// For highlights it should exponentially approach 1.
-						double kappa = Math.Pow(10, HighlightsInvariance);
-						
-						double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
-						double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
-						double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
-						
-						// Applying toning
-						r_chan[i, j] *= (float)(R2);
-						g_chan[i, j] *= (float)(G2);
-						b_chan[i, j] *= (float)(B2);
-						
-						// calculating norm after
-						double light_after = Math.Sqrt(
-									  r_chan[i, j] * r_chan[i, j] + 
-									  g_chan[i, j] * g_chan[i, j] + 
-									  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
-						
 						// Normalizing
 						r_chan[i, j] *= (float)(light_before / light_after);
 						g_chan[i, j] *= (float)(light_before / light_after);
@@ -604,7 +649,7 @@ namespace CatEye.Core
 			}
 		}
 				
-		public bool Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback)
+		public void Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback)
 		{
 			beta *= Math.PI / 180.0;
 			
@@ -622,65 +667,104 @@ namespace CatEye.Core
 				mWidth = crop_w; mHeight = crop_h;
 			}
 			
-			// Going thru new pixels. Calculating influence from source pixel
-			// colors to new pixel colors
+			// Full progress
+			int full_n = 0;
+			object full_n_lock = new object();
 			
-			for (int n = 0; n < oldH; n++)
+			// Initializing threads
+			int threads_num = 6;
+			Thread[] threads = new Thread[threads_num];
+			
+			bool user_cancel = false;
+			
+			for (int q = 0; q < threads_num; q++)
 			{
-				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				threads[q] = new Thread(delegate (object obj)
 				{
-					if (!callback((double)n / oldH)) return false;
-				}
-				
-				lock (this)
-				{
-					for (int m = 0; m < oldW; m++)
+					try
 					{
-						// Rotated source matrix squares
-						CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
+						int n1 = ((thread_data)obj).i1;
+						int n2 = ((thread_data)obj).i2;
+									
+						for (int n = n1; n < n2; n++)
 						{
-							Point.Rotate(new CatEye.Core.Point(m,       n      ), -beta, c),
-							Point.Rotate(new CatEye.Core.Point((m + 1), n      ), -beta, c),
-							Point.Rotate(new CatEye.Core.Point((m + 1), (n + 1)), -beta, c),
-							Point.Rotate(new CatEye.Core.Point(m,       (n + 1)), -beta, c)
-						};
-						
-						// Rotated and translated source matrix squares
-						CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
-						{
-							new Point(src_tr_pts[0].X - c.X + (double)crop_w / 2, src_tr_pts[0].Y - c.Y + (double)crop_h / 2),
-							new Point(src_tr_pts[1].X - c.X + (double)crop_w / 2, src_tr_pts[1].Y - c.Y + (double)crop_h / 2),
-							new Point(src_tr_pts[2].X - c.X + (double)crop_w / 2, src_tr_pts[2].Y - c.Y + (double)crop_h / 2),
-							new Point(src_tr_pts[3].X - c.X + (double)crop_w / 2, src_tr_pts[3].Y - c.Y + (double)crop_h / 2),
-						};
-						
-						ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
-						
-						int xmin = Math.Max((int)cp_src_tr.XMin, 0);
-						int ymin = Math.Max((int)cp_src_tr.YMin, 0);
-						int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
-						int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
-						
-						double bloha = 0.00001;
-						
-						for (int j = ymin; j < ymax; j++)
-						{
-							for (int i = xmin; i < xmax; i++)
+			
+							if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 							{
-								double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
-								
-								// Adding colors part
-								r_chan[i, j] += (float)(oldr[m, n] * part);
-								g_chan[i, j] += (float)(oldg[m, n] * part);
-								b_chan[i, j] += (float)(oldb[m, n] * part);
-								
+								if (!callback((double)full_n / oldH)) throw new UserCancelException();
 							}
+							
+							for (int m = 0; m < oldW; m++)
+							{
+								// Rotated source matrix squares
+								CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
+								{
+									Point.Rotate(new CatEye.Core.Point(m,       n      ), -beta, c),
+									Point.Rotate(new CatEye.Core.Point((m + 1), n      ), -beta, c),
+									Point.Rotate(new CatEye.Core.Point((m + 1), (n + 1)), -beta, c),
+									Point.Rotate(new CatEye.Core.Point(m,       (n + 1)), -beta, c)
+								};
+								
+								// Rotated and translated source matrix squares
+								CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
+								{
+									new Point(src_tr_pts[0].X - c.X + (double)crop_w / 2, src_tr_pts[0].Y - c.Y + (double)crop_h / 2),
+									new Point(src_tr_pts[1].X - c.X + (double)crop_w / 2, src_tr_pts[1].Y - c.Y + (double)crop_h / 2),
+									new Point(src_tr_pts[2].X - c.X + (double)crop_w / 2, src_tr_pts[2].Y - c.Y + (double)crop_h / 2),
+									new Point(src_tr_pts[3].X - c.X + (double)crop_w / 2, src_tr_pts[3].Y - c.Y + (double)crop_h / 2),
+								};
+								
+								ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
+								
+								int xmin = Math.Max((int)cp_src_tr.XMin, 0);
+								int ymin = Math.Max((int)cp_src_tr.YMin, 0);
+								int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
+								int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
+								
+								for (int j = ymin; j < ymax; j++)
+								{
+									for (int i = xmin; i < xmax; i++)
+									{
+										double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
+										
+										// Adding colors part
+										lock (this)
+										{
+											r_chan[i, j] += (float)(oldr[m, n] * part);
+											g_chan[i, j] += (float)(oldg[m, n] * part);
+											b_chan[i, j] += (float)(oldb[m, n] * part);
+										}
+									}
+								}
+							}
+							lock (full_n_lock) full_n ++;						
 						}
 					}
-				}
+					catch (UserCancelException)
+					{
+						user_cancel = true;
+					}						
+				});
 			}
 			
-			return true;
+			// Starting threads
+			for (int q = 0; q < threads_num; q++)
+			{
+				thread_data td = new thread_data();
+				td.i1 = (oldH / threads_num) * q;
+				td.i2 = (oldH / threads_num) * (q + 1);
+				
+				threads[q].Start(td);
+			}
+			
+			// Waiting for threads
+			for (int q = 0; q < threads_num; q++)
+			{
+				threads[q].Join();
+			}
+			
+			if (user_cancel) throw new UserCancelException();
+						
 		}
 		
 		public bool Resize(int targetWidth, int targetHeight, int quality, 

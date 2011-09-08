@@ -22,7 +22,7 @@ namespace CatEye.Core
 		/// <summary>
 		/// Crop and rotate the image
 		/// </summary>
-		bool Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback);
+		void Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback);
 		bool Resize(int targetWidth, int targetHeight, int quality, ProgressReporter callback);
 	}
 }
