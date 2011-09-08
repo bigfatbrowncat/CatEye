@@ -40,7 +40,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ExtendedStage.cs" />
-    <Compile Include="FloatBitmap.cs" />
     <Compile Include="RenderingQueue.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="EventArgsTypes.cs" />

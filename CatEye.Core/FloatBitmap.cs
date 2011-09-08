@@ -1,7 +1,6 @@
 using System;
-using CatEye.Core;
 
-namespace CatEye.UI.Base
+namespace CatEye.Core
 {
 	public class FloatBitmap : IBitmapCore
 	{
@@ -71,11 +70,14 @@ namespace CatEye.UI.Base
 					if (!callback((double)i / mWidth / 2)) 
 						return false;
 				}
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					r_chan[i, j] = ppm.RChannel[i, j];
-					g_chan[i, j] = ppm.GChannel[i, j];
-					b_chan[i, j] = ppm.BChannel[i, j];
+					for (int j = 0; j < mHeight; j++)
+					{
+						r_chan[i, j] = ppm.RChannel[i, j];
+						g_chan[i, j] = ppm.GChannel[i, j];
+						b_chan[i, j] = ppm.BChannel[i, j];
+					}
 				}
 			}
 			
@@ -91,11 +93,14 @@ namespace CatEye.UI.Base
 					if (!callback(0.5 + (double)i / mWidth / 2)) 
 						return false;
 				}
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					r_chan[i, j] /= (float)Max;
-					g_chan[i, j] /= (float)Max;
-					b_chan[i, j] /= (float)Max;
+					for (int j = 0; j < mHeight; j++)
+					{
+						r_chan[i, j] /= (float)Max;
+						g_chan[i, j] /= (float)Max;
+						b_chan[i, j] /= (float)Max;
+					}
 				}
 			}
 			
@@ -137,7 +142,6 @@ namespace CatEye.UI.Base
 					new_b[i, j] = (float)b;
 					sum[i, j] = s;
 				}
-				
 			}
 			
 			for (int i = 0; i < (int)(mWidth * k); i++)
@@ -147,12 +151,15 @@ namespace CatEye.UI.Base
 				new_g[i, j] /= sum[i, j];
 				new_b[i, j] /= sum[i, j];
 			}
-
-			r_chan = new_r;
-			g_chan = new_g;
-			b_chan = new_b;
-			mWidth = (int)(mWidth * k);
-			mHeight = (int)(mHeight * k);
+			
+			lock (this)
+			{
+				r_chan = new_r;
+				g_chan = new_g;
+				b_chan = new_b;
+				mWidth = (int)(mWidth * k);
+				mHeight = (int)(mHeight * k);
+			}
 		}
 		
 /*		/// <summary>
@@ -213,12 +220,14 @@ namespace CatEye.UI.Base
 						throw new UserCancelException();
 					}
 				}
-				
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					r_chan[i, j] *= (float)Amplitude;
-					g_chan[i, j] *= (float)Amplitude;
-					b_chan[i, j] *= (float)Amplitude;
+					for (int j = 0; j < mHeight; j++)
+					{
+						r_chan[i, j] *= (float)Amplitude;
+						g_chan[i, j] *= (float)Amplitude;
+						b_chan[i, j] *= (float)Amplitude;
+					}
 				}
 			}
 		}
@@ -267,24 +276,29 @@ namespace CatEye.UI.Base
 		public void AmplitudeAdd(double delta)
 		{
 			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
-			{				
-				double amp = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-				                       g_chan[i, j] * g_chan[i, j] + 
-				                       b_chan[i, j] * b_chan[i, j]);
-	
-				// Adding "power" to color amplitude
-				if (amp + delta > 0)
+			{
+				lock (this)
 				{
-					r_chan[i, j] *= (float)((amp + delta) / amp);
-					g_chan[i, j] *= (float)((amp + delta) / amp);
-					b_chan[i, j] *= (float)((amp + delta) / amp);
-				}
-				else
-				{
-					r_chan[i, j] = 0;
-					g_chan[i, j] = 0;
-					b_chan[i, j] = 0;
+					for (int j = 0; j < mHeight; j++)
+					{				
+						double amp = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+						                       g_chan[i, j] * g_chan[i, j] + 
+						                       b_chan[i, j] * b_chan[i, j]);
+			
+						// Adding "power" to color amplitude
+						if (amp + delta > 0)
+						{
+							r_chan[i, j] *= (float)((amp + delta) / amp);
+							g_chan[i, j] *= (float)((amp + delta) / amp);
+							b_chan[i, j] *= (float)((amp + delta) / amp);
+						}
+						else
+						{
+							r_chan[i, j] = 0;
+							g_chan[i, j] = 0;
+							b_chan[i, j] = 0;
+						}
+					}
 				}
 			}
 		}
@@ -330,17 +344,20 @@ namespace CatEye.UI.Base
 						throw new UserCancelException();
 					}
 				}
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
-					                         g_chan[i, j] * g_chan[i, j] +
-					                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					
-					double light_new = Math.Log(p * (Math.Exp(a * light) - 1.0) + 1.0) / b;
+					for (int j = 0; j < mHeight; j++)
+					{
+						double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+						                         g_chan[i, j] * g_chan[i, j] +
+						                         b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 						
-					r_chan[i,j] *= (float)(light_new / light); 
-					g_chan[i,j] *= (float)(light_new / light); 
-					b_chan[i,j] *= (float)(light_new / light); 
+						double light_new = Math.Log(p * (Math.Exp(a * light) - 1.0) + 1.0) / b;
+							
+						r_chan[i,j] *= (float)(light_new / light); 
+						g_chan[i,j] *= (float)(light_new / light); 
+						b_chan[i,j] *= (float)(light_new / light); 
+					}
 				}
 			}
 		}
@@ -377,7 +394,6 @@ namespace CatEye.UI.Base
 					if (!callback((double)i / (mWidth + radius)))
 						throw new UserCancelException();
 				}
-
 
 				for (int j = 0; j < mHeight; j++)
 				{
@@ -437,7 +453,7 @@ namespace CatEye.UI.Base
 						}
 						scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
 					}
-						
+					
 					if (i_back >= 0)
 					{
 						// Scaling amplitudes
@@ -447,9 +463,12 @@ namespace CatEye.UI.Base
 						else*/
 						kcomp = Math.Pow(scale_matrix[i_back, j] + 1, pressure);
 
-						r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
-						g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
-						b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
+						lock (this)
+						{
+							r_chan[i_back, j] = r_chan[i_back, j] * (float)kcomp;
+							g_chan[i_back, j] = g_chan[i_back, j] * (float)kcomp;
+							b_chan[i_back, j] = b_chan[i_back, j] * (float)kcomp;
+						}
 		
 					}
 				}
@@ -470,38 +489,42 @@ namespace CatEye.UI.Base
 					}
 				}
 				
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					// calculating current norm
-					double light_before = Math.Sqrt(
-								  r_chan[i, j] * r_chan[i, j] + 
-								  g_chan[i, j] * g_chan[i, j] + 
-								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					
-					// Calculating color coefficients
-					// R2, G2, B2 values depend on light value.
-					// For highlights it should exponentially approach 1.
-					double kappa = Math.Pow(10, HighlightsInvariance);
-					
-					double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
-					double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
-					double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
-					
-					// Applying toning
-					r_chan[i, j] *= (float)(R2);
-					g_chan[i, j] *= (float)(G2);
-					b_chan[i, j] *= (float)(B2);
-					
-					// calculating norm after
-					double light_after = Math.Sqrt(
-								  r_chan[i, j] * r_chan[i, j] + 
-								  g_chan[i, j] * g_chan[i, j] + 
-								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
-					
-					// Normalizing
-					r_chan[i, j] *= (float)(light_before / light_after);
-					g_chan[i, j] *= (float)(light_before / light_after);
-					b_chan[i, j] *= (float)(light_before / light_after);
+				
+					for (int j = 0; j < mHeight; j++)
+					{
+						// calculating current norm
+						double light_before = Math.Sqrt(
+									  r_chan[i, j] * r_chan[i, j] + 
+									  g_chan[i, j] * g_chan[i, j] + 
+									  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+						
+						// Calculating color coefficients
+						// R2, G2, B2 values depend on light value.
+						// For highlights it should exponentially approach 1.
+						double kappa = Math.Pow(10, HighlightsInvariance);
+						
+						double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
+						double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
+						double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
+						
+						// Applying toning
+						r_chan[i, j] *= (float)(R2);
+						g_chan[i, j] *= (float)(G2);
+						b_chan[i, j] *= (float)(B2);
+						
+						// calculating norm after
+						double light_after = Math.Sqrt(
+									  r_chan[i, j] * r_chan[i, j] + 
+									  g_chan[i, j] * g_chan[i, j] + 
+									  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
+						
+						// Normalizing
+						r_chan[i, j] *= (float)(light_before / light_after);
+						g_chan[i, j] *= (float)(light_before / light_after);
+						b_chan[i, j] *= (float)(light_before / light_after);
+					}
 					
 				}
 			}
@@ -519,17 +542,20 @@ namespace CatEye.UI.Base
 					}
 				}
 				
-				for (int j = 0; j < mHeight; j++)
+				lock (this)
 				{
-					double light_sqr = r_chan[i, j] * r_chan[i, j] + 
-								  			 g_chan[i, j] * g_chan[i, j] + 
-					                         b_chan[i, j] * b_chan[i, j];
-					double val = Math.Sqrt(light_sqr / 3);
-					
-					// Normalizing image
-					r_chan[i, j] = (float)(r_chan[i, j] * satur_factor + val * (1 - satur_factor));
-					g_chan[i, j] = (float)(g_chan[i, j] * satur_factor + val * (1 - satur_factor));
-					b_chan[i, j] = (float)(b_chan[i, j] * satur_factor + val * (1 - satur_factor));
+					for (int j = 0; j < mHeight; j++)
+					{
+						double light_sqr = r_chan[i, j] * r_chan[i, j] + 
+									  			 g_chan[i, j] * g_chan[i, j] + 
+						                         b_chan[i, j] * b_chan[i, j];
+						double val = Math.Sqrt(light_sqr / 3);
+						
+						// Normalizing image
+						r_chan[i, j] = (float)(r_chan[i, j] * satur_factor + val * (1 - satur_factor));
+						g_chan[i, j] = (float)(g_chan[i, j] * satur_factor + val * (1 - satur_factor));
+						b_chan[i, j] = (float)(b_chan[i, j] * satur_factor + val * (1 - satur_factor));
+					}
 				}
 			}
 		}
@@ -549,28 +575,31 @@ namespace CatEye.UI.Base
 			}
 			
 			
-			for (int j = 0; j < mHeight; j++)
+			lock (this)
 			{
-				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				for (int j = 0; j < mHeight; j++)
 				{
-					if (!callback((double)j / this.mHeight)) return;
-				}
-				
-				for (int i = 0; i < mWidth; i++)
-				{
-					double light = Math.Sqrt(
-									r_chan[i, j] * r_chan[i, j] + 
-								  	g_chan[i, j] * g_chan[i, j] + 
-					                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+					{
+						if (!callback((double)j / this.mHeight)) return;
+					}
 					
-					Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
-					
-					double newlight = light - cut;
-					if (newlight < 0) newlight = 0;
-					
-					r_chan[i, j] = (float)(curtone.R * newlight);
-					g_chan[i, j] = (float)(curtone.G * newlight);
-					b_chan[i, j] = (float)(curtone.B * newlight);
+					for (int i = 0; i < mWidth; i++)
+					{
+						double light = Math.Sqrt(
+										r_chan[i, j] * r_chan[i, j] + 
+									  	g_chan[i, j] * g_chan[i, j] + 
+						                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+						
+						Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
+						
+						double newlight = light - cut;
+						if (newlight < 0) newlight = 0;
+						
+						r_chan[i, j] = (float)(curtone.R * newlight);
+						g_chan[i, j] = (float)(curtone.G * newlight);
+						b_chan[i, j] = (float)(curtone.B * newlight);
+					}
 				}
 			}
 		}
@@ -579,71 +608,78 @@ namespace CatEye.UI.Base
 		{
 			beta *= Math.PI / 180.0;
 			
-			// Creating new image
-			float[,] newr = new float[crop_w, crop_h];
-			float[,] newg = new float[crop_w, crop_h];
-			float[,] newb = new float[crop_w, crop_h];
+			float[,] oldr = r_chan; 
+			float[,] oldg = g_chan; 
+			float[,] oldb = b_chan;
+			int oldW = mWidth, oldH = mHeight;
 			
+			// Creating new image
+			lock (this)
+			{
+				r_chan = new float[crop_w, crop_h];
+				g_chan = new float[crop_w, crop_h];
+				b_chan = new float[crop_w, crop_h];
+				mWidth = crop_w; mHeight = crop_h;
+			}
 			
 			// Going thru new pixels. Calculating influence from source pixel
 			// colors to new pixel colors
 			
-			for (int n = 0; n < mHeight; n++)
+			for (int n = 0; n < oldH; n++)
 			{
 				if (n % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (!callback((double)n / mHeight)) return false;
+					if (!callback((double)n / oldH)) return false;
 				}
 				
-				for (int m = 0; m < mWidth; m++)
+				lock (this)
 				{
-					// Rotated source matrix squares
-					CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
+					for (int m = 0; m < oldW; m++)
 					{
-						Point.Rotate(new CatEye.Core.Point(m,       n      ), -beta, c),
-						Point.Rotate(new CatEye.Core.Point((m + 1), n      ), -beta, c),
-						Point.Rotate(new CatEye.Core.Point((m + 1), (n + 1)), -beta, c),
-						Point.Rotate(new CatEye.Core.Point(m,       (n + 1)), -beta, c)
-					};
-					
-					// Rotated and translated source matrix squares
-					CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
-					{
-						new Point(src_tr_pts[0].X - c.X + (double)crop_w / 2, src_tr_pts[0].Y - c.Y + (double)crop_h / 2),
-						new Point(src_tr_pts[1].X - c.X + (double)crop_w / 2, src_tr_pts[1].Y - c.Y + (double)crop_h / 2),
-						new Point(src_tr_pts[2].X - c.X + (double)crop_w / 2, src_tr_pts[2].Y - c.Y + (double)crop_h / 2),
-						new Point(src_tr_pts[3].X - c.X + (double)crop_w / 2, src_tr_pts[3].Y - c.Y + (double)crop_h / 2),
-					};
-					
-					ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
-					
-					int xmin = Math.Max((int)cp_src_tr.XMin, 0);
-					int ymin = Math.Max((int)cp_src_tr.YMin, 0);
-					int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
-					int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
-					
-					double bloha = 0.00001;
-					
-					for (int j = ymin; j < ymax; j++)
-					{
-						for (int i = xmin; i < xmax; i++)
+						// Rotated source matrix squares
+						CatEye.Core.Point[] src_tr_pts = new CatEye.Core.Point[]
 						{
-							double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
-							
-							// Adding colors part
-							newr[i, j] += (float)(r_chan[m, n] * part);
-							newg[i, j] += (float)(g_chan[m, n] * part);
-							newb[i, j] += (float)(b_chan[m, n] * part);
-							
+							Point.Rotate(new CatEye.Core.Point(m,       n      ), -beta, c),
+							Point.Rotate(new CatEye.Core.Point((m + 1), n      ), -beta, c),
+							Point.Rotate(new CatEye.Core.Point((m + 1), (n + 1)), -beta, c),
+							Point.Rotate(new CatEye.Core.Point(m,       (n + 1)), -beta, c)
+						};
+						
+						// Rotated and translated source matrix squares
+						CatEye.Core.Point[] src_tr_pts2 = new CatEye.Core.Point[]
+						{
+							new Point(src_tr_pts[0].X - c.X + (double)crop_w / 2, src_tr_pts[0].Y - c.Y + (double)crop_h / 2),
+							new Point(src_tr_pts[1].X - c.X + (double)crop_w / 2, src_tr_pts[1].Y - c.Y + (double)crop_h / 2),
+							new Point(src_tr_pts[2].X - c.X + (double)crop_w / 2, src_tr_pts[2].Y - c.Y + (double)crop_h / 2),
+							new Point(src_tr_pts[3].X - c.X + (double)crop_w / 2, src_tr_pts[3].Y - c.Y + (double)crop_h / 2),
+						};
+						
+						ConvexPolygon cp_src_tr = new ConvexPolygon(src_tr_pts2);
+						
+						int xmin = Math.Max((int)cp_src_tr.XMin, 0);
+						int ymin = Math.Max((int)cp_src_tr.YMin, 0);
+						int xmax = Math.Min((int)cp_src_tr.XMax + 1, crop_w);
+						int ymax = Math.Min((int)cp_src_tr.YMax + 1, crop_h);
+						
+						double bloha = 0.00001;
+						
+						for (int j = ymin; j < ymax; j++)
+						{
+							for (int i = xmin; i < xmax; i++)
+							{
+								double part = cp_src_tr.CalcProjectionToPixel(i, j, quality);
+								
+								// Adding colors part
+								r_chan[i, j] += (float)(oldr[m, n] * part);
+								g_chan[i, j] += (float)(oldg[m, n] * part);
+								b_chan[i, j] += (float)(oldb[m, n] * part);
+								
+							}
 						}
 					}
 				}
 			}
 			
-			r_chan = newr;
-			g_chan = newg;
-			b_chan = newb;
-			mWidth = crop_w; mHeight = crop_h;
 			return true;
 		}
 		
@@ -705,10 +741,13 @@ namespace CatEye.UI.Base
 				}
 			}
 			
-			r_chan = newr;
-			g_chan = newg;
-			b_chan = newb;
-			mWidth = targetWidth; mHeight = targetHeight;
+			lock (this)
+			{
+				r_chan = newr;
+				g_chan = newg;
+				b_chan = newb;
+				mWidth = targetWidth; mHeight = targetHeight;
+			}
 			return true;
 		}
 	}
