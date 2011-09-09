@@ -5,6 +5,7 @@ using System.Globalization;
 namespace CatEye.Core
 {
 	[StageOperationID("CrotateStageOperation")]
+	[StageOperationParametersEditModeSupported(true)]
 	public class CrotateStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;

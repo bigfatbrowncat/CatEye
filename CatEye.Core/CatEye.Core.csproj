@@ -112,6 +112,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="FloatBitmap.cs" />
+    <Compile Include="Attributes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -123,6 +123,16 @@ namespace CatEye.UI.Gtk.Widgets
 				OnRemoveButtonClicked(this, EventArgs.Empty);
 			};
 			
+			// Checking if editing mode supported
+			_TitleWidget.SetEditModeSupported(false);
+			Type parametersType = operationParametersWidget.Parameters.GetType();
+			object[] attrs = parametersType.GetCustomAttributes(typeof(StageOperationParametersEditModeSupportedAttribute), true);
+			if (attrs.Length > 0)
+			{
+				if (((StageOperationParametersEditModeSupportedAttribute)attrs[0]).Supported) 
+					_TitleWidget.SetEditModeSupported(true);
+			}
+			
 			operationParametersWidget.Show();
 
 			

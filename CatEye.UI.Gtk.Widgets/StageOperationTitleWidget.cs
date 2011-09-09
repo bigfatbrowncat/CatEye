@@ -6,20 +6,10 @@ namespace CatEye.UI.Gtk.Widgets
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class StageOperationTitleWidget : Bin
 	{
-		private StageOperation _Operation;
 		private string _Title;
 		private bool _ViewToggledFromCode = false;
 		private bool _FreezeToggledFromCode = false;
 
-		public StageOperation Operation
-		{
-			get { return _Operation; }
-			set 
-			{ 
-				_Operation = value;
-			}
-		}
-		
 		public string Title
 		{
 			get { return _Title; }
@@ -138,9 +128,15 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 			remove_symbol.Show();
 			remove_button.Image = remove_symbol;
-			
-		}
 
+
+		}
+		
+		public void SetEditModeSupported(bool supported)
+		{
+			edit_togglebutton.Visible = supported;
+		}
+		
 		protected virtual void OnUpButtonClicked (object sender, System.EventArgs e)
 		{
 			if (UpButtonClicked != null)

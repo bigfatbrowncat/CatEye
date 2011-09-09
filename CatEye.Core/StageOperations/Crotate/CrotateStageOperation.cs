@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Crop and Rotate"), StageOperationID("CrotateStageOperation")]
+	[StageOperationDescription("Crop and Rotate")]
+	[StageOperationID("CrotateStageOperation")]
 	public class CrotateStageOperation : StageOperation
 	{
 		int quality = 3;
