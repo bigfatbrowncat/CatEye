@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.PreScaleSelectorWidget" design-size="300 27">
     <property name="MemberName" />
@@ -1249,8 +1249,8 @@
                 <property name="Upper">4</property>
                 <property name="PageIncrement">0.1</property>
                 <property name="StepIncrement">1</property>
-                <property name="ClimbRate">0.1</property>
-                <property name="Digits">3</property>
+                <property name="ClimbRate">0.001</property>
+                <property name="Digits">4</property>
                 <property name="Numeric">True</property>
                 <property name="Value">0.25</property>
                 <signal name="ValueChanged" handler="OnAspectSpinbuttonValueChanged" />
@@ -1315,8 +1315,8 @@
             <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.1</property>
-            <property name="Digits">2</property>
+            <property name="ClimbRate">0.01</property>
+            <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
             <signal name="ValueChanged" handler="OnCXSpinbuttonValueChanged" />
@@ -1345,8 +1345,8 @@
             <property name="Upper">3</property>
             <property name="PageIncrement">0.1</property>
             <property name="StepIncrement">0.01</property>
-            <property name="ClimbRate">0.1</property>
-            <property name="Digits">2</property>
+            <property name="ClimbRate">0.01</property>
+            <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <property name="Value">0.5</property>
             <signal name="ValueChanged" handler="OnCYSpinbuttonValueChanged" />
@@ -1379,8 +1379,8 @@
                 <property name="Upper">3</property>
                 <property name="PageIncrement">0.1</property>
                 <property name="StepIncrement">0.01</property>
-                <property name="ClimbRate">0.1</property>
-                <property name="Digits">2</property>
+                <property name="ClimbRate">0.01</property>
+                <property name="Digits">3</property>
                 <property name="Numeric">True</property>
                 <property name="Value">0.5</property>
                 <signal name="ValueChanged" handler="OnCropHSpinbuttonValueChanged" />
@@ -1556,8 +1556,8 @@
                 <property name="Upper">3</property>
                 <property name="PageIncrement">0.1</property>
                 <property name="StepIncrement">0.01</property>
-                <property name="ClimbRate">0.1</property>
-                <property name="Digits">2</property>
+                <property name="ClimbRate">0.01</property>
+                <property name="Digits">3</property>
                 <property name="Numeric">True</property>
                 <property name="Value">0.5</property>
                 <signal name="ValueChanged" handler="OnCropWSpinbuttonValueChanged" />

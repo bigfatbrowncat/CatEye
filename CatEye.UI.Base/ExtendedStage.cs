@@ -104,13 +104,41 @@ namespace CatEye.UI.Base
 		protected override void OnItemChanged (StageOperationParameters item)
 		{
 			base.OnItemChanged (item);
-			AskUpdate();
+
+			// We should check if we need update in that case
+			bool updating_needed = false;
+			
+			if (_EditingOperation != null)
+			{
+				if (_EditingOperation != item)
+				{
+					// Checking if our changed item is BEFORE the editing one
+					bool editing_found = false;
+					for (int i = 0; i < StageQueue.Count; i++)
+					{
+						if (_EditingOperation == StageQueue[i]) editing_found = true;
+						if (item == StageQueue[i])
+						{
+							if (!editing_found)
+							{
+								updating_needed = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				updating_needed = true;
+			}
+			if (updating_needed) AskUpdate();
 		}
 		
 		protected override void OnItemIndexChanged(StageOperationParameters item)
 		{
 			base.OnItemIndexChanged (item);
-			AskUpdate();
+			if (item.Active) AskUpdate();
 		}
 		
 		public ReadOnlyDictionary<StageOperationParameters, IStageOperationHolder> Holders
@@ -177,7 +205,6 @@ namespace CatEye.UI.Base
 					SetUIState(UIState.Processing);
 
 					CancelProcessingPending = false;
-					// Removing updating queue flag
 					
 					// Checking if the stage is frozen or not and is there a frozen image.
 					if (FrozenAt == null || mFrozenImage == null)
@@ -395,7 +422,11 @@ namespace CatEye.UI.Base
 
 		void HandleSohwOperationParametersEditorUserModified (object sender, EventArgs e)
 		{
-			AskUpdate();
+			// If the user modified some property in editing ("pen") mode,
+			// refresh the picture
+			IStageOperationParametersEditor editor = (IStageOperationParametersEditor)sender;
+			if (_EditingOperation != null && _Holders[_EditingOperation].StageOperationParametersEditor == editor)
+				OnImageUpdatingCompleted();
 		}
 		
 		void HandleSohwRemoveButtonClicked (object sender, EventArgs e)

@@ -70,25 +70,28 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected void UpdateSensitive()
 		{
-			crop_w_spinbutton.Visible = !link_w_togglebutton.Active;
-			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Expand = !crop_w_spinbutton.Visible;
-			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Fill = !crop_w_spinbutton.Visible;
-			link_w_togglebutton.Label = link_w_togglebutton.Active ? "Linked to Height" : "";
+			if (mDragState == DragState.None)
+			{
+				crop_w_spinbutton.Visible = !link_w_togglebutton.Active;
+				((HBox.BoxChild)w_hbox[link_w_togglebutton]).Expand = !crop_w_spinbutton.Visible;
+				((HBox.BoxChild)w_hbox[link_w_togglebutton]).Fill = !crop_w_spinbutton.Visible;
+				link_w_togglebutton.Label = link_w_togglebutton.Active ? "Linked to height" : "";
+					
+				crop_h_spinbutton.Visible = !link_h_togglebutton.Active;
+				((HBox.BoxChild)h_hbox[link_h_togglebutton]).Expand = !crop_h_spinbutton.Visible;
+				((HBox.BoxChild)h_hbox[link_h_togglebutton]).Fill = !crop_h_spinbutton.Visible;
+				link_h_togglebutton.Label = link_h_togglebutton.Active ? "Linked to width" : "";
 				
-			crop_h_spinbutton.Visible = !link_h_togglebutton.Active;
-			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Expand = !crop_h_spinbutton.Visible;
-			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Fill = !crop_h_spinbutton.Visible;
-			link_h_togglebutton.Label = link_h_togglebutton.Active ? "Linked to Width" : "";
-			
-			aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
-			aspect_combobox.Visible = !custom_togglebutton.Active;
-			
-			aspect_spinbutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
-			aspect_spinbutton.Visible = custom_togglebutton.Active;
-			
-			custom_togglebutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
-			
-			aspect_combobox.CheckResize();
+				aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
+				aspect_combobox.Visible = !custom_togglebutton.Active;
+				
+				aspect_spinbutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
+				aspect_spinbutton.Visible = custom_togglebutton.Active;
+				
+				custom_togglebutton.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
+				
+				aspect_combobox.CheckResize();
+			}
 		}
 		
 		protected void OnAngleSpinbuttonValueChanged (object sender, System.EventArgs e)
@@ -107,7 +110,8 @@ namespace CatEye.UI.Gtk.Widgets
 			if (mDragState != DragState.Center)
 			{
 				StartChangingParameters();
-				((CrotateStageOperationParameters)Parameters).Center.X = c_x_spinbutton.Value;
+				((CrotateStageOperationParameters)Parameters).Center = 
+					new Point( c_x_spinbutton.Value, ((CrotateStageOperationParameters)Parameters).Center.Y);
 				EndChangingParameters();
 				OnUserModified();
 			}
@@ -118,7 +122,8 @@ namespace CatEye.UI.Gtk.Widgets
 			if (mDragState != DragState.Center)
 			{
 				StartChangingParameters();
-				((CrotateStageOperationParameters)Parameters).Center.Y = c_y_spinbutton.Value;
+				((CrotateStageOperationParameters)Parameters).Center = 
+					new Point(((CrotateStageOperationParameters)Parameters).Center.X, c_y_spinbutton.Value);
 				EndChangingParameters();
 				OnUserModified();
 			}
@@ -253,6 +258,8 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		public override bool ReportMouseButton (int x, int y, int width, int height, uint button_id, bool is_down)
 		{
+			if (width == 0 || height == 0) return false;
+			
 			CrotateStageOperationParameters pm = ((CrotateStageOperationParameters)Parameters);
 
 			if (is_down)
@@ -292,7 +299,7 @@ namespace CatEye.UI.Gtk.Widgets
 					return true;
 				}
 				
-				// Checking if the user clicked the rb corner dot
+				// Checking if the user clicked the rb corner "square" dot
 				Gdk.Point scr_rb = new Gdk.Point(
 					(int)(scr_c_x + rb_corner_rot.X),
 					(int)(scr_c_y + rb_corner_rot.Y));
@@ -324,8 +331,12 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		public override bool ReportMousePosition (int x, int y, int width, int height)
 		{
+			if (width == 0 || height == 0) return false; 
+			
 			CrotateStageOperationParameters pm = ((CrotateStageOperationParameters)Parameters);
-
+			
+			bool res = false;
+			
 			if (mDragState == DragState.Center)
 			{
 				int new_scr_x = mCenterDotStartX - mDragStartX + x;
@@ -333,7 +344,7 @@ namespace CatEye.UI.Gtk.Widgets
 				
 				pm.Center = new Point((double)new_scr_x / width, (double)new_scr_y / height);
 				
-				return true;
+				res = true;
 			}
 			else if (mDragState == DragState.Round)
 			{
@@ -342,7 +353,7 @@ namespace CatEye.UI.Gtk.Widgets
 				Vector cur_dir = new Vector(scr_C, cur);
 				
 				pm.Angle = 180.0 / Math.PI * Math.Atan2(cur_dir.Y, cur_dir.X);
-				return true;
+				res = true;
 			}
 			else if (mDragState == DragState.Corner)
 			{
@@ -381,16 +392,18 @@ namespace CatEye.UI.Gtk.Widgets
 					pm.CropHeight = mCropHeightStart * Dh / D0h;
 					break;
 				}
-				return true;
+				res = true;
 			}
 			
-			return false;
+			return res;
 		}
 		
 		CatEye.Core.Point lt_corner_rot, rt_corner_rot, lb_corner_rot, rb_corner_rot;
 		
 		public override void DrawEditor (IBitmapView view)
 		{
+			if (view.Image == null || view.Image.Width == 0 || view.Image.Height == 0) return;
+
 			Gdk.Drawable target = ((FloatPixmapViewWidget)view).GdkWindow;
 			Gdk.Rectangle image_position = ((FloatPixmapViewWidget)view).CurrentImagePosition;
 			
@@ -403,15 +416,7 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			int scr_c_x = image_position.X + (int)(image_position.Width * C.X);
 			int scr_c_y = image_position.Y + (int)(image_position.Height * C.Y);
-
-			gc.RgbFgColor = new Gdk.Color(255, 0, 0);
-			gc.Function = Gdk.Function.Xor;
 			
-			target.DrawRectangle(gc, true, new Gdk.Rectangle(
-				scr_c_x - mDotRadius, 
-				scr_c_y - mDotRadius, 
-				2 * mDotRadius, 
-				2 * mDotRadius));
 			
 			// Calculating new picture's real dimensions
 			int trueWidth = image_position.Width, trueHeight = image_position.Height;
@@ -487,25 +492,63 @@ namespace CatEye.UI.Gtk.Widgets
 
 			
 			// Drawing frame
-			target.DrawPolygon(gc, false, new Gdk.Point[] {
-				scr_lt, scr_rt, scr_rb, scr_lb
-			});
 			
-			// Drawing "round" dot.
-			target.DrawArc(gc, true, 
-				scr_rnd.X - mDotRadius - 1, 
-				scr_rnd.Y - mDotRadius - 1, 
-				2 * mDotRadius + 2, 
-				2 * mDotRadius + 2,
-				0, 64 * 360);
+			using (Cairo.Context cc = Gdk.CairoHelper.Create(target))
+			{
+				cc.LineCap = Cairo.LineCap.Round;
+				cc.LineJoin = Cairo.LineJoin.Round;
+
+				cc.Color = new Cairo.Color(0, 0, 0, 0.5);
+				cc.LineWidth = 3;
+				cc.MoveTo(scr_lt.X, scr_lt.Y);
+				cc.LineTo(scr_lb.X, scr_lb.Y);
+				cc.LineTo(scr_rb.X, scr_rb.Y);
+				cc.LineTo(scr_rt.X, scr_rt.Y);
+				cc.LineTo(scr_lt.X, scr_lt.Y);
+				cc.ClosePath();
+				cc.Stroke();
 				
-			// Drawing rb corner dot
-			target.DrawArc(gc, true, 
-				scr_rb.X - mDotRadius, 
-				scr_rb.Y - mDotRadius, 
-				2 * mDotRadius, 
-				2 * mDotRadius,
-				0, 64 * 360);
+				cc.Color = new Cairo.Color(1, 1, 1, 1);
+				cc.LineWidth = 1;
+				cc.SetDash(new double[] {3, 3}, 0);
+				cc.MoveTo(scr_lt.X, scr_lt.Y);
+				cc.LineTo(scr_lb.X, scr_lb.Y);
+				cc.LineTo(scr_rb.X, scr_rb.Y);
+				cc.LineTo(scr_rt.X, scr_rt.Y);
+				cc.LineTo(scr_lt.X, scr_lt.Y);
+				cc.ClosePath();
+				cc.Stroke();
+				
+			}
+		
+			
+			// Drawing center "triangle" dot.
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.triangle_dot.png"))
+			{
+				target.DrawPixbuf(gc, buf, 
+					0, 0, (int)(scr_c_x - buf.Width / 2), (int)(scr_c_y - buf.Height / 2), 
+					buf.Width, buf.Height, Gdk.RgbDither.None, 0, 0);
+			}		
+			
+			// Drawing side "round" dot.
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.round_dot.png"))
+			{
+				target.DrawPixbuf(gc, buf, 
+					0, 0, 
+					(int)(scr_rnd.X - buf.Width / 2), 
+					(int)(scr_rnd.Y - buf.Height / 2), 
+					buf.Width, buf.Height, Gdk.RgbDither.None, 0, 0);
+			}
+
+			// Drawing corner "square" dot.
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.square_dot.png"))
+			{			
+				target.DrawPixbuf(gc, buf, 
+					0, 0, 
+					(int)(scr_rb.X - buf.Width / 2), 
+					(int)(scr_rb.Y - buf.Height / 2), 
+					buf.Width, buf.Height, Gdk.RgbDither.None, 0, 0);
+			}	
 			
 		}
 	}

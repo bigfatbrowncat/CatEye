@@ -293,6 +293,7 @@ namespace CatEye.UI.Base
 			if (mWorkingThread == null)
 			{
 				mWorkingThread = new Thread(ProcessingThread);
+				mWorkingThread.Priority = ThreadPriority.BelowNormal;
 				mWorkingThread.Start();
 			}
 		}

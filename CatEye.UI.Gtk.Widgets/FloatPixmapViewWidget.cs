@@ -15,7 +15,7 @@ namespace CatEye.UI.Gtk.Widgets
 		public event MouseButtonStateChangedHandler MouseButtonStateChanged;
 		
 		private bool _InstantUpdate = false;
-		private FloatBitmapGtk _HDR;
+		private FloatBitmapGtk mImage;
 		private Pixbuf _RenderedPicture = null;
 		private TimeSpan _UpdateTimeSpan = new TimeSpan(0, 0, 1);	// Initial set to 1 second to avoid possible division by 0
 
@@ -40,12 +40,12 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 		
-		public FloatBitmapGtk HDR
+		public IBitmapCore Image
 		{
-			get { return _HDR; }
+			get { return mImage; }
 			set 
 			{
-				_HDR = value; 
+				mImage = (FloatBitmapGtk)value; 
 				if (_InstantUpdate) UpdatePicture();
 			}
 		}
@@ -82,11 +82,11 @@ namespace CatEye.UI.Gtk.Widgets
 				GdkWindow.Cursor = new Cursor(Gdk.CursorType.Watch);
 				
 				DateTime update_start = DateTime.Now;
-				if (_HDR != null)
+				if (mImage != null)
 				{
-					Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, _HDR.Width, _HDR.Height);
+					Gdk.Pixbuf newRenderedPicture = Gdk.Pixbuf.FromDrawable(GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, mImage.Width, mImage.Height);
 		
-					_HDR.DrawToPixbuf(newRenderedPicture, delegate {
+					mImage.DrawToPixbuf(newRenderedPicture, delegate {
 						//while (Application.EventsPending()) Application.RunIteration();
 						return true;
 					});
@@ -118,7 +118,7 @@ namespace CatEye.UI.Gtk.Widgets
 			GdkWindow.Background = new Color(0, 0, 0);
 			GdkWindow.Clear();
 			
-			if (_HDR != null && _RenderedPicture != null)
+			if (mImage != null && _RenderedPicture != null)
 			{
 				Rectangle r = CurrentImagePosition;
 				
@@ -170,7 +170,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		public void SavePicture(string FileName, string Type)
 		{
-			if (_HDR != null)
+			if (mImage != null)
 			{
 				if (_RenderedPicture != null)
 					_RenderedPicture.Save(FileName, Type);

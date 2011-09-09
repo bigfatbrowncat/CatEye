@@ -26,7 +26,7 @@ public partial class StageEditorWindow : Gtk.Window
 	private StageOperationHolderFactory mStageOperationHolderFactory;
 	private BitmapCoreFactory mFloatBitmapGtkFactory;
 	
-	private static int mDelayBeforeUpdate = 100;
+	private static int mDelayBeforeUpdate = 200;
 	
 	private void UpdateTitle()
 	{
@@ -59,11 +59,13 @@ public partial class StageEditorWindow : Gtk.Window
 		// Image processor cycle
 		while (!mStageThreadStopFlag)
 		{
+			mStage.CancelProcessing();
 			if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > mDelayBeforeUpdate)
 			{
+				lastUpdateQueuedTime = DateTime.Now;
 				mStage.ProcessPending();
 			}
-			Thread.Sleep(10);
+			Thread.Sleep(30);
 		}
 	}
 
@@ -194,7 +196,7 @@ public partial class StageEditorWindow : Gtk.Window
 	void HandleStageImageChanged (object sender, EventArgs e)
 	{
 		Application.Invoke(delegate {
-			viewWidget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
+			viewWidget.Image = (FloatBitmapGtk)mStage.CurrentImage;
 		});
 	}
 	void HandleStageOperationFrozen (object sender, EventArgs e)
@@ -322,8 +324,8 @@ public partial class StageEditorWindow : Gtk.Window
 				{
 					if ((DateTime.Now - mLastUpdate).TotalMilliseconds / viewWidget.UpdateTimeSpan.TotalMilliseconds > 5)
 					{
-						if (viewWidget.HDR != mStage.CurrentImage)
-							viewWidget.HDR = (FloatBitmapGtk)mStage.CurrentImage;
+						if (viewWidget.Image != mStage.CurrentImage)
+							viewWidget.Image = (FloatBitmapGtk)mStage.CurrentImage;
 						else
 							viewWidget.UpdatePicture();
 		

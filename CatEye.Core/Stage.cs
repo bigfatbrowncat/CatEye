@@ -162,7 +162,7 @@ namespace CatEye.Core
 			return xdoc.InnerXml;
 		}
 		
-		public void CancelProcessing()
+		public virtual void CancelProcessing()
 		{
 			mCancelProcessingPending = true;
 		}
