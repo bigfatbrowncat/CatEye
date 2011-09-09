@@ -289,7 +289,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="283 579">
+  <widget class="Gtk.Window" id="CatEye.UI.Gtk.RenderingQueueWindow" design-size="356 678">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rendering queue</property>
@@ -323,8 +323,8 @@
                         <child>
                           <widget class="Gtk.Image" id="thumb_image">
                             <property name="MemberName" />
-                            <property name="WidthRequest">230</property>
-                            <property name="HeightRequest">230</property>
+                            <property name="WidthRequest">330</property>
+                            <property name="HeightRequest">330</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -345,7 +345,7 @@
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
                                 <property name="Ellipsize">Middle</property>
-                                <property name="MaxWidthChars">60</property>
+                                <property name="MaxWidthChars">50</property>
                                 <property name="SingleLineMode">True</property>
                               </widget>
                               <packing>
@@ -408,7 +408,7 @@
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
                                 <property name="Ellipsize">Middle</property>
-                                <property name="MaxWidthChars">60</property>
+                                <property name="MaxWidthChars">50</property>
                                 <property name="SingleLineMode">True</property>
                               </widget>
                               <packing>
@@ -869,7 +869,6 @@
                               <widget class="Gtk.VBox" id="stage_vbox">
                                 <property name="MemberName" />
                                 <property name="ShowScrollbars">True</property>
-                                <property name="Spacing">3</property>
                                 <property name="BorderWidth">6</property>
                                 <signal name="ExposeEvent" handler="OnStageVboxExposeEvent" />
                                 <signal name="SizeAllocated" handler="OnStageVboxSizeAllocated" />

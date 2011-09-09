@@ -134,8 +134,8 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			
 			int l, t, w, h;
-			w = Allocation.Width + 4; h = Allocation.Height + 4;
-			l = Allocation.Left - 1; t = Allocation.Top - 1;
+			w = Allocation.Width; h = Allocation.Height;
+			l = Allocation.Left; t = Allocation.Top;
 			
 			int mx, my;
 			using (Gdk.GC gc = new Gdk.GC(GdkWindow))
@@ -164,7 +164,7 @@ namespace CatEye.UI.Gtk.Widgets
 					}
 
 					gc.RgbFgColor = this.Style.Background(StateType.Normal);
-					GdkWindow.DrawRectangle(gc, true, new Gdk.Rectangle(l - 1 + mx, t - 1 + my, w - 2 * mx, h - 2 * my));
+					GdkWindow.DrawRectangle(gc, true, new Gdk.Rectangle(l + mx - 2, t + my - 2, w - 2 * mx + 3, h - 2 * my + 3));
 				}
 				
 				/*

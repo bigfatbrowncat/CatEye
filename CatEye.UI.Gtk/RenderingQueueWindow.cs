@@ -241,7 +241,7 @@ namespace CatEye.UI.Gtk
 				{
 					updateMoment = DateTime.Now;
 					// Drawing
-					int size = 200, margins = 30;
+					int size = 300, margins = 30;
 					
 					thumb_image.SetSizeRequest(size + margins, size + margins);
 					using (Gdk.Pixmap pm = new Gdk.Pixmap(thumb_image.GdkWindow, size + margins, size + margins, -1))

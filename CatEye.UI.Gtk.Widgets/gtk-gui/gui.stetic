@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.PreScaleSelectorWidget" design-size="300 27">
     <property name="MemberName" />
@@ -328,7 +328,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.CompressionStageOperationParametersWidget" design-size="300 105">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.CompressionStageOperationParametersWidget" design-size="254 105">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -551,7 +551,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.SaturationStageOperationParametersWidget" design-size="417 319">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.SaturationStageOperationParametersWidget" design-size="310 319">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -919,7 +919,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget" design-size="263 214">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget" design-size="243 212">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1199,22 +1199,17 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.CrotateStageOperationParametersWidget" design-size="315 222">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.CrotateStageOperationParametersWidget" design-size="262 206">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">7</property>
+        <property name="NRows">6</property>
         <property name="NColumns">2</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
+        <property name="BorderWidth">4</property>
         <child>
           <widget class="Gtk.SpinButton" id="angle_spinbutton">
             <property name="MemberName" />
@@ -1280,6 +1275,7 @@
             <child>
               <widget class="Gtk.CheckButton" id="custom_togglebutton">
                 <property name="MemberName" />
+                <property name="Tooltip" translatable="yes">Custom aspect ratio</property>
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes" />
                 <property name="DrawIndicator">False</property>
@@ -1397,6 +1393,7 @@
             <child>
               <widget class="Gtk.ToggleButton" id="link_h_togglebutton">
                 <property name="MemberName" />
+                <property name="Tooltip" translatable="yes">Link to Crop Width</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
                 <property name="Label" translatable="yes" />
@@ -1573,6 +1570,7 @@
             <child>
               <widget class="Gtk.ToggleButton" id="link_w_togglebutton">
                 <property name="MemberName" />
+                <property name="Tooltip">Link to Crop Height</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
                 <property name="Label" />
@@ -1761,13 +1759,14 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.FrozenPanel" design-size="312 28">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.FrozenPanel" design-size="312 35">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox">
         <property name="MemberName" />
         <property name="Spacing">2</property>
+        <property name="BorderWidth">4</property>
         <child>
           <placeholder />
         </child>
@@ -1807,7 +1806,7 @@
       <widget class="Gtk.VBox" id="vbox">
         <property name="MemberName" />
         <property name="Spacing">4</property>
-        <property name="BorderWidth">7</property>
+        <property name="BorderWidth">10</property>
         <child>
           <placeholder />
         </child>

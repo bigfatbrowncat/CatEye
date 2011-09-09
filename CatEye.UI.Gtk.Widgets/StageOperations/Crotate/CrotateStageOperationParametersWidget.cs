@@ -73,12 +73,12 @@ namespace CatEye.UI.Gtk.Widgets
 			crop_w_spinbutton.Visible = !link_w_togglebutton.Active;
 			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Expand = !crop_w_spinbutton.Visible;
 			((HBox.BoxChild)w_hbox[link_w_togglebutton]).Fill = !crop_w_spinbutton.Visible;
-			link_w_togglebutton.Label = link_w_togglebutton.Active ? "Link to height" : "";
+			link_w_togglebutton.Label = link_w_togglebutton.Active ? "Linked to Height" : "";
 				
 			crop_h_spinbutton.Visible = !link_h_togglebutton.Active;
 			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Expand = !crop_h_spinbutton.Visible;
 			((HBox.BoxChild)h_hbox[link_h_togglebutton]).Fill = !crop_h_spinbutton.Visible;
-			link_h_togglebutton.Label = link_h_togglebutton.Active ? "Link to width" : "";
+			link_h_togglebutton.Label = link_h_togglebutton.Active ? "Linked to Width" : "";
 			
 			aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
 			aspect_combobox.Visible = !custom_togglebutton.Active;
