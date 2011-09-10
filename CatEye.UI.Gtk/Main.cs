@@ -22,7 +22,7 @@ namespace CatEye
 			typeof(SaturationStageOperation),
 			typeof(ToneStageOperation),
 			typeof(BlackPointStageOperation),
-			typeof(LimitSizeStageOperation),
+			//typeof(LimitSizeStageOperation),
 			typeof(CrotateStageOperation)
 		};
 
@@ -34,7 +34,7 @@ namespace CatEye
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
 			typeof(BlackPointStageOperationParameters),
-			typeof(LimitSizeStageOperationParameters),
+			//typeof(LimitSizeStageOperationParameters),
 			typeof(CrotateStageOperationParameters)
 		};
 				
@@ -46,7 +46,7 @@ namespace CatEye
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
 			typeof(BlackPointStageOperationParametersWidget),
-			typeof(LimitSizeStageOperationParametersWidget),
+			//typeof(LimitSizeStageOperationParametersWidget),
 			typeof(CrotateStageOperationParametersWidget)
 		};
 		

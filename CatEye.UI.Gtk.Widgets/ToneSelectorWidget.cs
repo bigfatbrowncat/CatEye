@@ -7,9 +7,11 @@ namespace CatEye.UI.Gtk.Widgets
 	[System.ComponentModel.ToolboxItem(true)]
 	public class ToneSelectorWidget : DrawingArea
 	{
-		int margin = 6;
+		int margin = 9;
 		double mAlpha = 0.5;
 		bool mouse_down = false;
+		
+		private Gdk.Pixbuf savedPalette = null;
 		
 		private Tone mSelectedTone;
 
@@ -123,46 +125,40 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			base.OnExposeEvent (ev);
-			
+			//base.OnExposeEvent (ev);
 			int W = Allocation.Width, H = Allocation.Height;
 
-			Gdk.Pixbuf pb = null;
-			Gdk.GC gc = null;
-			try
+			using (Gdk.GC gc = new Gdk.GC(GdkWindow))
 			{
 				// Creating PixBuf to draw a color matrix
 				if (GdkWindow == null || W < 1 || H < 1) return true;
 				
-				pb = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, W - margin * 2, H - margin * 2);
 				//pb = Gdk.Pixbuf.FromDrawable(Parent.GdkWindow, Gdk.Rgb.Colormap, 0, 0, 0, 0, W - margin * 2, H - margin * 2);
-				
-				// Drawing color matrix to back pixbuf
-				DrawColors(pb);
 				
 				// Drawing frame to widget
 				Style.PaintBox(this.Style, GdkWindow, StateType.Normal, ShadowType.In, 
 					new Gdk.Rectangle(0, 0, W, H),
 					this, null, margin - 2, margin - 2, W - margin * 2 + 4, H - margin * 2 + 4);
 	
-				// Creating Graphics Context
-				gc = new Gdk.GC(GdkWindow);
+				if (savedPalette != null)
+				{
+					// Drawing color matrix backbuffer
+					GdkWindow.DrawPixbuf(gc, savedPalette, 0, 0, margin, margin, savedPalette.Width, savedPalette.Height, Gdk.RgbDither.Normal, 0, 0);
+				}
 				
-				// Drawing color matrix backbuffer
-				GdkWindow.DrawPixbuf(gc, pb, 0, 0, margin, margin, pb.Width, pb.Height, Gdk.RgbDither.Normal, 0, 0);
-				
-				int sel_x = (int)(Tone_to_X(mSelectedTone) * pb.Width) + margin;
-				int sel_y = (int)(Tone_to_Y(mSelectedTone) * pb.Height) + margin;
+				int sel_x = (int)(Tone_to_X(mSelectedTone) * savedPalette.Width) + margin;
+				int sel_y = (int)(Tone_to_Y(mSelectedTone) * savedPalette.Height) + margin;
 				//Console.WriteLine(Tone_to_X(mSelectedTone) +", " + Tone_to_Y(mSelectedTone));
-				
+
+				using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut.png"))
+				{
+					GdkWindow.DrawPixbuf(gc, buf, 0, 0, sel_x - buf.Width / 2, sel_y - buf.Height / 2, buf.Width, buf.Height,Gdk.RgbDither.None, 0, 0);
+				}
+				/*
 				gc.SetLineAttributes(2, Gdk.LineStyle.Solid, Gdk.CapStyle.Round,Gdk.JoinStyle.Round);
 				GdkWindow.DrawRectangle(gc, false,
 					new Gdk.Rectangle(sel_x - 4, sel_y - 4, 8, 8));
-			}
-			finally
-			{
-				if (gc != null) gc.Dispose();
-				if (pb != null) pb.Dispose();
+					*/
 			}
 			return true;
 		}
@@ -170,9 +166,15 @@ namespace CatEye.UI.Gtk.Widgets
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			// Insert layout code here.
-		}
+			if (savedPalette != null) savedPalette.Dispose();
+			
+			int W = Allocation.Width, H = Allocation.Height;
 
+			// Drawing color matrix to back pixbuf
+			savedPalette = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, W - margin * 2, H - margin * 2);
+			DrawColors(savedPalette);
+		}
+		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			// Calculate desired size here.
@@ -218,6 +220,12 @@ namespace CatEye.UI.Gtk.Widgets
 			return base.OnButtonReleaseEvent (evnt);
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			
+			if (savedPalette != null) savedPalette.Dispose();
+		}
 	}
 
 }

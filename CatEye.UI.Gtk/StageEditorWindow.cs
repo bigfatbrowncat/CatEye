@@ -38,7 +38,7 @@ public partial class StageEditorWindow : Gtk.Window
 			if (mStage.RawFileName != null) 
 			{
 				t += System.IO.Path.GetFileName(mStage.RawFileName);
-				if (mStage.Prescale > 1) t += " [%" + mStage.Prescale + "]";
+				if (mStage.Prescale > 1) t += " (1/" + mStage.Prescale + ")";
 			}
 			
 			t += " — " + MainClass.APP_NAME;

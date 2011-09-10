@@ -110,6 +110,7 @@
     <EmbeddedResource Include="res\square_dot.png" />
     <EmbeddedResource Include="res\round_dot.png" />
     <EmbeddedResource Include="res\triangle_dot.png" />
+    <EmbeddedResource Include="res\donut.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
