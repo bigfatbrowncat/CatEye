@@ -919,7 +919,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget" design-size="243 212">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget" design-size="272 288">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1025,25 +1025,27 @@
         <child>
           <widget class="Gtk.Table" id="table1">
             <property name="MemberName" />
+            <property name="NRows">3</property>
             <property name="NColumns">3</property>
             <property name="RowSpacing">6</property>
             <property name="ColumnSpacing">6</property>
             <property name="BorderWidth">4</property>
             <child>
-              <widget class="Gtk.HScale" id="hl_inv_hscale">
+              <widget class="Gtk.HScale" id="edge_hscale">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Lower">-1.5</property>
-                <property name="Upper">1.5</property>
+                <property name="Upper">1</property>
                 <property name="PageIncrement">0.01</property>
                 <property name="StepIncrement">0.01</property>
                 <property name="Value">0.001</property>
                 <property name="DrawValue">False</property>
                 <property name="Digits">3</property>
                 <property name="ValuePos">Right</property>
-                <signal name="ChangeValue" handler="OnHlInvHscaleChangeValue" />
+                <signal name="ChangeValue" handler="OnEdgeHscaleChangeValue" />
               </widget>
               <packing>
+                <property name="TopAttach">1</property>
+                <property name="BottomAttach">2</property>
                 <property name="LeftAttach">1</property>
                 <property name="RightAttach">2</property>
                 <property name="AutoSize">False</property>
@@ -1057,19 +1059,20 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.SpinButton" id="hl_inv_spinbutton">
+              <widget class="Gtk.SpinButton" id="edge_spinbutton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Lower">-2</property>
-                <property name="Upper">2</property>
+                <property name="Upper">1</property>
                 <property name="PageIncrement">0.01</property>
                 <property name="StepIncrement">0.01</property>
                 <property name="ClimbRate">0.001</property>
                 <property name="Digits">3</property>
                 <property name="Numeric">True</property>
-                <signal name="ValueChanged" handler="OnHlInvSpinbuttonValueChanged" />
+                <signal name="ValueChanged" handler="OnEdgeSpinbuttonValueChanged" />
               </widget>
               <packing>
+                <property name="TopAttach">1</property>
+                <property name="BottomAttach">2</property>
                 <property name="LeftAttach">2</property>
                 <property name="RightAttach">3</property>
                 <property name="AutoSize">False</property>
@@ -1084,14 +1087,135 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.HBox" id="hbox2">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="label9">
+                    <property name="MemberName" />
+                    <property name="Xalign">1</property>
+                    <property name="LabelProp" translatable="yes">Filter:</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ComboBox" id="filter_combobox">
+                    <property name="MemberName" />
+                    <property name="IsTextCombo">True</property>
+                    <property name="Items" translatable="yes">None
+Dark
+Light</property>
+                    <property name="Active">0</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="RightAttach">3</property>
+                <property name="AutoSize">False</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">True</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.Label" id="label7">
                 <property name="MemberName" />
                 <property name="Xalign">1</property>
-                <property name="LabelProp" translatable="yes">Hl. Inv.:</property>
+                <property name="LabelProp" translatable="yes">Edge:</property>
               </widget>
               <packing>
+                <property name="TopAttach">1</property>
+                <property name="BottomAttach">2</property>
                 <property name="XPadding">2</property>
                 <property name="AutoSize">False</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label8">
+                <property name="MemberName" />
+                <property name="Xalign">1</property>
+                <property name="LabelProp" translatable="yes">Softness:</property>
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HScale" id="softness_hscale">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Upper">1</property>
+                <property name="PageIncrement">0.01</property>
+                <property name="StepIncrement">0.01</property>
+                <property name="Value">0.001</property>
+                <property name="DrawValue">False</property>
+                <property name="Digits">3</property>
+                <property name="ValuePos">Right</property>
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="LeftAttach">1</property>
+                <property name="RightAttach">2</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.SpinButton" id="softness_spinbutton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Upper">1</property>
+                <property name="PageIncrement">0.01</property>
+                <property name="StepIncrement">0.01</property>
+                <property name="ClimbRate">0.001</property>
+                <property name="Digits">3</property>
+                <property name="Numeric">True</property>
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="LeftAttach">2</property>
+                <property name="RightAttach">3</property>
+                <property name="AutoSize">True</property>
                 <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>
                 <property name="XExpand">False</property>

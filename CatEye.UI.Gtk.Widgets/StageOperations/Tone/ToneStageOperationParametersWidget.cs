@@ -20,47 +20,78 @@ namespace CatEye.UI.Gtk.Widgets
 			base(parameters)
 		{
 			this.Build ();
+			
+			softness_hscale.Adjustment.Lower = 0.001;
+			softness_spinbutton.Adjustment.Lower = 0.001;
+			
 			toneselectorwidget1.ToneSelected += OnToneselectorwidget1ToneSelected;
 			toneselectorwidget1.SelectedToneChanged += OnToneselectorwidget1SelectedToneChanged;
 			toneselectorwidget1.Alpha = 0.5;
 		}
 		
-		private bool _HlInvIsChanging = false;
+		private bool _EdgeIsChanging = false;
+		private bool _SoftnessIsChanging = false;
 		
-		protected enum HlInvChanger { HScale, SpinButton }
+		protected enum EdgeChanger { HScale, SpinButton }
+		protected enum SoftnessChanger { HScale, SpinButton }
 		
-		protected void ChangeHlInv(double new_value, HlInvChanger changer)
+		protected void ChangeEdge(double new_value, EdgeChanger changer)
 		{
-			if (!_HlInvIsChanging)
+			if (!_EdgeIsChanging)
 			{
-				_HlInvIsChanging = true;
+				_EdgeIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != HlInvChanger.HScale)
-					hl_inv_hscale.Value = new_value;
+				if (changer != EdgeChanger.HScale)
+					edge_hscale.Value = new_value;
 				
-				if (changer != HlInvChanger.SpinButton)
-					hl_inv_spinbutton.Value = new_value;
+				if (changer != EdgeChanger.SpinButton)
+					edge_spinbutton.Value = new_value;
 				
-				((ToneStageOperationParameters)Parameters).HighlightsInvariance = new_value;
+				((ToneStageOperationParameters)Parameters).Edge = new_value;
 				
 				EndChangingParameters();
 				OnUserModified();
-				_HlInvIsChanging = false;
+				_EdgeIsChanging = false;
 			}
 		}
-		
+		protected void ChangeSoftness(double new_value, SoftnessChanger changer)
+		{
+			if (!_SoftnessIsChanging)
+			{
+				_SoftnessIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != SoftnessChanger.HScale)
+					softness_hscale.Value = new_value;
+				
+				if (changer != SoftnessChanger.SpinButton)
+					softness_spinbutton.Value = new_value;
+				
+				((ToneStageOperationParameters)Parameters).Softness = new_value;
+				
+				EndChangingParameters();
+				OnUserModified();
+				_SoftnessIsChanging = false;
+			}
+		}		
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			Tone tn = ((ToneStageOperationParameters)Parameters).Tone;
 			toneselectorwidget1.SelectedTone = tn;
 
-			_HlInvIsChanging = true;
-			hl_inv_hscale.Value = ((ToneStageOperationParameters)Parameters).HighlightsInvariance;
-			hl_inv_spinbutton.Value = ((ToneStageOperationParameters)Parameters).HighlightsInvariance;
-			_HlInvIsChanging = false;
+			_EdgeIsChanging = true;
+			edge_hscale.Value = ((ToneStageOperationParameters)Parameters).Edge;
+			edge_spinbutton.Value = ((ToneStageOperationParameters)Parameters).Edge;
+			_EdgeIsChanging = false;
+
+			_SoftnessIsChanging = true;
+			softness_hscale.Value = ((ToneStageOperationParameters)Parameters).Softness;
+			softness_spinbutton.Value = ((ToneStageOperationParameters)Parameters).Softness;
+			_SoftnessIsChanging = false;
 		}
 
 		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
@@ -88,12 +119,11 @@ namespace CatEye.UI.Gtk.Widgets
 
 		protected void OnHlInvHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeHlInv(hl_inv_hscale.Value, HlInvChanger.HScale);
 		}
 
 		protected void OnHlInvSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeHlInv(hl_inv_spinbutton.Value, HlInvChanger.SpinButton);
+			ChangeEdge(edge_spinbutton.Value, EdgeChanger.SpinButton);
 		}
 
 		public override bool ReportMouseButton (int x, int y, int width, int height, uint button_id, bool is_down)
@@ -294,6 +324,26 @@ namespace CatEye.UI.Gtk.Widgets
 				2 * dotRadius, 
 				2 * dotRadius,
 				0, 64*360);
+		}
+
+		protected void OnEdgeHscaleChangeValue (object o, ChangeValueArgs args)
+		{
+			ChangeEdge(edge_hscale.Value, EdgeChanger.HScale);
+		}
+
+		protected void OnSoftnessHscaleChangeValue (object o, ChangeValueArgs args)
+		{
+			ChangeSoftness(softness_hscale.Value, SoftnessChanger.HScale);
+		}
+
+		protected void OnEdgeSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeEdge(edge_hscale.Value, EdgeChanger.SpinButton);
+		}
+
+		protected void OnSoftnessSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeSoftness(softness_hscale.Value, SoftnessChanger.SpinButton);
 		}
 	}
 }

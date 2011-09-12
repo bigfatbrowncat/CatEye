@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Tone"), StageOperationID("ToneStageOperation")]
+	[StageOperationDescription("Tone")]
+	[StageOperationID("ToneStageOperation")]
 	public class ToneStageOperation : StageOperation
 	{
 		public ToneStageOperation (StageOperationParameters parameters)
@@ -20,7 +21,7 @@ namespace CatEye.Core
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: toning... ");
-			hdp.ApplyTone(pm.Tone, pm.HighlightsInvariance, 
+			hdp.ApplyTone(pm.Tone, pm.Edge, pm.Softness,
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

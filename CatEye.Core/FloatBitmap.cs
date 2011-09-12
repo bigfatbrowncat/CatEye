@@ -521,7 +521,7 @@ namespace CatEye.Core
 			
 		}
 		
-		public void ApplyTone(Tone tone, double HighlightsInvariance, ProgressReporter callback)
+		public void ApplyTone(Tone tone, double edge, double softness, ProgressReporter callback)
 		{
 			double maxlight = CalcMaxLight();
 			
@@ -546,11 +546,12 @@ namespace CatEye.Core
 					// Calculating color coefficients
 					// R2, G2, B2 values depend on light value.
 					// For highlights it should exponentially approach 1.
-					double kappa = Math.Pow(10, HighlightsInvariance);
+					double x = light_before / maxlight;
+					double K = Math.Atan2(softness * x, edge * edge - x * x) / Math.Atan2(softness, edge * edge - 1);
 					
-					double R2 = (1 - tone.R) * Math.Exp(-kappa * (maxlight - light_before)) + tone.R;
-					double G2 = (1 - tone.G) * Math.Exp(-kappa * (maxlight - light_before)) + tone.G;
-					double B2 = (1 - tone.B) * Math.Exp(-kappa * (maxlight - light_before)) + tone.B;
+					double R2 = (1 - tone.R) * K + tone.R;
+					double G2 = (1 - tone.G) * K + tone.G;
+					double B2 = (1 - tone.B) * K + tone.B;
 					
 					// Applying toning
 					r_chan[i, j] *= (float)(R2);
