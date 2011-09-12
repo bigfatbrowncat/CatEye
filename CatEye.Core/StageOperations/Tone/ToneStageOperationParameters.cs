@@ -9,20 +9,29 @@ namespace CatEye.Core
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
 
-		private Tone mTone = new Tone(1, 1, 1);
+		private Tone mDarkTone = new Tone(1, 1, 1);
+		private Tone mLightTone = new Tone(1, 1, 1);
 		private double mEdge = 0.95;
 		private double mSoftness = 0.1;
 		
-		public Tone Tone
+		public Tone DarkTone
 		{
-			get { return mTone; }
+			get { return mDarkTone; }
 			set
 			{
-				mTone = value;
+				mDarkTone = value;
 				OnChanged();
 			}
 		}
-		
+		public Tone LightTone
+		{
+			get { return mLightTone; }
+			set
+			{
+				mLightTone = value;
+				OnChanged();
+			}
+		}		
 		public double Edge
 		{
 			get { return mEdge; }
@@ -52,7 +61,8 @@ namespace CatEye.Core
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Edge")).Value = mEdge.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Softness")).Value = mSoftness.ToString(nfi);
-			xn.AppendChild(mTone.SerializeToXML(xdoc));
+			xn.AppendChild(mDarkTone.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "DarkTone";
+			xn.AppendChild(mLightTone.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "LightTone";
 			return xn;
 		}
 		
@@ -61,7 +71,12 @@ namespace CatEye.Core
 			base.DeserializeFromXML (node);
 			foreach (XmlNode xn in node.ChildNodes)
 			{
-				if (xn.Name == "Tone") mTone.DeserializeFromXML(xn);
+				if (xn.Name == "Tone" && 
+					xn.Attributes["Name"] != null &&
+					xn.Attributes["Name"].Value == "DarkTone") mDarkTone.DeserializeFromXML(xn);
+				if (xn.Name == "Tone" && 
+					xn.Attributes["Name"] != null &&
+					xn.Attributes["Name"].Value == "LightTone") mLightTone.DeserializeFromXML(xn);
 			}
 
 			double res = 0;
@@ -98,7 +113,8 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			ToneStageOperationParameters t = (ToneStageOperationParameters)target;
-			t.mTone = (Tone)mTone.Clone();
+			t.mDarkTone = (Tone)mDarkTone.Clone();
+			t.mLightTone = (Tone)mLightTone.Clone();
 			t.mEdge = mEdge;
 			t.mSoftness = mSoftness;
 			t.OnChanged();

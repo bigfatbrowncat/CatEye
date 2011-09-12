@@ -24,11 +24,13 @@ namespace CatEye.UI.Gtk.Widgets
 			softness_hscale.Adjustment.Lower = 0.001;
 			softness_spinbutton.Adjustment.Lower = 0.001;
 			
-			toneselectorwidget1.ToneSelected += OnToneselectorwidget1ToneSelected;
-			toneselectorwidget1.SelectedToneChanged += OnToneselectorwidget1SelectedToneChanged;
+			toneselectorwidget1.DarkToneSelected += HandleToneSelectorWidgetDarkToneSelected;
+			toneselectorwidget1.LightToneSelected += HandleToneSelectorWidgetLightToneSelected;
+
 			toneselectorwidget1.Alpha = 0.5;
 		}
-		
+
+
 		private bool _EdgeIsChanging = false;
 		private bool _SoftnessIsChanging = false;
 		
@@ -80,8 +82,8 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			Tone tn = ((ToneStageOperationParameters)Parameters).Tone;
-			toneselectorwidget1.SelectedTone = tn;
+			Tone tn = ((ToneStageOperationParameters)Parameters).DarkTone;
+			toneselectorwidget1.SelectedDarkTone = tn;
 
 			_EdgeIsChanging = true;
 			edge_hscale.Value = ((ToneStageOperationParameters)Parameters).Edge;
@@ -94,31 +96,24 @@ namespace CatEye.UI.Gtk.Widgets
 			_SoftnessIsChanging = false;
 		}
 
-		protected void OnToneselectorwidget1SelectedToneChanged (object sender, System.EventArgs e)
-		{
-			if (toneselectorwidget1.SelectedTone != null)
-			{
-				r_label.Markup = "R: <b>" + toneselectorwidget1.SelectedTone.R.ToString("0.00") + "</b>";
-				g_label.Markup = "G: <b>" + toneselectorwidget1.SelectedTone.G.ToString("0.00") + "</b>";
-				b_label.Markup = "B: <b>" + toneselectorwidget1.SelectedTone.B.ToString("0.00") + "</b>";
-			}
-		}
-
-		protected void OnToneselectorwidget1ToneSelected (object sender, System.EventArgs e)
+		protected void HandleToneSelectorWidgetDarkToneSelected (object sender, System.EventArgs e)
 		{
 			StartChangingParameters();
-			((ToneStageOperationParameters)Parameters).Tone = toneselectorwidget1.SelectedTone;
+			((ToneStageOperationParameters)Parameters).DarkTone = toneselectorwidget1.SelectedDarkTone;
 			EndChangingParameters();
 			OnUserModified();
 		}
-
+		void HandleToneSelectorWidgetLightToneSelected (object sender, EventArgs e)
+		{
+			StartChangingParameters();
+			((ToneStageOperationParameters)Parameters).LightTone = toneselectorwidget1.SelectedLightTone;
+			EndChangingParameters();
+			OnUserModified();
+		}
+		
 		protected void OnAlphaVscaleChangeValue (object o, ChangeValueArgs args)
 		{
 			toneselectorwidget1.Alpha = alpha_vscale.Value;
-		}
-
-		protected void OnHlInvHscaleChangeValue (object o, ChangeValueArgs args)
-		{
 		}
 
 		protected void OnHlInvSpinbuttonValueChanged (object sender, System.EventArgs e)

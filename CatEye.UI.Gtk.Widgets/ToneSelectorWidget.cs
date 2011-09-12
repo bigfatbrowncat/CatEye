@@ -10,10 +10,14 @@ namespace CatEye.UI.Gtk.Widgets
 		int margin = 9;
 		double mAlpha = 0.5;
 		bool mouse_down = false;
-		
+		uint mouse_button = 0;
+
+		private Gdk.Pixbuf black_donut = null;
+		private Gdk.Pixbuf white_donut = null;
 		private Gdk.Pixbuf savedPalette = null;
 		
-		private Tone mSelectedTone;
+		private Tone mSelectedDarkTone = new Tone(1, 1, 1);
+		private Tone mSelectedLightTone = new Tone(1, 1, 1);
 
 		public double Alpha {
 			get {
@@ -21,42 +25,67 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 			set {
 				mAlpha = value;
+				
+				if (savedPalette != null) DrawPalette(savedPalette);
 				QueueDraw();
 			}
 		}		
 		/// <summary>
 		/// Occurs when a tone selected by user.
 		/// </summary>
-		public event EventHandler<EventArgs> ToneSelected;
+		public event EventHandler<EventArgs> DarkToneSelected;
+		public event EventHandler<EventArgs> LightToneSelected;
 		/// <summary>
 		/// Occurs when SelectedTone value is changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedToneChanged;
+		public event EventHandler<EventArgs> SelectedDarkToneChanged;
+		public event EventHandler<EventArgs> SelectedLightToneChanged;
 		
-		public Tone SelectedTone 
+		public Tone SelectedDarkTone 
 		{
-			get { return mSelectedTone; }
+			get { return mSelectedDarkTone; }
 			set
 			{
-				mSelectedTone = value;
-				OnSelectedToneChanged();
+				mSelectedDarkTone = value;
+				OnSelectedDarkToneChanged();
+			}
+		}
+		public Tone SelectedLightTone 
+		{
+			get { return mSelectedLightTone; }
+			set
+			{
+				mSelectedLightTone = value;
+				OnSelectedLightToneChanged();
 			}
 		}
 		
-		protected virtual void OnToneSelected()
+		protected virtual void OnDarkToneSelected()
 		{
-			if (ToneSelected != null)
-				ToneSelected(this, EventArgs.Empty);
+			if (DarkToneSelected != null)
+				DarkToneSelected(this, EventArgs.Empty);
 		}
-		protected virtual void OnSelectedToneChanged()
+		protected virtual void OnSelectedDarkToneChanged()
 		{
-			if (SelectedToneChanged != null)
-				SelectedToneChanged(this, EventArgs.Empty);
+			if (SelectedDarkToneChanged != null)
+				SelectedDarkToneChanged(this, EventArgs.Empty);
+		}
+		protected virtual void OnLightToneSelected()
+		{
+			if (LightToneSelected != null)
+				LightToneSelected(this, EventArgs.Empty);
+		}
+		protected virtual void OnSelectedLightToneChanged()
+		{
+			if (SelectedLightToneChanged != null)
+				SelectedLightToneChanged(this, EventArgs.Empty);
 		}
 		
 		public ToneSelectorWidget (): base()
 		{
 			// Insert initialization code here.
+			black_donut = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut-black.png");
+			white_donut = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut-white.png");
 		}
 
 		
@@ -95,7 +124,7 @@ namespace CatEye.UI.Gtk.Widgets
 			return Math.Atan(Math.Pow(t.G * n / p, 1.0 / mAlpha)) / (Math.PI / 2 - 0.0001);
 		}
 		
-		unsafe void DrawColors(Gdk.Pixbuf buf)
+		unsafe void DrawPalette(Gdk.Pixbuf buf)
 		{
 			int h = buf.Height;
 			int w = buf.Width;
@@ -145,20 +174,28 @@ namespace CatEye.UI.Gtk.Widgets
 					// Drawing color matrix backbuffer
 					GdkWindow.DrawPixbuf(gc, savedPalette, 0, 0, margin, margin, savedPalette.Width, savedPalette.Height, Gdk.RgbDither.Normal, 0, 0);
 				}
-				
-				int sel_x = (int)(Tone_to_X(mSelectedTone) * savedPalette.Width) + margin;
-				int sel_y = (int)(Tone_to_Y(mSelectedTone) * savedPalette.Height) + margin;
-				//Console.WriteLine(Tone_to_X(mSelectedTone) +", " + Tone_to_Y(mSelectedTone));
 
-				using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut.png"))
-				{
-					GdkWindow.DrawPixbuf(gc, buf, 0, 0, sel_x - buf.Width / 2, sel_y - buf.Height / 2, buf.Width, buf.Height,Gdk.RgbDither.None, 0, 0);
-				}
-				/*
-				gc.SetLineAttributes(2, Gdk.LineStyle.Solid, Gdk.CapStyle.Round,Gdk.JoinStyle.Round);
-				GdkWindow.DrawRectangle(gc, false,
-					new Gdk.Rectangle(sel_x - 4, sel_y - 4, 8, 8));
-					*/
+				// Drawing dark selected color
+				int sel_x = (int)(Tone_to_X(mSelectedDarkTone) * savedPalette.Width) + margin;
+				int sel_y = (int)(Tone_to_Y(mSelectedDarkTone) * savedPalette.Height) + margin;
+
+				GdkWindow.DrawPixbuf(gc, black_donut, 
+					0, 0, 
+					sel_x - black_donut.Width / 2, 
+					sel_y - black_donut.Height / 2, 
+					black_donut.Width, black_donut.Height,
+					Gdk.RgbDither.None, 0, 0);
+
+				// Drawing light selected color
+				sel_x = (int)(Tone_to_X(mSelectedLightTone) * savedPalette.Width) + margin;
+				sel_y = (int)(Tone_to_Y(mSelectedLightTone) * savedPalette.Height) + margin;
+
+				GdkWindow.DrawPixbuf(gc, white_donut, 
+					0, 0, 
+					sel_x - white_donut.Width / 2, 
+					sel_y - white_donut.Height / 2, 
+					white_donut.Width, white_donut.Height,
+					Gdk.RgbDither.None, 0, 0);
 			}
 			return true;
 		}
@@ -172,7 +209,7 @@ namespace CatEye.UI.Gtk.Widgets
 
 			// Drawing color matrix to back pixbuf
 			savedPalette = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, W - margin * 2, H - margin * 2);
-			DrawColors(savedPalette);
+			DrawPalette(savedPalette);
 		}
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -182,7 +219,7 @@ namespace CatEye.UI.Gtk.Widgets
 			requisition.Width = 150;
 		}
 		
-		private void SelectNewTone(double winX, double winY)
+		private void SelectNewDarkTone(double winX, double winY)
 		{
 			double x = (double)(winX - margin) / (Allocation.Width - 2*margin);
 			double y = (double)(winY - margin) / (Allocation.Height - 2*margin);
@@ -192,17 +229,36 @@ namespace CatEye.UI.Gtk.Widgets
 			if (x > 1) x = 1;
 			if (y > 1) y = 1;
 			
-			SelectedTone = XY_to_Tone(x, y);
-			OnToneSelected();
+			SelectedDarkTone = XY_to_Tone(x, y);
+			OnDarkToneSelected();
+				
+			QueueDraw();
+		}
+		private void SelectNewLightTone(double winX, double winY)
+		{
+			double x = (double)(winX - margin) / (Allocation.Width - 2*margin);
+			double y = (double)(winY - margin) / (Allocation.Height - 2*margin);
+		
+			if (x < 0) x = 0;
+			if (y < 0) y = 0;
+			if (x > 1) x = 1;
+			if (y > 1) y = 1;
+			
+			SelectedLightTone = XY_to_Tone(x, y);
+			OnLightToneSelected();
 				
 			QueueDraw();
 		}
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			if (mouse_down)
+			if (mouse_down && mouse_button == 1)
 			{
-				SelectNewTone(evnt.X, evnt.Y);
+				SelectNewDarkTone(evnt.X, evnt.Y);
+			}
+			else if (mouse_down && mouse_button == 3)
+			{
+				SelectNewLightTone(evnt.X, evnt.Y);
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -210,7 +266,15 @@ namespace CatEye.UI.Gtk.Widgets
 		protected override bool OnButtonPressEvent (Gdk.EventButton ev)
 		{
 			mouse_down = true;
-			SelectNewTone(ev.X, ev.Y);
+			mouse_button = ev.Button;	// 1 for left, 3 for right
+			if (mouse_button == 1)
+			{
+				SelectNewDarkTone(ev.X, ev.Y);
+			}
+			else if (mouse_button == 3)
+			{
+				SelectNewLightTone(ev.X, ev.Y);
+			}
 			return base.OnButtonPressEvent (ev);
 		}
 		
@@ -224,6 +288,8 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			base.Dispose ();
 			
+			if (black_donut != null) black_donut.Dispose();
+			if (white_donut != null) white_donut.Dispose();
 			if (savedPalette != null) savedPalette.Dispose();
 		}
 	}

@@ -21,7 +21,7 @@ namespace CatEye.Core
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			
 			Console.WriteLine("Basic operations: toning... ");
-			hdp.ApplyTone(pm.Tone, pm.Edge, pm.Softness,
+			hdp.ApplyTone(pm.DarkTone, pm.LightTone, pm.Edge, pm.Softness,
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

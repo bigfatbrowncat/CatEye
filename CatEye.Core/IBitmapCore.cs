@@ -15,7 +15,7 @@ namespace CatEye.Core
 		void AmplitudeAdd (double delta);
 		void CompressLight(double curve, ProgressReporter callback);
 		void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback);
-		void ApplyTone(Tone tone, double edge, double softness, ProgressReporter callback);
+		void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback);
 		void ApplySaturation(double satur_factor, ProgressReporter callback);
 		void CutBlackPoint(double cut, ProgressReporter callback);
 		

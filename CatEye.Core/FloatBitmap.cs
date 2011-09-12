@@ -521,9 +521,21 @@ namespace CatEye.Core
 			
 		}
 		
-		public void ApplyTone(Tone tone, double edge, double softness, ProgressReporter callback)
+		public void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback)
 		{
-			double maxlight = CalcMaxLight();
+			double maxlight = 0, maxR = 0, maxG = 0, maxB = 0;
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
+			{
+				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+							  			g_chan[i, j] * g_chan[i, j] + 
+						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+				
+				if (maxlight < light) maxlight = light;
+				if (maxR < r_chan[i, j]) maxR = r_chan[i, j];
+				if (maxG < g_chan[i, j]) maxG = g_chan[i, j];
+				if (maxB < b_chan[i, j]) maxB = b_chan[i, j];
+			}
 			
 			for (int i = 0; i < mWidth; i++)
 			{
@@ -546,12 +558,17 @@ namespace CatEye.Core
 					// Calculating color coefficients
 					// R2, G2, B2 values depend on light value.
 					// For highlights it should exponentially approach 1.
-					double x = light_before / maxlight;
-					double K = Math.Atan2(softness * x, edge * edge - x * x) / Math.Atan2(softness, edge * edge - 1);
+					double xR = r_chan[i, j] / maxR;
+					double xG = r_chan[i, j] / maxG;
+					double xB = r_chan[i, j] / maxB;
 					
-					double R2 = (1 - tone.R) * K + tone.R;
-					double G2 = (1 - tone.G) * K + tone.G;
-					double B2 = (1 - tone.B) * K + tone.B;
+					double KR = Math.Atan2(softness * xR, edge * edge - xR * xR) / Math.Atan2(softness, edge * edge - 1);
+					double KG = Math.Atan2(softness * xG, edge * edge - xG * xG) / Math.Atan2(softness, edge * edge - 1);
+					double KB = Math.Atan2(softness * xB, edge * edge - xB * xB) / Math.Atan2(softness, edge * edge - 1);
+					
+					double R2 = (light_tone.R - dark_tone.R) * KR + dark_tone.R;
+					double G2 = (light_tone.G - dark_tone.G) * KG + dark_tone.G;
+					double B2 = (light_tone.B - dark_tone.B) * KB + dark_tone.B;
 					
 					// Applying toning
 					r_chan[i, j] *= (float)(R2);
