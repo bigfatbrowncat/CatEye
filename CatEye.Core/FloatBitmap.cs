@@ -558,28 +558,35 @@ namespace CatEye.Core
 					// Calculating color coefficients
 					// R2, G2, B2 values depend on light value.
 					// For highlights it should exponentially approach 1.
-					double xR = r_chan[i, j] / maxR;
-					double xG = g_chan[i, j] / maxG;
-					double xB = b_chan[i, j] / maxB;
+					double x = light_before / maxlight;//r_chan[i, j] / maxR;
 					
-					double KR = Math.Atan2(softness * xR, edge * edge - xR * xR) / Math.Atan2(softness, edge * edge - 1);
-					double KG = Math.Atan2(softness * xG, edge * edge - xG * xG) / Math.Atan2(softness, edge * edge - 1);
-					double KB = Math.Atan2(softness * xB, edge * edge - xB * xB) / Math.Atan2(softness, edge * edge - 1);
+					double K = Math.Atan2(softness * x, edge * edge - x * x) / Math.Atan2(softness, edge * edge - 1);
 					
-					double R2 = (light_tone.R - dark_tone.R) * KR + dark_tone.R;
-					double G2 = (light_tone.G - dark_tone.G) * KG + dark_tone.G;
-					double B2 = (light_tone.B - dark_tone.B) * KB + dark_tone.B;
+					double R1 = dark_tone.R * r_chan[i, j];
+					double G1 = dark_tone.G * g_chan[i, j];
+					double B1 = dark_tone.B * b_chan[i, j];
+					
+					double R2 = light_tone.R * r_chan[i, j];
+					double G2 = light_tone.G * g_chan[i, j];
+					double B2 = light_tone.B * b_chan[i, j];
+					
+					double Rres = (R2 - R1) * K + R1;
+					double Gres = (G2 - G1) * K + G1;
+					double Bres = (B2 - B1) * K + B1;
 					
 					// Applying toning
-					r_chan[i, j] *= (float)(R2);
-					g_chan[i, j] *= (float)(G2);
-					b_chan[i, j] *= (float)(B2);
+					lock (this)
+					{
+						r_chan[i, j] = (float)(Rres);
+						g_chan[i, j] = (float)(Gres);
+						b_chan[i, j] = (float)(Bres);
+					}
 					
 					// calculating norm after
 					double light_after = Math.Sqrt(
 								  r_chan[i, j] * r_chan[i, j] + 
 								  g_chan[i, j] * g_chan[i, j] + 
-								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.00001;
+								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.0001;
 					
 					lock (this)
 					{
