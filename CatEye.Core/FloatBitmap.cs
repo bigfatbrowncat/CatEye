@@ -559,8 +559,8 @@ namespace CatEye.Core
 					// R2, G2, B2 values depend on light value.
 					// For highlights it should exponentially approach 1.
 					double xR = r_chan[i, j] / maxR;
-					double xG = r_chan[i, j] / maxG;
-					double xB = r_chan[i, j] / maxB;
+					double xG = g_chan[i, j] / maxG;
+					double xB = b_chan[i, j] / maxB;
 					
 					double KR = Math.Atan2(softness * xR, edge * edge - xR * xR) / Math.Atan2(softness, edge * edge - 1);
 					double KG = Math.Atan2(softness * xG, edge * edge - xG * xG) / Math.Atan2(softness, edge * edge - 1);
