@@ -6,6 +6,7 @@ namespace CatEye.UI.Gtk.Widgets
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	[StageOperationID("CrotateStageOperation")]
+	[StageOperationParametersEditModeSupported(true)]
 	public partial class CrotateStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		ListStore ls;

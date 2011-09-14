@@ -83,6 +83,10 @@ namespace CatEye.Core
 			return new Point(p._X + v.X, p._Y + v.Y);
 		}
 		
+		public static double Distance(Point p, Point q)
+		{
+			return Math.Sqrt((p.X - q.X) * (p.X - q.X) + (p.Y - q.Y) * (p.Y - q.Y));
+		}
 	}
 	
 	public class Segment

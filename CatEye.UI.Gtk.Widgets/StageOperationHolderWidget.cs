@@ -125,7 +125,7 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			// Checking if editing mode supported
 			_TitleWidget.SetEditModeSupported(false);
-			Type parametersType = operationParametersWidget.Parameters.GetType();
+			Type parametersType = operationParametersWidget.GetType();
 			object[] attrs = parametersType.GetCustomAttributes(typeof(StageOperationParametersEditModeSupportedAttribute), true);
 			if (attrs.Length > 0)
 			{

@@ -426,7 +426,7 @@ public partial class StageEditorWindow : Gtk.Window
 			FileFilter ff = new FileFilter();
 			
 			ff.AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
-				return DCRawConnection.IsRaw(ffi.Filename);				
+				return DCRawConnection.IsRaw(ffi.Filename);
 			});
 			ff.Name = "RAW image";
 	
