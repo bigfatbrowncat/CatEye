@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Black point"), StageOperationID("BlackPointStageOperation")]
+	[StageOperationDescription("Black point")]
+	[StageOperationID("BlackPointStageOperation")]
 	public class BlackPointStageOperation : StageOperation
 	{
 		public BlackPointStageOperation (StageOperationParameters parameters)
