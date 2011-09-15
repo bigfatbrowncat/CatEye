@@ -3,6 +3,8 @@ using System.Threading;
 
 namespace CatEye.Core
 {
+	
+	
 	public class FloatBitmap : IBitmapCore
 	{
 		protected const int REPORT_EVERY_NTH_LINE = 5;
@@ -521,21 +523,49 @@ namespace CatEye.Core
 			
 		}
 		
+		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
+		{
+			double maxlight = CalcMaxLight();
+			
+			int i = light_center.X * Width;
+			int j = light_center.Y * Height;
+			
+			// Selecting points for analysis
+			
+			Random rnd = new Random();
+			int n = 0;
+			
+			double[] sel_r = new double[points];
+			double[] sel_g = new double[points];
+			double[] sel_b = new double[points];
+			
+			for (int p = 0; p < points; p++)
+			{
+				double phi = rnd.NextDouble() * 2 * Math.PI;
+				double rad = radius * rnd.NextDouble();
+			
+				int u = i + (int)(rad * Math.Cos(phi));
+				int v = j + (int)(rad * Math.Sin(phi));
+				
+				if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+				{
+					sel_r[n] = r_chan[u, v];
+					sel_g[n] = g_chan[u, v];
+					sel_b[n] = b_chan[u, v];
+					n++;
+				}
+			}
+			
+			
+		}
+		
+		public Tone FindDarkTone(Tone light_tone, double edge, double softness, Point dark_center, double dark_radius, int points)
+		{
+		}
+
 		public void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback)
 		{
-			double maxlight = 0, maxR = 0, maxG = 0, maxB = 0;
-			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
-			{
-				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-				
-				if (maxlight < light) maxlight = light;
-				if (maxR < r_chan[i, j]) maxR = r_chan[i, j];
-				if (maxG < g_chan[i, j]) maxG = g_chan[i, j];
-				if (maxB < b_chan[i, j]) maxB = b_chan[i, j];
-			}
+			double maxlight = CalcMaxLight();
 			
 			for (int i = 0; i < mWidth; i++)
 			{

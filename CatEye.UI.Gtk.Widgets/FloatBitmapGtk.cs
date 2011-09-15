@@ -63,9 +63,11 @@ namespace CatEye.UI.Gtk.Widgets
 					for (int j = 0; j < mHeight; j++)
 					{
 						// Locking self on drawing to avoid "dirty" drawing
+						
 						double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
 						double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
 						double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
+						
 	
 						double light = Math.Sqrt(r*r + g*g + b*b) / Math.Sqrt(3);
 						if (light > max) max = light;
@@ -99,6 +101,7 @@ namespace CatEye.UI.Gtk.Widgets
 					double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
 					double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
 					double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
+
 					
 					cur_pixel[0] = cut(r / max * 255);      // Red
 					cur_pixel[1] = cut(g / max * 255);      // Green

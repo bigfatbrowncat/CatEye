@@ -21,7 +21,15 @@ namespace CatEye.Core
 			mG = g / norm; 
 			mB = b / norm;
 		}
-
+		
+		public static double Distance(Tone t1, Tone t2)
+		{
+			return Math.Sqrt(
+				(t1.mR - t2.mR) * (t1.mR - t2.mR) +
+				(t1.mG - t2.mG) * (t1.mG - t2.mG) +
+				(t1.mB - t2.mB) * (t1.mB - t2.mB));
+		}
+		
 		public System.Xml.XmlNode SerializeToXML (System.Xml.XmlDocument xdoc)
 		{
 			XmlNode xn = xdoc.CreateElement("Tone");
