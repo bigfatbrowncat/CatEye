@@ -27,11 +27,11 @@ namespace CatEye.UI.Gtk.Widgets
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != CutChanger.HScale)
-					cut_hscale.Value = new_value;
+				if (changer != CutChanger.HScale)			
+					cut_hscale.Value = 2 * Math.Log(2 * new_value + 3, 5) - 1;
 				
 				if (changer != CutChanger.SpinButton)
-					cut_spinbutton.Value = new_value;
+					cut_spinbutton.Value = (Math.Pow(5, (new_value + 1) / 2.0) - 3) / 2.0;
 				
 				((BlackPointStageOperationParameters)Parameters).Cut = new_value;
 				
@@ -45,7 +45,7 @@ namespace CatEye.UI.Gtk.Widgets
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			_CutIsChanging = true;
-			cut_hscale.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
+			cut_hscale.Value = 2 * Math.Log(2 * ((BlackPointStageOperationParameters)Parameters).Cut + 3, 5) - 1;
 			cut_spinbutton.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
 			_CutIsChanging = false;
 			
