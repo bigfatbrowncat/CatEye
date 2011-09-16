@@ -527,8 +527,8 @@ namespace CatEye.Core
 		{
 			double maxlight = CalcMaxLight();
 			
-			int i = light_center.X * Width;
-			int j = light_center.Y * Height;
+			int i = (int)(light_center.X * Width);
+			int j = (int)(light_center.Y * Height);
 			
 			// Selecting points for analysis
 			
@@ -542,7 +542,7 @@ namespace CatEye.Core
 			for (int p = 0; p < points; p++)
 			{
 				double phi = rnd.NextDouble() * 2 * Math.PI;
-				double rad = radius * rnd.NextDouble();
+				double rad = light_radius * rnd.NextDouble();
 			
 				int u = i + (int)(rad * Math.Cos(phi));
 				int v = j + (int)(rad * Math.Sin(phi));
@@ -556,11 +556,12 @@ namespace CatEye.Core
 				}
 			}
 			
-			
+			return new Tone(1, 1, 1);
 		}
 		
 		public Tone FindDarkTone(Tone light_tone, double edge, double softness, Point dark_center, double dark_radius, int points)
 		{
+			return new Tone(1, 1, 1);
 		}
 
 		public void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback)
