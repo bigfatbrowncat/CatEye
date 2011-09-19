@@ -85,7 +85,7 @@ namespace CatEye.Core
 			}
 			
 			// Searching for maximum
-			double Max = CalcMaxLight();
+			double Max = CalcMaxBrightness();
 			
 			
 			// Normalizing to 0..1
@@ -306,7 +306,7 @@ namespace CatEye.Core
 			}
 		}
 		
-		protected double CalcMaxLight()
+		protected double CalcMaxBrightness()
 		{
 			double Max = 0;
 			for (int i = 0; i < mWidth; i++)
@@ -525,7 +525,7 @@ namespace CatEye.Core
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
 		{
-			double maxlight = CalcMaxLight();
+			double maxlight = CalcMaxBrightness();
 			
 			int i = (int)(light_center.X * Width);
 			int j = (int)(light_center.Y * Height);
@@ -535,9 +535,7 @@ namespace CatEye.Core
 			Random rnd = new Random();
 			int n = 0;
 			
-			double[] sel_r = new double[points];
-			double[] sel_g = new double[points];
-			double[] sel_b = new double[points];
+			Color[] sel = new Color[points];
 			
 			for (int p = 0; p < points; p++)
 			{
@@ -549,24 +547,239 @@ namespace CatEye.Core
 				
 				if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 				{
-					sel_r[n] = r_chan[u, v];
-					sel_g[n] = g_chan[u, v];
-					sel_b[n] = b_chan[u, v];
+					sel[n] = new Color(r_chan[u, v], g_chan[u, v], b_chan[u, v]);
 					n++;
 				}
 			}
 			
-			return new Tone(1, 1, 1);
+			// Searching for minimum tone distance to (1, 1, 1)
+			int steps_count = 1000;
+			double dc = 0.001;
+			Tone cur_light_tone = new Tone(1, 1, 1);
+			
+			for (int step = 0; step < steps_count; step++)
+			{
+				// Calculationg distance from current point to "gray" Tone(1, 1, 1)
+				double r0 = 0, g0 = 0, b0 = 0;
+				for (int p = 0; p < n; p++)
+				{
+					Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone, softness, edge, maxlight);
+					
+					r0 += changed.R;
+					g0 += changed.G;
+					b0 += changed.B;
+				}
+				double dist0 = Tone.Distance(new Tone(r0, g0, b0), new Tone(1, 1, 1));
+				
+				// Calculationg gradient
+				// Red shift
+				double Pdist_dR;
+				if (cur_light_tone.R + dc < 1) 
+				{
+					Tone cur_light_tone_dR = new Tone(cur_light_tone.R + dc, cur_light_tone.G, cur_light_tone.B);
+				
+					double r_dR = 0, g_dR = 0, b_dR = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dR, softness, edge, maxlight);
+						
+						r_dR += changed.R;
+						g_dR += changed.G;
+						b_dR += changed.B;
+					}
+					double dist_dR = Tone.Distance(new Tone(r_dR, g_dR, b_dR), new Tone(1, 1, 1));
+					Pdist_dR = (dist_dR - dist0) / dc;
+				}
+				else
+					Pdist_dR = 0;
+	
+				// Green shift
+				double Pdist_dG;
+				if (cur_light_tone.G + dc < 1) 
+				{
+					Tone cur_light_tone_dG = new Tone(cur_light_tone.R, cur_light_tone.G + dc, cur_light_tone.B);
+				
+					double r_dG = 0, g_dG = 0, b_dG = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dG, softness, edge, maxlight);
+						
+						r_dG += changed.R;
+						g_dG += changed.G;
+						b_dG += changed.B;
+					}
+					double dist_dG = Tone.Distance(new Tone(r_dG, g_dG, b_dG), new Tone(1, 1, 1));
+					Pdist_dG = (dist_dG - dist0) / dc;
+				}
+				else
+					Pdist_dG = 0;
+	
+				// Blue shift
+				double Pdist_dB;
+				if (cur_light_tone.B + dc < 1) 
+				{
+					Tone cur_light_tone_dB = new Tone(cur_light_tone.R, cur_light_tone.G, cur_light_tone.B + dc);
+				
+					double r_dB = 0, g_dB = 0, b_dB = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dB, softness, edge, maxlight);
+						
+						r_dB += changed.R;
+						g_dB += changed.G;
+						b_dB += changed.B;
+					}
+					double dist_dB = Tone.Distance(new Tone(r_dB, g_dB, b_dB), new Tone(1, 1, 1));
+					Pdist_dB = (dist_dB - dist0) / dc;
+				}
+				else
+					Pdist_dB = 0;
+				
+				// Moving up the gradient
+				double newR = cur_light_tone.R - Pdist_dR;
+				double newG = cur_light_tone.G - Pdist_dG;
+				double newB = cur_light_tone.B - Pdist_dB;
+				
+				newR = Math.Min(Math.Max(newR, 1), 0);
+				newG = Math.Min(Math.Max(newG, 1), 0);
+				newB = Math.Min(Math.Max(newB, 1), 0);
+				
+				cur_light_tone = new Tone(newR, newG, newB);
+			}
+			
+			return cur_light_tone;
 		}
 		
 		public Tone FindDarkTone(Tone light_tone, double edge, double softness, Point dark_center, double dark_radius, int points)
 		{
-			return new Tone(1, 1, 1);
+			double maxlight = CalcMaxBrightness();
+			
+			int i = (int)(dark_center.X * Width);
+			int j = (int)(dark_center.Y * Height);
+			
+			// Selecting points for analysis
+			
+			Random rnd = new Random();
+			int n = 0;
+			
+			Color[] sel = new Color[points];
+			
+			for (int p = 0; p < points; p++)
+			{
+				double phi = rnd.NextDouble() * 2 * Math.PI;
+				double rad = dark_radius * rnd.NextDouble();
+			
+				int u = i + (int)(rad * Math.Cos(phi));
+				int v = j + (int)(rad * Math.Sin(phi));
+				
+				if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
+				{
+					sel[n] = new Color(r_chan[u, v], g_chan[u, v], b_chan[u, v]);
+					n++;
+				}
+			}
+			
+			// Searching for minimum tone distance to (1, 1, 1)
+			int steps_count = 1000;
+			double dc = 0.001;
+			Tone cur_dark_tone = new Tone(1, 1, 1);
+			
+			for (int step = 0; step < steps_count; step++)
+			{
+				// Calculationg distance from current point to "gray" Tone(1, 1, 1)
+				double r0 = 0, g0 = 0, b0 = 0;
+				for (int p = 0; p < n; p++)
+				{
+					Color changed = sel[p].ApplyDualToning(cur_dark_tone, light_tone, softness, edge, maxlight);
+					
+					r0 += changed.R;
+					g0 += changed.G;
+					b0 += changed.B;
+				}
+				double dist0 = Tone.Distance(new Tone(r0, g0, b0), new Tone(1, 1, 1));
+				
+				// Calculationg gradient
+				// Red shift
+				double Pdist_dR;
+				if (cur_dark_tone.R + dc < 1) 
+				{
+					Tone cur_dark_tone_dR = new Tone(cur_dark_tone.R + dc, cur_dark_tone.G, cur_dark_tone.B);
+				
+					double r_dR = 0, g_dR = 0, b_dR = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dR, light_tone, softness, edge, maxlight);
+						
+						r_dR += changed.R;
+						g_dR += changed.G;
+						b_dR += changed.B;
+					}
+					double dist_dR = Tone.Distance(new Tone(r_dR, g_dR, b_dR), new Tone(1, 1, 1));
+					Pdist_dR = (dist_dR - dist0) / dc;
+				}
+				else
+					Pdist_dR = 0;
+	
+				// Green shift
+				double Pdist_dG;
+				if (cur_dark_tone.G + dc < 1) 
+				{
+					Tone cur_dark_tone_dG = new Tone(cur_dark_tone.R, cur_dark_tone.G + dc, cur_dark_tone.B);
+				
+					double r_dG = 0, g_dG = 0, b_dG = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dG, light_tone, softness, edge, maxlight);
+						
+						r_dG += changed.R;
+						g_dG += changed.G;
+						b_dG += changed.B;
+					}
+					double dist_dG = Tone.Distance(new Tone(r_dG, g_dG, b_dG), new Tone(1, 1, 1));
+					Pdist_dG = (dist_dG - dist0) / dc;
+				}
+				else
+					Pdist_dG = 0;
+	
+				// Blue shift
+				double Pdist_dB;
+				if (cur_dark_tone.B + dc < 1) 
+				{
+					Tone cur_dark_tone_dB = new Tone(cur_dark_tone.R, cur_dark_tone.G, cur_dark_tone.B + dc);
+				
+					double r_dB = 0, g_dB = 0, b_dB = 0;
+					for (int p = 0; p < n; p++)
+					{
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dB, light_tone, softness, edge, maxlight);
+						
+						r_dB += changed.R;
+						g_dB += changed.G;
+						b_dB += changed.B;
+					}
+					double dist_dB = Tone.Distance(new Tone(r_dB, g_dB, b_dB), new Tone(1, 1, 1));
+					Pdist_dB = (dist_dB - dist0) / dc;
+				}
+				else
+					Pdist_dB = 0;
+				
+				// Moving up the gradient
+				double newR = cur_dark_tone.R - Pdist_dR;
+				double newG = cur_dark_tone.G - Pdist_dG;
+				double newB = cur_dark_tone.B - Pdist_dB;
+				
+				newR = Math.Max(newR, 0);
+				newG = Math.Max(newG, 0);
+				newB = Math.Max(newB, 0);
+				
+				cur_dark_tone = new Tone(newR, newG, newB);
+			}
+			
+			return cur_dark_tone;
 		}
 
 		public void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback)
 		{
-			double maxlight = CalcMaxLight();
+			double max_brightness = CalcMaxBrightness();
 			
 			for (int i = 0; i < mWidth; i++)
 			{
@@ -580,53 +793,14 @@ namespace CatEye.Core
 				
 				for (int j = 0; j < mHeight; j++)
 				{
-					// calculating current norm
-					double light_before = Math.Sqrt(
-								  r_chan[i, j] * r_chan[i, j] + 
-								  g_chan[i, j] * g_chan[i, j] + 
-								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					
-					// Calculating color coefficients
-					// R2, G2, B2 values depend on light value.
-					// For highlights it should exponentially approach 1.
-					double x = light_before / maxlight;//r_chan[i, j] / maxR;
-					
-					double K = Math.Atan2(softness * x, edge * edge - x * x) / Math.Atan2(softness, edge * edge - 1);
-					
-					double R1 = dark_tone.R * r_chan[i, j];
-					double G1 = dark_tone.G * g_chan[i, j];
-					double B1 = dark_tone.B * b_chan[i, j];
-					
-					double R2 = light_tone.R * r_chan[i, j];
-					double G2 = light_tone.G * g_chan[i, j];
-					double B2 = light_tone.B * b_chan[i, j];
-					
-					double Rres = (R2 - R1) * K + R1;
-					double Gres = (G2 - G1) * K + G1;
-					double Bres = (B2 - B1) * K + B1;
-					
-					// Applying toning
-					lock (this)
-					{
-						r_chan[i, j] = (float)(Rres);
-						g_chan[i, j] = (float)(Gres);
-						b_chan[i, j] = (float)(Bres);
-					}
-					
-					// calculating norm after
-					double light_after = Math.Sqrt(
-								  r_chan[i, j] * r_chan[i, j] + 
-								  g_chan[i, j] * g_chan[i, j] + 
-								  b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) + 0.0001;
+					Color res_ij = new Color(r_chan[i, j], g_chan[i, j], b_chan[i, j]).ApplyDualToning(dark_tone, light_tone, softness, edge, max_brightness);
 					
 					lock (this)
 					{
-						// Normalizing
-						r_chan[i, j] *= (float)(light_before / light_after);
-						g_chan[i, j] *= (float)(light_before / light_after);
-						b_chan[i, j] *= (float)(light_before / light_after);
+						r_chan[i, j] = (float)(res_ij.R);
+						g_chan[i, j] = (float)(res_ij.G);
+						b_chan[i, j] = (float)(res_ij.B);
 					}
-					
 				}
 			}
 		}
@@ -663,7 +837,7 @@ namespace CatEye.Core
 		
 		public void CutBlackPoint(double cut, ProgressReporter callback)
 		{
-			double max_light = CalcMaxLight();
+			double max_light = CalcMaxBrightness();
 			double min_light = AmplitudeFindBlackPoint();
 			
 			if (cut < 0.00001)

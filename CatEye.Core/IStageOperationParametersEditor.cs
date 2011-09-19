@@ -12,7 +12,7 @@ namespace CatEye.Core
 		/// <returns>
 		/// Should return "true" if it's needed to update the picture.
 		/// </returns>
-		bool ReportMousePosition(int x, int y, int width, int height);
+		bool ReportMousePosition(IBitmapCore image, int x, int y, int width, int height);
 		
 		/// <summary>
 		/// Handles mouse button state change i.e. the user pushed or released the button.
@@ -33,7 +33,7 @@ namespace CatEye.Core
 		/// <returns>
 		/// Should return "true" if it's needed to update picture and "false" otherwise.
 		/// </returns>
-		bool ReportMouseButton(int x, int y, int width, int height, uint button_id, bool is_down);
+		bool ReportMouseButton(IBitmapCore image, int x, int y, int width, int height, uint button_id, bool is_down);
 		
 		void AnalyzeImage(IBitmapCore image);
 		
@@ -47,7 +47,7 @@ namespace CatEye.Core
 		/// <param name="image_position">
 		/// The rectangle on the <c>target</c> which is occupied by the image.
 		/// </param>
-		void DrawEditor(IBitmapView target); 
+		void DrawEditor(IBitmapCore image, IBitmapView target); 
 		
 	}
 }

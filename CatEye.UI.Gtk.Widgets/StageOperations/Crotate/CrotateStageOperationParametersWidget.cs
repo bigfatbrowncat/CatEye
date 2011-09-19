@@ -257,7 +257,7 @@ namespace CatEye.UI.Gtk.Widgets
 			UpdateSensitive();
 		}
 		
-		public override bool ReportMouseButton (int x, int y, int width, int height, uint button_id, bool is_down)
+		public override bool ReportMouseButton (IBitmapCore image, int x, int y, int width, int height, uint button_id, bool is_down)
 		{
 			if (width == 0 || height == 0) return false;
 			
@@ -330,7 +330,7 @@ namespace CatEye.UI.Gtk.Widgets
 			return false;
 		}
 		
-		public override bool ReportMousePosition (int x, int y, int width, int height)
+		public override bool ReportMousePosition (IBitmapCore image, int x, int y, int width, int height)
 		{
 			if (width == 0 || height == 0) return false; 
 			
@@ -401,7 +401,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		CatEye.Core.Point lt_corner_rot, rt_corner_rot, lb_corner_rot, rb_corner_rot;
 		
-		public override void DrawEditor (IBitmapView view)
+		public override void DrawEditor (IBitmapCore image, IBitmapView view)
 		{
 			if (view.Image == null || view.Image.Width == 0 || view.Image.Height == 0) return;
 

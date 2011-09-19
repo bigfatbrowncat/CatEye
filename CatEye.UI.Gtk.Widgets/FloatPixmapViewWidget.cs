@@ -115,7 +115,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			GdkWindow.Background = new Color(0, 0, 0);
+			GdkWindow.Background = new Gdk.Color(0, 0, 0);
 			GdkWindow.Clear();
 			
 			if (mImage != null && _RenderedPicture != null)
@@ -154,9 +154,9 @@ namespace CatEye.UI.Gtk.Widgets
 					using (Gdk.GC gc = new Gdk.GC(GdkWindow))
 					{
 						gc.Function = Gdk.Function.Xor;
-						gc.RgbFgColor = new Color(255, 255, 0);
+						gc.RgbFgColor = new Gdk.Color(255, 255, 0);
 						GdkWindow.DrawRectangle(gc, false, screen_rect);
-						gc.RgbFgColor = new Color(255, 255, 255);
+						gc.RgbFgColor = new Gdk.Color(255, 255, 255);
 						GdkWindow.DrawRectangle(gc, false, picture_rect);
 						gc.Function = Gdk.Function.Clear;
 					}

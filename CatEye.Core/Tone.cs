@@ -4,6 +4,58 @@ using System.Xml;
 
 namespace CatEye.Core
 {
+	public struct Color
+	{
+		private double mR, mG, mB;
+		
+		public double R	{ get { return mR; } }
+		public double G	{ get { return mG; } }
+		public double B	{ get { return mB; } }
+
+		public Color (double r, double g, double b)
+		{
+			mR = r; mG = g; mB = b;
+		}
+		
+		public double CalcBrightness()
+		{
+			return Math.Sqrt(mR * mR + mG * mG + mB * mB) / Math.Sqrt(3);
+		}
+		
+		public Color ChangeBrightness(double newBrightness)
+		{
+			double oldBr = CalcBrightness();
+			return new Color(
+				mR * newBrightness / oldBr,
+				mG * newBrightness / oldBr,
+				mB * newBrightness / oldBr);
+		}
+		
+		public Color ApplyDualToning(Tone dark_tone, Tone light_tone, 
+		                             double softness, double edge, double maxBrightness)
+		{
+			// Calculating relative brightness
+			double brightness_before = CalcBrightness();
+			double rel_bright = brightness_before / maxBrightness;
+			
+			// Calculating new color
+			
+			double K = Math.Atan2(softness * rel_bright, edge * edge - rel_bright * rel_bright) / Math.Atan2(softness, edge * edge - 1);
+			
+			double R1 = dark_tone.R * mR;
+			double G1 = dark_tone.G * mG;
+			double B1 = dark_tone.B * mB;
+			
+			double R2 = light_tone.R * mR;
+			double G2 = light_tone.G * mG;
+			double B2 = light_tone.B * mB;
+
+			return new Color((R2 - R1) * K + R1,
+			                 (G2 - G1) * K + G1,
+			                 (B2 - B1) * K + B1).ChangeBrightness(brightness_before);
+		}		
+	}
+	
 	public class Tone : ICloneable
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
