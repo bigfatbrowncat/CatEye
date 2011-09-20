@@ -107,7 +107,6 @@ namespace CatEye.UI.Gtk
 			expander1.Expanded = false;
 			queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 			
-			WindowsSystemColorsHelper.AssureStyleColors(this);
 		}
 
 		public bool IsDestroyed { get { return mIsDestroyed; } }

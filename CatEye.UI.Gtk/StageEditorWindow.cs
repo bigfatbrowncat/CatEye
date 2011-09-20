@@ -72,8 +72,6 @@ public partial class StageEditorWindow : Gtk.Window
 	
 	protected void SetColorsUpdatingPending()
 	{
-		WindowsSystemColorsHelper.AssureStyleColors(this);
-
 		if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
 			Environment.OSVersion.Platform == PlatformID.Win32S ||
 			Environment.OSVersion.Platform == PlatformID.Win32Windows ||
@@ -114,6 +112,7 @@ public partial class StageEditorWindow : Gtk.Window
 		stage_vbox.Add(mFrozenPanel);
 
 		SetColorsUpdatingPending();
+
 		Microsoft.Win32.SystemEvents.DisplaySettingsChanged += delegate {
 			SetColorsUpdatingPending();
 		};
@@ -185,7 +184,6 @@ public partial class StageEditorWindow : Gtk.Window
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Warning, ButtonsType.Ok, 
 			                                             "Can not find default.cestage");
-			WindowsSystemColorsHelper.AssureStyleColors(md);
 			
 			md.Title = MainClass.APP_NAME;
 			md.Run();
@@ -440,7 +438,6 @@ public partial class StageEditorWindow : Gtk.Window
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
 			                                             "Can not start DCRaw process");
-			WindowsSystemColorsHelper.AssureStyleColors(md);
 			md.Title = MainClass.APP_NAME;
 			md.Run();
 			md.Destroy();
@@ -499,7 +496,6 @@ public partial class StageEditorWindow : Gtk.Window
 			string filename = ""; int prescale = 2;
 			bool ok = false;
 
-			WindowsSystemColorsHelper.AssureStyleColors(fcd);
 			if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 			{
 				ok = true;
@@ -554,7 +550,6 @@ public partial class StageEditorWindow : Gtk.Window
 	protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
 	{
 		AboutBox abb = new AboutBox();
-		WindowsSystemColorsHelper.AssureStyleColors(abb);
 		abb.Run();
 		abb.Destroy();
 	}
@@ -582,7 +577,6 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
 		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
-		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			string fn = fcd.Filename;
@@ -615,7 +609,6 @@ public partial class StageEditorWindow : Gtk.Window
 		
 		string fn = "";
 		bool ok = false;
-		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			ok = true;
@@ -642,7 +635,6 @@ public partial class StageEditorWindow : Gtk.Window
 					this, DialogFlags.Modal,
 					MessageType.Error, ButtonsType.Ok, 
 					false, "Can't load stage from the file \"{0}\".\n{1}", fn, sdex.Message);
-				WindowsSystemColorsHelper.AssureStyleColors(md);
 				
 				md.Title = MainClass.APP_NAME;
 				
@@ -727,7 +719,6 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
 		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
-		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			fn = fcd.Filename;
