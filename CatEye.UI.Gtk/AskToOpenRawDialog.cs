@@ -40,6 +40,7 @@ namespace CatEye.UI.Gtk
 			this.Build ();
 			ActionArea.BorderWidth = 10;
 			ActionArea.Layout = ButtonBoxStyle.Spread;
+			WindowsSystemColorsHelper.AssureStyleColors(this);
 		}
 	}
 }

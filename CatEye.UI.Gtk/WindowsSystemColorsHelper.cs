@@ -8,7 +8,63 @@ namespace CatEye.UI.Gtk
 	{
 		public static Gdk.Color SelectionColor = new Gdk.Color(92, 192, 64);
 		
-		public static Widget[] PaintIntoWindowsColors(Widget widget, Widget[] descendantsToExclude)
+		private static List<Widget> addedWidgets = new List<Widget>();
+		public static void AssureStyleColors(Widget widget)
+		{
+			// Checking of the OS
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
+				Environment.OSVersion.Platform == PlatformID.Win32S ||
+				Environment.OSVersion.Platform == PlatformID.Win32Windows ||
+				Environment.OSVersion.Platform == PlatformID.WinCE)
+			{
+				// Enumerate all children
+				bool all_enum = false;
+				List<Widget> children_recursive = new List<Widget>();
+				List<Widget> passed = new List<Widget>();
+	
+	
+				children_recursive.Add(widget);
+				do
+				{
+					all_enum = true;
+					Widget[] chreccur = children_recursive.ToArray();
+					for (int i = 0; i < chreccur.Length; i++)
+					{
+						Widget chld = chreccur[i];
+						if (!passed.Contains(chld))
+						{
+							passed.Add(chld);
+							if (chld is Container) 
+							{
+								all_enum = false;
+								foreach (Widget w in ((Container)chld).AllChildren) 
+								{
+										children_recursive.Add(w);
+								}
+							}
+						}
+					}
+					
+				} while (!all_enum);
+				foreach (Widget chld in children_recursive)
+				{
+					if (!addedWidgets.Contains(chld))
+					{
+						addedWidgets.Add(chld);
+						chld.Shown += HandleChldShown;
+						if (chld is Container)
+						{
+							((Container)chld).Added += delegate(object o, AddedArgs args) {
+								AssureStyleColors(args.Widget);
+							};
+						}
+						HandleChldShown(chld, EventArgs.Empty);
+					}
+				}
+			}
+		}
+
+		static void HandleChldShown (object sender, EventArgs e)
 		{
 			Gdk.Color control_color = new Gdk.Color(System.Drawing.SystemColors.Control.R,
 			                                        System.Drawing.SystemColors.Control.G,
@@ -28,64 +84,36 @@ namespace CatEye.UI.Gtk
 			Gdk.Color selectedButton_color = new Gdk.Color((byte)(((double)SelectionColor.Red + 3 * button_color.Red + 65535) / 5 / 255),
 			                                               (byte)(((double)SelectionColor.Green + 3 * button_color.Green + 65535)  / 5 / 255),
 			                                               (byte)(((double)SelectionColor.Blue + 3 * button_color.Blue + 65535) / 5 / 255));
-	
-			// Enumerate all children
-			bool all_enum = false;
-			List<Widget> children_recursive = new List<Widget>();
-			List<Widget> passed = new List<Widget>();
-
-			if (descendantsToExclude == null) descendantsToExclude = new Widget[] {};
-			List<Widget> to_exclude = new List<Widget>(descendantsToExclude);
-			List<Widget> result = new List<Widget>(descendantsToExclude);
-
-			children_recursive.Add(widget);
-			do
-			{
-				all_enum = true;
-				Widget[] chreccur = children_recursive.ToArray();
-				for (int i = 0; i < chreccur.Length; i++)
-				{
-					Widget chld = chreccur[i];
-					if (!passed.Contains(chld))
-					{
-						passed.Add(chld);
-						if (chld is Container) 
-						{
-							all_enum = false;
-							foreach (Widget w in ((Container)chld).AllChildren) 
-							{
-								if (!to_exclude.Contains(w))
-									children_recursive.Add(w);
-							}
-						}
-						result.Add(chld);
-					}
-				}
-				
-			} while (!all_enum);
 			
-			foreach (Widget chld in children_recursive)
+			
+			Widget me = (Widget)sender;
+			
+			if ((me is Button) || (me is Scale) || (me is ToolButton))
 			{
-				chld.ModifyBg(StateType.Selected, SelectionColor);
-				chld.ModifyBg(StateType.Normal, button_color);
-				chld.ModifyBg(StateType.Active, button_color);
-				chld.ModifyBg(StateType.Insensitive, button_color);
-				chld.ModifyBg(StateType.Prelight, selectedButton_color);
-				
-				chld.ModifyCursor(controlText_color, buttonHighlight_color);
-	
-				chld.ModifyFg(StateType.Selected, controlText_color);
-				chld.ModifyFg(StateType.Normal, controlText_color);
-				chld.ModifyFg(StateType.Active, controlText_color);
-				chld.ModifyFg(StateType.Insensitive, grayText_color);
-				chld.ModifyFg(StateType.Prelight, controlText_color);
-				
-				chld.ModifyBase(StateType.Insensitive, button_color);	// Text editors back color when they are inactive
-				chld.ModifyBase(StateType.Selected, SelectionColor);	// Selection in text editors
-				chld.ModifyBase(StateType.Active, SelectionColor);	// Selection in text editors
+				me.ModifyBg(StateType.Normal, button_color);
+				me.ModifyBg(StateType.Active, button_color);
 			}
+			else
+			{
+				me.ModifyBg(StateType.Normal, control_color);
+				me.ModifyBg(StateType.Active, control_color);
+			}
+
+			me.ModifyBg(StateType.Selected, SelectionColor);
+			me.ModifyBg(StateType.Insensitive, button_color);
+			me.ModifyBg(StateType.Prelight, selectedButton_color);
 			
-			return result.ToArray();
+			me.ModifyCursor(controlText_color, buttonHighlight_color);
+
+			me.ModifyFg(StateType.Selected, controlText_color);
+			me.ModifyFg(StateType.Normal, controlText_color);
+			me.ModifyFg(StateType.Active, controlText_color);
+			me.ModifyFg(StateType.Insensitive, grayText_color);
+			me.ModifyFg(StateType.Prelight, controlText_color);
+			
+			me.ModifyBase(StateType.Insensitive, control_color);	// Text editors back color when they are inactive
+			me.ModifyBase(StateType.Selected, SelectionColor);	// Selection in text editors
+			me.ModifyBase(StateType.Active, SelectionColor);	// Selection in text editors
 		}
 
 	}

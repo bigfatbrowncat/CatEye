@@ -15,9 +15,6 @@ public partial class StageEditorWindow : Gtk.Window
 	private Thread mStageThread;
 	private volatile ExtendedStage mStage;
 	private volatile bool mStageThreadStopFlag = false;
-	private volatile bool mColorsUpdatingPending = false;
-	private DateTime mColorsUpdatingPendingFrom;
-	private Widget[] mWidgetsWhichColorsAreChanged = new Widget[] {};
 	
 	private DateTime mLastUpdate;
 	private FrozenPanel mFrozenPanel;
@@ -70,24 +67,27 @@ public partial class StageEditorWindow : Gtk.Window
 				mStage.ProcessPending();
 			}
 			Thread.Sleep(30);
-			if (mColorsUpdatingPending)
-			{
-				mColorsUpdatingPending = false;
-				Application.Invoke(delegate {
-					mWidgetsWhichColorsAreChanged = WindowsSystemColorsHelper.PaintIntoWindowsColors(this, mWidgetsWhichColorsAreChanged);
-
-					Gdk.Color controlDark_color = new Gdk.Color(System.Drawing.SystemColors.ControlDark.R,
-					                                            System.Drawing.SystemColors.ControlDark.G,
-					                                            System.Drawing.SystemColors.ControlDark.B);
-					stage_vbox.ModifyBg(StateType.Normal, controlDark_color);
-				});
-			}
 		}
 	}
 	
 	protected void SetColorsUpdatingPending()
 	{
-		mColorsUpdatingPending = true;
+		WindowsSystemColorsHelper.AssureStyleColors(this);
+
+		if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
+			Environment.OSVersion.Platform == PlatformID.Win32S ||
+			Environment.OSVersion.Platform == PlatformID.Win32Windows ||
+			Environment.OSVersion.Platform == PlatformID.WinCE)
+		{
+			Gdk.Color controlDark_color = new Gdk.Color(System.Drawing.SystemColors.ControlDark.R,
+		                                                System.Drawing.SystemColors.ControlDark.G,
+		                                                System.Drawing.SystemColors.ControlDark.B);
+			stage_vbox.ModifyBg(StateType.Normal, controlDark_color);
+		}
+		else
+		{
+			stage_vbox.ModifyBg(StateType.Normal, Style.Dark(StateType.Normal));
+		}
 	}
 	
 	public StageEditorWindow (Type[] stageOperationTypes,
@@ -113,8 +113,10 @@ public partial class StageEditorWindow : Gtk.Window
 		};
 		stage_vbox.Add(mFrozenPanel);
 
-		//mWidgetsWhichColorsAreChanged = WindowsSystemColorsHelper.PaintIntoWindowsColors(this, mWidgetsWhichColorsAreChanged);
 		SetColorsUpdatingPending();
+		Microsoft.Win32.SystemEvents.DisplaySettingsChanged += delegate {
+			SetColorsUpdatingPending();
+		};
 		
 		// Preparing stage operation adding store
 		ListStore ls = new ListStore(typeof(string), typeof(int));
@@ -183,7 +185,7 @@ public partial class StageEditorWindow : Gtk.Window
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Warning, ButtonsType.Ok, 
 			                                             "Can not find default.cestage");
-			WindowsSystemColorsHelper.PaintIntoWindowsColors(md, null);
+			WindowsSystemColorsHelper.AssureStyleColors(md);
 			
 			md.Title = MainClass.APP_NAME;
 			md.Run();
@@ -279,7 +281,6 @@ public partial class StageEditorWindow : Gtk.Window
 			((Gtk.Box.BoxChild)stage_vbox[sohw]).Fill = false;
 			((Gtk.Box.BoxChild)stage_vbox[sohw]).Expand = false;
 
-			WindowsSystemColorsHelper.PaintIntoWindowsColors(sohw, new Widget[] {});
 
 			sohw.Show();
 			ArrangeVBoxes();
@@ -439,7 +440,7 @@ public partial class StageEditorWindow : Gtk.Window
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
 			                                             "Can not start DCRaw process");
-			WindowsSystemColorsHelper.PaintIntoWindowsColors(md, null);
+			WindowsSystemColorsHelper.AssureStyleColors(md);
 			md.Title = MainClass.APP_NAME;
 			md.Run();
 			md.Destroy();
@@ -451,7 +452,6 @@ public partial class StageEditorWindow : Gtk.Window
 			                                                      FileChooserAction.Open,
 			                                                      "Cancel", ResponseType.Cancel,
 			                                                      "Open", ResponseType.Accept);
-			WindowsSystemColorsHelper.PaintIntoWindowsColors(fcd, null);
 
 			// Filter for RAWs
 			FileFilter ff = new FileFilter();
@@ -472,6 +472,7 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			// Adding preview widget
 			RawPreviewWidget rpw = new RawPreviewWidget();
+			
 			fcd.PreviewWidget = rpw;
 			fcd.UpdatePreview += delegate {
 				rpw.Filename = fcd.Filename;
@@ -481,7 +482,7 @@ public partial class StageEditorWindow : Gtk.Window
 				rpw.Filename = fcd.Filename;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
 			};
-
+			
 			if (mStage.RawFileName != null)
 			{
 				fcd.SetFilename(mStage.RawFileName);
@@ -497,6 +498,8 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			string filename = ""; int prescale = 2;
 			bool ok = false;
+
+			WindowsSystemColorsHelper.AssureStyleColors(fcd);
 			if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 			{
 				ok = true;
@@ -551,7 +554,7 @@ public partial class StageEditorWindow : Gtk.Window
 	protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
 	{
 		AboutBox abb = new AboutBox();
-		WindowsSystemColorsHelper.PaintIntoWindowsColors(abb, null);
+		WindowsSystemColorsHelper.AssureStyleColors(abb);
 		abb.Run();
 		abb.Destroy();
 	}
@@ -579,7 +582,7 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
 		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
-		WindowsSystemColorsHelper.PaintIntoWindowsColors(fcd, null);
+		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			string fn = fcd.Filename;
@@ -612,7 +615,7 @@ public partial class StageEditorWindow : Gtk.Window
 		
 		string fn = "";
 		bool ok = false;
-		WindowsSystemColorsHelper.PaintIntoWindowsColors(fcd, null);
+		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			ok = true;
@@ -639,7 +642,7 @@ public partial class StageEditorWindow : Gtk.Window
 					this, DialogFlags.Modal,
 					MessageType.Error, ButtonsType.Ok, 
 					false, "Can't load stage from the file \"{0}\".\n{1}", fn, sdex.Message);
-				WindowsSystemColorsHelper.PaintIntoWindowsColors(md, null);
+				WindowsSystemColorsHelper.AssureStyleColors(md);
 				
 				md.Title = MainClass.APP_NAME;
 				
@@ -724,7 +727,7 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.CurrentName = System.IO.Path.GetFileNameWithoutExtension(mStage.RawFileName);
 		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
 		
-		WindowsSystemColorsHelper.PaintIntoWindowsColors(fcd, null);
+		WindowsSystemColorsHelper.AssureStyleColors(fcd);
 		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
 		{
 			fn = fcd.Filename;
@@ -831,11 +834,6 @@ public partial class StageEditorWindow : Gtk.Window
 
 	protected void OnShown (object sender, System.EventArgs e)
 	{
-		// Colors in Windows OS
-		// TODO: Add Windows check
-		SetColorsUpdatingPending();
-		Microsoft.Win32.SystemEvents.DisplaySettingsChanged += delegate {
-			SetColorsUpdatingPending();
-		};
+
 	}
 }

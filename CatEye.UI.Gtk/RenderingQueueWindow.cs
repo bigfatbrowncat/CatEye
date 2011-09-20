@@ -68,7 +68,7 @@ namespace CatEye.UI.Gtk
 				base(WindowType.Toplevel)
 		{
 			this.Build ();
-
+			
 			// Adding queue event handlers
 			mRenderingQueue = renderingQueue;
 			mRenderingQueue.QueueProgressMessageReport += HandleRenderingQueueProgressMessageReport;
@@ -107,6 +107,7 @@ namespace CatEye.UI.Gtk
 			expander1.Expanded = false;
 			queue_GtkLabel.Markup = "<b>Queue (" + mRenderingQueue.Queue.Length + " left)</b>";
 			
+			WindowsSystemColorsHelper.AssureStyleColors(this);
 		}
 
 		public bool IsDestroyed { get { return mIsDestroyed; } }
