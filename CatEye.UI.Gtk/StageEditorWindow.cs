@@ -68,7 +68,76 @@ public partial class StageEditorWindow : Gtk.Window
 			Thread.Sleep(30);
 		}
 	}
+	
+	protected virtual void UpdateColorsInWindows()
+	{
+		Gdk.Color control_color = new Gdk.Color(System.Drawing.SystemColors.Control.R,
+		                                        System.Drawing.SystemColors.Control.G,
+		                                        System.Drawing.SystemColors.Control.B);
+		Gdk.Color controlDark_color = new Gdk.Color(System.Drawing.SystemColors.ControlDark.R,
+		                                            System.Drawing.SystemColors.ControlDark.G,
+		                                            System.Drawing.SystemColors.ControlDark.B);
+		Gdk.Color button_color = new Gdk.Color(System.Drawing.SystemColors.ButtonFace.R,
+		                                       System.Drawing.SystemColors.ButtonFace.G,
+		                                       System.Drawing.SystemColors.ButtonFace.B);
+		Gdk.Color buttonHighlight_color = new Gdk.Color(System.Drawing.SystemColors.ButtonHighlight.R,
+		                                                System.Drawing.SystemColors.ButtonHighlight.G,
+		                                                System.Drawing.SystemColors.ButtonHighlight.B);
+		Gdk.Color controlText_color = new Gdk.Color(System.Drawing.SystemColors.ControlText.R,
+		                                            System.Drawing.SystemColors.ControlText.G,
+		                                            System.Drawing.SystemColors.ControlText.B);
+		Gdk.Color grayText_color = new Gdk.Color(System.Drawing.SystemColors.GrayText.R,
+		                                         System.Drawing.SystemColors.GrayText.G,
+		                                         System.Drawing.SystemColors.GrayText.B);
 
+			ModifyBg(Gtk.StateType.Normal, control_color);
+		// Enumerate all children
+		bool all_enum = false;
+		List<Gtk.Widget> children_recursive = new System.Collections.Generic.List<Gtk.Widget>();
+		Dictionary<Gtk.Widget, bool> child_passed = new Dictionary<Gtk.Widget, bool>();
+		
+		foreach (Gtk.Widget w in AllChildren) 
+			children_recursive.Add(w);
+		do
+		{
+			all_enum = true;
+			Gtk.Widget[] chreccur = children_recursive.ToArray();
+			foreach (Gtk.Widget chld in chreccur)
+			{
+				if (!child_passed.ContainsKey(chld) || child_passed[chld] != true)
+				{
+					child_passed.Add(chld, true);
+					if (chld is Gtk.Container) 
+					{
+						all_enum = false;
+						foreach (Gtk.Widget w in ((Gtk.Container)chld).AllChildren) 
+							children_recursive.Add(w);
+					}
+				}
+			}
+			
+		} while (!all_enum);
+		
+		foreach (Gtk.Widget chld in children_recursive)
+		{
+			chld.ModifyBg(Gtk.StateType.Normal, button_color);
+			chld.ModifyBg(Gtk.StateType.Active, button_color);
+			chld.ModifyBg(Gtk.StateType.Insensitive, button_color);
+			chld.ModifyBg(Gtk.StateType.Prelight, buttonHighlight_color);
+			
+			chld.ModifyCursor(controlText_color, buttonHighlight_color);
+
+			chld.ModifyFg(StateType.Normal, controlText_color);
+			chld.ModifyFg(StateType.Active, controlText_color);
+			chld.ModifyFg(StateType.Insensitive, grayText_color);
+			chld.ModifyFg(StateType.Prelight, controlText_color);
+			
+			chld.ModifyBase(Gtk.StateType.Insensitive, button_color);
+		}
+		
+		stage_vbox.ModifyBg(StateType.Normal, controlDark_color);
+	}
+	
 	public StageEditorWindow (Type[] stageOperationTypes,
 							  StageOperationFactory stageOperationFactory, 
 							  StageOperationParametersFactory stageOperationParametersFactory,
@@ -164,6 +233,13 @@ public partial class StageEditorWindow : Gtk.Window
 			md.Destroy();
 		}
 		
+		// Colors in Windows OS
+		// TODO: Add Windows check
+		UpdateColorsInWindows();
+		Microsoft.Win32.SystemEvents.DisplaySettingsChanged += delegate {
+			UpdateColorsInWindows();
+		};
+		
 	}
 	
 #region Handlers called from other thread. 
@@ -255,7 +331,8 @@ public partial class StageEditorWindow : Gtk.Window
 
 			sohw.Show();
 			ArrangeVBoxes();
-		});		
+			UpdateColorsInWindows();	// TODO: Too long!
+		});	
 	}
 
 	void HandleStageOperationRemovedFromStage (object sender, StageOperationParametersEventArgs e)
@@ -658,7 +735,7 @@ public partial class StageEditorWindow : Gtk.Window
 		l = stage_vbox.Allocation.Left; t = stage_vbox.Allocation.Top;
 
 
-		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Active, 
+		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
 			Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
 		l + 1, t + 1, w - 2, h - 2);
 	}
