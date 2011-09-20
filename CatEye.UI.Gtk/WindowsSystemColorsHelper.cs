@@ -6,8 +6,6 @@ namespace CatEye.UI.Gtk
 {
 	public static class WindowsSystemColorsHelper
 	{
-		public static Gdk.Color SelectionColor = new Gdk.Color(92, 192, 64);
-		
 		private static List<Widget> addedWidgets = new List<Widget>();
 		public static void AssureStyleColors(Widget widget)
 		{
@@ -81,12 +79,12 @@ namespace CatEye.UI.Gtk
 			Gdk.Color grayText_color = new Gdk.Color(System.Drawing.SystemColors.GrayText.R,
 			                                         System.Drawing.SystemColors.GrayText.G,
 			                                         System.Drawing.SystemColors.GrayText.B);
-			Gdk.Color selectedButton_color = new Gdk.Color((byte)(((double)SelectionColor.Red + 3 * button_color.Red + 65535) / 5 / 255),
-			                                               (byte)(((double)SelectionColor.Green + 3 * button_color.Green + 65535)  / 5 / 255),
-			                                               (byte)(((double)SelectionColor.Blue + 3 * button_color.Blue + 65535) / 5 / 255));
-			
-			
 			Widget me = (Widget)sender;
+
+			Gdk.Color selected_color = me.Style.Backgrounds[(int)StateType.Selected];
+			Gdk.Color selectedButton_color = new Gdk.Color((byte)(((double)selected_color.Red + 3 * button_color.Red + 65535) / 5 / 255),
+			                                               (byte)(((double)selected_color.Green + 3 * button_color.Green + 65535)  / 5 / 255),
+			                                               (byte)(((double)selected_color.Blue + 3 * button_color.Blue + 65535) / 5 / 255));
 			
 			if ((me is Button) || (me is Scale) || (me is ToolButton))
 			{
@@ -99,7 +97,7 @@ namespace CatEye.UI.Gtk
 				me.ModifyBg(StateType.Active, control_color);
 			}
 
-			me.ModifyBg(StateType.Selected, SelectionColor);
+			me.ModifyBg(StateType.Selected, selected_color);
 			me.ModifyBg(StateType.Insensitive, button_color);
 			me.ModifyBg(StateType.Prelight, selectedButton_color);
 			
@@ -112,8 +110,8 @@ namespace CatEye.UI.Gtk
 			me.ModifyFg(StateType.Prelight, controlText_color);
 			
 			me.ModifyBase(StateType.Insensitive, control_color);	// Text editors back color when they are inactive
-			me.ModifyBase(StateType.Selected, SelectionColor);	// Selection in text editors
-			me.ModifyBase(StateType.Active, SelectionColor);	// Selection in text editors
+			me.ModifyBase(StateType.Selected, selected_color);	// Selection in text editors
+			me.ModifyBase(StateType.Active, selected_color);	// Selection in text editors
 		}
 
 	}
