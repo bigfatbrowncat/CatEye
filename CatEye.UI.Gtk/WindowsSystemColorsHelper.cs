@@ -97,7 +97,7 @@ namespace CatEye.UI.Gtk
 				me.ModifyBg(StateType.Active, control_color);
 			}
 
-			me.ModifyBg(StateType.Selected, selected_color);
+			//me.ModifyBg(StateType.Selected, selected_color);
 			me.ModifyBg(StateType.Insensitive, button_color);
 			me.ModifyBg(StateType.Prelight, selectedButton_color);
 			
@@ -110,8 +110,8 @@ namespace CatEye.UI.Gtk
 			me.ModifyFg(StateType.Prelight, controlText_color);
 			
 			me.ModifyBase(StateType.Insensitive, control_color);	// Text editors back color when they are inactive
-			me.ModifyBase(StateType.Selected, selected_color);	// Selection in text editors
-			me.ModifyBase(StateType.Active, selected_color);	// Selection in text editors
+			//me.ModifyBase(StateType.Selected, selected_color);	// Selection in text editors
+			//me.ModifyBase(StateType.Active, selected_color);	// Selection in text editors
 		}
 
 	}
