@@ -69,6 +69,7 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			if (SelectedDarkToneChanged != null)
 				SelectedDarkToneChanged(this, EventArgs.Empty);
+			QueueDraw();
 		}
 		protected virtual void OnLightToneSelected()
 		{
@@ -79,6 +80,7 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			if (SelectedLightToneChanged != null)
 				SelectedLightToneChanged(this, EventArgs.Empty);
+			QueueDraw();
 		}
 		
 		public ToneSelectorWidget (): base()

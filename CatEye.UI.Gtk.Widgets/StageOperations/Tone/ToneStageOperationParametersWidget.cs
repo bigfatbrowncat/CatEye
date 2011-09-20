@@ -83,6 +83,8 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			Tone tn = ((ToneStageOperationParameters)Parameters).DarkTone;
 			toneselectorwidget1.SelectedDarkTone = tn;
+			tn = ((ToneStageOperationParameters)Parameters).LightTone;
+			toneselectorwidget1.SelectedLightTone = tn;
 
 			_EdgeIsChanging = true;
 			edge_hscale.Value = ((ToneStageOperationParameters)Parameters).Edge;
@@ -133,7 +135,7 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 			else
 			{
-				int points = 100;
+				int points = 500;
 				
 				if (mButtonDown == 1 /* left */)
 				{
@@ -206,9 +208,9 @@ namespace CatEye.UI.Gtk.Widgets
 						cc.LineJoin = Cairo.LineJoin.Round;
 		
 						if (mButtonDown == 1 /* left */)
-							cc.Color = new Cairo.Color(0, 0, 0, 0.5);
+							cc.Color = new Cairo.Color(1, 1, 1, 0.3);
 						else if (mButtonDown == 3 /* right */)
-							cc.Color = new Cairo.Color(1, 1, 1, 0.5);
+							cc.Color = new Cairo.Color(0, 0, 0, 0.3);
 								
 						cc.LineWidth = 3;
 						cc.Arc(scrCenter.X, scrCenter.Y, Point.Distance(scrCenter, scrSide), 0, 2 * Math.PI);
@@ -216,9 +218,9 @@ namespace CatEye.UI.Gtk.Widgets
 						cc.Stroke();
 						
 						if (mButtonDown == 1 /* left */)
-							cc.Color = new Cairo.Color(1, 1, 1, 1);
+							cc.Color = new Cairo.Color(0, 0, 0, 1);
 						else if (mButtonDown == 3 /* right */)
-							cc.Color = new Cairo.Color(0, 0, 0, 0);
+							cc.Color = new Cairo.Color(1, 1, 1, 1);
 
 						cc.LineWidth = 1;
 						cc.SetDash(new double[] {3, 3}, 0);

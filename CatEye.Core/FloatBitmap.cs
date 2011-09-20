@@ -574,7 +574,7 @@ namespace CatEye.Core
 				// Calculationg gradient
 				// Red shift
 				double Pdist_dR;
-				if (cur_light_tone.R + dc < 1) 
+				//if (cur_light_tone.R + dc < 1) 
 				{
 					Tone cur_light_tone_dR = new Tone(cur_light_tone.R + dc, cur_light_tone.G, cur_light_tone.B);
 				
@@ -590,12 +590,12 @@ namespace CatEye.Core
 					double dist_dR = Tone.Distance(new Tone(r_dR, g_dR, b_dR), new Tone(1, 1, 1));
 					Pdist_dR = (dist_dR - dist0) / dc;
 				}
-				else
-					Pdist_dR = 0;
+				//else
+				//	Pdist_dR = 0;
 	
 				// Green shift
 				double Pdist_dG;
-				if (cur_light_tone.G + dc < 1) 
+				//if (cur_light_tone.G + dc < 1) 
 				{
 					Tone cur_light_tone_dG = new Tone(cur_light_tone.R, cur_light_tone.G + dc, cur_light_tone.B);
 				
@@ -611,12 +611,12 @@ namespace CatEye.Core
 					double dist_dG = Tone.Distance(new Tone(r_dG, g_dG, b_dG), new Tone(1, 1, 1));
 					Pdist_dG = (dist_dG - dist0) / dc;
 				}
-				else
-					Pdist_dG = 0;
+				//else
+				//	Pdist_dG = 0;
 	
 				// Blue shift
 				double Pdist_dB;
-				if (cur_light_tone.B + dc < 1) 
+				//if (cur_light_tone.B + dc < 1) 
 				{
 					Tone cur_light_tone_dB = new Tone(cur_light_tone.R, cur_light_tone.G, cur_light_tone.B + dc);
 				
@@ -632,17 +632,17 @@ namespace CatEye.Core
 					double dist_dB = Tone.Distance(new Tone(r_dB, g_dB, b_dB), new Tone(1, 1, 1));
 					Pdist_dB = (dist_dB - dist0) / dc;
 				}
-				else
-					Pdist_dB = 0;
+				//else
+				//	Pdist_dB = 0;
 				
 				// Moving up the gradient
-				double newR = cur_light_tone.R - Pdist_dR;
-				double newG = cur_light_tone.G - Pdist_dG;
-				double newB = cur_light_tone.B - Pdist_dB;
+				double newR = cur_light_tone.R - Pdist_dR * dc;
+				double newG = cur_light_tone.G - Pdist_dG * dc;
+				double newB = cur_light_tone.B - Pdist_dB * dc;
 				
-				newR = Math.Min(Math.Max(newR, 1), 0);
-				newG = Math.Min(Math.Max(newG, 1), 0);
-				newB = Math.Min(Math.Max(newB, 1), 0);
+				newR = Math.Max(newR, 0);
+				newG = Math.Max(newG, 0);
+				newB = Math.Max(newB, 0);
 				
 				cur_light_tone = new Tone(newR, newG, newB);
 			}
@@ -701,7 +701,7 @@ namespace CatEye.Core
 				// Calculationg gradient
 				// Red shift
 				double Pdist_dR;
-				if (cur_dark_tone.R + dc < 1) 
+				//if (cur_dark_tone.R + dc < 1) 
 				{
 					Tone cur_dark_tone_dR = new Tone(cur_dark_tone.R + dc, cur_dark_tone.G, cur_dark_tone.B);
 				
@@ -717,12 +717,12 @@ namespace CatEye.Core
 					double dist_dR = Tone.Distance(new Tone(r_dR, g_dR, b_dR), new Tone(1, 1, 1));
 					Pdist_dR = (dist_dR - dist0) / dc;
 				}
-				else
-					Pdist_dR = 0;
+				//else
+				//	Pdist_dR = 0;
 	
 				// Green shift
 				double Pdist_dG;
-				if (cur_dark_tone.G + dc < 1) 
+				//if (cur_dark_tone.G + dc < 1) 
 				{
 					Tone cur_dark_tone_dG = new Tone(cur_dark_tone.R, cur_dark_tone.G + dc, cur_dark_tone.B);
 				
@@ -738,12 +738,12 @@ namespace CatEye.Core
 					double dist_dG = Tone.Distance(new Tone(r_dG, g_dG, b_dG), new Tone(1, 1, 1));
 					Pdist_dG = (dist_dG - dist0) / dc;
 				}
-				else
-					Pdist_dG = 0;
+				//else
+				//	Pdist_dG = 0;
 	
 				// Blue shift
 				double Pdist_dB;
-				if (cur_dark_tone.B + dc < 1) 
+				//if (cur_dark_tone.B + dc < 1) 
 				{
 					Tone cur_dark_tone_dB = new Tone(cur_dark_tone.R, cur_dark_tone.G, cur_dark_tone.B + dc);
 				
@@ -759,13 +759,13 @@ namespace CatEye.Core
 					double dist_dB = Tone.Distance(new Tone(r_dB, g_dB, b_dB), new Tone(1, 1, 1));
 					Pdist_dB = (dist_dB - dist0) / dc;
 				}
-				else
-					Pdist_dB = 0;
+				//else
+				//	Pdist_dB = 0;
 				
 				// Moving up the gradient
-				double newR = cur_dark_tone.R - Pdist_dR;
-				double newG = cur_dark_tone.G - Pdist_dG;
-				double newB = cur_dark_tone.B - Pdist_dB;
+				double newR = cur_dark_tone.R - Pdist_dR * dc;
+				double newG = cur_dark_tone.G - Pdist_dG * dc;
+				double newB = cur_dark_tone.B - Pdist_dB * dc;
 				
 				newR = Math.Max(newR, 0);
 				newG = Math.Max(newG, 0);
