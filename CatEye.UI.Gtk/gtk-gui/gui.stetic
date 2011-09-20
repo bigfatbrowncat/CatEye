@@ -769,6 +769,7 @@
     <property name="Title" translatable="yes">CatEye</property>
     <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
+    <signal name="Shown" handler="OnShown" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />

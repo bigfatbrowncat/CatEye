@@ -84,6 +84,7 @@
     <Compile Include="gtk-gui\StageEditorWindow.cs" />
     <Compile Include="AskToOpenRawDialog.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.AskToOpenRawDialog.cs" />
+    <Compile Include="WindowsSystemColorsHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
