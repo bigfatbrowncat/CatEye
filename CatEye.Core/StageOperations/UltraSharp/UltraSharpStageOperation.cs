@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Ultra sharp"), StageOperationID("UltraSharpStageOperation")]
+	[StageOperationDescription("Local contrast", "Lets you to make the image more impressive by increasing/decreasing of its contrast"
+	 ), StageOperationID("UltraSharpStageOperation")]
 	public class UltraSharpStageOperation : StageOperation
 	{
 		// TODO: There should be some quality configuration which should calculate

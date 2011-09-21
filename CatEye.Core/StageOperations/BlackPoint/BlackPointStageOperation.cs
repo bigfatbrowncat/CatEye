@@ -2,7 +2,7 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Black point")]
+	[StageOperationDescription("Black point", "Sets the image's dark point as \"black\" to avoid smoke or to increase global contrast")]
 	[StageOperationID("BlackPointStageOperation")]
 	public class BlackPointStageOperation : StageOperation
 	{

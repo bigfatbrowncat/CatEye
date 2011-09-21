@@ -118,6 +118,7 @@ public partial class StageEditorWindow : Gtk.Window
 		};
 		
 		// Preparing stage operation adding store
+		/*
 		ListStore ls = new ListStore(typeof(string), typeof(int));
 		for (int i = 0; i < mStageOperationTypes.Length; i++)
 		{
@@ -130,7 +131,8 @@ public partial class StageEditorWindow : Gtk.Window
 		Gtk.TreeIter ti;
 		ls.GetIterFirst(out ti);
 		stageOperationToAdd_combobox.SetActiveIter(ti);
-
+		*/
+		
 		// Setting view widget events
 		viewWidget.ExposeEvent += HandleViewWidgetExposeEvent;
 		viewWidget.MousePositionChanged += HandleViewWidgetMousePositionChanged;
@@ -646,6 +648,7 @@ public partial class StageEditorWindow : Gtk.Window
 	
 	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
 	{
+		/*
 		if (mStage.FrozenAt == null)
 		{
 			Gtk.TreeIter ti;
@@ -655,6 +658,7 @@ public partial class StageEditorWindow : Gtk.Window
 				
 			stage_vbox.CheckResize();
 		}
+		*/
 	}
 
 	[GLib.ConnectBefore()]
@@ -827,4 +831,79 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 
 	}
+
+	protected void OnTogglebuttonClicked (object sender, System.EventArgs e)
+	{
+		if (togglebutton.Active)
+		{
+			Menu menu = new Menu();
+			int w, h;
+			menu.GetSizeRequest(out w, out h);
+			menu.SetSizeRequest(togglebutton.Allocation.Width, h);
+	
+			Dictionary<MenuItem, Type> stage_operation_types = new Dictionary<MenuItem, Type>();
+			
+			for (int i = 0; i < mStageOperationTypes.Length; i++)
+			{
+				string name = StageOperationDescriptionAttribute.GetName(mStageOperationTypes[i]);
+				if (name == null) name = mStageOperationTypes[i].Name;
+				string description = StageOperationDescriptionAttribute.GetDescription(mStageOperationTypes[i]);
+			
+				MenuItem item = new MenuItem();
+				
+				VBox item_vbox = new VBox();
+				item_vbox.BorderWidth = 4;
+				item_vbox.Show();
+				
+				
+				Label lbl_name = new Label();
+				lbl_name.UseMarkup = true;
+				lbl_name.Markup = "<b>" + name + "</b>";
+				lbl_name.Justify = Justification.Left;
+				lbl_name.Xalign = 0;
+				item_vbox.Add(lbl_name);
+				lbl_name.Show();
+
+				if (description != null && description != "")
+				{
+					Label lbl_desc = new Label(description);
+					lbl_desc.LineWrapMode = Pango.WrapMode.Word;
+					lbl_desc.LineWrap = true;
+					lbl_desc.Wrap = true;
+					item_vbox.Add(lbl_desc);
+					lbl_desc.Show();
+					item_vbox.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
+						lbl_desc.WidthRequest = args.Allocation.Width - 10;
+					};
+				}
+				
+				item.Child = item_vbox;
+				stage_operation_types.Add(item, mStageOperationTypes[i]);
+				
+				item.Activated += delegate(object s, EventArgs ea) {
+					mStage.CreateAndAddNewItem(stage_operation_types[(MenuItem)s]).Active = true;
+					stage_vbox.CheckResize();
+					GtkScrolledWindow.Vadjustment.Value = GtkScrolledWindow.Vadjustment.Upper;
+				};
+				
+				menu.Append(item);
+				item_vbox.CheckResize();
+				//lbl_desc.WidthRequest = ww;
+			}
+			menu.Deactivated += delegate {
+				togglebutton.Active = false;
+			};
+			
+			menu.ShowAll();
+			menu.Popup(null, null, delegate (Menu m, out int x, out int y, out bool push_in) {
+				int x1, y1, x0, y0;
+				GdkWindow.GetOrigin(out x0, out y0);
+				togglebutton.TranslateCoordinates(this, 0, 0, out x1, out y1);
+				x = x0 + x1;
+				y = y0 + y1;
+				push_in = false;
+			}, 0, 0);
+		}
+	}
+
 }

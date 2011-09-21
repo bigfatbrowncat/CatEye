@@ -2,7 +2,7 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Tone")]
+	[StageOperationDescription("Tone", "Applies color toning to the image so you can change white balance. Bright and dark parts are toned separately")]
 	[StageOperationID("ToneStageOperation")]
 	public class ToneStageOperation : StageOperation
 	{

@@ -6,14 +6,17 @@ namespace CatEye
 	public class StageOperationDescriptionAttribute : Attribute
 	{
 		private string _Name;
+		private string _Description;
 		public string Name { get { return _Name; } }
+		public string Description { get { return _Description; } }
 		
-		public StageOperationDescriptionAttribute(string name)
+		public StageOperationDescriptionAttribute(string name, string description)
 		{
 			_Name = name;
+			_Description = description;
 		}
 
-		public static string GetSOName(Type stageOperationType)
+		public static string GetName(Type stageOperationType)
 		{
 			object[] attrs = stageOperationType.GetCustomAttributes(typeof(StageOperationDescriptionAttribute), true);
 			if (attrs.Length == 0)
@@ -22,6 +25,16 @@ namespace CatEye
 			}
 			
 			return ((StageOperationDescriptionAttribute)attrs[0]).Name;
+		}
+		public static string GetDescription(Type stageOperationType)
+		{
+			object[] attrs = stageOperationType.GetCustomAttributes(typeof(StageOperationDescriptionAttribute), true);
+			if (attrs.Length == 0)
+			{
+				return null;
+			}
+			
+			return ((StageOperationDescriptionAttribute)attrs[0]).Description;
 		}
 		
 	}

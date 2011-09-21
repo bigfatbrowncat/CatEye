@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Compression"), StageOperationID("CompressionStageOperation")]
+	[StageOperationDescription("Compression", "Lowers the global image contrast, so dark details could be recognized"), 
+	 StageOperationID("CompressionStageOperation")]
 	public class CompressionStageOperation : StageOperation
 	{
 		public CompressionStageOperation (StageOperationParameters parameters)

@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Saturation"), StageOperationID("SaturationStageOperation")]
+	[StageOperationDescription("Saturation", "Makes the image more or less colorful. Can be used to make a bleck/white image"), 
+	 StageOperationID("SaturationStageOperation")]
 	public class SaturationStageOperation : StageOperation
 	{
 		public SaturationStageOperation (StageOperationParameters parameters)

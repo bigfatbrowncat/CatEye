@@ -217,7 +217,7 @@ namespace CatEye.Core
 								j++;
 							}
 							cur_eff += e.Progress * efforts[j];
-							string desc = StageOperationDescriptionAttribute.GetSOName(sender.GetType());
+							string desc = StageOperationDescriptionAttribute.GetName(sender.GetType());
 							
 							OnProgressMessageReport(true,
 								cur_eff / full_efforts, 

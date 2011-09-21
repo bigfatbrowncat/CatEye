@@ -2,7 +2,7 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Crop and Rotate")]
+	[StageOperationDescription("Crop and Rotate", "Let you crop a rectangular part of the image rotated by any angle")]
 	[StageOperationID("CrotateStageOperation")]
 	public class CrotateStageOperation : StageOperation
 	{

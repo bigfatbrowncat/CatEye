@@ -88,7 +88,7 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			_OperationParametersWidget = operationParametersWidget;
 			
-			_TitleWidget.Title = StageOperationDescriptionAttribute.GetSOName(_OperationParametersWidget.Parameters.GetSOType());
+			_TitleWidget.Title = StageOperationDescriptionAttribute.GetName(_OperationParametersWidget.Parameters.GetSOType());
 			
 			vbox.Add(operationParametersWidget);
 			((Box.BoxChild)vbox[operationParametersWidget]).Position = 1;
