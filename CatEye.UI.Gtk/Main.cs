@@ -777,7 +777,11 @@ namespace CatEye
 			if (ownServerStarted)
 			{
 				string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
-				windowsGtkStyle = new WindowsGtkStyle(mylocation + Path.DirectorySeparatorChar + "win-gtkrc");
+				windowsGtkStyle = new WindowsGtkStyle(mylocation + 
+				                                      Path.DirectorySeparatorChar + 
+				                                      "res" + 
+				                                      Path.DirectorySeparatorChar + 
+				                                      "win-gtkrc");
 				Application.Init ();
 				windowsGtkStyle.UpdateStyle();
 				
