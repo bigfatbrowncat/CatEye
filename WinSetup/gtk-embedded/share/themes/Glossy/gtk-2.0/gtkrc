@@ -58,7 +58,7 @@ style "clearlooks-default"
 
   engine "clearlooks" 
   {
-    #scrollbar_color   = "#76acde"
+    scrollbar_color   = lighter(@bg_color)
     colorize_scrollbar = TRUE
     menubarstyle      = 2 # 0 = flat, 1 = sunken, 2 = flat gradient
     toolbarstyle      = 0 # 0 = flat, 1 = enable effects
@@ -159,7 +159,7 @@ style "clearlooks-progressbar" = "clearlooks-wide"
 {
   xthickness = 1
   ythickness = 1
-  # fg[PRELIGHT]  = "#ffffff"
+  fg[PRELIGHT]  = @selected_fg_color
 }
 
 style "clearlooks-combo" = "clearlooks-button"
