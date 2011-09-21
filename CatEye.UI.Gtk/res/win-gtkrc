@@ -58,8 +58,8 @@ style "clearlooks-default"
 
   engine "clearlooks" 
   {
-    scrollbar_color   = lighter(@bg_color)
-    colorize_scrollbar = TRUE
+    #scrollbar_color   = lighter(@bg_color)
+    colorize_scrollbar = FALSE
     menubarstyle      = 2 # 0 = flat, 1 = sunken, 2 = flat gradient
     toolbarstyle      = 0 # 0 = flat, 1 = enable effects
     animation         = FALSE
