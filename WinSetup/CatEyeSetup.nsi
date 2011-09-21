@@ -1,4 +1,5 @@
 ; CatEyeSetup program for Windows
+; for test commit
 
 ;--------------------------------
 ; Common settings
