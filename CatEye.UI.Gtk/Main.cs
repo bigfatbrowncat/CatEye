@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -775,7 +776,8 @@ namespace CatEye
 
 			if (ownServerStarted)
 			{
-				windowsGtkStyle = new WindowsGtkStyle("win-gtkrc");
+				string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
+				windowsGtkStyle = new WindowsGtkStyle(mylocation + Path.DirectorySeparatorChar + "win-gtkrc");
 				Application.Init ();
 				windowsGtkStyle.UpdateStyle();
 				
