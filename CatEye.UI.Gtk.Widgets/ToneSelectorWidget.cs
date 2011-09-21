@@ -73,8 +73,11 @@ namespace CatEye.UI.Gtk.Widgets
 			get { return mDarkToneSelectorSymbol; }
 			set
 			{
-				mDarkToneSelectorSymbol = value;
-				QueueDraw();
+				if (mDarkToneSelectorSymbol != value)
+				{
+					mDarkToneSelectorSymbol = value;
+					QueueDraw();
+				}
 			}
 		}
 		public ToneSelectorSymbol LightToneSelectorSymbol
@@ -82,8 +85,11 @@ namespace CatEye.UI.Gtk.Widgets
 			get { return mLightToneSelectorSymbol; }
 			set
 			{
-				mLightToneSelectorSymbol = value;
-				QueueDraw();
+				if (mLightToneSelectorSymbol != value)
+				{
+					mLightToneSelectorSymbol = value;
+					QueueDraw();
+				}
 			}
 		}
 		

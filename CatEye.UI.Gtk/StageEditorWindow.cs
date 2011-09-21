@@ -832,7 +832,7 @@ public partial class StageEditorWindow : Gtk.Window
 
 	}
 
-	protected void OnTogglebuttonClicked (object sender, System.EventArgs e)
+	protected void OnTogglebuttonToggled (object sender, System.EventArgs e)
 	{
 		if (togglebutton.Active)
 		{
@@ -870,6 +870,16 @@ public partial class StageEditorWindow : Gtk.Window
 					lbl_desc.LineWrapMode = Pango.WrapMode.Word;
 					lbl_desc.LineWrap = true;
 					lbl_desc.Wrap = true;
+					
+					//Pango.FontDescription fd = Pango.FontDescription.FromString(
+					//	lbl_desc.PangoContext.FontDescription.Family + ", " + ((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size)).ToString());
+					
+					string fd_string = lbl_desc.PangoContext.FontDescription.Family + " " +
+						((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 1);
+					
+					Pango.FontDescription fd = Pango.FontDescription.FromString(fd_string);
+					lbl_desc.ModifyFont(fd);
+						
 					item_vbox.Add(lbl_desc);
 					lbl_desc.Show();
 					item_vbox.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
@@ -905,5 +915,4 @@ public partial class StageEditorWindow : Gtk.Window
 			}, 0, 0);
 		}
 	}
-
 }

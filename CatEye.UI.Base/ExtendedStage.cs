@@ -424,9 +424,9 @@ namespace CatEye.UI.Base
 		{
 			// If the user modified some property in editing ("pen") mode,
 			// refresh the picture
-			IStageOperationParametersEditor editor = (IStageOperationParametersEditor)sender;
+			/*IStageOperationParametersEditor editor = (IStageOperationParametersEditor)sender;
 			if (_EditingOperation != null && _Holders[_EditingOperation].StageOperationParametersEditor == editor)
-				OnImageUpdatingCompleted();
+				OnImageUpdatingCompleted();*/
 		}
 		
 		void HandleSohwRemoveButtonClicked (object sender, EventArgs e)

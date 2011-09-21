@@ -68,6 +68,7 @@ namespace CatEye.UI.Gtk.Widgets
 						double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
 						double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
 						
+						//Console.WriteLine(i);
 	
 						double light = Math.Sqrt(r*r + g*g + b*b) / Math.Sqrt(3);
 						if (light > max) max = light;

@@ -118,8 +118,8 @@ namespace CatEye.UI.Gtk.Widgets
 		protected void HandleToneSelectorWidgetDarkToneSelected (object sender, System.EventArgs e)
 		{
 			StartChangingParameters();
-			((ToneStageOperationParameters)Parameters).DarkTone = toneselectorwidget1.SelectedDarkTone;
 			((ToneStageOperationParameters)Parameters).AutoDarkTone = false;
+			((ToneStageOperationParameters)Parameters).DarkTone = toneselectorwidget1.SelectedDarkTone;
 			toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.Donut;
 			EndChangingParameters();
 			OnUserModified();
@@ -127,8 +127,8 @@ namespace CatEye.UI.Gtk.Widgets
 		void HandleToneSelectorWidgetLightToneSelected (object sender, EventArgs e)
 		{
 			StartChangingParameters();
-			((ToneStageOperationParameters)Parameters).LightTone = toneselectorwidget1.SelectedLightTone;
 			((ToneStageOperationParameters)Parameters).AutoLightTone = false;
+			((ToneStageOperationParameters)Parameters).LightTone = toneselectorwidget1.SelectedLightTone;
 			toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.Donut;
 			EndChangingParameters();
 			OnUserModified();

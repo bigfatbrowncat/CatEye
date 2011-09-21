@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="CatEyeIcon">
@@ -827,7 +827,7 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">Custom</property>
-                            <signal name="Clicked" handler="OnTogglebuttonClicked" />
+                            <signal name="Toggled" handler="OnTogglebuttonToggled" />
                             <child>
                               <widget class="Gtk.HBox" id="hbox3">
                                 <property name="MemberName" />
@@ -835,18 +835,18 @@
                                 <child>
                                   <widget class="Gtk.Image" id="image59">
                                     <property name="MemberName" />
+                                    <property name="Xalign">1</property>
                                     <property name="Pixbuf">stock:gtk-add Button</property>
                                   </widget>
                                   <packing>
                                     <property name="Position">0</property>
-                                    <property name="AutoSize">True</property>
-                                    <property name="Expand">False</property>
-                                    <property name="Fill">False</property>
+                                    <property name="AutoSize">False</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <widget class="Gtk.Label" id="label1">
                                     <property name="MemberName" />
+                                    <property name="Xalign">0</property>
                                     <property name="LabelProp" translatable="yes">Add new operation</property>
                                   </widget>
                                   <packing>
