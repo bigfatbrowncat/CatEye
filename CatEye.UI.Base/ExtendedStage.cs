@@ -536,7 +536,7 @@ namespace CatEye.UI.Base
 			if (EditingOperation != null &&
 				Holders[EditingOperation].StageOperationParametersEditor != null)
 			{
-				return Holders[EditingOperation].StageOperationParametersEditor.ReportMousePosition(CurrentImage, x, y, width, height);
+				return Holders[EditingOperation].StageOperationParametersEditor.ReportMousePosition(x, y, width, height);
 			}
 			else
 				return false;
@@ -566,7 +566,7 @@ namespace CatEye.UI.Base
 			if (EditingOperation != null &&
 				Holders[EditingOperation].StageOperationParametersEditor != null)
 			{
-				return Holders[EditingOperation].StageOperationParametersEditor.ReportMouseButton(CurrentImage, x, y, width, height, button_id, is_down);
+				return Holders[EditingOperation].StageOperationParametersEditor.ReportMouseButton(x, y, width, height, button_id, is_down);
 			}
 			else
 				return false;
@@ -577,7 +577,7 @@ namespace CatEye.UI.Base
 			if (EditingOperation != null &&
 				Holders[EditingOperation].StageOperationParametersEditor != null)
 			{
-				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(CurrentImage, target);
+				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(target);
 			}
 		}
 		

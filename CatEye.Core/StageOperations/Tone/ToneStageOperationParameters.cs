@@ -13,6 +13,12 @@ namespace CatEye.Core
 		private Tone mLightTone = new Tone(1, 1, 1);
 		private double mEdge = 0.95;
 		private double mSoftness = 0.1;
+		private bool mAutoDarkTone = false;
+		private bool mAutoLightTone = false;
+		private Point mAutoDarkCenter = new Point(0, 0);
+		private Point mAutoLightCenter = new Point(0, 0);
+		private double mAutoDarkRadius;
+		private double mAutoLightRadius;
 		
 		public Tone DarkTone
 		{
@@ -31,7 +37,68 @@ namespace CatEye.Core
 				mLightTone = value;
 				OnChanged();
 			}
-		}		
+		}
+		
+		public bool AutoDarkTone
+		{
+			get { return mAutoDarkTone; }
+			set
+			{
+				mAutoDarkTone = value;
+				OnChanged();
+			}
+		}
+
+		public bool AutoLightTone
+		{
+			get { return mAutoLightTone; }
+			set
+			{
+				mAutoLightTone = value;
+				OnChanged();
+			}
+		}
+		
+		public Point AutoDarkCenter
+		{
+			get { return mAutoDarkCenter; }
+			set
+			{
+				mAutoDarkCenter = value;
+				OnChanged();
+			}
+		}
+
+		public Point AutoLightCenter
+		{
+			get { return mAutoLightCenter; }
+			set
+			{
+				mAutoLightCenter = value;
+				OnChanged();
+			}
+		}
+
+		public double AutoDarkRadius
+		{
+			get { return mAutoDarkRadius; }
+			set
+			{
+				mAutoDarkRadius = value;
+				OnChanged();
+			}
+		}
+
+		public double AutoLightRadius
+		{
+			get { return mAutoLightRadius; }
+			set
+			{
+				mAutoLightRadius = value;
+				OnChanged();
+			}
+		}
+		
 		public double Edge
 		{
 			get { return mEdge; }
@@ -63,6 +130,13 @@ namespace CatEye.Core
 			xn.Attributes.Append(xdoc.CreateAttribute("Softness")).Value = mSoftness.ToString(nfi);
 			xn.AppendChild(mDarkTone.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "DarkTone";
 			xn.AppendChild(mLightTone.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "LightTone";
+			
+			xn.Attributes.Append(xdoc.CreateAttribute("AutoDarkTone")).Value = mAutoDarkTone.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("AutoLightTone")).Value = mAutoLightTone.ToString();
+			xn.Attributes.Append(xdoc.CreateAttribute("AutoDarkRadius")).Value = mAutoDarkRadius.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("AutoLightRadius")).Value = mAutoLightRadius.ToString(nfi);
+			xn.AppendChild(mAutoDarkCenter.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "AutoDarkCenter";
+			xn.AppendChild(mAutoLightCenter.SerializeToXML(xdoc)).Attributes.Append(xdoc.CreateAttribute("Name")).Value = "AutoLightCenter";
 			return xn;
 		}
 		
@@ -77,6 +151,12 @@ namespace CatEye.Core
 				if (xn.Name == "Tone" && 
 					xn.Attributes["Name"] != null &&
 					xn.Attributes["Name"].Value == "LightTone") mLightTone.DeserializeFromXML(xn);
+				if (xn.Name == "Point" &&
+					xn.Attributes["Name"] != null &&
+					xn.Attributes["Name"].Value == "AutoDarkCenter") mAutoDarkCenter.DeserializeFromXML(xn);
+				if (xn.Name == "Point" &&
+					xn.Attributes["Name"] != null &&
+					xn.Attributes["Name"].Value == "AutoLightCenter") mAutoLightCenter.DeserializeFromXML(xn);
 			}
 
 			double res = 0;
@@ -99,6 +179,50 @@ namespace CatEye.Core
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse Softness value");
+			}
+			
+			res = 0;
+			if (node.Attributes["AutoDarkRadius"] != null)
+			{
+				if (double.TryParse(node.Attributes["AutoDarkRadius"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mAutoDarkRadius = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse AutoDarkRadius value");
+			}
+
+			res = 0;
+			if (node.Attributes["AutoLightRadius"] != null)
+			{
+				if (double.TryParse(node.Attributes["AutoLightRadius"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mAutoLightRadius = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse AutoLightRadius value");
+			}
+			
+			bool bres = false;
+			if (node.Attributes["AutoDarkTone"] != null)
+			{
+				if (bool.TryParse(node.Attributes["AutoDarkTone"].Value, out bres))
+				{
+					mAutoDarkTone = bres;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse AutoDarkTone value");
+			}
+			
+			bres = false;
+			if (node.Attributes["AutoLightTone"] != null)
+			{
+				if (bool.TryParse(node.Attributes["AutoLightTone"].Value, out bres))
+				{
+					mAutoLightTone = bres;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse AutoLightTone value");
 			}
 			
 			OnChanged();

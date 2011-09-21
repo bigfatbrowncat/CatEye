@@ -113,6 +113,8 @@
     <EmbeddedResource Include="res\triangle_dot.png" />
     <EmbeddedResource Include="res\donut-black.png" />
     <EmbeddedResource Include="res\donut-white.png" />
+    <EmbeddedResource Include="res\dot-black.png" />
+    <EmbeddedResource Include="res\dot-white.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
@@ -124,5 +126,25 @@
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Scale\" />
     <Folder Include="StageOperations\Crotate\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\src\chain.svg" />
+    <None Include="res\src\chain-small.svg" />
+    <None Include="res\src\donut-black.svg" />
+    <None Include="res\src\donut-white.svg" />
+    <None Include="res\src\dot-black.svg" />
+    <None Include="res\src\dot-white.svg" />
+    <None Include="res\src\down.svg" />
+    <None Include="res\src\line-small.svg" />
+    <None Include="res\src\pen.svg" />
+    <None Include="res\src\pen-small.svg" />
+    <None Include="res\src\remove.svg" />
+    <None Include="res\src\round_dot.svg" />
+    <None Include="res\src\shadow.svg" />
+    <None Include="res\src\snowflake.svg" />
+    <None Include="res\src\snowflake-small.svg" />
+    <None Include="res\src\square_dot.svg" />
+    <None Include="res\src\triangle_dot.svg" />
+    <None Include="res\src\up.svg" />
   </ItemGroup>
 </Project>

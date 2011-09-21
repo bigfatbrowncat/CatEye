@@ -11,9 +11,10 @@ namespace CatEye.UI.Gtk.Widgets
 	public partial class ToneStageOperationParametersWidget : StageOperationParametersWidget
 	{
 		private uint mButtonDown;
-		// Points showing where is the center of area "would-be-white" and where is radius pointing from the center of this area
-		private Point mCenter = null, mSide = null;
+
+		private Point mScrCenter = null, mScrSide = null;
 		private bool mIsMouseDown = false;
+		private Tone mAnalyzedDarkTone, mAnalyzedLightTone;
 		
 		public ToneStageOperationParametersWidget (StageOperationParameters parameters) :
 			base(parameters)
@@ -81,10 +82,26 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{
-			Tone tn = ((ToneStageOperationParameters)Parameters).DarkTone;
-			toneselectorwidget1.SelectedDarkTone = tn;
-			tn = ((ToneStageOperationParameters)Parameters).LightTone;
-			toneselectorwidget1.SelectedLightTone = tn;
+			if (((ToneStageOperationParameters)Parameters).AutoDarkTone)
+			{
+				toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.None;
+			}
+			else
+			{
+				toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.Donut;
+				toneselectorwidget1.SelectedDarkTone = ((ToneStageOperationParameters)Parameters).DarkTone;
+			}
+
+			if (((ToneStageOperationParameters)Parameters).AutoLightTone)
+			{
+				toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.None;
+			}
+			else
+			{
+				toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.Donut;
+				toneselectorwidget1.SelectedLightTone = ((ToneStageOperationParameters)Parameters).LightTone;
+			}
+			
 
 			_EdgeIsChanging = true;
 			edge_hscale.Value = ((ToneStageOperationParameters)Parameters).Edge;
@@ -95,12 +112,15 @@ namespace CatEye.UI.Gtk.Widgets
 			softness_hscale.Value = ((ToneStageOperationParameters)Parameters).Softness;
 			softness_spinbutton.Value = ((ToneStageOperationParameters)Parameters).Softness;
 			_SoftnessIsChanging = false;
+			
 		}
 
 		protected void HandleToneSelectorWidgetDarkToneSelected (object sender, System.EventArgs e)
 		{
 			StartChangingParameters();
 			((ToneStageOperationParameters)Parameters).DarkTone = toneselectorwidget1.SelectedDarkTone;
+			((ToneStageOperationParameters)Parameters).AutoDarkTone = false;
+			toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.Donut;
 			EndChangingParameters();
 			OnUserModified();
 		}
@@ -108,6 +128,8 @@ namespace CatEye.UI.Gtk.Widgets
 		{
 			StartChangingParameters();
 			((ToneStageOperationParameters)Parameters).LightTone = toneselectorwidget1.SelectedLightTone;
+			((ToneStageOperationParameters)Parameters).AutoLightTone = false;
+			toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.Donut;
 			EndChangingParameters();
 			OnUserModified();
 		}
@@ -122,7 +144,7 @@ namespace CatEye.UI.Gtk.Widgets
 			ChangeEdge(edge_spinbutton.Value, EdgeChanger.SpinButton);
 		}
 
-		public override bool ReportMouseButton (IBitmapCore image, int x, int y, int width, int height, uint button_id, bool is_down)
+		public override bool ReportMouseButton (int x, int y, int width, int height, uint button_id, bool is_down)
 		{
 			if (width == 0 || height == 0) return false;
 
@@ -130,52 +152,67 @@ namespace CatEye.UI.Gtk.Widgets
 			{
 				mIsMouseDown = true;
 				mButtonDown = button_id;
-				mCenter = new Point((double)x / width, (double)y / height);
-				mSide = new Point((double)(x + 1) / width, (double)(y + 1) / height);
+				mScrCenter = new Point(x, y);
+				mScrSide = new Point(x + 1, y + 1);
 			}
 			else
 			{
-				int points = 500;
-				
+				// Setting the Parameters
 				if (mButtonDown == 1 /* left */)
 				{
 					ToneStageOperationParameters pms = (ToneStageOperationParameters)Parameters;
-						
-					pms.DarkTone = image.FindDarkTone(
-						pms.LightTone, 
-						pms.Edge, 
-						pms.Softness, 
-						mCenter, 
-						Point.Distance(mCenter, mSide), points);
+					
+					pms.AutoDarkCenter = new Point(mScrCenter.X / width, mScrCenter.Y / height);
+					pms.AutoDarkRadius = Point.Distance(mScrCenter, mScrSide) * 2 / (width + height);
+					pms.AutoDarkTone = true;
+					toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.None;
 				}
 				else if (mButtonDown == 3 /* right */)
 				{
 					ToneStageOperationParameters pms = (ToneStageOperationParameters)Parameters;
 						
-					pms.LightTone = image.FindLightTone(
-						pms.DarkTone, 
-						pms.Edge, 
-						pms.Softness, 
-						mCenter, 
-						Point.Distance(mCenter, mSide), points);
+					pms.AutoLightCenter = new Point(mScrCenter.X / width, mScrCenter.Y / height);
+					pms.AutoLightRadius = Point.Distance(mScrCenter, mScrSide) * 2 / (width + height);
+					pms.AutoLightTone = true;
+					toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.None;
 				}
 				
 				mIsMouseDown = false;
-				mCenter = null; mSide = null;
+				mScrCenter = null; mScrSide = null;
 			}
 			return true;
 		}
 		
-		public override bool ReportMousePosition (IBitmapCore image, int x, int y, int width, int height)
+		public override bool ReportMousePosition (int x, int y, int width, int height)
 		{
 			if (width == 0 || height == 0) return false;
 
 			if (mIsMouseDown)
 			{
-				mSide = new Point((double)x / width, (double)y / height);
-				if (Point.Distance(mCenter, mSide) < Math.Sqrt(2) / Math.Sqrt((double)width * height)) 
+				mScrSide = new Point(x, y);
+				if (Point.Distance(mScrCenter, mScrSide) < Math.Sqrt(2)) 
 				{
-					mSide = new Point((double)(x + 1) / width, (double)(y + 1) / height);
+					mScrSide = new Point(x + 1, y + 1);
+				}
+				
+				// Setting the Parameters
+				if (mButtonDown == 1 /* left */)
+				{
+					ToneStageOperationParameters pms = (ToneStageOperationParameters)Parameters;
+					
+					pms.AutoDarkCenter = new Point(mScrCenter.X / width, mScrCenter.Y / height);
+					pms.AutoDarkRadius = Point.Distance(mScrCenter, mScrSide) * 2 / (width + height);
+					pms.AutoDarkTone = true;
+					toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.None;
+				}
+				else if (mButtonDown == 3 /* right */)
+				{
+					ToneStageOperationParameters pms = (ToneStageOperationParameters)Parameters;
+						
+					pms.AutoLightCenter = new Point(mScrCenter.X / width, mScrCenter.Y / height);
+					pms.AutoLightRadius = Point.Distance(mScrCenter, mScrSide) * 2 / (width + height);
+					pms.AutoLightTone = true;
+					toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.None;
 				}
 				
 				return true;
@@ -183,56 +220,106 @@ namespace CatEye.UI.Gtk.Widgets
 			return false;
 		}
 
-		public override void DrawEditor (IBitmapCore image, IBitmapView view)
+		public override void DrawEditor (IBitmapView view)
 		{
-			if (mCenter != null && mSide != null)
+			Gdk.Drawable target = ((FloatPixmapViewWidget)view).GdkWindow;
+			Gdk.Rectangle image_position = ((FloatPixmapViewWidget)view).CurrentImagePosition;
+			ToneStageOperationParameters pms = (ToneStageOperationParameters)Parameters;
+			
+			
+			Gdk.GC gc = new Gdk.GC(target);
+			gc.Function = Gdk.Function.Copy;
+			
+			if (pms.AutoDarkTone)
 			{
-				Gdk.Drawable target = ((FloatPixmapViewWidget)view).GdkWindow;
-				Gdk.Rectangle image_position = ((FloatPixmapViewWidget)view).CurrentImagePosition;
+				// Drawing dark selection
+				Point scrDarkCenter = new Point(image_position.X + (int)(pms.AutoDarkCenter.X * view.Image.Width),
+				                                image_position.Y + (int)(pms.AutoDarkCenter.Y * view.Image.Height));
+				double scrDarkRadius = pms.AutoDarkRadius * (view.Image.Width + view.Image.Height) / 2;
 				
-				
-				Gdk.GC gc = new Gdk.GC(target);
-				gc.Function = Gdk.Function.Copy;
-				
-				Point scrCenter = new Point(image_position.X + (int)(mCenter.X * view.Image.Width),	
-				                            image_position.Y + (int)(mCenter.Y * view.Image.Height));
-				Point scrSide = new Point(image_position.X + (int)(mSide.X * view.Image.Width),	
-				                          image_position.Y + (int)(mSide.Y * view.Image.Height));
-							
-				
-				if (mIsMouseDown)
+				using (Cairo.Context cc = Gdk.CairoHelper.Create(target))
 				{
-					using (Cairo.Context cc = Gdk.CairoHelper.Create(target))
-					{
-						cc.LineCap = Cairo.LineCap.Round;
-						cc.LineJoin = Cairo.LineJoin.Round;
-		
-						if (mButtonDown == 1 /* left */)
-							cc.Color = new Cairo.Color(1, 1, 1, 0.3);
-						else if (mButtonDown == 3 /* right */)
-							cc.Color = new Cairo.Color(0, 0, 0, 0.3);
-								
-						cc.LineWidth = 3;
-						cc.Arc(scrCenter.X, scrCenter.Y, Point.Distance(scrCenter, scrSide), 0, 2 * Math.PI);
-						cc.ClosePath();
-						cc.Stroke();
-						
-						if (mButtonDown == 1 /* left */)
-							cc.Color = new Cairo.Color(0, 0, 0, 1);
-						else if (mButtonDown == 3 /* right */)
-							cc.Color = new Cairo.Color(1, 1, 1, 1);
-
-						cc.LineWidth = 1;
-						cc.SetDash(new double[] {3, 3}, 0);
-						cc.Arc(scrCenter.X, scrCenter.Y, Point.Distance(scrCenter, scrSide), 0, 2 * Math.PI);
-						cc.ClosePath();
-						cc.Stroke();
-						
-					}					
+					cc.LineCap = Cairo.LineCap.Round;
+					cc.LineJoin = Cairo.LineJoin.Round;
+	
+					cc.Color = new Cairo.Color(1, 1, 1, 0.3);
+							
+					cc.LineWidth = 3;
+					cc.Arc(scrDarkCenter.X, scrDarkCenter.Y, scrDarkRadius, 0, 2 * Math.PI);
+					cc.ClosePath();
+					cc.Stroke();
+					
+					cc.Color = new Cairo.Color(0, 0, 0, 1);
+	
+					cc.LineWidth = 1;
+					cc.SetDash(new double[] {3, 3}, 0);
+					cc.Arc(scrDarkCenter.X, scrDarkCenter.Y, scrDarkRadius, 0, 2 * Math.PI);
+					cc.ClosePath();
+					cc.Stroke();
+				}
+			}
+			
+			if (pms.AutoLightTone)
+			{
+				// Drawing light selection
+				Point scrLightCenter = new Point(image_position.X + (int)(pms.AutoLightCenter.X * view.Image.Width),
+				                                 image_position.Y + (int)(pms.AutoLightCenter.Y * view.Image.Height));
+				double scrLightRadius = pms.AutoLightRadius * (view.Image.Width + view.Image.Height) / 2;
+				
+				using (Cairo.Context cc = Gdk.CairoHelper.Create(target))
+				{
+					cc.LineCap = Cairo.LineCap.Round;
+					cc.LineJoin = Cairo.LineJoin.Round;
+	
+					cc.Color = new Cairo.Color(0, 0, 0, 0.3);
+							
+					cc.LineWidth = 3;
+					cc.Arc(scrLightCenter.X, scrLightCenter.Y, scrLightRadius, 0, 2 * Math.PI);
+					cc.ClosePath();
+					cc.Stroke();
+					
+					cc.Color = new Cairo.Color(1, 1, 1, 1);
+	
+					cc.LineWidth = 1;
+					cc.SetDash(new double[] {3, 3}, 0);
+					cc.Arc(scrLightCenter.X, scrLightCenter.Y, scrLightRadius, 0, 2 * Math.PI);
+					cc.ClosePath();
+					cc.Stroke();
 				}
 			}
 		}
-
+		
+		public override void AnalyzeImage (IBitmapCore image)
+		{
+			int points = 200;	// TODO: Make option
+			
+			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
+			if (pm.AutoDarkTone)
+			{
+				mAnalyzedDarkTone = image.FindDarkTone(
+					pm.LightTone, 
+					pm.Edge, 
+					pm.Softness, 
+					pm.AutoDarkCenter,
+					pm.AutoDarkRadius, 
+					points);
+				toneselectorwidget1.SelectedDarkTone = mAnalyzedDarkTone;
+				toneselectorwidget1.DarkToneSelectorSymbol = ToneSelectorSymbol.Dot;
+			}
+			if (pm.AutoLightTone)
+			{
+				mAnalyzedLightTone = image.FindLightTone(
+					pm.DarkTone, 
+					pm.Edge, 
+					pm.Softness, 
+					pm.AutoLightCenter,
+					pm.AutoLightRadius, 
+					points);
+				toneselectorwidget1.SelectedLightTone = mAnalyzedLightTone;
+				toneselectorwidget1.LightToneSelectorSymbol = ToneSelectorSymbol.Dot;
+			}
+		}
+		
 		protected void OnEdgeHscaleChangeValue (object o, ChangeValueArgs args)
 		{
 			ChangeEdge(edge_hscale.Value, EdgeChanger.HScale);

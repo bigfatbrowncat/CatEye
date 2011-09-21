@@ -4,6 +4,8 @@ using CatEye.Core;
 
 namespace CatEye.UI.Gtk.Widgets
 {
+	public enum ToneSelectorSymbol { Dot, Donut, None }
+	
 	[System.ComponentModel.ToolboxItem(true)]
 	public class ToneSelectorWidget : DrawingArea
 	{
@@ -12,12 +14,18 @@ namespace CatEye.UI.Gtk.Widgets
 		bool mouse_down = false;
 		uint mouse_button = 0;
 
+		private Gdk.Pixbuf black_dot = null;
+		private Gdk.Pixbuf white_dot = null;
 		private Gdk.Pixbuf black_donut = null;
 		private Gdk.Pixbuf white_donut = null;
+		
 		private Gdk.Pixbuf savedPalette = null;
 		
 		private Tone mSelectedDarkTone = new Tone(1, 1, 1);
 		private Tone mSelectedLightTone = new Tone(1, 1, 1);
+		
+		private ToneSelectorSymbol mDarkToneSelectorSymbol = ToneSelectorSymbol.Donut;
+		private ToneSelectorSymbol mLightToneSelectorSymbol = ToneSelectorSymbol.Donut;
 
 		public double Alpha {
 			get {
@@ -60,6 +68,25 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 		
+		public ToneSelectorSymbol DarkToneSelectorSymbol
+		{
+			get { return mDarkToneSelectorSymbol; }
+			set
+			{
+				mDarkToneSelectorSymbol = value;
+				QueueDraw();
+			}
+		}
+		public ToneSelectorSymbol LightToneSelectorSymbol
+		{
+			get { return mLightToneSelectorSymbol; }
+			set
+			{
+				mLightToneSelectorSymbol = value;
+				QueueDraw();
+			}
+		}
+		
 		protected virtual void OnDarkToneSelected()
 		{
 			if (DarkToneSelected != null)
@@ -86,6 +113,8 @@ namespace CatEye.UI.Gtk.Widgets
 		public ToneSelectorWidget (): base()
 		{
 			// Insert initialization code here.
+			black_dot = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.dot-black.png");
+			white_dot = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.dot-white.png");
 			black_donut = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut-black.png");
 			white_donut = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.donut-white.png");
 		}
@@ -180,24 +209,48 @@ namespace CatEye.UI.Gtk.Widgets
 				// Drawing dark selected color
 				int sel_x = (int)(Tone_to_X(mSelectedDarkTone) * savedPalette.Width) + margin;
 				int sel_y = (int)(Tone_to_Y(mSelectedDarkTone) * savedPalette.Height) + margin;
-
-				GdkWindow.DrawPixbuf(gc, black_donut, 
-					0, 0, 
-					sel_x - black_donut.Width / 2, 
-					sel_y - black_donut.Height / 2, 
-					black_donut.Width, black_donut.Height,
-					Gdk.RgbDither.None, 0, 0);
+				
+				if (mDarkToneSelectorSymbol == ToneSelectorSymbol.Donut)
+				{
+					GdkWindow.DrawPixbuf(gc, black_donut, 
+						0, 0, 
+						sel_x - black_donut.Width / 2, 
+						sel_y - black_donut.Height / 2, 
+						black_donut.Width, black_donut.Height,
+						Gdk.RgbDither.None, 0, 0);
+				}
+				else if (mDarkToneSelectorSymbol == ToneSelectorSymbol.Dot)
+				{
+					GdkWindow.DrawPixbuf(gc, black_dot, 
+						0, 0, 
+						sel_x - black_dot.Width / 2, 
+						sel_y - black_dot.Height / 2, 
+						black_dot.Width, black_dot.Height,
+						Gdk.RgbDither.None, 0, 0);
+				}
 
 				// Drawing light selected color
 				sel_x = (int)(Tone_to_X(mSelectedLightTone) * savedPalette.Width) + margin;
 				sel_y = (int)(Tone_to_Y(mSelectedLightTone) * savedPalette.Height) + margin;
-
-				GdkWindow.DrawPixbuf(gc, white_donut, 
-					0, 0, 
-					sel_x - white_donut.Width / 2, 
-					sel_y - white_donut.Height / 2, 
-					white_donut.Width, white_donut.Height,
-					Gdk.RgbDither.None, 0, 0);
+				
+				if (mLightToneSelectorSymbol == ToneSelectorSymbol.Donut)
+				{
+					GdkWindow.DrawPixbuf(gc, white_donut, 
+						0, 0, 
+						sel_x - white_donut.Width / 2, 
+						sel_y - white_donut.Height / 2, 
+						white_donut.Width, white_donut.Height,
+						Gdk.RgbDither.None, 0, 0);
+				}
+				else if (mLightToneSelectorSymbol == ToneSelectorSymbol.Dot)
+				{
+					GdkWindow.DrawPixbuf(gc, white_dot, 
+						0, 0, 
+						sel_x - white_dot.Width / 2, 
+						sel_y - white_dot.Height / 2, 
+						white_dot.Width, white_dot.Height,
+						Gdk.RgbDither.None, 0, 0);
+				}
 			}
 			return true;
 		}
@@ -292,6 +345,8 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			if (black_donut != null) black_donut.Dispose();
 			if (white_donut != null) white_donut.Dispose();
+			if (black_dot != null) black_dot.Dispose();
+			if (white_dot != null) white_dot.Dispose();
 			if (savedPalette != null) savedPalette.Dispose();
 		}
 	}

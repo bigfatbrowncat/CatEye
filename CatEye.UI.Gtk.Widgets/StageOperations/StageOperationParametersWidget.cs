@@ -93,7 +93,7 @@ namespace CatEye
 		/// <returns>
 		/// Should return "true" if it's needed to update the picture.
 		/// </returns>
-		public virtual bool ReportMousePosition(IBitmapCore image, int x, int y, int width, int height)
+		public virtual bool ReportMousePosition(int x, int y, int width, int height)
 		{ 
 			return false;
 		}
@@ -117,7 +117,7 @@ namespace CatEye
 		/// <returns>
 		/// Should return "true" if it's needed to update picture and "false" otherwise.
 		/// </returns>
-		public virtual bool ReportMouseButton(IBitmapCore image, int x, int y, int width, int height, uint button_id, bool is_down) 
+		public virtual bool ReportMouseButton(int x, int y, int width, int height, uint button_id, bool is_down) 
 		{
 			return false;
 		}
@@ -140,7 +140,7 @@ namespace CatEye
 		/// <param name="image_position">
 		/// The rectangle on the <c>target</c> which is occupied by the image.
 		/// </param>
-		public virtual void DrawEditor(IBitmapCore image, IBitmapView view) 
+		public virtual void DrawEditor(IBitmapView view) 
 		{
 		}
 		
