@@ -176,6 +176,8 @@ namespace CatEye
 			return false;
 		}
 		
+		private static WindowsGtkStyle windowsGtkStyle;
+		
 		private static List<StageEditorWindow> mStageEditorWindows = new List<StageEditorWindow>();
 		private static RenderingQueue mRenderingQueue;
 		private static RenderingQueueWindow mRenderingQueueWindow;
@@ -394,12 +396,7 @@ namespace CatEye
 #endif
 			}
 		}
-		
-		static string ColorToHex(System.Drawing.Color c)
-		{
-			return "#" + c.R.ToString("x2") + c.G.ToString("x2") + c.B.ToString("x2");
-		}
-		
+
 		private static bool mLoadedSomethingAlready = false;
 		public static void Main(string[] args)
 		{
@@ -778,22 +775,9 @@ namespace CatEye
 
 			if (ownServerStarted)
 			{
+				windowsGtkStyle = new WindowsGtkStyle("res" + System.IO.Path.DirectorySeparatorChar.ToString() + "win-gtkrc");
 				Application.Init ();
-				
-				// Setting theme for Windows OS
-				if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
-					Environment.OSVersion.Platform == PlatformID.Win32S ||
-					Environment.OSVersion.Platform == PlatformID.Win32Windows ||
-					Environment.OSVersion.Platform == PlatformID.WinCE)
-				{
-					Gtk.Settings.Default.SetStringProperty("gtk-color-scheme", 
-					      "fg_color:" + ColorToHex(System.Drawing.SystemColors.ControlText) + "\n" +
-					      "bg_color:" + ColorToHex(System.Drawing.SystemColors.Control) + "\n" + 
-					      "base_color:" + ColorToHex(System.Drawing.SystemColors.Window) + "\n" + 
-					      "text_color:" + ColorToHex(System.Drawing.SystemColors.ControlText) + "\n" + 
-					      "selected_bg_color:" + ColorToHex(System.Drawing.SystemColors.Highlight) + "\n" + 
-					      "selected_fg_color:" + ColorToHex(System.Drawing.SystemColors.HighlightText), null);
-				}
+				windowsGtkStyle.UpdateStyle();
 				
 				// Creating render queue and its window
 				mRenderingQueue = new RenderingQueue();

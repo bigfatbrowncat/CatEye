@@ -84,10 +84,14 @@
     <Compile Include="gtk-gui\StageEditorWindow.cs" />
     <Compile Include="AskToOpenRawDialog.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.AskToOpenRawDialog.cs" />
+    <Compile Include="WindowsGtkStyle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="default.cestage">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="res\win-gtkrc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
