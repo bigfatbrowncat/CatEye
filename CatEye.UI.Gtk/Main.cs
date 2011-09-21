@@ -775,7 +775,7 @@ namespace CatEye
 
 			if (ownServerStarted)
 			{
-				windowsGtkStyle = new WindowsGtkStyle("res" + System.IO.Path.DirectorySeparatorChar.ToString() + "win-gtkrc");
+				windowsGtkStyle = new WindowsGtkStyle("win-gtkrc");
 				Application.Init ();
 				windowsGtkStyle.UpdateStyle();
 				

@@ -61,8 +61,6 @@
   <ItemGroup>
     <None Include="res\CatEyeRemove.ico" />
     <None Include="res\CatEyeSetup.ico" />
-    <None Include="res\orange.bmp" />
-    <None Include="res\orange-uninstall.bmp" />
     <None Include="licenses\license_cateye.txt" />
     <None Include="licenses\license_glut32.txt" />
     <None Include="licenses\license_gpl.txt" />
@@ -166,7 +164,6 @@
     <None Include="gtk-embedded\pangosharpglue-2.dll" />
     <None Include="gtk-embedded\zlib1.dll" />
     <None Include="CatEye.exe.config" />
-    <None Include="res\win.bmp" />
     <None Include="CatEyeSetup.nsi" />
     <None Include="debug.cmd" />
     <None Include="gtk-postinstall.bat" />
@@ -190,6 +187,26 @@
       <Visible>False</Visible>
     </None>
     <None Include="Extensions.nsh" />
+    <None Include="res\install_left.bmp" />
+    <None Include="res\top_left.bmp" />
+    <None Include="res\uninstall_left.bmp" />
+    <None Include="res\png\CatEyeRemove-32x32.png" />
+    <None Include="res\png\CatEyeRemove-48x48.png" />
+    <None Include="res\png\CatEyeRemove-64x64.png" />
+    <None Include="res\png\CatEyeRemove-small-16x16.png" />
+    <None Include="res\png\CatEyeRemove-small-24x24.png" />
+    <None Include="res\png\CatEyeSetup-32x32.png" />
+    <None Include="res\png\CatEyeSetup-48x48.png" />
+    <None Include="res\png\CatEyeSetup-64x64.png" />
+    <None Include="res\png\CatEyeSetup-small-16x16.png" />
+    <None Include="res\png\CatEyeSetup-small-24x24.png" />
+    <None Include="res\svg-inkscape\CatEyeRemove.svg" />
+    <None Include="res\svg-inkscape\CatEyeRemove-LeftPane.svg" />
+    <None Include="res\svg-inkscape\CatEyeRemove-small.svg" />
+    <None Include="res\svg-inkscape\CatEyeSetup.svg" />
+    <None Include="res\svg-inkscape\CatEyeSetup-LeftPane.svg" />
+    <None Include="res\svg-inkscape\CatEyeSetup-small.svg" />
+    <None Include="res\svg-inkscape\CatEyeSetup-TopPane.svg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

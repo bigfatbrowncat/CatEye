@@ -154,6 +154,7 @@ Section "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
   File "..\${PKGDIR}bin\${config}\dcraw.exe"
+  File "..\${PKGDIR}bin\${config}\win-gtkrc"
   
   CreateShortCut  $DESKTOP\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
   CreateDirectory $SMPROGRAMS\${PRODUCT_NAME}
