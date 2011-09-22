@@ -17,6 +17,15 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Build ();
 		}
 
+		protected void OnPreScaleHscaleValueChanged (object sender, System.EventArgs e)
+		{
+			preScale_hscale.Value = Math.Round(preScale_hscale.Value);
+			if (preScale_hscale.Value > 1)
+				value_label.Text = (1.0 / preScale_hscale.Value * 100).ToString("0.0") + "%";
+			else
+				value_label.Text = (1.0 / preScale_hscale.Value * 100).ToString("0") + "%";
+				
+		}
 	}
 }
 

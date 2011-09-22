@@ -13,7 +13,7 @@ namespace CatEye.UI.Base
 		private	IBitmapCore mFrozenImage = null;
 		private StageOperationParameters _EditingOperation = null;
 		private StageOperationParameters _FrozenAt = null;
-		private double mZoomValue = 0.5;
+		private double mZoomAfterPrescaleValue = 0.5;
 		private string _RawFileName = null;
 		private string _StageFileName = null;
 		private int _PreScale = 0;
@@ -30,6 +30,7 @@ namespace CatEye.UI.Base
 			new Dictionary<StageOperationParameters, IStageOperationHolder>();
 
 		public event EventHandler<EventArgs> ImageChanged;
+		public event EventHandler<EventArgs> ViewNeedsUpdate;
 		public event EventHandler<EventArgs> UIStateChanged;
 		public event EventHandler<EventArgs> EditingOperationChanged;
 		public event EventHandler<EventArgs> OperationFrozen;
@@ -80,12 +81,12 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public double ZoomValue
+		public double ZoomAfterPrescaleValue
 		{
-			get { return mZoomValue; }
+			get { return mZoomAfterPrescaleValue; }
 			set 
 			{
-				mZoomValue = value;
+				mZoomAfterPrescaleValue = value;
 				mFrozenImage = null;
 				AskUpdate();
 			}
@@ -211,9 +212,9 @@ namespace CatEye.UI.Base
 					{
 						CurrentImage = (IBitmapCore)SourceImage.Clone();
 
-						if (mZoomValue < 0.999 || mZoomValue > 1.001)
+						if (mZoomAfterPrescaleValue < 0.999 || mZoomAfterPrescaleValue > 1.001)
 						{
-							CurrentImage.ScaleFast(mZoomValue, delegate (double progress) {
+							CurrentImage.ScaleFast(mZoomAfterPrescaleValue, delegate (double progress) {
 								OnProgressMessageReport(true, progress, "Applying zoom (downscaling)...", false);
 								return !CancelProcessingPending;			
 							});
@@ -394,7 +395,13 @@ namespace CatEye.UI.Base
 			mSOParametersEditorFactory = SOParametersEditorFactory;
 			mSOHolderFactory = SOHolderFactory;
 		}
-
+		
+		protected virtual void OnViewNeedsUpdate()
+		{
+			if (ViewNeedsUpdate != null)
+				ViewNeedsUpdate(this, EventArgs.Empty);
+		}
+		
 		protected virtual void OnEditingOperationChanged()
 		{
 			if (EditingOperationChanged != null)
@@ -424,6 +431,7 @@ namespace CatEye.UI.Base
 		{
 			// If the user modified some property in editing ("pen") mode,
 			// refresh the picture
+			OnViewNeedsUpdate();
 			/*IStageOperationParametersEditor editor = (IStageOperationParametersEditor)sender;
 			if (_EditingOperation != null && _Holders[_EditingOperation].StageOperationParametersEditor == editor)
 				OnImageUpdatingCompleted();*/

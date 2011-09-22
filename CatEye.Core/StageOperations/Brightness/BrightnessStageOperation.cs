@@ -3,7 +3,7 @@ using System;
 namespace CatEye.Core
 {
 	[StageOperationDescription("Brightness", 
-		"Makes the image brighter or darker. Can also normalize the brightness to an average value.")]
+		"Makes the image brighter or darker. Can also normalize the brightness to an average value")]
 	[StageOperationID("BrightnessStageOperation")]
 	public class BrightnessStageOperation : StageOperation
 	{

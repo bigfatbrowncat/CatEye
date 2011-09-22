@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="CatEyeIcon">
@@ -989,8 +989,10 @@
                         <child>
                           <widget class="CatEye.UI.Gtk.Widgets.ZoomWidget" id="zoomWidget">
                             <property name="MemberName" />
+                            <property name="Sensitive">False</property>
                             <property name="Events">ButtonPressMask</property>
                             <property name="Value">0.25</property>
+                            <property name="MaxValue">1</property>
                           </widget>
                           <packing>
                             <property name="Position">3</property>
@@ -1023,7 +1025,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="CatEye.UI.Gtk.AskToOpenRawDialog" design-size="324 408">
+  <widget class="Gtk.Dialog" id="CatEye.UI.Gtk.AskToOpenRawDialog" design-size="326 408">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">RAW file found</property>
@@ -1063,6 +1065,7 @@
             <child>
               <widget class="CatEye.UI.Gtk.Widgets.RawPreviewWidget" id="rawpreviewwidget">
                 <property name="MemberName" />
+                <property name="WidthRequest">300</property>
                 <property name="Events">ButtonPressMask</property>
               </widget>
               <packing>

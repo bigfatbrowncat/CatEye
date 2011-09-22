@@ -140,7 +140,7 @@ public partial class StageEditorWindow : Gtk.Window
 		
 		// Setting zoom widget events
 		zoomWidget.ValueChanged += delegate {
-			mStage.ZoomValue = zoomWidget.Value;
+			mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;
 		};
 		
 		// ** Preparing stage and its thread **
@@ -169,8 +169,9 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.RawFileNameChanged += HandleStageRawFileNameChanged;
 		mStage.StageFileNameChanged += HandleStageStageFileNameChanged;
 		mStage.PreScaleChanged += HandleStagePrescaleChanged;
+		mStage.ViewNeedsUpdate += HandleStageViewNeedsUpdate;
 
-		mStage.ZoomValue = zoomWidget.Value;
+		mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;
 		
 		mStageThread.Start();
 		
@@ -193,9 +194,15 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 		
 	}
-	
+
 #region Handlers called from other thread. 
 	// Each handler here should contain Application.Invoke
+	void HandleStageViewNeedsUpdate (object sender, EventArgs e)
+	{
+		Application.Invoke(delegate {
+			viewWidget.QueueDraw();
+		});
+	}
 	
 	void HandleStageItemIndexChanged (object sender, EventArgs e)
 	{
@@ -218,6 +225,13 @@ public partial class StageEditorWindow : Gtk.Window
 	void HandleStagePrescaleChanged (object sender, EventArgs e)
 	{
 		Application.Invoke(delegate {
+			if (mStage.Prescale == 0)
+				zoomWidget.Sensitive = false;
+			else
+			{
+				zoomWidget.Sensitive = true;
+				zoomWidget.MaxValue = (1.0 / mStage.Prescale);
+			}
 			UpdateTitle();
 		});
 	}
@@ -380,7 +394,12 @@ public partial class StageEditorWindow : Gtk.Window
 		{
 			StageOperationHolderWidget sohw = (StageOperationHolderWidget)mStage.Holders[mStage.StageQueue[i]];
 			((Gtk.Box.BoxChild)stage_vbox[sohw]).Position = i;
+			
+		//	if (sohw.Requisition.Width > maxWidth) maxWidth = sohw.Requisition.Width;
 		}
+		//if (maxWidth > 0)
+		//	stage_vbox.SetSizeRequest(maxWidth, -1);
+		stage_vbox.CheckResize();
 	}
 
 	bool HandleViewWidgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
@@ -862,8 +881,9 @@ public partial class StageEditorWindow : Gtk.Window
 				lbl_name.Xalign = 0;
 
 				// Setting the name font
+				double name_size_k = 1.1;
 				string name_fd_string = lbl_name.PangoContext.FontDescription.Family + " " +
-					((int)(1 * lbl_name.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 1);
+					((int)(name_size_k * lbl_name.PangoContext.FontDescription.Size / Pango.Scale.PangoScale));
 				Pango.FontDescription name_fd = Pango.FontDescription.FromString(name_fd_string);
 				name_fd.Weight = Pango.Weight.Bold;
 				lbl_name.ModifyFont(name_fd);
@@ -878,12 +898,10 @@ public partial class StageEditorWindow : Gtk.Window
 					lbl_desc.LineWrap = true;
 					lbl_desc.Wrap = true;
 					
-					//Pango.FontDescription fd = Pango.FontDescription.FromString(
-					//	lbl_desc.PangoContext.FontDescription.Family + ", " + ((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size)).ToString());
-
 					// Setting the description font
+					double desc_size_k = 0.9;
 					string desc_fd_string = lbl_desc.PangoContext.FontDescription.Family + " " +
-						((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 1);
+						((int)(desc_size_k * lbl_desc.PangoContext.FontDescription.Size / Pango.Scale.PangoScale));
 					Pango.FontDescription desc_fd = Pango.FontDescription.FromString(desc_fd_string);
 					lbl_desc.ModifyFont(desc_fd);
 						
@@ -899,8 +917,10 @@ public partial class StageEditorWindow : Gtk.Window
 				
 				item.Activated += delegate(object s, EventArgs ea) {
 					mStage.CreateAndAddNewItem(stage_operation_types[(MenuItem)s]).Active = true;
-					stage_vbox.CheckResize();
+					GtkScrolledWindow.HscrollbarPolicy = PolicyType.Never;
 					GtkScrolledWindow.Vadjustment.Value = GtkScrolledWindow.Vadjustment.Upper;
+					ArrangeVBoxes();
+					
 				};
 				
 				menu.Append(item);

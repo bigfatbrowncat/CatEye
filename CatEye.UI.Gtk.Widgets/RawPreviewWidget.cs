@@ -53,40 +53,53 @@ namespace CatEye.UI.Gtk.Widgets
 						else
 						{
 							// Reading metadata
-							
-							string res = prc.StandardOutput.ReadLine();
 							string mu = "";
-							while (res != null)
+							try
 							{
-								if (res.StartsWith("Camera: "))
+								string res = prc.StandardOutput.ReadLine();
+								while (res != null)
 								{
-									mu += "<b>Camera: </b>" + res.Substring(8) + "\n";
+									if (res.StartsWith("Camera: "))
+									{
+										mu += "<b>Camera: </b>" + res.Substring(8) + "\n";
+									}
+									else if (res.StartsWith("ISO speed: "))
+									{
+										mu += "<b>ISO speed: </b>" + res.Substring(11) + "\n";
+									}
+									else if (res.StartsWith("Shutter: "))
+									{
+										mu += "<b>Shutter: </b>" + res.Substring(9) + "\n";
+									}
+									else if (res.StartsWith("Aperture: "))
+									{
+										mu += "<b>Aperture: </b>" + res.Substring(10) + "\n";
+									}
+									else if (res.StartsWith("Focal length: "))
+									{
+										mu += "<b>Focal length: </b>" + res.Substring(14) + "\n";
+									}
+#if DEBUG							
+									else 
+										Console.WriteLine("metadata> " + res);
+#endif
+									res = prc.StandardOutput.ReadLine();
 								}
-								else if (res.StartsWith("ISO speed: "))
-								{
-									mu += "<b>ISO speed: </b>" + res.Substring(11) + "\n";
-								}
-								else if (res.StartsWith("Shutter: "))
-								{
-									mu += "<b>Shutter: </b>" + res.Substring(9) + "\n";
-								}
-								else if (res.StartsWith("Aperture: "))
-								{
-									mu += "<b>Aperture: </b>" + res.Substring(10) + "\n";
-								}
-								else if (res.StartsWith("Focal length: "))
-								{
-									mu += "<b>Focal length: </b>" + res.Substring(14) + "\n";
-								}
-	#if DEBUG							
-								else 
-									Console.WriteLine("metadata> " + res);
-	#endif
-								res = prc.StandardOutput.ReadLine();
+								prc.WaitForExit(-1);	// R.I.P.
+								prc.Close();
 							}
-							prc.WaitForExit(-1);	// R.I.P.
-							prc.Close();
-							
+							catch (Exception 
+#if DEBUG
+								ex
+#endif								
+								)
+							{
+#if DEBUG
+								Console.WriteLine("Exception occured during the image metadata loading: " + ex.Message);
+#endif								
+								mu = "Can't load metadata";
+							}
+
 							identification_label.Markup = mu;
 							file_is_good = true;
 							
@@ -156,7 +169,11 @@ namespace CatEye.UI.Gtk.Widgets
 									}
 		
 								}
-								catch (Exception ex)
+								catch (Exception 
+#if DEBUG
+									ex
+#endif								
+									)
 								{
 #if DEBUG
 									Console.WriteLine("Exception occured during the thumbnail loading process: " + ex.Message);

@@ -3,14 +3,74 @@ using Gtk;
 
 namespace CatEye.UI.Gtk.Widgets
 {
+	class WarningTooltip : Window
+	{
+		private Label mLabel;
+		private uint mTimerID = 0;
+		private Widget mBaseWidget;
+		public WarningTooltip(Widget baseWidget) : base(WindowType.Popup)
+		{
+			mBaseWidget = baseWidget;
+			
+			mLabel = new Label();
+			mLabel.UseMarkup = true;
+			Add(mLabel);
+			BorderWidth = 4;
+			mLabel.Show();
+			
+			SizeAllocated += HandleSizeAllocated;
+
+			using (Style stl = Rc.GetStyleByPaths(this.Settings, "gtk-tooltip*", "gtk-tooltip*", GLib.GType.None))
+			{
+				this.Style = stl;
+				mLabel.Style = stl;
+			}
+		}
+
+		void HandleSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (mBaseWidget != null && mBaseWidget.GdkWindow != null)
+			{
+				int x0, y0, x1, y1;
+				mBaseWidget.GdkWindow.GetOrigin(out x0, out y0);
+				mBaseWidget.TranslateCoordinates(mBaseWidget.Toplevel, 0, 0, out x1, out y1);
+				Move(x0 + x1, y0 + y1 - args.Allocation.Height - 10);
+			}
+		}
+
+		public void ShowWarning(double maxValue, uint delay)
+		{
+			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image in more than at <b>" + 
+			                (maxValue * 100).ToString("0") + "%</b> of it's original size cause it was downscaled";
+			mLabel.LineWrap = true;
+			mLabel.WidthRequest = 200;
+			
+			SetSizeRequest(mBaseWidget.Allocation.Width, -1);
+			
+			if (mTimerID != 0)
+			{
+				GLib.Source.Remove(mTimerID);
+			}
+			mTimerID = GLib.Timeout.Add(delay, delegate {
+				Hide();
+				return false;
+			});
+			
+			Show();
+		}
+	}
+	
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ZoomWidget : Bin
 	{
-		private double[] mGoodValues = new double[] { 0.125/2, 0.125, 0.25, 0.5, 0.75, 1 };
+		private double[] mGoodValuesBase = new double[] { 0.125 / 2, 0.125, 0.25, 1.0 / 3, 0.5, 0.75, 1 };
+		private double[] mGoodValues = new double[] { 0.125 / 2, 0.125, 0.25, 1.0 / 3, 0.5, 0.75, 1 };
 		
 		private double mValue = 1;
+		private double mMaxValue = 1;
 		private bool setting_divider = false;
-
+		private WarningTooltip mWarningTooltip;
+		private bool mChangingSelf = false;
 		
 		public event EventHandler<EventArgs> ValueChanged;
 		
@@ -33,7 +93,9 @@ namespace CatEye.UI.Gtk.Widgets
 				{
 					zoom_label.Text = (100.0 * mValue).ToString("0.0") + "%";
 				}
+				mChangingSelf = true;
 				zoom_hscale.Value = (double)mValue;
+				mChangingSelf = false;
 				setting_divider = false;
 			}
 		}
@@ -43,30 +105,59 @@ namespace CatEye.UI.Gtk.Widgets
 			get { return mValue; }
 			set
 			{
-				mValue = value;
+				double oldValue = mValue;
+				if (value > mMaxValue) 
+					mValue = mMaxValue;
+				else
+					mValue = value;
+				
 				if (mValue < mGoodValues[0]) mValue = mGoodValues[0];
 				if (mValue > mGoodValues[mGoodValues.Length - 1]) 
 					mValue = mGoodValues[mGoodValues.Length - 1];
-				if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
+				
+				if (mValue != oldValue)
+				{
+					if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
+				}
+				
 				UpdateDividerView();
+			}
+		}
+		
+		public double MaxValue
+		{
+			get { return mMaxValue; }
+			set { 
+				mMaxValue = value;
+				for (int i = 0; i < mGoodValues.Length; i++)
+					mGoodValues[i] = mGoodValuesBase[i] * mMaxValue;
+				
+				if (Value > mMaxValue) Value = mMaxValue;
 			}
 		}
 
 		public ZoomWidget ()
 		{
 			this.Build ();
+			mWarningTooltip = new WarningTooltip(this);
 		}
-
+		
 		protected void OnZoomHscaleValueChanged (object sender, System.EventArgs e)
 		{
-			Value = zoom_hscale.Value;
+			double newValue = zoom_hscale.Value;
+			if (!mChangingSelf && newValue > mMaxValue)
+			{
+				mWarningTooltip.ShowWarning(mMaxValue, 5000);
+			}
+			
+			Value = newValue;
 			
 			UpdateDividerView();
 		}
 
 		protected void OnZoom100ButtonClicked (object sender, System.EventArgs e)
 		{
-			Value = 1;
+			Value = mMaxValue;
 		}
 
 		protected void OnZoomInButtonClicked (object sender, System.EventArgs e)
@@ -76,6 +167,10 @@ namespace CatEye.UI.Gtk.Widgets
 				if ((ValueIsNear(mGoodValues[i]) || Value > mGoodValues[i]) && Value < mGoodValues[i + 1])
 				{
 					Value = mGoodValues[i + 1];
+					if (mGoodValues[i + 1] > mMaxValue)
+					{
+						mWarningTooltip.ShowWarning(mMaxValue, 5000);
+					}
 					break;
 				}
 			}
