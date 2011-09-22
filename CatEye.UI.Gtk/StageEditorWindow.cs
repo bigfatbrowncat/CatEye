@@ -857,10 +857,17 @@ public partial class StageEditorWindow : Gtk.Window
 				
 				
 				Label lbl_name = new Label();
-				lbl_name.UseMarkup = true;
-				lbl_name.Markup = "<b>" + name + "</b>";
+				lbl_name.Text = name;
 				lbl_name.Justify = Justification.Left;
 				lbl_name.Xalign = 0;
+
+				// Setting the name font
+				string name_fd_string = lbl_name.PangoContext.FontDescription.Family + " " +
+					((int)(1 * lbl_name.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 1);
+				Pango.FontDescription name_fd = Pango.FontDescription.FromString(name_fd_string);
+				name_fd.Weight = Pango.Weight.Bold;
+				lbl_name.ModifyFont(name_fd);
+				
 				item_vbox.Add(lbl_name);
 				lbl_name.Show();
 
@@ -873,12 +880,12 @@ public partial class StageEditorWindow : Gtk.Window
 					
 					//Pango.FontDescription fd = Pango.FontDescription.FromString(
 					//	lbl_desc.PangoContext.FontDescription.Family + ", " + ((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size)).ToString());
-					
-					string fd_string = lbl_desc.PangoContext.FontDescription.Family + " " +
+
+					// Setting the description font
+					string desc_fd_string = lbl_desc.PangoContext.FontDescription.Family + " " +
 						((int)(0.8 * lbl_desc.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 1);
-					
-					Pango.FontDescription fd = Pango.FontDescription.FromString(fd_string);
-					lbl_desc.ModifyFont(fd);
+					Pango.FontDescription desc_fd = Pango.FontDescription.FromString(desc_fd_string);
+					lbl_desc.ModifyFont(desc_fd);
 						
 					item_vbox.Add(lbl_desc);
 					lbl_desc.Show();
