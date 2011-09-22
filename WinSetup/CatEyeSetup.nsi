@@ -107,19 +107,35 @@ Function .onInit
 FunctionEnd
 
 
-!macro RegisterExtension extenstion
-  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} Stage Operations File" 
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\${PRODUCT_NAME}.exe,0"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+!macro RegisterCestage extenstion
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.CestageFile"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "${PRODUCT_NAME} Stage Operations File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\DefaultIcon" "" "$INSTDIR\res\ico\cestage.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
   ; default application for current user (for NT6.0 and newer)
   GetVersion::WindowsVersion
   Pop $winver
   ${If} $winver >= "6.0"
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.CestageFile" 
   ${EndIf}
 !macroend
+
+
+!macro RegisterExtension extenstion
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+   ; default application for current user (for NT6.0 and newer)
+   GetVersion::WindowsVersion
+   Pop $winver
+   ${If} $winver >= "6.0"
+     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
+     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
+   ${EndIf}
+ !macroend
+
 
 ;--------------------------------
 
@@ -139,9 +155,17 @@ Section "Installer section"
   File /r "${PKGDIR}licenses\*.*"
   SetOutPath "$INSTDIR"
 
+  ; Resources Install
+  CreateDirectory "$INSTDIR\res\ico"
+  SetOutPath "$INSTDIR\res\ico"
+  File "..\${PKGDIR}bin\${config}\res\ico\*.*"
+  SetOutPath "$INSTDIR"
 
   ; GtkInstall
   File /r "${PKGDIR}gtk-embedded\*.*"
+  SetOutPath "$INSTDIR\res"
+  File "..\${PKGDIR}bin\${config}\res\win-gtkrc"
+  SetOutPath "$INSTDIR"
   File "${PKGDIR}gtk-postinstall.bat"
   Exec "${PKGDIR}gtk-postinstall.bat"
   Delete "${PKGDIR}gtk-postinstall.bat"
@@ -155,8 +179,8 @@ Section "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
   File "..\${PKGDIR}bin\${config}\dcraw.exe"
-  File "..\${PKGDIR}bin\${config}\win-gtkrc"
-  
+
+
   CreateShortCut  $DESKTOP\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
   CreateDirectory $SMPROGRAMS\${PRODUCT_NAME}
   CreateShortCut  $SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
@@ -166,11 +190,11 @@ Section "Installer section"
   WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "SetupDir" "$INSTDIR"
   
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayName" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-  WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayIcon" "$INSTDIR\CatEye.exe"
+  WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayIcon" "$INSTDIR\res\ico\cateye.ico"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "UninstallString" "$INSTDIR\Uninstall.exe"
   
   ; Registering .cestage file
-  !insertmacro RegisterExtension "cestage"
+  !insertmacro RegisterCestage "cestage"
   
   WriteUninstaller $INSTDIR\Uninstall.exe
 
@@ -232,10 +256,20 @@ Function un.GtkDelete
   Delete "$INSTDIR\pango-querymodules.exe"
   Delete "$INSTDIR\pangosharpglue-2.dll"
   Delete "$INSTDIR\zlib1.dll"
+  Delete "$INSTDIR\res\win-gtkrc"
   
   RmDir /r "$INSTDIR\etc"
   RmDir /r "$INSTDIR\lib"
   RmDir /r "$INSTDIR\share"
+  RmDir /r "$INSTDIR\res"
+FunctionEnd
+
+
+Function un.ResDelete
+  Delete "$INSTDIR\res\ico\cateye.ico"
+  Delete "$INSTDIR\res\ico\cateye-raw.ico"
+  Delete "$INSTDIR\res\ico\cestage.ico"
+  RmDir /r "$INSTDIR\res\ico"
 FunctionEnd
 
 ;--------------------------------
@@ -244,12 +278,14 @@ Section "un.Installer section"
   SetShellVarContext all
   
   call un.LicensesDel
+  call un.ResDelete
   call un.GtkDelete
   
   Delete $INSTDIR\dcraw.exe
   Delete $INSTDIR\CatEye.Core.dll
   Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
   Delete $INSTDIR\CatEye.UI.Base.dll
+  Delete $INSTDIR\CatEye.Widgets.dll"
   Delete $INSTDIR\default.cestage
   Delete $INSTDIR\CatEye.exe.config
   Delete $INSTDIR\CatEye.exe
@@ -270,7 +306,7 @@ Section "un.Installer section"
   DeleteRegKey HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}
   
   ; Delete .cestage file registration
-  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File"
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile"
   DeleteRegKey HKLM "Software\Classes\.cestage"
   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage"
   ; default application for current user (for NT6.0 and newer)
