@@ -20,10 +20,11 @@ namespace CatEye.UI.Gtk.Widgets
 		protected void OnPreScaleHscaleValueChanged (object sender, System.EventArgs e)
 		{
 			preScale_hscale.Value = Math.Round(preScale_hscale.Value);
+			value_label.UseMarkup = true;
 			if (preScale_hscale.Value > 1)
-				value_label.Text = (1.0 / preScale_hscale.Value * 100).ToString("0.0") + "%";
+				value_label.Markup = "<b>" + (1.0 / preScale_hscale.Value * 100).ToString("0.0") + "%</b>";
 			else
-				value_label.Text = (1.0 / preScale_hscale.Value * 100).ToString("0") + "%";
+				value_label.Markup = "<b>" + (1.0 / preScale_hscale.Value * 100).ToString("0") + "%</b>";
 				
 		}
 	}

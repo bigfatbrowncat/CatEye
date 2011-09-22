@@ -61,23 +61,23 @@ namespace CatEye.UI.Gtk.Widgets
 								{
 									if (res.StartsWith("Camera: "))
 									{
-										mu += "<b>Camera: </b>" + res.Substring(8) + "\n";
+										mu += "Camera: <b>" + res.Substring(8) + "</b>\n";
 									}
 									else if (res.StartsWith("ISO speed: "))
 									{
-										mu += "<b>ISO speed: </b>" + res.Substring(11) + "\n";
+										mu += "ISO speed: <b>" + res.Substring(11) + "</b>\n";
 									}
 									else if (res.StartsWith("Shutter: "))
 									{
-										mu += "<b>Shutter: </b>" + res.Substring(9) + "\n";
+										mu += "Shutter: <b>" + res.Substring(9) + "</b>\n";
 									}
 									else if (res.StartsWith("Aperture: "))
 									{
-										mu += "<b>Aperture: </b>" + res.Substring(10) + "\n";
+										mu += "Aperture: <b>" + res.Substring(10) + "</b>\n";
 									}
 									else if (res.StartsWith("Focal length: "))
 									{
-										mu += "<b>Focal length: </b>" + res.Substring(14) + "\n";
+										mu += "Focal length: <b>" + res.Substring(14) + "</b>\n";
 									}
 #if DEBUG							
 									else 
@@ -131,8 +131,6 @@ namespace CatEye.UI.Gtk.Widgets
 											readed_all += readed;
 										}
 										while (readed > 0);
-							
-										//while (Application.EventsPending()) Application.RunIteration();
 			
 										prc2.WaitForExit(-1);	// R.I.P.
 										prc2.Close();
@@ -151,7 +149,7 @@ namespace CatEye.UI.Gtk.Widgets
 									if (pb != null)
 									{
 										Gdk.Pixbuf pbold = pb;
-										origsize_label.Markup = "<b>Image size: </b>" + pb.Width + " x " + pb.Height;
+										origsize_label.Markup = "Image size: <b>" + pb.Width + "</b> x <b>" + pb.Height + "</b>";
 										if (pb.Width > pb.Height)
 											pb = pb.ScaleSimple(size, (int)((double)pb.Height / pb.Width * size), Gdk.InterpType.Bilinear);
 										else

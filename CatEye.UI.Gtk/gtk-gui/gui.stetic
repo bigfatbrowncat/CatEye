@@ -1025,7 +1025,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="CatEye.UI.Gtk.AskToOpenRawDialog" design-size="326 408">
+  <widget class="Gtk.Dialog" id="CatEye.UI.Gtk.AskToOpenRawDialog" design-size="296 408">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">RAW file found</property>
@@ -1065,7 +1065,7 @@
             <child>
               <widget class="CatEye.UI.Gtk.Widgets.RawPreviewWidget" id="rawpreviewwidget">
                 <property name="MemberName" />
-                <property name="WidthRequest">300</property>
+                <property name="WidthRequest">270</property>
                 <property name="Events">ButtonPressMask</property>
               </widget>
               <packing>
