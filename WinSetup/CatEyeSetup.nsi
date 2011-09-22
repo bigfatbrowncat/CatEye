@@ -145,6 +145,10 @@ Section "Installer section"
   File "${PKGDIR}gtk-postinstall.bat"
   Exec "${PKGDIR}gtk-postinstall.bat"
   Delete "${PKGDIR}gtk-postinstall.bat"
+  CreateDirectory "$INSTDIR\res"
+  SetOutPath "$INSTDIR\res"
+  File "..\${PKGDIR}bin\${config}\res\win-gtkrc"
+  SetOutPath "$INSTDIR"
 
 
   ; Put files there
@@ -155,8 +159,8 @@ Section "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
   File "..\${PKGDIR}bin\${config}\dcraw.exe"
-  File "..\${PKGDIR}bin\${config}\win-gtkrc"
-  
+
+
   CreateShortCut  $DESKTOP\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
   CreateDirectory $SMPROGRAMS\${PRODUCT_NAME}
   CreateShortCut  $SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
@@ -232,10 +236,12 @@ Function un.GtkDelete
   Delete "$INSTDIR\pango-querymodules.exe"
   Delete "$INSTDIR\pangosharpglue-2.dll"
   Delete "$INSTDIR\zlib1.dll"
+  Delete "INSTDIR\res\win-gtkrc"
   
   RmDir /r "$INSTDIR\etc"
   RmDir /r "$INSTDIR\lib"
   RmDir /r "$INSTDIR\share"
+  RmDir /r "$INSTDIR\res"
 FunctionEnd
 
 ;--------------------------------
