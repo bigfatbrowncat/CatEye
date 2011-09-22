@@ -142,13 +142,13 @@ Section "Installer section"
 
   ; GtkInstall
   File /r "${PKGDIR}gtk-embedded\*.*"
-  File "${PKGDIR}gtk-postinstall.bat"
-  Exec "${PKGDIR}gtk-postinstall.bat"
-  Delete "${PKGDIR}gtk-postinstall.bat"
   CreateDirectory "$INSTDIR\res"
   SetOutPath "$INSTDIR\res"
   File "..\${PKGDIR}bin\${config}\res\win-gtkrc"
   SetOutPath "$INSTDIR"
+  File "${PKGDIR}gtk-postinstall.bat"
+  Exec "${PKGDIR}gtk-postinstall.bat"
+  Delete "${PKGDIR}gtk-postinstall.bat"
 
 
   ; Put files there
@@ -236,7 +236,7 @@ Function un.GtkDelete
   Delete "$INSTDIR\pango-querymodules.exe"
   Delete "$INSTDIR\pangosharpglue-2.dll"
   Delete "$INSTDIR\zlib1.dll"
-  Delete "INSTDIR\res\win-gtkrc"
+  Delete "$INSTDIR\res\win-gtkrc"
   
   RmDir /r "$INSTDIR\etc"
   RmDir /r "$INSTDIR\lib"
@@ -256,6 +256,7 @@ Section "un.Installer section"
   Delete $INSTDIR\CatEye.Core.dll
   Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
   Delete $INSTDIR\CatEye.UI.Base.dll
+  Delete $INSTDIR\CatEye.Widgets.dll"
   Delete $INSTDIR\default.cestage
   Delete $INSTDIR\CatEye.exe.config
   Delete $INSTDIR\CatEye.exe
