@@ -92,8 +92,6 @@
     <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
     <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
     <Compile Include="StageOperations\Tone\ToneStageOperationParameters.cs" />
-    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperation.cs" />
-    <Compile Include="StageOperations\UltraSharp\UltraSharpStageOperationParameters.cs" />
     <Compile Include="Tone.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperation.cs" />
     <Compile Include="StageOperations\BlackPoint\BlackPointStageOperationParameters.cs" />
@@ -113,6 +111,8 @@
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="FloatBitmap.cs" />
     <Compile Include="Attributes.cs" />
+    <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperation.cs" />
+    <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -121,10 +121,10 @@
     <Folder Include="StageOperations\Compression\" />
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\Tone\" />
-    <Folder Include="StageOperations\UltraSharp\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Crotate\" />
     <Folder Include="StageOperations\LimitSize\" />
+    <Folder Include="StageOperations\LocalContrast\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

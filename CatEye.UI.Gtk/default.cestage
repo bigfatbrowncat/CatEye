@@ -9,5 +9,5 @@
   </StageOperationParameters>
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
   <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.60" DarkPreserving="0.01" />
-  <StageOperationParameters ID="UltraSharpStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
+  <StageOperationParameters ID="LocalContrastStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
 </Stage>

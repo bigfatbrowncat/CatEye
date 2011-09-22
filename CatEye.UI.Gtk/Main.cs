@@ -19,7 +19,7 @@ namespace CatEye
 		{
 			typeof(CompressionStageOperation),
 			typeof(BrightnessStageOperation),
-			typeof(UltraSharpStageOperation),
+			typeof(LocalContrastStageOperation),
 			typeof(SaturationStageOperation),
 			typeof(ToneStageOperation),
 			typeof(BlackPointStageOperation),
@@ -31,7 +31,7 @@ namespace CatEye
 		{
 			typeof(CompressionStageOperationParameters),
 			typeof(BrightnessStageOperationParameters),
-			typeof(UltraSharpStageOperationParameters),
+			typeof(LocalContrastStageOperationParameters),
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
 			typeof(BlackPointStageOperationParameters),
@@ -43,7 +43,7 @@ namespace CatEye
 		{
 			typeof(CompressionStageOperationParametersWidget),
 			typeof(BrightnessStageOperationParametersWidget),
-			typeof(UltraSharpStageOperationParametersWidget),
+			typeof(LocalContrastStageOperationParametersWidget),
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
 			typeof(BlackPointStageOperationParametersWidget),

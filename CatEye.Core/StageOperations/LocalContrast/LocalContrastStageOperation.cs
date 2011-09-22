@@ -2,15 +2,15 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Local contrast", "Lets you to make the image more impressive by increasing/decreasing of its contrast"
-	 ), StageOperationID("UltraSharpStageOperation")]
-	public class UltraSharpStageOperation : StageOperation
+	[StageOperationDescription("Local contrast", "Lets you to make the image more impressive by increasing/decreasing of its contrast")]
+	[StageOperationID("LocalContrastStageOperation")]
+	public class LocalContrastStageOperation : StageOperation
 	{
 		// TODO: There should be some quality configuration which should calculate
 		// points number value
 		int points = 150; // 260 is perfect
 
-		public UltraSharpStageOperation (StageOperationParameters parameters)
+		public LocalContrastStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
 		}
@@ -22,9 +22,9 @@ namespace CatEye.Core
 		
 		public override void OnDo (IBitmapCore hdp)
 		{
-			UltraSharpStageOperationParameters pm = (UltraSharpStageOperationParameters)Parameters;
+			LocalContrastStageOperationParameters pm = (LocalContrastStageOperationParameters)Parameters;
 			
-			Console.WriteLine("Ultra sharpening...");
+			Console.WriteLine("Applying Local Contrast...");
 			
 			// Making delta0 from base
 			//double delta0 = Math.Pow(10, -pm.Base);
@@ -32,7 +32,7 @@ namespace CatEye.Core
 			
 			double pressure = pm.Pressure;
 			double contrast = pm.Contrast;
-			if (pm.Type == UltraSharpStageOperationParameters.SharpType.Soft) 
+			if (pm.Type == LocalContrastStageOperationParameters.SharpType.Soft) 
 				pressure *= -1;
 			
 			hdp.SharpenLight(pm.Radius, pressure, contrast, points, 
@@ -43,7 +43,7 @@ namespace CatEye.Core
 		}
 		public override Type GetParametersType ()
 		{
-			return typeof(UltraSharpStageOperationParameters);
+			return typeof(LocalContrastStageOperationParameters);
 		}
 	}
 }
