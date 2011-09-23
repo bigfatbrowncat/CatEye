@@ -69,6 +69,8 @@ namespace CatEye.UI.Gtk
 		{
 			this.Build ();
 			
+			title_Label.ModifyFont(FontHelpers.ScaleFontSize(title_Label, 1.4));
+			
 			// Adding queue event handlers
 			mRenderingQueue = renderingQueue;
 			mRenderingQueue.QueueProgressMessageReport += HandleRenderingQueueProgressMessageReport;
@@ -363,7 +365,7 @@ namespace CatEye.UI.Gtk
 
 		protected void OnShown (object sender, System.EventArgs e)
 		{
-			title_Label.ModifyFont(FontHelpers.ScaleFontSize(title_Label, 1.4));
+
 		}
 	}
 }
