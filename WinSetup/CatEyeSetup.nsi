@@ -73,6 +73,9 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 !insertmacro MUI_PAGE_EXTENSIONS    ; my page for extensions registration
 
+;!define MUI_COMPONENTSPAGE_SMALLDESC
+;!insertmacro MUI_PAGE_COMPONENTS
+
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -139,7 +142,11 @@ FunctionEnd
 
 ;--------------------------------
 
-Section "Installer section"
+;SectionGroup "Files types associations"
+
+;SectionGroupEnd
+
+Section  "Installer section"
   
   SetShellVarContext all
   
