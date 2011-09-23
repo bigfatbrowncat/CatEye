@@ -40,8 +40,9 @@ namespace CatEye.UI.Gtk.Widgets
 
 		public void ShowWarning(double maxValue, uint delay)
 		{
-			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image more than at <b>" + 
-			                (maxValue * 100).ToString("0") + "%</b> of it's original size cause it was downscaled";
+			mLabel.Markup = 
+				String.Format("<b>Sorry!</b>\nYou can't zoom the image more than at <b>{0}%</b> of its original size cause it has been downscaled", 
+				(maxValue * 100).ToString("0"));
 			mLabel.LineWrap = true;
 			mLabel.WidthRequest = mBaseWidget.Allocation.Width - 10;
 			
@@ -167,12 +168,12 @@ namespace CatEye.UI.Gtk.Widgets
 				if ((ValueIsNear(mGoodValues[i]) || Value > mGoodValues[i]) && Value < mGoodValues[i + 1])
 				{
 					Value = mGoodValues[i + 1];
-					if (mGoodValues[i + 1] > mMaxValue)
-					{
-						mWarningTooltip.ShowWarning(mMaxValue, 5000);
-					}
-					break;
+					return;
 				}
+			}
+			if (ValueIsNear(mMaxValue))
+			{
+				mWarningTooltip.ShowWarning(mMaxValue, 5000);
 			}
 		}
 

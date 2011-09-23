@@ -371,7 +371,7 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
-		public void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
+		public unsafe void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
 		{
 			float[,] light = new float[mWidth, mHeight];
 			double maxlight = 0;
@@ -468,7 +468,7 @@ namespace CatEye.Core
 											//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
 											double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
 												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
-			
+											
 											f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
 			
 											double scale = f;	// It was f / 5
