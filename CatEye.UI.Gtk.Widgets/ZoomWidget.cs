@@ -94,7 +94,7 @@ namespace CatEye.UI.Gtk.Widgets
 					zoom_label.Text = (100.0 * mValue).ToString("0.0") + "%";
 				}
 				mChangingSelf = true;
-				zoom_hscale.Value = (double)mValue;
+				zoom_hscale.Value = Math.Log(1 + (1 + Math.Sqrt(5)) * (double)mValue, 2 + Math.Sqrt(5));
 				mChangingSelf = false;
 				setting_divider = false;
 			}
@@ -144,7 +144,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected void OnZoomHscaleValueChanged (object sender, System.EventArgs e)
 		{
-			double newValue = zoom_hscale.Value;
+			double newValue = (Math.Pow(2 + Math.Sqrt(5), zoom_hscale.Value) - 1) / (1 + Math.Sqrt(5));
 			if (!mChangingSelf && newValue > mMaxValue)
 			{
 				mWarningTooltip.ShowWarning(mMaxValue, 5000);
