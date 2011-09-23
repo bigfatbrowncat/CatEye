@@ -82,6 +82,7 @@
     <Compile Include="ForeColoredSymbol.cs" />
     <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.LocalContrastStageOperationParametersWidget.cs" />
+    <Compile Include="FontHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
