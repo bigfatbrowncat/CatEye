@@ -135,7 +135,8 @@ namespace CatEye.UI.Gtk
 					// TODO Can't be used currently cause of buggy Gtk#
 					//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
 			
-					rp.Save(e.Target.Destination, e.Target.FileType);
+					rp.Savev(e.Target.Destination, e.Target.FileType, new string[] { "quality" }, new string[] { "95" });
+					//rp.Save(e.Target.Destination, e.Target.FileType);
 				}
 			});
 			

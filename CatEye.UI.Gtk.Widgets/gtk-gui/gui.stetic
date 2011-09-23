@@ -52,7 +52,7 @@
             <property name="MemberName" />
             <property name="LabelProp" translatable="yes">00</property>
             <property name="Justify">Center</property>
-            <property name="WidthChars">5</property>
+            <property name="WidthChars">6</property>
             <property name="MaxWidthChars">5</property>
             <property name="SingleLineMode">True</property>
           </widget>
