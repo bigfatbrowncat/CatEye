@@ -69,6 +69,8 @@ namespace CatEye.UI.Gtk
 		{
 			this.Build ();
 			
+			title_Label.ModifyFont(FontHelpers.ScaleFontSize(title_Label, 1.4));
+			
 			// Adding queue event handlers
 			mRenderingQueue = renderingQueue;
 			mRenderingQueue.QueueProgressMessageReport += HandleRenderingQueueProgressMessageReport;
@@ -132,10 +134,10 @@ namespace CatEye.UI.Gtk
 						}
 					);
 				
-					// TODO Can't be used currently cause of buggy Gtk#
-					//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
-			
-					rp.Save(e.Target.Destination, e.Target.FileType);
+					// TODO: "quality" must be specified for jpeg only. 
+					// For png it should be "tEXt" fields.
+					// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
+					rp.Savev(e.Target.Destination, e.Target.FileType, new string[] { "quality" }, new string[] { "95" });
 				}
 			});
 			
@@ -363,7 +365,7 @@ namespace CatEye.UI.Gtk
 
 		protected void OnShown (object sender, System.EventArgs e)
 		{
-			titleGtkLabel.ModifyFont(Pango.FontDescription.FromString("12"));
+
 		}
 	}
 }

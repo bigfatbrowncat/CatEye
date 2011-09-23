@@ -138,9 +138,7 @@ public partial class StageEditorWindow : Gtk.Window
 		viewWidget.MouseButtonStateChanged += HandleViewWidgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		zoomWidget.ValueChanged += delegate {
-			mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;
-		};
+		zoomWidget.ValueChanged += HandleZoomWidgetValueChanged;
 		
 		// ** Preparing stage and its thread **
 		mStageThread = new Thread(StageThreadStart);
@@ -230,8 +228,8 @@ public partial class StageEditorWindow : Gtk.Window
 			{
 				zoomWidget.Sensitive = true;
 				zoomWidget.MaxValue = (1.0 / mStage.Prescale);
+				mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;	
 			}
-			UpdateTitle();
 		});
 	}
 	void HandleStageImageChanged (object sender, EventArgs e)
@@ -400,7 +398,12 @@ public partial class StageEditorWindow : Gtk.Window
 		//	stage_vbox.SetSizeRequest(maxWidth, -1);
 		stage_vbox.CheckResize();
 	}
-
+	
+	void HandleZoomWidgetValueChanged (object sender, EventArgs e)
+	{
+		mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;	
+	}
+	
 	bool HandleViewWidgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
 	{
 		int x_rel = x - viewWidget.CurrentImagePosition.X;
@@ -449,6 +452,7 @@ public partial class StageEditorWindow : Gtk.Window
 	public void LoadCEStage(string filename)
 	{
 		mStage.LoadStage(filename);
+		
 	}
 	
 	protected void LoadRawImageActionPicked()
@@ -663,21 +667,6 @@ public partial class StageEditorWindow : Gtk.Window
 			}
 		}
 	}
-	
-	protected void OnAddStageOperationButtonClicked (object sender, System.EventArgs e)
-	{
-		/*
-		if (mStage.FrozenAt == null)
-		{
-			Gtk.TreeIter ti;
-			stageOperationToAdd_combobox.GetActiveIter(out ti);
-			int index = (int)stageOperationToAdd_combobox.Model.GetValue(ti, 1);
-			mStage.CreateAndAddNewItem(mStageOperationTypes[index]);
-				
-			stage_vbox.CheckResize();
-		}
-		*/
-	}
 
 	[GLib.ConnectBefore()]
 	protected void OnStageVboxExposeEvent (object o, Gtk.ExposeEventArgs args)
@@ -690,11 +679,6 @@ public partial class StageEditorWindow : Gtk.Window
 		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
 			Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
 		l + 1, t + 1, w - 2, h - 2);
-	}
-
-	protected void OnStageVboxSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
-	{
-		QueueDraw();
 	}
 
 	protected void OnRenderToActionActivated (object sender, System.EventArgs e)
@@ -773,19 +757,6 @@ public partial class StageEditorWindow : Gtk.Window
 
 		if (accept)
 		{
-			/*
-			Stage stg = new Stage(MainClass.StageOperationFactory, 
-				MainClass.StageOperationParametersFactoryFromID,
-				MainClass.ImageLoader);
-			
-			for (int i = 0; i < stages.StageQueue.Length; i++)
-			{
-				stg.Add((StageOperationParameters)stages.StageQueue[i].Clone());
-			}
-			
-			MainClass.rq.Add(stg, stages.RawFileName, fn, dest_type);
-			*/
-			
 			// Sending remote command to add stage to queue
 			string command = "AddToQueue_StageData";
 			string[] arguments = new string[] 
@@ -798,39 +769,6 @@ public partial class StageEditorWindow : Gtk.Window
 			};
 			MainClass.RemoteControlService.SendCommand(RemoteControlService.PackCommand(command, arguments));
 			
-			/*
-			// Rendering
-			RenderingProgressWindow rpw = new RenderingProgressWindow();
-			rpw.ImageName = this.FileName;
-			rpw.Show();
-			
-			FloatPixmap renderDest = new FloatPixmap(src_img);
-			
-			// Rendering			
-			stages.ApplyAllOperations(renderDest);
-			
-			// Drawing to pixbuf and saving to file
-			Gdk.Pixbuf rp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, renderDest.width, renderDest.height);
-
-			renderDest.DrawToPixbuf(rp, 
-				delegate (double progress) {
-					rpw.SetStatusAndProgress(progress, "Saving image...");
-					while (Application.EventsPending()) Application.RunIteration();
-					return true;
-				}
-			);
-		
-			// TODO Can't be used currently cause of buggy Gtk#
-		//rp.Savev(filename, type, new string[] { "quality" }, new string[] { "95" });
-	
-			rp.Save(filename, type);
-				
-			rpw.Hide();
-			rpw.Dispose();
-			
-			if (rp != null)
-				rp.Dispose();
-			*/
 		}
 	}
 	
@@ -852,12 +790,12 @@ public partial class StageEditorWindow : Gtk.Window
 
 	protected void OnTogglebuttonToggled (object sender, System.EventArgs e)
 	{
-		if (togglebutton.Active)
+		if (addNewOperation_togglebutton.Active)
 		{
 			Menu menu = new Menu();
 			int w, h;
 			menu.GetSizeRequest(out w, out h);
-			menu.SetSizeRequest(togglebutton.Allocation.Width, h);
+			menu.SetSizeRequest(addNewOperation_togglebutton.Allocation.Width, h);
 	
 			Dictionary<MenuItem, Type> stage_operation_types = new Dictionary<MenuItem, Type>();
 			
@@ -881,9 +819,7 @@ public partial class StageEditorWindow : Gtk.Window
 
 				// Setting the name font
 				double name_size_k = 1.1;
-				string name_fd_string = lbl_name.PangoContext.FontDescription.Family + " " +
-					((int)(name_size_k * lbl_name.PangoContext.FontDescription.Size / Pango.Scale.PangoScale));
-				Pango.FontDescription name_fd = Pango.FontDescription.FromString(name_fd_string);
+				Pango.FontDescription name_fd = FontHelpers.ScaleFontSize(lbl_name, name_size_k);
 				name_fd.Weight = Pango.Weight.Bold;
 				lbl_name.ModifyFont(name_fd);
 				
@@ -899,9 +835,7 @@ public partial class StageEditorWindow : Gtk.Window
 					
 					// Setting the description font
 					double desc_size_k = 0.9;
-					string desc_fd_string = lbl_desc.PangoContext.FontDescription.Family + " " +
-						((int)(desc_size_k * lbl_desc.PangoContext.FontDescription.Size / Pango.Scale.PangoScale));
-					Pango.FontDescription desc_fd = Pango.FontDescription.FromString(desc_fd_string);
+					Pango.FontDescription desc_fd = FontHelpers.ScaleFontSize(lbl_desc, desc_size_k);
 					lbl_desc.ModifyFont(desc_fd);
 						
 					item_vbox.Add(lbl_desc);
@@ -927,14 +861,14 @@ public partial class StageEditorWindow : Gtk.Window
 				//lbl_desc.WidthRequest = ww;
 			}
 			menu.Deactivated += delegate {
-				togglebutton.Active = false;
+				addNewOperation_togglebutton.Active = false;
 			};
 			
 			menu.ShowAll();
 			menu.Popup(null, null, delegate (Menu m, out int x, out int y, out bool push_in) {
 				int x1, y1, x0, y0;
 				GdkWindow.GetOrigin(out x0, out y0);
-				togglebutton.TranslateCoordinates(this, 0, 0, out x1, out y1);
+				addNewOperation_togglebutton.TranslateCoordinates(this, 0, 0, out x1, out y1);
 				x = x0 + x1;
 				y = y0 + y1;
 				push_in = false;

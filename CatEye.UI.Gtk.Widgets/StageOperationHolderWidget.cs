@@ -141,61 +141,43 @@ namespace CatEye.UI.Gtk.Widgets
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			// Here we should draw the shadow
-			
-			
-			int l, t, w, h;
-			w = Allocation.Width; h = Allocation.Height;
-			l = Allocation.Left; t = Allocation.Top;
-			
-			int mx, my;
-			using (Gdk.GC gc = new Gdk.GC(GdkWindow))
+			using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.shadow.png"))
 			{
-				using (Gdk.Pixbuf buf = Gdk.Pixbuf.LoadFromResource("CatEye.UI.Gtk.Widgets.res.shadow.png"))
+				int l, t, w, h;
+				w = Allocation.Width; h = Allocation.Height;
+				l = Allocation.Left; t = Allocation.Top;
+				
+				int mx, my;
+				mx = buf.Width / 3;
+				my = buf.Height / 3;
+				
+				using (Gdk.GC gc = new Gdk.GC(GdkWindow))
 				{
-					mx = buf.Width / 3;
-					my = buf.Height / 3;
-					
-					// Corners
-					GdkWindow.DrawPixbuf(gc, buf, 0, 0, l, t, mx, my, Gdk.RgbDither.None, 0, 0);
-					GdkWindow.DrawPixbuf(gc, buf, 2 * mx, 0, l + w - mx, t, mx, my, Gdk.RgbDither.None, 0, 0);
-					GdkWindow.DrawPixbuf(gc, buf, 2 * mx, 2 * my, l + w - mx, t + h - my, mx, my, Gdk.RgbDither.None, 0, 0);
-					GdkWindow.DrawPixbuf(gc, buf, 0, 2 * my, l, t + h - my, mx, my, Gdk.RgbDither.None, 0, 0);
-					
-					// Sides
-					for (int i = 0; i < (w - 2 * mx); i++)
+					if (!(new Gdk.Rectangle(l + mx, t + my, w - 2 * mx, h - 2 * my).Contains(evnt.Area)))
 					{
-						GdkWindow.DrawPixbuf(gc, buf, mx, 0, l + mx + i, t, 1, my, Gdk.RgbDither.None, 0, 0);
-						GdkWindow.DrawPixbuf(gc, buf, mx, 2 * my, l + mx + i, t + h - my, 1, my, Gdk.RgbDither.None, 0, 0);
+						// Corners
+						GdkWindow.DrawPixbuf(gc, buf, 0, 0, l, t, mx, my, Gdk.RgbDither.None, 0, 0);
+						GdkWindow.DrawPixbuf(gc, buf, 2 * mx, 0, l + w - mx, t, mx, my, Gdk.RgbDither.None, 0, 0);
+						GdkWindow.DrawPixbuf(gc, buf, 2 * mx, 2 * my, l + w - mx, t + h - my, mx, my, Gdk.RgbDither.None, 0, 0);
+						GdkWindow.DrawPixbuf(gc, buf, 0, 2 * my, l, t + h - my, mx, my, Gdk.RgbDither.None, 0, 0);
+						
+						// Sides
+						for (int i = 0; i < (w - 2 * mx); i++)
+						{
+							GdkWindow.DrawPixbuf(gc, buf, mx, 0, l + mx + i, t, 1, my, Gdk.RgbDither.None, 0, 0);
+							GdkWindow.DrawPixbuf(gc, buf, mx, 2 * my, l + mx + i, t + h - my, 1, my, Gdk.RgbDither.None, 0, 0);
+						}
+						for (int j = 0; j < (h - 2 * my); j++)
+						{
+							GdkWindow.DrawPixbuf(gc, buf, 0, my, l, t + my + j, mx, 1, Gdk.RgbDither.None, 0, 0);
+							GdkWindow.DrawPixbuf(gc, buf, 2 * mx, my, l + w - mx, t + my + j, mx, 1, Gdk.RgbDither.None, 0, 0);
+						}
 					}
-					for (int j = 0; j < (h - 2 * my); j++)
-					{
-						GdkWindow.DrawPixbuf(gc, buf, 0, my, l, t + my + j, mx, 1, Gdk.RgbDither.None, 0, 0);
-						GdkWindow.DrawPixbuf(gc, buf, 2 * mx, my, l + w - mx, t + my + j, mx, 1, Gdk.RgbDither.None, 0, 0);
-					}
-
 					gc.RgbFgColor = this.Style.Background(StateType.Normal);
 					GdkWindow.DrawRectangle(gc, true, new Gdk.Rectangle(l + mx - 2, t + my - 2, w - 2 * mx + 3, h - 2 * my + 3));
 				}
-				
-				/*
-				Gdk.Color mid = Style.Mid(StateType.Normal);
-				Gdk.Color dark = new Gdk.Color(0,0,0);
-				
-				Gdk.Color[] shadow_colors = new Gdk.Color[4];
-				for (int i = 0; i < shadow_colors.Length; i++)
-				{
-					double a = (double)i * i / (shadow_colors.Length * shadow_colors.Length);
-					shadow_colors[i] = new Gdk.Color(
-						(byte)(((dark.Red / 256) * a + (mid.Red / 256) * (1 - a))),
-						(byte)(((dark.Green / 256) * a + (mid.Green / 256) * (1 - a))),
-						(byte)(((dark.Blue / 256) * a + (mid.Blue / 256) * (1 - a)))
-					);
-					gc.RgbFgColor = shadow_colors[i]; 
-					GdkWindow.DrawRectangle(gc, false, new Gdk.Rectangle(l + i, t + i, w - 2*i, h - 2*i));
-				}
-				
-				*/
 			}
+			
 			return base.OnExposeEvent(evnt);
 		}
 	}

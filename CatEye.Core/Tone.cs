@@ -24,7 +24,7 @@ namespace CatEye.Core
 		
 		public Color ChangeBrightness(double newBrightness)
 		{
-			double oldBr = CalcBrightness();
+			double oldBr = CalcBrightness() + 0.0001;
 			return new Color(
 				mR * newBrightness / oldBr,
 				mG * newBrightness / oldBr,
@@ -35,13 +35,13 @@ namespace CatEye.Core
 		                             double softness, double edge, double maxBrightness)
 		{
 			// Calculating relative brightness
-			double brightness_before = CalcBrightness();
+			double brightness_before = CalcBrightness() + 0.0001;
 			double rel_bright = brightness_before / maxBrightness;
 			
 			// Calculating new color
 			
 			double K = Math.Atan2(softness * rel_bright, edge * edge - rel_bright * rel_bright) / Math.Atan2(softness, edge * edge - 1);
-			
+	
 			double R1 = dark_tone.R * mR;
 			double G1 = dark_tone.G * mG;
 			double B1 = dark_tone.B * mB;

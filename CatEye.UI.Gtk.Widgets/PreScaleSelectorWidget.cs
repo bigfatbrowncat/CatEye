@@ -25,7 +25,7 @@ namespace CatEye.UI.Gtk.Widgets
 				value_label.Markup = "<b>" + (1.0 / preScale_hscale.Value * 100).ToString("0.0") + "%</b>";
 			else
 				value_label.Markup = "<b>" + (1.0 / preScale_hscale.Value * 100).ToString("0") + "%</b>";
-				
+			
 		}
 	}
 }

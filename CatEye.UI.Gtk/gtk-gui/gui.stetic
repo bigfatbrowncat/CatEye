@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="CatEyeIcon">
@@ -476,7 +476,7 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="titleGtkLabel">
+                  <widget class="Gtk.Label" id="title_Label">
                     <property name="MemberName" />
                     <property name="HeightRequest">32</property>
                     <property name="Xalign">0</property>
@@ -823,7 +823,7 @@
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.ToggleButton" id="togglebutton">
+                          <widget class="Gtk.ToggleButton" id="addNewOperation_togglebutton">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">Custom</property>
@@ -897,7 +897,6 @@
                                 <property name="ShowScrollbars">True</property>
                                 <property name="BorderWidth">6</property>
                                 <signal name="ExposeEvent" handler="OnStageVboxExposeEvent" />
-                                <signal name="SizeAllocated" handler="OnStageVboxSizeAllocated" />
                                 <child>
                                   <placeholder />
                                 </child>

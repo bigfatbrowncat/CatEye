@@ -1,4 +1,6 @@
 using System;
+using CatEye.UI.Gtk.Widgets;
+
 namespace CatEye
 {
 	public partial class AboutBox : Gtk.Dialog
@@ -7,7 +9,7 @@ namespace CatEye
 		{
 			this.Build ();
 			
-			title_label.ModifyFont(Pango.FontDescription.FromString("19"));
+			title_label.ModifyFont(FontHelpers.ScaleFontSize(title_label, 2));
 		}
 	}
 }

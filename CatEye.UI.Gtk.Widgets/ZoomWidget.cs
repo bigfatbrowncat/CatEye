@@ -40,10 +40,10 @@ namespace CatEye.UI.Gtk.Widgets
 
 		public void ShowWarning(double maxValue, uint delay)
 		{
-			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image in more than at <b>" + 
+			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image more than at <b>" + 
 			                (maxValue * 100).ToString("0") + "%</b> of it's original size cause it was downscaled";
 			mLabel.LineWrap = true;
-			mLabel.WidthRequest = 200;
+			mLabel.WidthRequest = mBaseWidget.Allocation.Width - 10;
 			
 			SetSizeRequest(mBaseWidget.Allocation.Width, -1);
 			
@@ -85,7 +85,7 @@ namespace CatEye.UI.Gtk.Widgets
 			if (!setting_divider)
 			{
 				setting_divider = true;
-				if (mValue >= 0.99 || Math.Abs(mValue*100 - Math.Round(mValue * 100)) < 0.01)
+				if (mValue >= 0.99 || Math.Abs(mValue * 100 - Math.Round(mValue * 100)) < 0.01)
 				{
 					zoom_label.Text = (100.0 * mValue).ToString("0") + "%";
 				}
@@ -94,7 +94,7 @@ namespace CatEye.UI.Gtk.Widgets
 					zoom_label.Text = (100.0 * mValue).ToString("0.0") + "%";
 				}
 				mChangingSelf = true;
-				zoom_hscale.Value = (double)mValue;
+				zoom_hscale.Value = Math.Log(1 + (1 + Math.Sqrt(5)) * (double)mValue, 2 + Math.Sqrt(5));
 				mChangingSelf = false;
 				setting_divider = false;
 			}
@@ -144,7 +144,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected void OnZoomHscaleValueChanged (object sender, System.EventArgs e)
 		{
-			double newValue = zoom_hscale.Value;
+			double newValue = (Math.Pow(2 + Math.Sqrt(5), zoom_hscale.Value) - 1) / (1 + Math.Sqrt(5));
 			if (!mChangingSelf && newValue > mMaxValue)
 			{
 				mWarningTooltip.ShowWarning(mMaxValue, 5000);
