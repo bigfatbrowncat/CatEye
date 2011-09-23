@@ -85,7 +85,7 @@ namespace CatEye.UI.Gtk.Widgets
 			if (!setting_divider)
 			{
 				setting_divider = true;
-				if (mValue >= 0.99 || Math.Abs(mValue*100 - Math.Round(mValue * 100)) < 0.01)
+				if (mValue >= 0.99 || Math.Abs(mValue * 100 - Math.Round(mValue * 100)) < 0.01)
 				{
 					zoom_label.Text = (100.0 * mValue).ToString("0") + "%";
 				}
