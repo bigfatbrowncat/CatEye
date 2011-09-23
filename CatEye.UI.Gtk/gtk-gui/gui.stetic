@@ -476,10 +476,11 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="titleGtkLabel">
+                  <widget class="Gtk.Label" id="title_Label">
                     <property name="MemberName" />
                     <property name="HeightRequest">32</property>
                     <property name="Xalign">0</property>
+                    <property name="Yalign">0.8</property>
                     <property name="LabelProp" translatable="yes">&lt;b&gt;Currently processing&lt;/b&gt;</property>
                     <property name="UseMarkup">True</property>
                   </widget>
@@ -823,7 +824,7 @@
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.ToggleButton" id="togglebutton">
+                          <widget class="Gtk.ToggleButton" id="addNewOperation_togglebutton">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">Custom</property>
