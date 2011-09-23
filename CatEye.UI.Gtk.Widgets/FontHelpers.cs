@@ -16,7 +16,7 @@ namespace CatEye.UI.Gtk.Widgets
 				Environment.OSVersion.Platform == PlatformID.Win32Windows ||
 				Environment.OSVersion.Platform == PlatformID.WinCE)
 			{
-				scaleK *= WindowsFontScaleBase;
+				k *= WindowsFontScaleBase;
 			}
 			
 			string fd_string = w.PangoContext.FontDescription.Family + " " +
