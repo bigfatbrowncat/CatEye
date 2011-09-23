@@ -40,10 +40,10 @@ namespace CatEye.UI.Gtk.Widgets
 
 		public void ShowWarning(double maxValue, uint delay)
 		{
-			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image in more than at <b>" + 
+			mLabel.Markup = "<b>Sorry!</b>\nYou can't zoom the image more than at <b>" + 
 			                (maxValue * 100).ToString("0") + "%</b> of it's original size cause it was downscaled";
 			mLabel.LineWrap = true;
-			mLabel.WidthRequest = 200;
+			mLabel.WidthRequest = mBaseWidget.Allocation.Width - 10;
 			
 			SetSizeRequest(mBaseWidget.Allocation.Width, -1);
 			

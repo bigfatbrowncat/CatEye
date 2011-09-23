@@ -76,7 +76,7 @@ namespace CatEye.UI.Gtk
 					while (!mListeningThreadStopPending)
 					{
 						string text = "";
-						while (mListener.Server != null && 
+						while (mListener != null && 
 							   mListener.Server.IsBound && 
 							  !mListener.Pending()) 
 						{
@@ -298,6 +298,7 @@ namespace CatEye.UI.Gtk
 			if (mListener != null)
 			{
 				mListener.Stop();
+				mListener = null;
 			}
 			mListeningThreadStopPending = true;
 		}

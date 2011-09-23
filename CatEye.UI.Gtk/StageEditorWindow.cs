@@ -138,9 +138,7 @@ public partial class StageEditorWindow : Gtk.Window
 		viewWidget.MouseButtonStateChanged += HandleViewWidgetMouseButtonStateChanged;
 		
 		// Setting zoom widget events
-		zoomWidget.ValueChanged += delegate {
-			mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;
-		};
+		zoomWidget.ValueChanged += HandleZoomWidgetValueChanged;
 		
 		// ** Preparing stage and its thread **
 		mStageThread = new Thread(StageThreadStart);
@@ -230,8 +228,8 @@ public partial class StageEditorWindow : Gtk.Window
 			{
 				zoomWidget.Sensitive = true;
 				zoomWidget.MaxValue = (1.0 / mStage.Prescale);
+				mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;	
 			}
-			UpdateTitle();
 		});
 	}
 	void HandleStageImageChanged (object sender, EventArgs e)
@@ -400,7 +398,12 @@ public partial class StageEditorWindow : Gtk.Window
 		//	stage_vbox.SetSizeRequest(maxWidth, -1);
 		stage_vbox.CheckResize();
 	}
-
+	
+	void HandleZoomWidgetValueChanged (object sender, EventArgs e)
+	{
+		mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;	
+	}
+	
 	bool HandleViewWidgetMouseButtonStateChanged (object sender, int x, int y, uint button_id, bool is_down)
 	{
 		int x_rel = x - viewWidget.CurrentImagePosition.X;
@@ -449,6 +452,7 @@ public partial class StageEditorWindow : Gtk.Window
 	public void LoadCEStage(string filename)
 	{
 		mStage.LoadStage(filename);
+		
 	}
 	
 	protected void LoadRawImageActionPicked()

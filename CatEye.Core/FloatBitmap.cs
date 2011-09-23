@@ -357,10 +357,10 @@ namespace CatEye.Core
 						
 						double light_new = Math.Log(p * (Math.Exp(a * light) - 1.0) + 1.0) / b;
 							
-						double bloha = 0.00001;
-						r_chan[i,j] *= (float)(light_new / (light + bloha)); 
-						g_chan[i,j] *= (float)(light_new / (light + bloha)); 
-						b_chan[i,j] *= (float)(light_new / (light + bloha)); 
+						double bloha = 0.001;
+						r_chan[i, j] *= (float)(light_new / (light + bloha)); 
+						g_chan[i, j] *= (float)(light_new / (light + bloha)); 
+						b_chan[i, j] *= (float)(light_new / (light + bloha)); 
 					}
 				}
 			}
@@ -373,25 +373,24 @@ namespace CatEye.Core
 		
 		public void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
 		{
-			double[,] light = new double[mWidth, mHeight];
+			float[,] light = new float[mWidth, mHeight];
 			double maxlight = 0;
 	
 			// Сalculating light
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
 			{
-				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-				if (light[i,j] > maxlight) maxlight = light[i,j];
+				light[i, j] = (float)(Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+				                                g_chan[i, j] * g_chan[i, j] + 
+				                                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3));
+				if (light[i, j] > maxlight) maxlight = light[i, j];
+				
 			}
 						
-			double[,] scale_matrix = new double[mWidth, mHeight];
-			double[,] dispersion_matrix = new double[mWidth, mHeight];
+			float[,] scale_matrix = new float[mWidth, mHeight];
+			float[,] dispersion_matrix = new float[mWidth, mHeight];
 				
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
-			
-			Console.WriteLine("Calculating scale factors...");
 			
 			// Full progress
 			int full_i = 0;
@@ -440,11 +439,11 @@ namespace CatEye.Core
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
 											double delta = (light[i, j] - light[u, v]);
-											dispersion_matrix[i, j] += delta * delta;
+											dispersion_matrix[i, j] += (float)(delta * delta);
 											avg ++;
 										}
 									}
-									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
+									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1)));  // (avg + 1) to avoid div by zero
 			
 									// Average
 									avg = 0;
@@ -461,7 +460,7 @@ namespace CatEye.Core
 										{
 											double delta = (light[i, j] - light[u, v]);
 											double f = Math.Log(Math.Abs(delta) + 1);
-											
+
 											// Limiting f to remove white and dark "crowns" near contrast objects
 											//double d = 2, K = 0.5; -- good
 											double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
@@ -474,7 +473,7 @@ namespace CatEye.Core
 			
 											double scale = f;	// It was f / 5
 											
-											scale_matrix[i, j] += scale;
+											scale_matrix[i, j] += (float)scale;
 											avg ++;
 										}
 									}
@@ -794,7 +793,7 @@ namespace CatEye.Core
 				for (int j = 0; j < mHeight; j++)
 				{
 					Color res_ij = new Color(r_chan[i, j], g_chan[i, j], b_chan[i, j]).ApplyDualToning(dark_tone, light_tone, softness, edge, max_brightness);
-					
+				
 					lock (this)
 					{
 						r_chan[i, j] = (float)(res_ij.R);
