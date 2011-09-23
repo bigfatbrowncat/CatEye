@@ -897,7 +897,6 @@
                                 <property name="ShowScrollbars">True</property>
                                 <property name="BorderWidth">6</property>
                                 <signal name="ExposeEvent" handler="OnStageVboxExposeEvent" />
-                                <signal name="SizeAllocated" handler="OnStageVboxSizeAllocated" />
                                 <child>
                                   <placeholder />
                                 </child>

@@ -681,11 +681,6 @@ public partial class StageEditorWindow : Gtk.Window
 		l + 1, t + 1, w - 2, h - 2);
 	}
 
-	protected void OnStageVboxSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
-	{
-		QueueDraw();
-	}
-
 	protected void OnRenderToActionActivated (object sender, System.EventArgs e)
 	{
 		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Render image to", 
