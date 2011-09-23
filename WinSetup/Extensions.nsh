@@ -6,15 +6,13 @@
 !include "CommCtrl.nsh"
 
 var /global extpage
-;var /global ext_cestage
-var /global ext_cestage_state
-;var /global ext_cr2
-var /global ext_cr2_state
-;var /global ext_pef
-var /global ext_pef_state
 var /global listview
 var /global select
 var /global unselect
+var /global ext_cestage_state
+var /global ext_cr2_state
+var /global ext_pef_state
+
 
 !macro MUI_PAGE_EXTENSIONS
   Page custom ExtensionsCreate ExtensionsDestroy
@@ -25,12 +23,6 @@ Function ExtensionsCreate
     nsDialogs::Create 1018
     Pop $extpage
     !insertmacro MUI_HEADER_TEXT $(ExtensionsPage_HeaderText) $(ExtensionsPage_SubHeaderText)
-;    ${NSD_CreateCheckBox} 0u 0u 300u 10u ".cestage"
-;    Pop $ext_cestage
-;    ${NSD_CreateCheckBox} 0u 30u 150u 10u ".CR2"
-;    Pop $ext_cr2
-;    ${NSD_CreateCheckBox} 0u 50u 150u 10u ".PEF"
-;    Pop $ext_pef
     
     ${NSD_CreateListView} 0u 5u 300u 110u ""
     Pop $listview
@@ -60,28 +52,40 @@ Function ExtensionsCreate
     !undef _LISTVIEW_TEMP_STYLE
     ; Set the state of checkbox ${NSD_LV_SetCheckState} "hWnd" "iItem" "State"
     ; Before using this, you must set the LVS_EX_CHECKBOXES extended style.
-    ${NSD_LV_SetCheckState} $listview 0 1
-    ${NSD_LV_SetCheckState} $listview 1 1
-    ${NSD_LV_SetCheckState} $listview 2 1
+    
+    ${NSD_LV_SetCheckState} $listview 0 $ext_cestage_state
+    ${NSD_LV_SetCheckState} $listview 1 $ext_cr2_state
+    ${NSD_LV_SetCheckState} $listview 2 $ext_pef_state
     
     ${NSD_CreateButton} 150u 125u 70u 15u "Check all"
     Pop $select
+    ${NSD_OnClick} $select SelectButtonChange
     
     ${NSD_CreateButton} 230u 125u 70u 15u "Uncheck all"
     Pop $unselect
+    ${NSD_OnClick} $unselect UnselectButtonChange
     
     nsDialogs::Show
 FunctionEnd
 
 
-Function ExtensionsDestroy
-;    ${NSD_GetState} $ext_cestage $ext_cestage_state
-;    ${NSD_GetState} $ext_cr2     $ext_cr2_state
-;    ${NSD_GetState} $ext_pef     $ext_pef_state
+Function SelectButtonChange
+        ${NSD_LV_SetCheckState} $listview 0 1
+        ${NSD_LV_SetCheckState} $listview 1 1
+        ${NSD_LV_SetCheckState} $listview 2 1
+FunctionEnd
 
+
+Function UnselectButtonChange
+        ${NSD_LV_SetCheckState} $listview 0 0
+        ${NSD_LV_SetCheckState} $listview 1 0
+        ${NSD_LV_SetCheckState} $listview 2 0
+FunctionEnd
+
+
+Function ExtensionsDestroy
     ${NSD_LV_GetCheckState} $listview 0 $ext_cestage_state
     ${NSD_LV_GetCheckState} $listview 1 $ext_cr2_state
     ${NSD_LV_GetCheckState} $listview 2 $ext_pef_state
-
 FunctionEnd
 
