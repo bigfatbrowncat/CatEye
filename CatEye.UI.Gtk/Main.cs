@@ -502,14 +502,14 @@ namespace CatEye
 				{
 					// Two file names: one cestage and one raw
 
-					string cestage_filename = "";
-					string raw_filename = "";
+					string cestage_filename;
+					string raw_filename;
 					if (IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
 					{
 						cestage_filename = argslist[0];
 						raw_filename = argslist[1];
 					}
-					else if (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
+					else // if (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
 					{
 						cestage_filename = argslist[1];
 						raw_filename = argslist[0];
@@ -517,15 +517,15 @@ namespace CatEye
 					
 					// Guessing target filename
 					if (target_type == "") target_type = "jpeg";
-					string target_name = System.IO.Path.ChangeExtension(argslist[1], target_type);
+					string target_name = System.IO.Path.ChangeExtension(raw_filename, target_type);
 					target_name = CheckIfFileExistsAndAddIndex(target_name);
 					
 					// Launching StageEditor with the cestage file and the raw file
 					commands.Add("AddToQueue");
 					commands_arguments.Add(new List<string>(new string[] 
 					{
-						argslist[0], 
-						argslist[1], 
+						cestage_filename, 
+						raw_filename, 
 						target_name, 
 						target_type, 
 						prescale.ToString()

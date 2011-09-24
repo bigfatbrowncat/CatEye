@@ -538,7 +538,7 @@
             <child>
               <widget class="Gtk.Label" id="median_label">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">0,5</property>
+                <property name="LabelProp" translatable="yes">None</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -1053,7 +1053,6 @@
                 <property name="Upper">1</property>
                 <property name="PageIncrement">0.01</property>
                 <property name="StepIncrement">0.01</property>
-                <property name="Value">0.001</property>
                 <property name="DrawValue">False</property>
                 <property name="Digits">3</property>
                 <property name="ValuePos">Right</property>
@@ -1076,7 +1075,7 @@
               <widget class="Gtk.SpinButton" id="edge_spinbutton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Upper">1</property>
+                <property name="Upper">10</property>
                 <property name="PageIncrement">0.01</property>
                 <property name="StepIncrement">0.01</property>
                 <property name="ClimbRate">0.001</property>

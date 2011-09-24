@@ -246,7 +246,7 @@ namespace CatEye.Core
 			{
 				light[i, j] = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 				                               g_chan[i, j] * g_chan[i, j] +
-				                               b_chan[i, j] * b_chan[i, j]);
+				                               b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				local_mid += light[i, j];
 			}
@@ -463,7 +463,7 @@ namespace CatEye.Core
 
 											// Limiting f to remove white and dark "crowns" near contrast objects
 											//double d = 2, K = 0.5; -- good
-											double K = 2.5 * contrast, A = 1;//0.01 + contrast / 20;
+											double K = 2.5 * contrast;
 											//double denoise_delta = 0.05, denoise_min = 0.2;
 											//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
 											double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
@@ -524,8 +524,6 @@ namespace CatEye.Core
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
 		{
-			double maxlight = CalcMaxBrightness();
-			
 			int i = (int)(light_center.X * Width);
 			int j = (int)(light_center.Y * Height);
 			
@@ -562,7 +560,7 @@ namespace CatEye.Core
 				double r0 = 0, g0 = 0, b0 = 0;
 				for (int p = 0; p < n; p++)
 				{
-					Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone, softness, edge, maxlight);
+					Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone, softness, edge);
 					
 					r0 += changed.R;
 					g0 += changed.G;
@@ -580,7 +578,7 @@ namespace CatEye.Core
 					double r_dR = 0, g_dR = 0, b_dR = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dR, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dR, softness, edge);
 						
 						r_dR += changed.R;
 						g_dR += changed.G;
@@ -601,7 +599,7 @@ namespace CatEye.Core
 					double r_dG = 0, g_dG = 0, b_dG = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dG, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dG, softness, edge);
 						
 						r_dG += changed.R;
 						g_dG += changed.G;
@@ -622,7 +620,7 @@ namespace CatEye.Core
 					double r_dB = 0, g_dB = 0, b_dB = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dB, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(dark_tone, cur_light_tone_dB, softness, edge);
 						
 						r_dB += changed.R;
 						g_dB += changed.G;
@@ -651,8 +649,6 @@ namespace CatEye.Core
 		
 		public Tone FindDarkTone(Tone light_tone, double edge, double softness, Point dark_center, double dark_radius, int points)
 		{
-			double maxlight = CalcMaxBrightness();
-			
 			int i = (int)(dark_center.X * Width);
 			int j = (int)(dark_center.Y * Height);
 			
@@ -689,7 +685,7 @@ namespace CatEye.Core
 				double r0 = 0, g0 = 0, b0 = 0;
 				for (int p = 0; p < n; p++)
 				{
-					Color changed = sel[p].ApplyDualToning(cur_dark_tone, light_tone, softness, edge, maxlight);
+					Color changed = sel[p].ApplyDualToning(cur_dark_tone, light_tone, softness, edge);
 					
 					r0 += changed.R;
 					g0 += changed.G;
@@ -707,7 +703,7 @@ namespace CatEye.Core
 					double r_dR = 0, g_dR = 0, b_dR = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dR, light_tone, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dR, light_tone, softness, edge);
 						
 						r_dR += changed.R;
 						g_dR += changed.G;
@@ -728,7 +724,7 @@ namespace CatEye.Core
 					double r_dG = 0, g_dG = 0, b_dG = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dG, light_tone, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dG, light_tone, softness, edge);
 						
 						r_dG += changed.R;
 						g_dG += changed.G;
@@ -749,7 +745,7 @@ namespace CatEye.Core
 					double r_dB = 0, g_dB = 0, b_dB = 0;
 					for (int p = 0; p < n; p++)
 					{
-						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dB, light_tone, softness, edge, maxlight);
+						Color changed = sel[p].ApplyDualToning(cur_dark_tone_dB, light_tone, softness, edge);
 						
 						r_dB += changed.R;
 						g_dB += changed.G;
@@ -778,8 +774,6 @@ namespace CatEye.Core
 
 		public void ApplyTone(Tone dark_tone, Tone light_tone, double edge, double softness, ProgressReporter callback)
 		{
-			double max_brightness = CalcMaxBrightness();
-			
 			for (int i = 0; i < mWidth; i++)
 			{
 				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null)
@@ -792,7 +786,7 @@ namespace CatEye.Core
 				
 				for (int j = 0; j < mHeight; j++)
 				{
-					Color res_ij = new Color(r_chan[i, j], g_chan[i, j], b_chan[i, j]).ApplyDualToning(dark_tone, light_tone, softness, edge, max_brightness);
+					Color res_ij = new Color(r_chan[i, j], g_chan[i, j], b_chan[i, j]).ApplyDualToning(dark_tone, light_tone, softness, edge);
 				
 					lock (this)
 					{

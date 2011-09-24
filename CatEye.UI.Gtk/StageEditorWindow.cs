@@ -374,7 +374,11 @@ public partial class StageEditorWindow : Gtk.Window
 					}
 				}
 			}
-			catch (Exception ex)
+			catch (Exception 
+#if DEBUG
+				ex
+#endif
+				)
 			{
 				// Any exception is harmless here
 #if DEBUG

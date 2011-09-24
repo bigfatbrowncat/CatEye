@@ -46,7 +46,7 @@ namespace CatEye.UI.Gtk.Widgets
 				
 				// Setting all editors to the value
 				if (changer != EdgeChanger.HScale)
-					edge_hscale.Value = new_value;
+					edge_hscale.Value = Math.Log(new_value + 1, 11);
 				
 				if (changer != EdgeChanger.SpinButton)
 					edge_spinbutton.Value = new_value;
@@ -104,7 +104,7 @@ namespace CatEye.UI.Gtk.Widgets
 			
 
 			_EdgeIsChanging = true;
-			edge_hscale.Value = ((ToneStageOperationParameters)Parameters).Edge;
+			edge_hscale.Value = Math.Log(((ToneStageOperationParameters)Parameters).Edge + 1, 11);
 			edge_spinbutton.Value = ((ToneStageOperationParameters)Parameters).Edge;
 			_EdgeIsChanging = false;
 
@@ -322,7 +322,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected void OnEdgeHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeEdge(edge_hscale.Value, EdgeChanger.HScale);
+			ChangeEdge(Math.Pow(11, edge_hscale.Value) - 1, EdgeChanger.HScale);
 		}
 
 		protected void OnSoftnessHscaleChangeValue (object o, ChangeValueArgs args)
@@ -332,7 +332,7 @@ namespace CatEye.UI.Gtk.Widgets
 
 		protected void OnEdgeSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeEdge(edge_hscale.Value, EdgeChanger.SpinButton);
+			ChangeEdge(edge_spinbutton.Value, EdgeChanger.SpinButton);
 		}
 
 		protected void OnSoftnessSpinbuttonValueChanged (object sender, System.EventArgs e)

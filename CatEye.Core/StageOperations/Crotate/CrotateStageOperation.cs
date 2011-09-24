@@ -17,7 +17,6 @@ namespace CatEye.Core
 			int trueWidth = hdp.Width, trueHeight = hdp.Height;
 			
 			double w1, h1;
-			Point c_pix = new Point(pm.Center.X * hdp.Width, pm.Center.Y * hdp.Height);
 
 			w1 = pm.CropWidth * hdp.Width;
 			h1 = pm.CropHeight * hdp.Height;

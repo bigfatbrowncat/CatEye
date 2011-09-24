@@ -172,7 +172,11 @@ namespace CatEye.UI.Gtk
 						sex.StackTrace);
 #endif	
 				}
-				catch (CatEye.Core.UserCancelException ucex)
+				catch (CatEye.Core.UserCancelException 
+#if DEBUG
+					ucex
+#endif	
+					)
 				{
 #if DEBUG
 					Console.WriteLine("[S] User interrupted the server listening cycle");

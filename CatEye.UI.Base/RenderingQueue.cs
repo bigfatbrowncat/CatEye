@@ -253,7 +253,11 @@ namespace CatEye.UI.Base
 						
 						OnAfterItemProcessingFinished(mInProgress);
 					}
-					catch (UserCancelException exp)
+					catch (UserCancelException 
+#if DEBUG
+						exp
+#endif
+						)
 					{
 #if DEBUG
 						Console.WriteLine("User has sent " + exp.GetType().Name + " exception.");

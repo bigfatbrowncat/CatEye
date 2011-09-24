@@ -32,16 +32,15 @@ namespace CatEye.Core
 		}
 		
 		public Color ApplyDualToning(Tone dark_tone, Tone light_tone, 
-		                             double softness, double edge, double maxBrightness)
+		                             double softness, double edge)
 		{
 			// Calculating relative brightness
 			double brightness_before = CalcBrightness() + 0.0001;
-			double rel_bright = brightness_before / maxBrightness;
+			double x = brightness_before;
 			
 			// Calculating new color
 			
-			double K = Math.Atan2(softness * rel_bright, edge * edge - rel_bright * rel_bright) / Math.Atan2(softness, edge * edge - 1);
-	
+			double K = Math.Atan2(softness * x, edge * edge - x * x) / Math.PI;
 			double R1 = dark_tone.R * mR;
 			double G1 = dark_tone.G * mG;
 			double B1 = dark_tone.B * mB;
@@ -50,9 +49,9 @@ namespace CatEye.Core
 			double G2 = light_tone.G * mG;
 			double B2 = light_tone.B * mB;
 
-			return new Color((R2 - R1) * K + R1,
-			                 (G2 - G1) * K + G1,
-			                 (B2 - B1) * K + B1).ChangeBrightness(brightness_before);
+			return new Color(R2 * K + R1 * (1 - K),
+			                 G2 * K + G1 * (1 - K),
+			                 B2 * K + B1 * (1 - K)).ChangeBrightness(brightness_before);
 		}		
 	}
 	
