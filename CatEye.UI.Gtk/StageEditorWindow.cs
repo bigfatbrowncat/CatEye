@@ -83,7 +83,12 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 		else
 		{
-			stage_vbox.ModifyBg(StateType.Normal, Style.Dark(StateType.Normal));
+			Gdk.Color c = Style.Mid(StateType.Normal);
+			c.Red = (ushort)(c.Red * 0.85); 
+			c.Green = (ushort)(c.Green * 0.85); 
+			c.Blue = (ushort)(c.Blue * 0.85); 
+			
+			stage_vbox.ModifyBg(StateType.Normal, c);
 		}
 	}
 	
@@ -678,11 +683,18 @@ public partial class StageEditorWindow : Gtk.Window
 		int l, t, w, h;
 		w = stage_vbox.Allocation.Width; h = stage_vbox.Allocation.Height;
 		l = stage_vbox.Allocation.Left; t = stage_vbox.Allocation.Top;
-
-
-		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
-			Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
-		l + 1, t + 1, w - 2, h - 2);
+		
+		using (Gdk.GC gc = new Gdk.GC(stage_vbox.GdkWindow))
+		{
+			gc.RgbFgColor = stage_vbox.Style.Background(stage_vbox.State);
+			gc.RgbBgColor = stage_vbox.Style.Background(stage_vbox.State);
+			
+			stage_vbox.GdkWindow.DrawRectangle(gc, true, l, t, w, h);
+			
+			/*Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
+				Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
+			l + 1, t + 1, w - 2, h - 2);*/
+		}
 	}
 
 	protected void OnRenderToActionActivated (object sender, System.EventArgs e)

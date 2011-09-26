@@ -51,7 +51,7 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 			custom_symbol.Show();
 			custom_togglebutton.Image = custom_symbol;
-			
+			custom_togglebutton.Label = null;
 			
 			ls = new ListStore(typeof(string), typeof(int));
 			string[] ratioNames = ((CrotateStageOperationParameters)Parameters).PresetAspectRatioNames;
@@ -76,12 +76,12 @@ namespace CatEye.UI.Gtk.Widgets
 				crop_w_spinbutton.Visible = !link_w_togglebutton.Active;
 				((HBox.BoxChild)w_hbox[link_w_togglebutton]).Expand = !crop_w_spinbutton.Visible;
 				((HBox.BoxChild)w_hbox[link_w_togglebutton]).Fill = !crop_w_spinbutton.Visible;
-				link_w_togglebutton.Label = link_w_togglebutton.Active ? "Linked to height" : "";
+				link_w_togglebutton.Label = link_w_togglebutton.Active ? "Linked to height" : null;
 					
 				crop_h_spinbutton.Visible = !link_h_togglebutton.Active;
 				((HBox.BoxChild)h_hbox[link_h_togglebutton]).Expand = !crop_h_spinbutton.Visible;
 				((HBox.BoxChild)h_hbox[link_h_togglebutton]).Fill = !crop_h_spinbutton.Visible;
-				link_h_togglebutton.Label = link_h_togglebutton.Active ? "Linked to width" : "";
+				link_h_togglebutton.Label = link_h_togglebutton.Active ? "Linked to width" : null;
 				
 				aspect_combobox.Sensitive = link_w_togglebutton.Active || link_h_togglebutton.Active;
 				aspect_combobox.Visible = !custom_togglebutton.Active;
