@@ -684,17 +684,9 @@ public partial class StageEditorWindow : Gtk.Window
 		w = stage_vbox.Allocation.Width; h = stage_vbox.Allocation.Height;
 		l = stage_vbox.Allocation.Left; t = stage_vbox.Allocation.Top;
 		
-		using (Gdk.GC gc = new Gdk.GC(stage_vbox.GdkWindow))
-		{
-			gc.RgbFgColor = stage_vbox.Style.Background(stage_vbox.State);
-			gc.RgbBgColor = stage_vbox.Style.Background(stage_vbox.State);
-			
-			stage_vbox.GdkWindow.DrawRectangle(gc, true, l, t, w, h);
-			
-			/*Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
-				Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
-			l + 1, t + 1, w - 2, h - 2);*/
-		}
+		Gtk.Style.PaintBox(stage_vbox.Style, stage_vbox.GdkWindow, Gtk.StateType.Normal, 
+		                   Gtk.ShadowType.In, new Gdk.Rectangle(l, t, w, h), this, null,
+		                   l + 1, t + 1, w - 2, h - 2);
 	}
 
 	protected void OnRenderToActionActivated (object sender, System.EventArgs e)
@@ -889,6 +881,42 @@ public partial class StageEditorWindow : Gtk.Window
 				y = y0 + y1;
 				push_in = false;
 			}, 0, 0);
+		}
+	}
+
+	protected void OnGtkScrolledWindowExposeEvent (object o, Gtk.ExposeEventArgs args)
+	{
+	}
+
+	protected void OnStageVboxSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+	{
+		if (stage_vbox.Children.Length == 0)
+			stage_vbox.QueueDraw();
+		else
+		{
+			int frame = 7;
+			// Search for stages outer rect
+			int l = stage_vbox.Children[0].Allocation.Left + frame;
+			int t = stage_vbox.Children[0].Allocation.Top + frame;
+			int r = stage_vbox.Children[0].Allocation.Right - frame;
+			int b = stage_vbox.Children[0].Allocation.Bottom - frame;
+			
+			for (int i = 1; i < stage_vbox.Children.Length; i++)
+			{
+				if (stage_vbox.Children[i].Allocation.Left + frame < l)
+					l = stage_vbox.Children[i].Allocation.Left + frame;
+				if (stage_vbox.Children[i].Allocation.Top + frame < t)
+					t = stage_vbox.Children[i].Allocation.Top + frame;
+				if (stage_vbox.Children[i].Allocation.Right - frame > r)
+					r = stage_vbox.Children[i].Allocation.Right - frame;
+				if (stage_vbox.Children[i].Allocation.Bottom - frame > b)
+					b = stage_vbox.Children[i].Allocation.Bottom - frame;
+			}
+		
+			stage_vbox.QueueDrawArea(0, 0, stage_vbox.Allocation.Width, t);
+			stage_vbox.QueueDrawArea(0, 0, l, stage_vbox.Allocation.Height);
+			stage_vbox.QueueDrawArea(r, 0, stage_vbox.Allocation.Width, stage_vbox.Allocation.Height);
+			stage_vbox.QueueDrawArea(0, b, stage_vbox.Allocation.Width, stage_vbox.Allocation.Height);
 		}
 	}
 }

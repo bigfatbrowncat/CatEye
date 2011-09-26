@@ -887,6 +887,7 @@
                         <property name="MemberName" />
                         <property name="HscrollbarPolicy">Never</property>
                         <property name="ShadowType">In</property>
+                        <signal name="ExposeEvent" handler="OnGtkScrolledWindowExposeEvent" />
                         <child>
                           <widget class="Gtk.Viewport" id="GtkViewport">
                             <property name="MemberName" />
@@ -897,6 +898,7 @@
                                 <property name="ShowScrollbars">True</property>
                                 <property name="BorderWidth">6</property>
                                 <signal name="ExposeEvent" handler="OnStageVboxExposeEvent" />
+                                <signal name="SizeAllocated" handler="OnStageVboxSizeAllocated" />
                                 <child>
                                   <placeholder />
                                 </child>
