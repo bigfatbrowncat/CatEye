@@ -77,7 +77,6 @@ namespace CatEye
 		
 		public abstract double CalculateEfforts(IBitmapCore hdp);
 		public abstract void OnDo(IBitmapCore hdp);
-		public abstract Type GetParametersType();
 	}
 
 }

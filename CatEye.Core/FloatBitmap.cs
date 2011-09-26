@@ -15,6 +15,19 @@ namespace CatEye.Core
 		
 		public int Width { get { return mWidth; } }
 		public int Height { get { return mHeight; } }
+
+		public float[,] RedChannel
+		{
+			get { return r_chan; }
+		}
+		public float[,] GreenChannel
+		{
+			get { return g_chan; }
+		}
+		public float[,] BlueChannel
+		{
+			get { return b_chan; }
+		}
 		
 		protected FloatBitmap ()
 		{

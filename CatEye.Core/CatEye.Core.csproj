@@ -113,6 +113,9 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperation.cs" />
     <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperationParameters.cs" />
+    <Compile Include="HistogramCollector.cs" />
+    <Compile Include="StageOperations\Histogram\HistogramStageOperation.cs" />
+    <Compile Include="StageOperations\Histogram\HistogramStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -125,6 +128,7 @@
     <Folder Include="StageOperations\Crotate\" />
     <Folder Include="StageOperations\LimitSize\" />
     <Folder Include="StageOperations\LocalContrast\" />
+    <Folder Include="StageOperations\Histogram\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

@@ -27,10 +27,6 @@ namespace CatEye.Core
 				}
 			);			
 		}
-		public override Type GetParametersType ()
-		{
-			return typeof(CompressionStageOperationParameters);
-		}
 
 	}
 }

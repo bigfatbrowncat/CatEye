@@ -6,7 +6,11 @@ namespace CatEye.Core
 	{
 		int Width { get; }
 		int Height { get; }
-
+		
+		float[,] RedChannel { get; }
+		float[,] GreenChannel { get; }
+		float[,] BlueChannel { get; }
+		
 		double AmplitudeFindMedian ();
 		double AmplitudeFindBlackPoint ();
 
