@@ -2,7 +2,8 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Limit size", ""), StageOperationID("LimitSizeStageOperation")]
+	[StageOperationDescription("Limit size", "")]
+	[StageOperationID("LimitSizeStageOperation")]
 	public class LimitSizeStageOperation : StageOperation
 	{
 		public enum Mode 
@@ -51,10 +52,7 @@ namespace CatEye.Core
 					});
 			}
 		}
-		public override Type GetParametersType ()
-		{
-			return typeof(LimitSizeStageOperationParameters);
-		}
+
 
 	}
 
