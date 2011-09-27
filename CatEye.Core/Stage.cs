@@ -398,7 +398,7 @@ namespace CatEye.Core
 			mCancelLoadingPending = false;
 			OnProgressMessageReport(false, 0, "Waiting for dcraw...", false);
 			
-			System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -c \"" + filename.Replace("\"", "\\\"") + "\"");
+			System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -H 5 -c \"" + filename.Replace("\"", "\\\"") + "\"");
 			try
 			{
 				if (prc.Start())
