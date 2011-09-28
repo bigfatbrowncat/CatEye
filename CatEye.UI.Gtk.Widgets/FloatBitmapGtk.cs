@@ -79,7 +79,13 @@ namespace CatEye.UI.Gtk.Widgets
 					double r = N * (1.0 - Math.Exp(-(double)r_chan[i, j] / N));
 					double g = N * (1.0 - Math.Exp(-(double)g_chan[i, j] / N));
 					double b = N * (1.0 - Math.Exp(-(double)b_chan[i, j] / N));
-
+					
+					// Applying highlights
+					
+					r = r * (1 - hl_chan[i, j]) + 1 * hl_chan[i, j] - 0.001;
+					g = g * (1 - hl_chan[i, j]) + 1 * hl_chan[i, j] - 0.001;
+					b = b * (1 - hl_chan[i, j]) + 1 * hl_chan[i, j] - 0.001;
+					
 					
 					cur_pixel[0] = cut(r * 255);      // Red
 					cur_pixel[1] = cut(g * 255);      // Green
