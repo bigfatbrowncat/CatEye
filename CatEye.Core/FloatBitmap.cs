@@ -98,7 +98,7 @@ namespace CatEye.Core
 			}
 			
 			// Searching for maximum
-			double Max = CalcMaxBrightness();
+			double Max = CalcMaxLight();
 			
 			
 			// Normalizing to 0..1
@@ -119,6 +119,35 @@ namespace CatEye.Core
 					}
 				}
 			}
+			
+			// Removing highlights (setting the color of 2% highlight to white)
+			double delta = 0.03;
+			double alpha = Math.Log(2) / delta;
+			double q = Math.Sqrt(3);
+			for (int i = 0; i < mWidth; i++)
+			{
+				for (int j = 0; j < mHeight; j++)
+				{
+					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                     g_chan[i, j] * g_chan[i, j] +
+					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+				
+					double beta = Math.Log(0.0001 + q - r_chan[i, j]) - alpha;
+					r_chan[i, j] = (float)(r_chan[i, j] + Math.Exp(alpha * x + beta));
+					beta = Math.Log(0.0001 + q - g_chan[i, j]) - alpha;
+					g_chan[i, j] = (float)(g_chan[i, j] + Math.Exp(alpha * x + beta));
+					beta = Math.Log(0.0001 + q - b_chan[i, j]) - alpha;
+					b_chan[i, j] = (float)(b_chan[i, j] + Math.Exp(alpha * x + beta));
+					
+					double x2 = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                      g_chan[i, j] * g_chan[i, j] +
+					                      b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					r_chan[i, j] *= (float)(x / (x2 + 0.0001));
+					g_chan[i, j] *= (float)(x / (x2 + 0.0001));
+					b_chan[i, j] *= (float)(x / (x2 + 0.0001));
+				}
+				
+			}			
 			
 			return true;
 		}
@@ -319,15 +348,15 @@ namespace CatEye.Core
 			}
 		}
 		
-		protected double CalcMaxBrightness()
+		protected double CalcMaxLight()
 		{
 			double Max = 0;
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+							  			 g_chan[i, j] * g_chan[i, j] + 
+						      			 b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				if (Max < light) Max = light;
 			}
@@ -843,7 +872,7 @@ namespace CatEye.Core
 		
 		public void CutBlackPoint(double cut, ProgressReporter callback)
 		{
-			double max_light = CalcMaxBrightness();
+			double max_light = CalcMaxLight();
 			double min_light = AmplitudeFindBlackPoint();
 			
 			if (cut < 0.00001)
