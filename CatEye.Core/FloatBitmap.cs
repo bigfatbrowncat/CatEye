@@ -100,8 +100,10 @@ namespace CatEye.Core
 				}
 			}
 			
-			// Searching for maximum
-			double Max = CalcMaxLight();
+			// Searching for the higher tail
+			HistogramCollector hiscol = new HistogramCollector(CalcMaxLight(), 1024);
+			hiscol.CollectData(this);
+			double maxLight = hiscol.LineToScale(hiscol.FindHighTailLightness(0.001));
 			
 			
 			// Normalizing to 0..1
@@ -116,15 +118,15 @@ namespace CatEye.Core
 				{
 					for (int j = 0; j < mHeight; j++)
 					{
-						r_chan[i, j] /= (float)Max;
-						g_chan[i, j] /= (float)Max;
-						b_chan[i, j] /= (float)Max;
+						r_chan[i, j] /= (float)maxLight;
+						g_chan[i, j] /= (float)maxLight;
+						b_chan[i, j] /= (float)maxLight;
 					}
 				}
 			}
 			
 			// Building highlights matrix
-			double delta = 0.03;	// Highlight distance
+			double delta = 0.05;	// Highlight distance
 			double alpha = Math.Log(2) / delta;
 			double q = 1;
 			for (int i = 0; i < mWidth; i++)
@@ -134,9 +136,11 @@ namespace CatEye.Core
 					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
 					                     g_chan[i, j] * g_chan[i, j] +
 					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					if (x > 1) x = 1;
 				
 					double beta = Math.Log(q) - alpha;
 					hl_chan[i, j] = (float)(Math.Exp(alpha * x + beta));
+					//if (x > 0.9) Console.Write("(" + i + "," + j + ")");
 				}
 				
 			}			

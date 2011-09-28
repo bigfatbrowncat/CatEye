@@ -440,7 +440,7 @@ namespace CatEye.Core
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine("Exception occured during loading process: " + ex.Message);
+						Console.WriteLine("Exception occured during loading process: " + ex.Message + "\n" + ex.StackTrace);
 						
 						//Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
 						return null;
