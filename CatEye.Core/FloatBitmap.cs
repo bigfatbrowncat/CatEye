@@ -9,7 +9,7 @@ namespace CatEye.Core
 	{
 		protected const int REPORT_EVERY_NTH_LINE = 5;
 		
-		protected float[,] r_chan, g_chan, b_chan;
+		protected float[,] r_chan, g_chan, b_chan, hl_chan;
 		
 		protected int mWidth, mHeight;
 		
@@ -40,6 +40,7 @@ namespace CatEye.Core
 			r_chan = new float[mWidth, mHeight];
 			g_chan = new float[mWidth, mHeight];
 			b_chan = new float[mWidth, mHeight];
+			hl_chan = new float[mWidth, mHeight];
 			
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
@@ -47,6 +48,7 @@ namespace CatEye.Core
 				r_chan[i, j] = src.r_chan[i, j];
 				g_chan[i, j] = src.g_chan[i, j];
 				b_chan[i, j] = src.b_chan[i, j];
+				hl_chan[i, j] = src.hl_chan[i, j];
 			}
 		}
 		
@@ -78,6 +80,7 @@ namespace CatEye.Core
 			r_chan = new float[mWidth, mHeight];
 			g_chan = new float[mWidth, mHeight];
 			b_chan = new float[mWidth, mHeight];
+			hl_chan = new float[mWidth, mHeight];
 			
 			for (int i = 0; i < mWidth; i++)
 			{
@@ -97,8 +100,10 @@ namespace CatEye.Core
 				}
 			}
 			
-			// Searching for maximum
-			double Max = CalcMaxBrightness();
+			// Searching for the higher tail
+			HistogramCollector hiscol = new HistogramCollector(CalcMaxLight(), 1024);
+			hiscol.CollectData(this);
+			double maxLight = hiscol.LineToScale(hiscol.FindHighTailLightness(0.001));
 			
 			
 			// Normalizing to 0..1
@@ -113,12 +118,32 @@ namespace CatEye.Core
 				{
 					for (int j = 0; j < mHeight; j++)
 					{
-						r_chan[i, j] /= (float)Max;
-						g_chan[i, j] /= (float)Max;
-						b_chan[i, j] /= (float)Max;
+						r_chan[i, j] /= (float)maxLight;
+						g_chan[i, j] /= (float)maxLight;
+						b_chan[i, j] /= (float)maxLight;
 					}
 				}
 			}
+			
+			// Building highlights matrix
+			double delta = 0.05;	// Highlight distance
+			double alpha = Math.Log(2) / delta;
+			double q = 1;
+			for (int i = 0; i < mWidth; i++)
+			{
+				for (int j = 0; j < mHeight; j++)
+				{
+					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                     g_chan[i, j] * g_chan[i, j] +
+					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					if (x > 1) x = 1;
+				
+					double beta = Math.Log(q) - alpha;
+					hl_chan[i, j] = (float)(Math.Exp(alpha * x + beta));
+					//if (x > 0.9) Console.Write("(" + i + "," + j + ")");
+				}
+				
+			}			
 			
 			return true;
 		}
@@ -128,6 +153,7 @@ namespace CatEye.Core
 			float[,] new_r = new float[(int)(mWidth * k), (int)(mHeight * k)];
 			float[,] new_g = new float[(int)(mWidth * k), (int)(mHeight * k)];
 			float[,] new_b = new float[(int)(mWidth * k), (int)(mHeight * k)];
+			float[,] new_hl = new float[(int)(mWidth * k), (int)(mHeight * k)];
 			int[,] sum = new int[(int)(mWidth * k), (int)(mHeight * k)];
 
 			for (int i = 0; i < (int)(mWidth * k); i++)
@@ -141,7 +167,7 @@ namespace CatEye.Core
 				}
 				for (int j = 0; j < (int)(mHeight * k); j++)
 				{
-					double r = 0, g = 0, b = 0; int s = 0;
+					double r = 0, g = 0, b = 0, hl = 0; int s = 0;
 					for (int u = (int)((double)i / k); u < (int)(((double)i + 1) / k); u++)
 					for (int v = (int)((double)j / k); v < (int)(((double)j + 1) / k); v++)
 					{
@@ -150,12 +176,14 @@ namespace CatEye.Core
 							r += r_chan[u, v];
 							g += g_chan[u, v];
 							b += b_chan[u, v];
+							hl += hl_chan[u, v];
 							s ++;
 						}
 					}
 					new_r[i, j] = (float)r;
 					new_g[i, j] = (float)g;
 					new_b[i, j] = (float)b;
+					new_hl[i, j] = (float)hl;
 					sum[i, j] = s;
 				}
 			}
@@ -166,6 +194,7 @@ namespace CatEye.Core
 				new_r[i, j] /= sum[i, j];
 				new_g[i, j] /= sum[i, j];
 				new_b[i, j] /= sum[i, j];
+				new_hl[i, j] /= sum[i, j];
 			}
 			
 			lock (this)
@@ -173,57 +202,11 @@ namespace CatEye.Core
 				r_chan = new_r;
 				g_chan = new_g;
 				b_chan = new_b;
+				hl_chan = new_hl;
 				mWidth = (int)(mWidth * k);
 				mHeight = (int)(mHeight * k);
 			}
 		}
-		
-/*		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="left">
-		/// Left from 0 to 1
-		/// </param>
-		/// <param name="top">
-		/// Top from 0 to 1
-		/// </param>
-		/// <param name="right">
-		/// Right from 0 to 1 must be greater than left
-		/// </param>
-		/// <param name="bottom">
-		/// Bottom from 0 to 1 must be greater than top
-		/// </param>
-		/// <param name="callback">
-		/// A <see cref="ProgressReporter"/>, which will be used to report the progress.
-		/// </param>
-		public void Crop(double left, double top, double right, double bottom, ProgressReporter callback)
-		{
-			int i1 = Math.Max(0, (int)(width * left)), 
-				i2 = Math.Min(width - 1, (int)(width * right)), 
-				j1 = Math.Max(0, (int)(height * top)), 
-				j2 = Math.Min(height - 1, (int)(height * bottom));
-			
-			float[,] newr = new float[i2 - i1 + 1, j2 - j1 + 1];
-			float[,] newg = new float[i2 - i1 + 1, j2 - j1 + 1];
-			float[,] newb = new float[i2 - i1 + 1, j2 - j1 + 1];
-			
-			for (int i = i1; i <= i2; i++)
-			{
-				if (i % REPORT_EVERY_NTH_LINE == 0 && callback != null) 
-					callback((double)(i - i1) / (i2 - i1 + 1));
-				for (int j = j1; j <= j2; j++)
-				{
-					newr[i - i1, j - j1] = r_chan[i, j];
-					newg[i - i1, j - j1] = g_chan[i, j];
-					newb[i - i1, j - j1] = b_chan[i, j];
-				}
-			}
-			
-			r_chan = newr; g_chan = newg; b_chan = newb;
-			width = i2 - i1 + 1;
-			height = j2 - j1 + 1;
-		}
-*/
 		
 		public void AmplitudeMultiply(double Amplitude, ProgressReporter callback)
 		{
@@ -319,15 +302,15 @@ namespace CatEye.Core
 			}
 		}
 		
-		protected double CalcMaxBrightness()
+		protected double CalcMaxLight()
 		{
 			double Max = 0;
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
 			{
 				double light = Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-							  			g_chan[i, j] * g_chan[i, j] + 
-						      			b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+							  			 g_chan[i, j] * g_chan[i, j] + 
+						      			 b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
 				
 				if (Max < light) Max = light;
 			}
@@ -843,7 +826,7 @@ namespace CatEye.Core
 		
 		public void CutBlackPoint(double cut, ProgressReporter callback)
 		{
-			double max_light = CalcMaxBrightness();
+			double max_light = CalcMaxLight();
 			double min_light = AmplitudeFindBlackPoint();
 			
 			if (cut < 0.00001)
@@ -892,6 +875,7 @@ namespace CatEye.Core
 			float[,] oldr = r_chan; 
 			float[,] oldg = g_chan; 
 			float[,] oldb = b_chan;
+			float[,] oldhl = hl_chan;
 			int oldW = mWidth, oldH = mHeight;
 			
 			// Creating new image
@@ -900,6 +884,7 @@ namespace CatEye.Core
 				r_chan = new float[crop_w, crop_h];
 				g_chan = new float[crop_w, crop_h];
 				b_chan = new float[crop_w, crop_h];
+				hl_chan = new float[crop_w, crop_h];
 				mWidth = crop_w; mHeight = crop_h;
 			}
 			
@@ -969,6 +954,7 @@ namespace CatEye.Core
 											r_chan[i, j] += (float)(oldr[m, n] * part);
 											g_chan[i, j] += (float)(oldg[m, n] * part);
 											b_chan[i, j] += (float)(oldb[m, n] * part);
+											hl_chan[i, j] += (float)(oldhl[m, n] * part);
 										}
 									}
 								}
@@ -1017,6 +1003,7 @@ namespace CatEye.Core
 			float[,] newr = new float[targetWidth, targetHeight];
 			float[,] newg = new float[targetWidth, targetHeight];
 			float[,] newb = new float[targetWidth, targetHeight];
+			float[,] newhl = new float[targetWidth, targetHeight];
 			
 			
 			// Going thru new pixels. Calculating influence from source pixel
@@ -1056,6 +1043,7 @@ namespace CatEye.Core
 							newr[i, j] += (float)(r_chan[m, n] * part);
 							newg[i, j] += (float)(g_chan[m, n] * part);
 							newb[i, j] += (float)(b_chan[m, n] * part);
+							newhl[i, j] += (float)(hl_chan[m, n] * part);
 						}
 					}
 				}
@@ -1066,6 +1054,7 @@ namespace CatEye.Core
 				r_chan = newr;
 				g_chan = newg;
 				b_chan = newb;
+				hl_chan = newhl;
 				mWidth = targetWidth; mHeight = targetHeight;
 			}
 			return true;

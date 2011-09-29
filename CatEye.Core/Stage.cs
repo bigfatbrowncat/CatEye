@@ -398,7 +398,7 @@ namespace CatEye.Core
 			mCancelLoadingPending = false;
 			OnProgressMessageReport(false, 0, "Waiting for dcraw...", false);
 			
-			System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -c \"" + filename.Replace("\"", "\\\"") + "\"");
+			System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -H 9 -c \"" + filename.Replace("\"", "\\\"") + "\"");
 			try
 			{
 				if (prc.Start())
@@ -440,7 +440,7 @@ namespace CatEye.Core
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine("Exception occured during loading process: " + ex.Message);
+						Console.WriteLine("Exception occured during loading process: " + ex.Message + "\n" + ex.StackTrace);
 						
 						//Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
 						return null;
