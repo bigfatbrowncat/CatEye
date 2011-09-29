@@ -81,6 +81,7 @@ namespace CatEye.UI.Base
 			}
 		}
 		
+		//TODO: Don't update the image if it is scaled down
 		public double ZoomAfterPrescaleValue
 		{
 			get { return mZoomAfterPrescaleValue; }
@@ -132,10 +133,15 @@ namespace CatEye.UI.Base
 			else
 			{
 				updating_needed = true;
+				//if (!item.Active)
+				//{
+				//	_EditingOperation = null;
+				//}
 			}
 			if (updating_needed) AskUpdate();
 		}
-		
+
+		//TODO: Check if the item is interchanged with an inactive stage operation
 		protected override void OnItemIndexChanged(StageOperationParameters item)
 		{
 			base.OnItemIndexChanged (item);
@@ -152,6 +158,7 @@ namespace CatEye.UI.Base
 			get { return _TheUIState; } 
 		}
 		
+		//TODO: To add "_Holders[StageQueue[i]].Edit = false;" if the stage operation is inactive
 		public StageOperationParameters EditingOperation
 		{
 			get { return _EditingOperation; }
@@ -412,7 +419,7 @@ namespace CatEye.UI.Base
 		{
 			if (OperationFrozen != null)
 				OperationFrozen(this, EventArgs.Empty);
-			AskUpdate();
+			//AskUpdate();
 		}
 
 		protected virtual void OnOperationDefrozen()
