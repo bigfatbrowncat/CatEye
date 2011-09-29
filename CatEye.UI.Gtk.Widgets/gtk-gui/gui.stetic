@@ -1914,7 +1914,7 @@
       <placeholder />
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.PreprocessStageOperationParametersWidget" design-size="352 207">
+  <widget class="Gtk.Bin" id="CatEye.UI.Gtk.Widgets.HighlightStageOperationParametersWidget" design-size="352 207">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -2001,7 +2001,7 @@
           <widget class="Gtk.Label" id="label7">
             <property name="MemberName" />
             <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Highlights cut:</property>
+            <property name="LabelProp" translatable="yes">Cut:</property>
           </widget>
           <packing>
             <property name="XPadding">2</property>

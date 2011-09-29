@@ -5,39 +5,39 @@ using CatEye.Core;
 namespace CatEye.UI.Gtk.Widgets
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	[StageOperationID("PreprocessStageOperation")]
-	public partial class PreprocessStageOperationParametersWidget : StageOperationParametersWidget
+	[StageOperationID("HighlightStageOperation")]
+	public partial class HighlightStageOperationParametersWidget : StageOperationParametersWidget
 	{
-		public PreprocessStageOperationParametersWidget (StageOperationParameters parameters) 
+		public HighlightStageOperationParametersWidget (StageOperationParameters parameters) 
 			: base (parameters)
 		{
 			this.Build ();
 		}
 
-		private bool _HighlightsCutIsChanging = false;
+		private bool _CutIsChanging = false;
 		private bool _SoftnessIsChanging = false;
 
-		protected enum HighlightsCutChanger { HScale, SpinButton }
+		protected enum CutChanger { HScale, SpinButton }
 		protected enum SoftnessChanger { HScale, SpinButton }
 		
-		protected void ChangeHighlightsCut(double new_value, HighlightsCutChanger changer)
+		protected void ChangeCut(double new_value, CutChanger changer)
 		{
-			if (!_HighlightsCutIsChanging)
+			if (!_CutIsChanging)
 			{
-				_HighlightsCutIsChanging = true;
+				_CutIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != HighlightsCutChanger.HScale)
+				if (changer != CutChanger.HScale)
 					cut_hscale.Value = new_value;
 				
-				if (changer != HighlightsCutChanger.SpinButton)
+				if (changer != CutChanger.SpinButton)
 					cut_spinbutton.Value = new_value;
 				
-				((PreprocessStageOperationParameters)Parameters).HighlightsCut = new_value;
+				((HighlightStageOperationParameters)Parameters).Cut = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_HighlightsCutIsChanging = false;
+				_CutIsChanging = false;
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace CatEye.UI.Gtk.Widgets
 				if (changer != SoftnessChanger.SpinButton)
 					softness_spinbutton.Value = new_value;
 				
-				((PreprocessStageOperationParameters)Parameters).Softness = new_value;
+				((HighlightStageOperationParameters)Parameters).Softness = new_value;
 				EndChangingParameters();
 				OnUserModified();
 				_SoftnessIsChanging = false;
@@ -64,26 +64,26 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		protected override void HandleParametersChangedNotByUI ()
 		{			
-			_HighlightsCutIsChanging = true;
-			cut_hscale.Value = ((PreprocessStageOperationParameters)Parameters).HighlightsCut;
-			cut_spinbutton.Value = ((PreprocessStageOperationParameters)Parameters).HighlightsCut;
-			_HighlightsCutIsChanging = false;
+			_CutIsChanging = true;
+			cut_hscale.Value = ((HighlightStageOperationParameters)Parameters).Cut;
+			cut_spinbutton.Value = ((HighlightStageOperationParameters)Parameters).Cut;
+			_CutIsChanging = false;
 			
 			_SoftnessIsChanging = true;
-			softness_hscale.Value = ((PreprocessStageOperationParameters)Parameters).Softness;
-			softness_spinbutton.Value = ((PreprocessStageOperationParameters)Parameters).Softness;
+			softness_hscale.Value = ((HighlightStageOperationParameters)Parameters).Softness;
+			softness_spinbutton.Value = ((HighlightStageOperationParameters)Parameters).Softness;
 			_SoftnessIsChanging = false;
 			
 		}
 
 		protected void OnCutHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeHighlightsCut(cut_hscale.Value, HighlightsCutChanger.HScale);
+			ChangeCut(cut_hscale.Value, CutChanger.HScale);
 		}
 
 		protected void OnCutSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeHighlightsCut(cut_spinbutton.Value, HighlightsCutChanger.SpinButton);
+			ChangeCut(cut_spinbutton.Value, CutChanger.SpinButton);
 		}
 
 		protected void OnSoftnessHscaleChangeValue (object o, ChangeValueArgs args)

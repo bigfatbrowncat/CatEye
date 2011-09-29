@@ -4,18 +4,18 @@ using System.Xml;
 
 namespace CatEye.Core
 {
-	[StageOperationID("PreprocessStageOperation")]
-	public class PreprocessStageOperationParameters : StageOperationParameters
+	[StageOperationID("HighlightStageOperation")]
+	public class HighlightStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mHighlightsCut = 0, mSoftness = 0.1;
+		private double mCut = 0, mSoftness = 0.1;
 		
-		public double HighlightsCut
+		public double Cut
 		{
-			get { return mHighlightsCut; }
+			get { return mCut; }
 			set 
 			{
-				mHighlightsCut = value;
+				mCut = value;
 				OnChanged();
 			}
 		}
@@ -32,7 +32,7 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-			xn.Attributes.Append(xdoc.CreateAttribute("HighlightsCut")).Value = mHighlightsCut.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Cut")).Value = mCut.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Softness")).Value = mSoftness.ToString(nfi);
 			return xn;
 		}
@@ -41,14 +41,14 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-			if (node.Attributes["HighlightsCut"] != null)
+			if (node.Attributes["Cut"] != null)
 			{
-				if (double.TryParse(node.Attributes["HighlightsCut"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Cut"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mHighlightsCut = res;
+					mCut = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse HighlightsCut value");
+					throw new IncorrectNodeValueException("Can't parse Cut value");
 			}
 			if (node.Attributes["Softness"] != null)
 			{
@@ -63,13 +63,13 @@ namespace CatEye.Core
 		}
 				
 		
-		public PreprocessStageOperationParameters ()
+		public HighlightStageOperationParameters ()
 		{
 		}
 		
 		public override Type GetSOType ()
 		{
-			return typeof(PreprocessStageOperation);
+			return typeof(HighlightStageOperation);
 		}
 	}
 }

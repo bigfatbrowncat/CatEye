@@ -1047,9 +1047,6 @@ namespace CatEye.Core
 			double min_tail = Math.Min(red_tail, Math.Min(green_tail, blue_tail));
 			double max_tail = Math.Max(red_tail, Math.Max(green_tail, blue_tail));
 			
-			Console.WriteLine("min: " + min_tail + "max: " + max_tail);
-			
-			double max_hl = 0;
 			// Building highlights matrix
 			double delta = softness;	// Highlight distance
 			double alpha = Math.Log(2) / delta;
@@ -1071,11 +1068,9 @@ namespace CatEye.Core
 					                     g_chan[i, j] * g_chan[i, j] +
 					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) / q;
 					double beta = Math.Log(q) - alpha;
-					hl_chan[i, j] = (float)((Math.Exp(alpha * x + beta) - Math.Exp(beta)) * (1 + Math.Exp(beta)));
-					if (hl_chan[i, j] > max_hl) max_hl = hl_chan[i, j];
+					hl_chan[i, j] = (float)((Math.Exp(alpha * x + beta) - Math.Exp(beta)) / (Math.Exp(alpha + beta) - Math.Exp(beta)));
 				}
-			}	
-			Console.WriteLine(max_hl);
+			}
 		}
 	}
 }

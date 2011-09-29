@@ -26,7 +26,7 @@ namespace CatEye
 			//typeof(LimitSizeStageOperation),
 			typeof(CrotateStageOperation),
 			typeof(HistogramStageOperation),
-			typeof(PreprocessStageOperation)
+			typeof(HighlightStageOperation)
 		};
 
 		public static readonly Type[] mStageOperationParametersTypes = new Type[]
@@ -40,7 +40,7 @@ namespace CatEye
 			//typeof(LimitSizeStageOperationParameters),
 			typeof(CrotateStageOperationParameters),
 			typeof(HistogramStageOperationParameters),
-			typeof(PreprocessStageOperationParameters)
+			typeof(HighlightStageOperationParameters)
 		};
 				
 		public static readonly Type[] mStageOperationParametersWidgetTypes = new Type[]
@@ -54,7 +54,7 @@ namespace CatEye
 			//typeof(LimitSizeStageOperationParametersWidget),
 			typeof(CrotateStageOperationParametersWidget),
 			typeof(HistogramStageOperationParametersWidget),
-			typeof(PreprocessStageOperationParametersWidget)
+			typeof(HighlightStageOperationParametersWidget)
 		};
 		
 		public static StageOperation StageOperationFactory(StageOperationParameters parameters)

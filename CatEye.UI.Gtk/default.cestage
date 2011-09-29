@@ -1,13 +1,17 @@
 <?xml version="1.0"?>
 <Stage>
+  <StageOperationParameters ID="HighlightStageOperation" Active="True" Cut="0" Softness="0.1" />
   <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" Normalize="True" />
   <StageOperationParameters ID="CrotateStageOperation" Active="False" Angle="0" CropWidth="1" CropHeight="1" AspectRatio="0" AspectRatioPreset="0" AspectRatioCustom="False" Mode="1">
     <Point X="0.5" Y="0.5" Name="Center" />
   </StageOperationParameters>
-  <StageOperationParameters ID="ToneStageOperation" Active="False" HighlightsInvariance="0">
-    <Tone R="1.00094476412756" G="0.999987548333831" B="0.999066805745698" />
+  <StageOperationParameters ID="ToneStageOperation" Active="False" Edge="0.95" Softness="0.1" AutoDarkTone="False" AutoLightTone="False" AutoDarkRadius="0" AutoLightRadius="0">
+    <Tone R="1" G="1" B="1" Name="DarkTone" />
+    <Tone R="1" G="1" B="1" Name="LightTone" />
+    <Point X="0" Y="0" Name="AutoDarkCenter" />
+    <Point X="0" Y="0" Name="AutoLightCenter" />
   </StageOperationParameters>
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
-  <StageOperationParameters ID="CompressionStageOperation" Active="True" Power="0.60" DarkPreserving="0.01" />
+  <StageOperationParameters ID="CompressionStageOperation" Active="True" Curve="0.5" />
   <StageOperationParameters ID="LocalContrastStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
 </Stage>

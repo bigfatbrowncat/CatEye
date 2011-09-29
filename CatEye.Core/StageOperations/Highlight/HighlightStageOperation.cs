@@ -2,11 +2,11 @@ using System;
 
 namespace CatEye.Core
 {
-	[StageOperationDescription("Preprocess", "Preprocessing the photo")]
-	[StageOperationID("PreprocessStageOperation")]
-	public class PreprocessStageOperation : StageOperation
+	[StageOperationDescription("Cut highlights", "Controlling highlights edge")]
+	[StageOperationID("HighlightStageOperation")]
+	public class HighlightStageOperation : StageOperation
 	{
-		public PreprocessStageOperation (StageOperationParameters parameters)
+		public HighlightStageOperation (StageOperationParameters parameters)
 			: base(parameters)
 		{
 		}
@@ -21,8 +21,8 @@ namespace CatEye.Core
 			int lines = 1024;
 			double tailValueAtLeast = 0.01;
 			
-			PreprocessStageOperationParameters sop = (PreprocessStageOperationParameters)Parameters;
-			hdp.CutHighlights(sop.HighlightsCut, 
+			HighlightStageOperationParameters sop = (HighlightStageOperationParameters)Parameters;
+			hdp.CutHighlights(sop.Cut, 
 			                  sop.Softness, 
 			                  lines, 
 			                  tailValueAtLeast,
