@@ -116,6 +116,8 @@
     <Compile Include="HistogramCollector.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperation.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperationParameters.cs" />
+    <Compile Include="StageOperations\Preprocess\PreprocessStageOperation.cs" />
+    <Compile Include="StageOperations\Preprocess\PreprocessStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -129,6 +131,7 @@
     <Folder Include="StageOperations\LimitSize\" />
     <Folder Include="StageOperations\LocalContrast\" />
     <Folder Include="StageOperations\Histogram\" />
+    <Folder Include="StageOperations\Preprocess\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />

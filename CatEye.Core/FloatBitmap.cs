@@ -100,11 +100,7 @@ namespace CatEye.Core
 				}
 			}
 			
-			// Searching for the higher tail
-			HistogramCollector hiscol = new HistogramCollector(CalcMaxLight(), 1024);
-			hiscol.CollectData(this);
-			double maxLight = hiscol.LineToScale(hiscol.FindHighTailLightness(0.001));
-			
+			double maxLight = CalcMaxLight();
 			
 			// Normalizing to 0..1
 			for (int i = 0; i < mWidth; i++)
@@ -124,27 +120,7 @@ namespace CatEye.Core
 					}
 				}
 			}
-			
-			// Building highlights matrix
-			double delta = 0.05;	// Highlight distance
-			double alpha = Math.Log(2) / delta;
-			double q = 1;
-			for (int i = 0; i < mWidth; i++)
-			{
-				for (int j = 0; j < mHeight; j++)
-				{
-					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
-					                     g_chan[i, j] * g_chan[i, j] +
-					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					if (x > 1) x = 1;
-				
-					double beta = Math.Log(q) - alpha;
-					hl_chan[i, j] = (float)(Math.Exp(alpha * x + beta));
-					//if (x > 0.9) Console.Write("(" + i + "," + j + ")");
-				}
-				
-			}			
-			
+
 			return true;
 		}
 
@@ -1058,6 +1034,48 @@ namespace CatEye.Core
 				mWidth = targetWidth; mHeight = targetHeight;
 			}
 			return true;
+		}
+		
+		public void CutHighlights(double cut, double softness, int lines, double tailValueAtLeast, ProgressReporter callback)
+		{
+			double maxlight = CalcMaxLight();
+			HistogramCollector sc = new HistogramCollector(maxlight, lines);
+			sc.CollectData(this);
+			double red_tail = sc.LineToScale(sc.FindHighTailRed(tailValueAtLeast));
+			double green_tail = sc.LineToScale(sc.FindHighTailGreen(tailValueAtLeast));
+			double blue_tail = sc.LineToScale(sc.FindHighTailBlue(tailValueAtLeast));
+			double min_tail = Math.Min(red_tail, Math.Min(green_tail, blue_tail));
+			double max_tail = Math.Max(red_tail, Math.Max(green_tail, blue_tail));
+			
+			Console.WriteLine("min: " + min_tail + "max: " + max_tail);
+			
+			double max_hl = 0;
+			// Building highlights matrix
+			double delta = softness;	// Highlight distance
+			double alpha = Math.Log(2) / delta;
+			double q = min_tail + cut * (max_tail - min_tail);
+			for (int j = 0; j < mHeight; j++)
+			{
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / mHeight)) throw new UserCancelException();
+				}
+				
+				for (int i = 0; i < mWidth; i++)
+				{
+					if (r_chan[i, j] > q) r_chan[i, j] = (float)q;
+					if (g_chan[i, j] > q) g_chan[i, j] = (float)q;
+					if (b_chan[i, j] > q) b_chan[i, j] = (float)q;
+					
+					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                     g_chan[i, j] * g_chan[i, j] +
+					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) / q;
+					double beta = Math.Log(q) - alpha;
+					hl_chan[i, j] = (float)((Math.Exp(alpha * x + beta) - Math.Exp(beta)) * (1 + Math.Exp(beta)));
+					if (hl_chan[i, j] > max_hl) max_hl = hl_chan[i, j];
+				}
+			}	
+			Console.WriteLine(max_hl);
 		}
 	}
 }
