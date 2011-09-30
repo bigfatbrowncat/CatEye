@@ -403,6 +403,7 @@ namespace CatEye.Core
 									// Dispersion
 									
 									int avg = 0;
+									//double sgn_delta = 0;
 									for (int k = 0; k < 3 * points; k++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
@@ -414,12 +415,14 @@ namespace CatEye.Core
 										
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
-											double delta = (light[i, j] - light[u, v]);
+											double delta = (light[i, j] - light[u, v]) / maxlight;
 											dispersion_matrix[i, j] += (float)(delta * delta);
+											//sgn_delta += Math.Sign(delta);
 											avg ++;
 										}
 									}
-									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1)));  // (avg + 1) to avoid div by zero
+									//sgn_delta /= Math.Abs(sgn_delta) + 0.0001;
+									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/);  // (avg + 1) to avoid div by zero
 									
 									
 									// Average
@@ -460,27 +463,18 @@ namespace CatEye.Core
 									// Compensating the dispersion factor to avoid "crown"
 									//double x1 = 0.25, x2 = 0.55, y2 = 0.03;
 									
-									double x1 = 0.3, x2 = 0.6, y2 = 0.01;
+									/*
+									double x1 = 0.125, x2 = 0.25, y2 = 0.01;
 									double kk = y2 / (x2 - x1);
 									double b = -kk * x1;
-									double minus = kk * dispersion_matrix[i, j] - b * (Math.Exp(dispersion_matrix[i, j] * kk / (1.1 * b)) - 1);
+									double minus = kk * dispersion_matrix[i, j] - b * (Math.Exp(dispersion_matrix[i, j] * kk / b) - 1);
 
 									double sg = Math.Sign(scale_matrix[i, j]);
 									scale_matrix[i, j] -= (float)(sg * minus);
 									if (Math.Sign(scale_matrix[i, j]) != sg) scale_matrix[i, j] = 0;
-									
-									
-									/*double sgn = Math.Sign(scale_matrix[i, j]);
-									double abs = Math.Abs(scale_matrix[i, j]);
-									
-									double limit = contrast * 0.15;
-									scale_matrix[i, j] = (float)(sgn * limit * (1 - Math.Exp(- abs / limit)));
 									*/
 									
-									//scale_matrix[i, j] *= (float)(Math.Exp(- dispersion_matrix[i, j] / (0.2 * contrast)));
-									
-									
-									if (rnd.Next(1000) == 0)
+									if (rnd.Next(300) == 0)
 									{
 										lock (sw)
 										{
