@@ -439,40 +439,15 @@ namespace CatEye.Core
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
 											double delta = (light[i, j] - light[u, v]) / maxlight;
-											double f = Math.Log(Math.Abs(delta) + 1);
-
-											// Limiting f to remove white and dark "crowns" near contrast objects
-											double K = 2.5 * contrast;
-											/*double limit = 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
-												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.001)) + 0.0001;*/
+											double f = 0.05 * Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
 											
-											//double limit = contrast;
-											//f = limit *  (1 - Math.Exp(-f / limit));
-											
-											
-			
-											double scale = 0.1 * f * Math.Sign(delta);	// It was f / 5
-											
-											scale_matrix[i, j] += (float)scale;
+											scale_matrix[i, j] += (float)f;
 											
 											avg ++;
 										}
 									}
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
 									
-									// Compensating the dispersion factor to avoid "crown"
-									//double x1 = 0.25, x2 = 0.55, y2 = 0.03;
-									
-									/*
-									double x1 = 0.125, x2 = 0.25, y2 = 0.01;
-									double kk = y2 / (x2 - x1);
-									double b = -kk * x1;
-									double minus = kk * dispersion_matrix[i, j] - b * (Math.Exp(dispersion_matrix[i, j] * kk / b) - 1);
-
-									double sg = Math.Sign(scale_matrix[i, j]);
-									scale_matrix[i, j] -= (float)(sg * minus);
-									if (Math.Sign(scale_matrix[i, j]) != sg) scale_matrix[i, j] = 0;
-									*/
 									
 									if (rnd.Next(300) == 0)
 									{
