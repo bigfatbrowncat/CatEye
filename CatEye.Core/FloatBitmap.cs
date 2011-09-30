@@ -374,6 +374,8 @@ namespace CatEye.Core
 			
 			bool user_cancel = false;
 			
+			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
+			
 			for (int q = 0; q < threads_num; q++)
 			{
 				threads[q] = new Thread(delegate (object obj)
@@ -384,7 +386,8 @@ namespace CatEye.Core
 			
 						int i1 = ((thread_data)obj).i1;
 						int i2 = ((thread_data)obj).i2;
-									
+						
+						
 						for (int i = i1; i < i2; i++)
 						{
 							if (callback != null)
@@ -398,8 +401,9 @@ namespace CatEye.Core
 								if (i < mWidth)
 								{
 									// Dispersion
+									
 									int avg = 0;
-									for (int k = 0; k < points; k++)
+									for (int k = 0; k < 3 * points; k++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
 										//double alpha = 3;
@@ -416,7 +420,8 @@ namespace CatEye.Core
 										}
 									}
 									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1)));  // (avg + 1) to avoid div by zero
-			
+									
+									
 									// Average
 									avg = 0;
 									for (int k = 0; k < points; k++)
@@ -430,26 +435,58 @@ namespace CatEye.Core
 										
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
-											double delta = (light[i, j] - light[u, v]);
+											double delta = (light[i, j] - light[u, v]) / maxlight;
 											double f = Math.Log(Math.Abs(delta) + 1);
 
 											// Limiting f to remove white and dark "crowns" near contrast objects
-											//double d = 2, K = 0.5; -- good
 											double K = 2.5 * contrast;
-											//double denoise_delta = 0.05, denoise_min = 0.2;
-											//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
-											double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
-												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
+											/*double limit = 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
+												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.001)) + 0.0001;*/
 											
-											f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
+											//double limit = contrast;
+											//f = limit *  (1 - Math.Exp(-f / limit));
+											
+											
 			
-											double scale = f;	// It was f / 5
+											double scale = 0.1 * f * Math.Sign(delta);	// It was f / 5
 											
 											scale_matrix[i, j] += (float)scale;
+											
 											avg ++;
 										}
 									}
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
+									
+									// Compensating the dispersion factor to avoid "crown"
+									//double x1 = 0.25, x2 = 0.55, y2 = 0.03;
+									
+									double x1 = 0.3, x2 = 0.6, y2 = 0.01;
+									double kk = y2 / (x2 - x1);
+									double b = -kk * x1;
+									double minus = kk * dispersion_matrix[i, j] - b * (Math.Exp(dispersion_matrix[i, j] * kk / (1.1 * b)) - 1);
+
+									double sg = Math.Sign(scale_matrix[i, j]);
+									scale_matrix[i, j] -= (float)(sg * minus);
+									if (Math.Sign(scale_matrix[i, j]) != sg) scale_matrix[i, j] = 0;
+									
+									
+									/*double sgn = Math.Sign(scale_matrix[i, j]);
+									double abs = Math.Abs(scale_matrix[i, j]);
+									
+									double limit = contrast * 0.15;
+									scale_matrix[i, j] = (float)(sgn * limit * (1 - Math.Exp(- abs / limit)));
+									*/
+									
+									//scale_matrix[i, j] *= (float)(Math.Exp(- dispersion_matrix[i, j] / (0.2 * contrast)));
+									
+									
+									if (rnd.Next(1000) == 0)
+									{
+										lock (sw)
+										{
+											sw.WriteLine(dispersion_matrix[i, j] + "\t" + Math.Abs(scale_matrix[i, j]));
+										}
+									}
 								}
 								
 								// Scaling amplitudes
@@ -481,6 +518,7 @@ namespace CatEye.Core
 				td.i1 = (mWidth / threads_num) * q;
 				td.i2 = (mWidth / threads_num) * (q + 1);
 				
+				threads[q].Priority = ThreadPriority.BelowNormal;
 				threads[q].Start(td);
 			}
 			
@@ -489,6 +527,8 @@ namespace CatEye.Core
 			{
 				threads[q].Join();
 			}
+			
+			sw.Close();
 			
 			if (user_cancel) throw new UserCancelException();
 			
