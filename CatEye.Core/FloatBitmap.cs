@@ -404,7 +404,7 @@ namespace CatEye.Core
 									
 									int avg = 0;
 									//double sgn_delta = 0;
-									for (int k = 0; k < 3 * points; k++)
+									for (int p = 0; p < 3 * points; p++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
 										//double alpha = 3;
@@ -427,7 +427,7 @@ namespace CatEye.Core
 									
 									// Average
 									avg = 0;
-									for (int k = 0; k < points; k++)
+									for (int p = 0; p < points; p++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
 										//double alpha = 3;
@@ -447,7 +447,33 @@ namespace CatEye.Core
 										}
 									}
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
+
 									
+									// Removing "crowns"
+									double x20 = 0.3, x21 = 0.6, y1 = 0.019;
+									double k = y1 / (x21 - x20);
+									double b = k * x20;
+									
+									double sgn = Math.Sign(scale_matrix[i, j]);
+									double val = Math.Abs(scale_matrix[i, j]);
+									
+									double mu = k * dispersion_matrix[i, j] / b;
+									double pow = contrast * 10;
+									
+									val -= b * (-1 + Math.Pow(1 + Math.Pow(mu, pow), 1.0 / pow));
+									val = val < 0 ? 0 : val;
+									scale_matrix[i, j] = (float)(val * sgn) * 3;
+									
+									// Scaling amplitudes
+									double kcomp;
+									kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
+				
+									lock (this)
+									{
+										r_chan[i, j] = r_chan[i, j] * (float)kcomp;
+										g_chan[i, j] = g_chan[i, j] * (float)kcomp;
+										b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+									}									
 									
 									if (rnd.Next(300) == 0)
 									{
@@ -456,17 +482,6 @@ namespace CatEye.Core
 											sw.WriteLine(dispersion_matrix[i, j] + "\t" + Math.Abs(scale_matrix[i, j]));
 										}
 									}
-								}
-								
-								// Scaling amplitudes
-								double kcomp;
-								kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
-			
-								lock (this)
-								{
-									r_chan[i, j] = r_chan[i, j] * (float)kcomp;
-									g_chan[i, j] = g_chan[i, j] * (float)kcomp;
-									b_chan[i, j] = b_chan[i, j] * (float)kcomp;
 								}
 								
 							}
