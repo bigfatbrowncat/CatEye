@@ -27,7 +27,7 @@ Function ExtensionsCreate
     ${NSD_CreateListView} 0u 5u 300u 110u ""
     Pop $listview
     
-    ${NSD_LV_InsertColumn} $listview 0 20u "#"
+    ${NSD_LV_InsertColumn} $listview 0 20u " "
     ${NSD_LV_InsertColumn} $listview 1 60u "Extension"
     ${NSD_LV_InsertColumn} $listview 2 350u "Description"
     
@@ -48,7 +48,7 @@ Function ExtensionsCreate
     ; Send a message to set checkboxes style to listview.
     ;!define /math _LISTVIEW_TEMP_STYLE ${LVS_EX_CHECKBOXES} | ${LVS_EX_FULLROWSELECT}
     !define _LISTVIEW_TEMP_STYLE ${LVS_EX_CHECKBOXES}
-    SendMessage $listview ${LVM_SETEXTENDEDLISTVIEWSTYLE} 0 ${_LISTVIEW_TEMP_STYLE}
+        SendMessage $listview ${LVM_SETEXTENDEDLISTVIEWSTYLE} 0 ${_LISTVIEW_TEMP_STYLE}
     !undef _LISTVIEW_TEMP_STYLE
     ; Set the state of checkbox ${NSD_LV_SetCheckState} "hWnd" "iItem" "State"
     ; Before using this, you must set the LVS_EX_CHECKBOXES extended style.
