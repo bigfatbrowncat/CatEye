@@ -361,7 +361,13 @@ namespace CatEye.Core
 						
 			float[,] scale_matrix = new float[mWidth, mHeight];
 			float[,] dispersion_matrix = new float[mWidth, mHeight];
-				
+			
+			int disp_lines = 8000;
+			int scale_lines = 5000;
+			float disp_max = 1f;
+			float scale_max = 0.5f;
+			int[,] dispersion_pos = new int[disp_lines, scale_lines];
+			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
 			
 			// Full progress
@@ -373,8 +379,6 @@ namespace CatEye.Core
 			Thread[] threads = new Thread[threads_num];
 			
 			bool user_cancel = false;
-			
-			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
 			
 			for (int q = 0; q < threads_num; q++)
 			{
@@ -424,7 +428,6 @@ namespace CatEye.Core
 									//sgn_delta /= Math.Abs(sgn_delta) + 0.0001;
 									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/);  // (avg + 1) to avoid div by zero
 									
-									
 									// Average
 									avg = 0;
 									for (int p = 0; p < points; p++)
@@ -447,10 +450,20 @@ namespace CatEye.Core
 										}
 									}
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
-
 									
-									// Removing "crowns"
-									double x20 = 0.3, x21 = 0.6, y1 = 0.019;
+									// Adding point to scale-dispersion diagram
+									lock (dispersion_pos)
+									{
+										float val = Math.Abs(scale_matrix[i, j]);
+										if (dispersion_matrix[i, j] < disp_max && val < scale_max)
+										{
+											dispersion_pos[(int)(dispersion_matrix[i, j] * disp_lines / disp_max),
+											               (int)(val * scale_lines / scale_max)] ++;
+										}
+									}
+									
+									// Removing "crowns". Part 2
+									/*double x20 = 0.3, x21 = 0.6, y1 = 0.019;
 									double k = y1 / (x21 - x20);
 									double b = k * x20;
 									
@@ -458,12 +471,28 @@ namespace CatEye.Core
 									double val = Math.Abs(scale_matrix[i, j]);
 									
 									double mu = k * dispersion_matrix[i, j] / b;
-									double pow = contrast * 10;
+									double pow = 3;
 									
 									val -= b * (-1 + Math.Pow(1 + Math.Pow(mu, pow), 1.0 / pow));
 									val = val < 0 ? 0 : val;
 									scale_matrix[i, j] = (float)(val * sgn) * 3;
-									
+									*/
+									// Removing "crowns". Part 2
+									/*
+									sgn = Math.Sign(scale_matrix[i, j]);
+									val = Math.Abs(scale_matrix[i, j]);
+
+									double bb = 1;
+									double pow2 = 3;
+									double qq = 150;
+									double x0 = Math.Pow(bb * (pow2 - 1)/(pow2 + 1), 1.0 / pow2);
+									double y0 = (pow2 - 1)/(2*pow2);
+									double D0 = pow2 * Math.Pow(x0, pow2 - 1) * bb / (1 - y0) / Math.Pow((Math.Pow(x0, pow2) + bb), 2);
+									double val_mod = val * qq / D0 + x0;
+									val = (Math.Pow(val_mod, pow2)/(Math.Pow(val_mod, pow2) + bb) - y0) / (1 - y0) / qq;
+									scale_matrix[i, j] = (float)(val * sgn);
+									*/
+									/*
 									// Scaling amplitudes
 									double kcomp;
 									kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
@@ -482,6 +511,7 @@ namespace CatEye.Core
 											sw.WriteLine(dispersion_matrix[i, j] + "\t" + Math.Abs(scale_matrix[i, j]));
 										}
 									}
+									*/
 								}
 								
 							}
@@ -512,7 +542,118 @@ namespace CatEye.Core
 				threads[q].Join();
 			}
 			
+			// Searching for scale tails
+			double tail_val = 0.001; // 1% of max
+			float[] scale_tails = new float[disp_lines];
+			for (int i = 0; i < disp_lines; i++)
+			{
+				// Searching for the line max value
+				double max = 0;
+				for (int j = 0; j < scale_lines; j++)
+				{
+					if (Math.Log(dispersion_pos[i, j] + 1) > max) 
+						max = Math.Log(dispersion_pos[i, j] + 1);
+				}
+				if (max > 0.000001)
+				{
+					// Searching for the lower tail
+					double min_scale = 0;
+					for (int j = 0; j < scale_lines; j++)
+					{
+						if (Math.Log(dispersion_pos[i, j] + 1) > tail_val * max)
+						{
+							min_scale = j * scale_max / scale_lines;
+							break;
+						}
+					}
+					scale_tails[i] = (float)min_scale;
+				}
+				else
+					scale_tails[i] = -0.005f;	// Actually, any negative value is OK here
+			}
+			
+			// Dubbing the tails
+			float[] new_scale_tails = new float[disp_lines];
+			for (int i = 0; i < disp_lines; i++)
+			{
+				int tail_Delta = disp_lines / 30;
+				tail_Delta += 4 * tail_Delta * i * 2 / disp_lines;
+				
+				double norm = 0;
+				double val = 0;
+				for (int k = -tail_Delta + 1; k <= tail_Delta - 1; k++)
+				{
+					if (i + k >= 0)
+					{
+						if (i + k < disp_lines && scale_tails[i + k] >= 0)
+						{
+							// Real point
+							double f = (Math.Exp(1.0 - Math.Abs(k) / tail_Delta) - 1) / (Math.E - 1);
+							norm += f;
+							val += f * scale_tails[i + k];
+						}
+						else if (i + k >= disp_lines)
+						{
+							// Linear extrapolation (for greatest dispersion values)
+							double f = (Math.Exp(1.0 - Math.Abs(k) / tail_Delta) - 1) / (Math.E - 1);
+							norm += f;
+
+							double tg = (scale_tails[i] - scale_tails[i - tail_Delta]) / tail_Delta;
+							val += f * (scale_tails[i] + tg * k);
+						}
+						// else scale_tails[i + k] == 0 -- do nothing
+					}
+				}
+				val /= norm + 0.00001;
+				new_scale_tails[i] = (float)val;
+			}
+			
+			// The tails found (i hope). Let's cut them out.
+			for (int i = 0; i < mWidth; i++)
+			{
+				for (int j = 0; j < mHeight; j++)
+				{
+					// Cutting tails
+					
+					double sgn = Math.Sign(scale_matrix[i, j]);
+					double val = Math.Abs(scale_matrix[i, j]);
+					
+					int disp_line = (int)(dispersion_matrix[i, j] * disp_lines);
+					val -= new_scale_tails[disp_line];
+
+					scale_matrix[i, j] = (float)(val * sgn);
+					
+					double kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
+
+					lock (this)
+					{
+						r_chan[i, j] = r_chan[i, j] * (float)kcomp;
+						g_chan[i, j] = g_chan[i, j] * (float)kcomp;
+						b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+					}
+				}
+			}
+			
+			// Plotting gradient map
+			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
+			for (int j = 0; j < scale_lines - 1; j+=2)
+			{
+				for (int i = 0; i < disp_lines - 1; i+=2)
+				{
+					double sum = (dispersion_pos[i, j] + dispersion_pos[i+1, j] + dispersion_pos[i, j+1] + dispersion_pos[i+1, j+1]);
+					sum = Math.Log(sum + 1);
+					sw.Write(sum  + "\t");
+				}
+				sw.WriteLine();
+			}
 			sw.Close();
+			
+			// Plotting tails
+			System.IO.TextWriter sw2 = new System.IO.StreamWriter("test2.txt");
+			for (int i = 0; i < disp_lines - 1; i+=2)
+			{
+				sw2.WriteLine((double)i * disp_max / disp_lines + "\t" + scale_tails[i] + "\t" + new_scale_tails[i]);
+			}			
 			
 			if (user_cancel) throw new UserCancelException();
 			
