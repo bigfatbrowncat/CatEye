@@ -8,7 +8,7 @@ namespace CatEye.Core
 	{
 		// TODO: There should be some quality configuration which should calculate
 		// points number value
-		int points = 150; // 260 is perfect
+		int points = 300; // 260 is perfect
 
 		public LocalContrastStageOperation (StageOperationParameters parameters)
 			: base (parameters)

@@ -85,6 +85,8 @@
     <Compile Include="FontHelpers.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.HistogramStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\Highlight\HighlightStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.HighlightStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -130,6 +132,7 @@
     <Folder Include="StageOperations\Crotate\" />
     <Folder Include="StageOperations\LocalContrast\" />
     <Folder Include="StageOperations\Histogram\" />
+    <Folder Include="StageOperations\Highlight\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\src\chain.svg" />

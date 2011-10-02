@@ -100,11 +100,7 @@ namespace CatEye.Core
 				}
 			}
 			
-			// Searching for the higher tail
-			HistogramCollector hiscol = new HistogramCollector(CalcMaxLight(), 1024);
-			hiscol.CollectData(this);
-			double maxLight = hiscol.LineToScale(hiscol.FindHighTailLightness(0.001));
-			
+			double maxLight = CalcMaxLight();
 			
 			// Normalizing to 0..1
 			for (int i = 0; i < mWidth; i++)
@@ -124,27 +120,7 @@ namespace CatEye.Core
 					}
 				}
 			}
-			
-			// Building highlights matrix
-			double delta = 0.05;	// Highlight distance
-			double alpha = Math.Log(2) / delta;
-			double q = 1;
-			for (int i = 0; i < mWidth; i++)
-			{
-				for (int j = 0; j < mHeight; j++)
-				{
-					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
-					                     g_chan[i, j] * g_chan[i, j] +
-					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-					if (x > 1) x = 1;
-				
-					double beta = Math.Log(q) - alpha;
-					hl_chan[i, j] = (float)(Math.Exp(alpha * x + beta));
-					//if (x > 0.9) Console.Write("(" + i + "," + j + ")");
-				}
-				
-			}			
-			
+
 			return true;
 		}
 
@@ -398,6 +374,8 @@ namespace CatEye.Core
 			
 			bool user_cancel = false;
 			
+			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
+			
 			for (int q = 0; q < threads_num; q++)
 			{
 				threads[q] = new Thread(delegate (object obj)
@@ -408,7 +386,8 @@ namespace CatEye.Core
 			
 						int i1 = ((thread_data)obj).i1;
 						int i2 = ((thread_data)obj).i2;
-									
+						
+						
 						for (int i = i1; i < i2; i++)
 						{
 							if (callback != null)
@@ -422,8 +401,10 @@ namespace CatEye.Core
 								if (i < mWidth)
 								{
 									// Dispersion
+									
 									int avg = 0;
-									for (int k = 0; k < points; k++)
+									//double sgn_delta = 0;
+									for (int p = 0; p < 3 * points; p++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
 										//double alpha = 3;
@@ -434,16 +415,19 @@ namespace CatEye.Core
 										
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
-											double delta = (light[i, j] - light[u, v]);
+											double delta = (light[i, j] - light[u, v]) / maxlight;
 											dispersion_matrix[i, j] += (float)(delta * delta);
+											//sgn_delta += Math.Sign(delta);
 											avg ++;
 										}
 									}
-									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1)));  // (avg + 1) to avoid div by zero
-			
+									//sgn_delta /= Math.Abs(sgn_delta) + 0.0001;
+									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/);  // (avg + 1) to avoid div by zero
+									
+									
 									// Average
 									avg = 0;
-									for (int k = 0; k < points; k++)
+									for (int p = 0; p < points; p++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
 										//double alpha = 3;
@@ -454,37 +438,50 @@ namespace CatEye.Core
 										
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
-											double delta = (light[i, j] - light[u, v]);
-											double f = Math.Log(Math.Abs(delta) + 1);
-
-											// Limiting f to remove white and dark "crowns" near contrast objects
-											//double d = 2, K = 0.5; -- good
-											double K = 2.5 * contrast;
-											//double denoise_delta = 0.05, denoise_min = 0.2;
-											//double denoiser = (1 - Math.Exp(-dispersion_matrix[i, j] / denoise_delta)) * (1 - denoise_min) + denoise_min;
-											double limit = /*denoiser **/ 0.01 * Math.Exp(-dispersion_matrix[i, j] * dispersion_matrix[i, j] / (contrast * contrast)) * 
-												(K / (Math.Sqrt(dispersion_matrix[i, j] + K*K) + 0.0001)) + 0.0001;
+											double delta = (light[i, j] - light[u, v]) / maxlight;
+											double f = 0.05 * Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
 											
-											f = limit * (1 - Math.Exp(-f / limit)) * Math.Sign(delta);
-			
-											double scale = f;	// It was f / 5
+											scale_matrix[i, j] += (float)f;
 											
-											scale_matrix[i, j] += (float)scale;
 											avg ++;
 										}
 									}
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
-								}
-								
-								// Scaling amplitudes
-								double kcomp;
-								kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
-			
-								lock (this)
-								{
-									r_chan[i, j] = r_chan[i, j] * (float)kcomp;
-									g_chan[i, j] = g_chan[i, j] * (float)kcomp;
-									b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+
+									
+									// Removing "crowns"
+									double x20 = 0.3, x21 = 0.6, y1 = 0.019;
+									double k = y1 / (x21 - x20);
+									double b = k * x20;
+									
+									double sgn = Math.Sign(scale_matrix[i, j]);
+									double val = Math.Abs(scale_matrix[i, j]);
+									
+									double mu = k * dispersion_matrix[i, j] / b;
+									double pow = contrast * 10;
+									
+									val -= b * (-1 + Math.Pow(1 + Math.Pow(mu, pow), 1.0 / pow));
+									val = val < 0 ? 0 : val;
+									scale_matrix[i, j] = (float)(val * sgn) * 3;
+									
+									// Scaling amplitudes
+									double kcomp;
+									kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
+				
+									lock (this)
+									{
+										r_chan[i, j] = r_chan[i, j] * (float)kcomp;
+										g_chan[i, j] = g_chan[i, j] * (float)kcomp;
+										b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+									}									
+									
+									if (rnd.Next(300) == 0)
+									{
+										lock (sw)
+										{
+											sw.WriteLine(dispersion_matrix[i, j] + "\t" + Math.Abs(scale_matrix[i, j]));
+										}
+									}
 								}
 								
 							}
@@ -505,6 +502,7 @@ namespace CatEye.Core
 				td.i1 = (mWidth / threads_num) * q;
 				td.i2 = (mWidth / threads_num) * (q + 1);
 				
+				threads[q].Priority = ThreadPriority.BelowNormal;
 				threads[q].Start(td);
 			}
 			
@@ -513,6 +511,8 @@ namespace CatEye.Core
 			{
 				threads[q].Join();
 			}
+			
+			sw.Close();
 			
 			if (user_cancel) throw new UserCancelException();
 			
@@ -1058,6 +1058,43 @@ namespace CatEye.Core
 				mWidth = targetWidth; mHeight = targetHeight;
 			}
 			return true;
+		}
+		
+		public void CutHighlights(double cut, double softness, int lines, double tailValueAtLeast, ProgressReporter callback)
+		{
+			double maxlight = CalcMaxLight();
+			HistogramCollector sc = new HistogramCollector(maxlight, lines);
+			sc.CollectData(this);
+			double red_tail = sc.LineToScale(sc.FindHighTailRed(tailValueAtLeast));
+			double green_tail = sc.LineToScale(sc.FindHighTailGreen(tailValueAtLeast));
+			double blue_tail = sc.LineToScale(sc.FindHighTailBlue(tailValueAtLeast));
+			double min_tail = Math.Min(red_tail, Math.Min(green_tail, blue_tail));
+			double max_tail = Math.Max(red_tail, Math.Max(green_tail, blue_tail));
+			
+			// Building highlights matrix
+			double delta = softness;	// Highlight distance
+			double alpha = Math.Log(2) / delta;
+			double q = min_tail + cut * (max_tail - min_tail);
+			for (int j = 0; j < mHeight; j++)
+			{
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / mHeight)) throw new UserCancelException();
+				}
+				
+				for (int i = 0; i < mWidth; i++)
+				{
+					if (r_chan[i, j] > q) r_chan[i, j] = (float)q;
+					if (g_chan[i, j] > q) g_chan[i, j] = (float)q;
+					if (b_chan[i, j] > q) b_chan[i, j] = (float)q;
+					
+					double x = Math.Sqrt(r_chan[i, j] * r_chan[i, j] +
+					                     g_chan[i, j] * g_chan[i, j] +
+					                     b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3) / q;
+					double beta = Math.Log(q) - alpha;
+					hl_chan[i, j] = (float)((Math.Exp(alpha * x + beta) - Math.Exp(beta)) / (Math.Exp(alpha + beta) - Math.Exp(beta)));
+				}
+			}
 		}
 	}
 }
