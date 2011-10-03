@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace CatEye.Core
@@ -345,27 +346,27 @@ namespace CatEye.Core
 		
 		public unsafe void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
 		{
-			float[,] light = new float[mWidth, mHeight];
+			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
 	
 			// Сalculating light
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
 			{
-				light[i, j] = (float)(Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
+				light[i, j] = (Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
 				                                g_chan[i, j] * g_chan[i, j] + 
 				                                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3));
 				if (light[i, j] > maxlight) maxlight = light[i, j];
 				
 			}
 						
-			float[,] scale_matrix = new float[mWidth, mHeight];
-			float[,] dispersion_matrix = new float[mWidth, mHeight];
+			double[,] scale_matrix = new double[mWidth, mHeight];
+			double[,] dispersion_matrix = new double[mWidth, mHeight];
 			
-			int disp_lines = 8000;
-			int scale_lines = 5000;
-			float disp_max = 1f;
-			float scale_max = 0.5f;
+			int disp_lines = 700;
+			int scale_lines = 1000;
+			double disp_max = 1f;
+			double scale_max = 0.7f;
 			int[,] dispersion_pos = new int[disp_lines, scale_lines];
 			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
@@ -420,13 +421,13 @@ namespace CatEye.Core
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
 											double delta = (light[i, j] - light[u, v]) / maxlight;
-											dispersion_matrix[i, j] += (float)(delta * delta);
+											dispersion_matrix[i, j] += delta * delta;
 											//sgn_delta += Math.Sign(delta);
 											avg ++;
 										}
 									}
 									//sgn_delta /= Math.Abs(sgn_delta) + 0.0001;
-									dispersion_matrix[i, j] = (float)(Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/);  // (avg + 1) to avoid div by zero
+									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/;  // (avg + 1) to avoid div by zero
 									
 									// Average
 									avg = 0;
@@ -442,9 +443,9 @@ namespace CatEye.Core
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
 											double delta = (light[i, j] - light[u, v]) / maxlight;
-											double f = 0.05 * Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
+											double f = Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
 											
-											scale_matrix[i, j] += (float)f;
+											scale_matrix[i, j] += f;
 											
 											avg ++;
 										}
@@ -454,7 +455,7 @@ namespace CatEye.Core
 									// Adding point to scale-dispersion diagram
 									lock (dispersion_pos)
 									{
-										float val = Math.Abs(scale_matrix[i, j]);
+										double val = Math.Abs(scale_matrix[i, j]);
 										if (dispersion_matrix[i, j] < disp_max && val < scale_max)
 										{
 											dispersion_pos[(int)(dispersion_matrix[i, j] * disp_lines / disp_max),
@@ -542,9 +543,13 @@ namespace CatEye.Core
 				threads[q].Join();
 			}
 			
+			
+			if (user_cancel) throw new UserCancelException();
+			
+			
 			// Searching for scale tails
-			double tail_val = 0.001; // 1% of max
-			float[] scale_tails = new float[disp_lines];
+			double tail_val = contrast;
+			double[] scale_tails = new double[disp_lines];
 			for (int i = 0; i < disp_lines; i++)
 			{
 				// Searching for the line max value
@@ -566,18 +571,56 @@ namespace CatEye.Core
 							break;
 						}
 					}
-					scale_tails[i] = (float)min_scale;
+					scale_tails[i] = min_scale;
 				}
 				else
-					scale_tails[i] = -0.005f;	// Actually, any negative value is OK here
+					scale_tails[i] = -0.005;	// Actually, any negative value is OK here
 			}
 			
+			// Enumerating gaps
+			List<int> gaps = new List<int>();
+			bool starts_with_gap = scale_tails[0] < 0;
+			bool current_is_gap = starts_with_gap;
+			for (int i = 1; i < disp_lines; i++)
+			{
+				if ((scale_tails[i] < 0) != current_is_gap)
+				{
+					current_is_gap = (scale_tails[i] < 0);
+					gaps.Add(i);
+				}
+			}
+			// Interpolating the points inside the gaps
+			if (starts_with_gap) gaps.RemoveAt(0);	// Ignoring the starting gap if any
+			for (int i = 0; i < gaps.Count / 2; i++)
+			{
+				double val1 = scale_tails[gaps[2 * i] - 1];	// Left shore
+				double val2 = scale_tails[gaps[2 * i + 1]];	// Right shore
+				for (int k = gaps[2 * i]; k < gaps[2 * i + 1]; k++)
+				{
+					double val_k = val1 + (val2 - val1) * (k - gaps[2 * i + 1]) / (gaps[2 * i + 1] - (gaps[2 * i] - 1));
+					scale_tails[k] = val_k;
+				}
+			}
+			
+			// Extrapolating the last
+			int extr_base = disp_lines / 10;
+			if (gaps.Count % 2 == 1)
+			{
+				double val1 = scale_tails[gaps[gaps.Count - 1] - extr_base];		// Left shore
+				double val2 = scale_tails[gaps[gaps.Count - 1] - 1];				// Right shore
+				for (int k = gaps[gaps.Count - 1]; k < disp_lines; k++)
+				{
+					double val_k = val1 + (val2 - val1) * (k - (gaps[gaps.Count - 1] - extr_base)) / extr_base;
+					scale_tails[k] = val_k;
+				}
+			}
+						
 			// Dubbing the tails
-			float[] new_scale_tails = new float[disp_lines];
+			double[] new_scale_tails = new double[disp_lines];
 			for (int i = 0; i < disp_lines; i++)
 			{
-				int tail_Delta = disp_lines / 30;
-				tail_Delta += 4 * tail_Delta * i * 2 / disp_lines;
+				int tail_Delta = disp_lines / 10;
+				//tail_Delta += 4 * tail_Delta * i * 2 / disp_lines;
 				
 				double norm = 0;
 				double val = 0;
@@ -605,10 +648,10 @@ namespace CatEye.Core
 					}
 				}
 				val /= norm + 0.00001;
-				new_scale_tails[i] = (float)val;
+				new_scale_tails[i] = val;
 			}
 			
-			// The tails found (i hope). Let's cut them out.
+			// The tails are beautiful now (I hope). Let's cut them out.
 			for (int i = 0; i < mWidth; i++)
 			{
 				for (int j = 0; j < mHeight; j++)
@@ -619,11 +662,16 @@ namespace CatEye.Core
 					double val = Math.Abs(scale_matrix[i, j]);
 					
 					int disp_line = (int)(dispersion_matrix[i, j] * disp_lines);
-					val -= new_scale_tails[disp_line];
-
-					scale_matrix[i, j] = (float)(val * sgn);
+					double disp_line_delta = dispersion_matrix[i, j] * disp_lines - disp_line;
 					
-					double kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
+					val -= new_scale_tails[disp_line] * (1 - disp_line_delta) +
+					       new_scale_tails[disp_line + 1] * disp_line_delta;
+					
+					if (val < 0) val = 0;	// Horay! I'm an idiot.
+					
+					scale_matrix[i, j] = val * sgn;
+					
+					double kcomp = Math.Pow(0.1 * scale_matrix[i, j] + 1, pressure);
 
 					lock (this)
 					{
@@ -653,9 +701,8 @@ namespace CatEye.Core
 			for (int i = 0; i < disp_lines - 1; i+=2)
 			{
 				sw2.WriteLine((double)i * disp_max / disp_lines + "\t" + scale_tails[i] + "\t" + new_scale_tails[i]);
-			}			
-			
-			if (user_cancel) throw new UserCancelException();
+			}
+			sw2.Close();
 			
 		}
 		
