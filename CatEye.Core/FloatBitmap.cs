@@ -363,10 +363,10 @@ namespace CatEye.Core
 			double[,] scale_matrix = new double[mWidth, mHeight];
 			double[,] dispersion_matrix = new double[mWidth, mHeight];
 			
-			int disp_lines = 700;
-			int scale_lines = 1000;
+			int disp_lines = 1000;
+			int scale_lines = 1500;
 			double disp_max = 1f;
-			double scale_max = 0.7f;
+			double scale_max = 1f;
 			int[,] dispersion_pos = new int[disp_lines, scale_lines];
 			
 			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
@@ -406,13 +406,10 @@ namespace CatEye.Core
 								if (i < mWidth)
 								{
 									// Dispersion
-									
 									int avg = 0;
-									//double sgn_delta = 0;
-									for (int p = 0; p < 3 * points; p++)
+									for (int p = 0; p < points; p++)
 									{
 										double phi = rnd.NextDouble() * 2 * Math.PI;
-										//double alpha = 3;
 										double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
 									
 										int u = i + (int)(rad * Math.Cos(phi));
@@ -422,11 +419,9 @@ namespace CatEye.Core
 										{
 											double delta = (light[i, j] - light[u, v]) / maxlight;
 											dispersion_matrix[i, j] += delta * delta;
-											//sgn_delta += Math.Sign(delta);
 											avg ++;
 										}
 									}
-									//sgn_delta /= Math.Abs(sgn_delta) + 0.0001;
 									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/;  // (avg + 1) to avoid div by zero
 									
 									// Average
@@ -463,56 +458,6 @@ namespace CatEye.Core
 										}
 									}
 									
-									// Removing "crowns". Part 2
-									/*double x20 = 0.3, x21 = 0.6, y1 = 0.019;
-									double k = y1 / (x21 - x20);
-									double b = k * x20;
-									
-									double sgn = Math.Sign(scale_matrix[i, j]);
-									double val = Math.Abs(scale_matrix[i, j]);
-									
-									double mu = k * dispersion_matrix[i, j] / b;
-									double pow = 3;
-									
-									val -= b * (-1 + Math.Pow(1 + Math.Pow(mu, pow), 1.0 / pow));
-									val = val < 0 ? 0 : val;
-									scale_matrix[i, j] = (float)(val * sgn) * 3;
-									*/
-									// Removing "crowns". Part 2
-									/*
-									sgn = Math.Sign(scale_matrix[i, j]);
-									val = Math.Abs(scale_matrix[i, j]);
-
-									double bb = 1;
-									double pow2 = 3;
-									double qq = 150;
-									double x0 = Math.Pow(bb * (pow2 - 1)/(pow2 + 1), 1.0 / pow2);
-									double y0 = (pow2 - 1)/(2*pow2);
-									double D0 = pow2 * Math.Pow(x0, pow2 - 1) * bb / (1 - y0) / Math.Pow((Math.Pow(x0, pow2) + bb), 2);
-									double val_mod = val * qq / D0 + x0;
-									val = (Math.Pow(val_mod, pow2)/(Math.Pow(val_mod, pow2) + bb) - y0) / (1 - y0) / qq;
-									scale_matrix[i, j] = (float)(val * sgn);
-									*/
-									/*
-									// Scaling amplitudes
-									double kcomp;
-									kcomp = Math.Pow(scale_matrix[i, j] + 1, pressure);
-				
-									lock (this)
-									{
-										r_chan[i, j] = r_chan[i, j] * (float)kcomp;
-										g_chan[i, j] = g_chan[i, j] * (float)kcomp;
-										b_chan[i, j] = b_chan[i, j] * (float)kcomp;
-									}									
-									
-									if (rnd.Next(300) == 0)
-									{
-										lock (sw)
-										{
-											sw.WriteLine(dispersion_matrix[i, j] + "\t" + Math.Abs(scale_matrix[i, j]));
-										}
-									}
-									*/
 								}
 								
 							}
@@ -664,14 +609,15 @@ namespace CatEye.Core
 					int disp_line = (int)(dispersion_matrix[i, j] * disp_lines);
 					double disp_line_delta = dispersion_matrix[i, j] * disp_lines - disp_line;
 					
-					val -= new_scale_tails[disp_line] * (1 - disp_line_delta) +
-					       new_scale_tails[disp_line + 1] * disp_line_delta;
+					val -= (new_scale_tails[disp_line] * (1 - disp_line_delta) +
+					       new_scale_tails[disp_line + 1] * disp_line_delta);
 					
+					val = Math.Log(val + 1);
 					if (val < 0) val = 0;	// Horay! I'm an idiot.
 					
 					scale_matrix[i, j] = val * sgn;
 					
-					double kcomp = Math.Pow(0.1 * scale_matrix[i, j] + 1, pressure);
+					double kcomp = Math.Pow(0.2 * scale_matrix[i, j] + 1, pressure);
 
 					lock (this)
 					{
