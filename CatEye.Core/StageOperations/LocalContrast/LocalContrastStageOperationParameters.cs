@@ -10,15 +10,15 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mContrast = 0.5, mRadius = 0.1;
+		private double mPressure = 10, mAnticrown = 0.5, mRadius = 0.1;
 		private SharpType mType = SharpType.Sharp;
 
-		public double Contrast
+		public double Anticrown
 		{
-			get { return mContrast; }
+			get { return mAnticrown; }
 			set 
 			{
-				mContrast = value;
+				mAnticrown = value;
 				OnChanged();
 			}
 		}
@@ -57,7 +57,7 @@ namespace CatEye.Core
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Anticrown")).Value = mAnticrown.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
@@ -83,14 +83,14 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Pressure value");
 			}
-			if (node.Attributes["Contrast"] != null)
+			if (node.Attributes["Anticrown"] != null)
 			{
-				if (double.TryParse(node.Attributes["Contrast"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Anticrown"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mContrast = res;
+					mAnticrown = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Contrast value");
+					throw new IncorrectNodeValueException("Can't parse Anticrown value");
 			}
 			if (node.Attributes["Radius"] != null)
 			{
@@ -132,7 +132,7 @@ namespace CatEye.Core
 			base.CopyDataTo (target);
 			LocalContrastStageOperationParameters t = (LocalContrastStageOperationParameters)target;
 			t.mPressure = mPressure;
-			t.mContrast = mContrast;
+			t.mAnticrown = mAnticrown;
 			t.mRadius = mRadius;
 			t.mType = mType;
 			t.OnChanged();

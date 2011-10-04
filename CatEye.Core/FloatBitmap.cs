@@ -344,7 +344,7 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
-		public unsafe void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
+		public unsafe void SharpenLight(double radius_part, double pressure, double anticrown, int points, ProgressReporter callback)
 		{
 			float[,] oldr = r_chan; 
 			float[,] oldg = g_chan; 
@@ -439,7 +439,7 @@ namespace CatEye.Core
 											dispersion_matrix[i, j] += delta * delta;
 											
 											// Scale
-											double f = Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
+											double f = delta; // Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
 											scale_matrix[i, j] += f;
 
 											avg ++;
@@ -511,7 +511,7 @@ namespace CatEye.Core
 			
 			
 			// Searching for scale tails
-			double tail_val = 0.87;
+			double tail_val = (anticrown * 0.495 + 0.5);
 			double[] scale_tails = new double[disp_lines];
 			for (int i = 0; i < disp_lines; i++)
 			{
@@ -553,7 +553,7 @@ namespace CatEye.Core
 				}
 			}
 			// Interpolating the points inside the gaps
-			if (starts_with_gap) gaps.RemoveAt(0);	// Ignoring the starting gap if any
+			if (starts_with_gap && gaps.Count > 0) gaps.RemoveAt(0);	// Ignoring the starting gap if any
 			for (int i = 0; i < gaps.Count / 2; i++)
 			{
 				double val1 = scale_tails[gaps[2 * i] - 1];	// Left shore

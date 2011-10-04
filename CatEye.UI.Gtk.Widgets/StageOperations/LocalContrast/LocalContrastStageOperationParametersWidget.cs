@@ -16,11 +16,11 @@ namespace CatEye.UI.Gtk.Widgets
 		}
 		
 		private bool _PressureIsChanging = false;
-		private bool _ContrastIsChanging = false;
+		private bool _AnticrownIsChanging = false;
 		private bool _RadiusIsChanging = false;
 
 		protected enum PressureChanger { HScale, SpinButton }
-		protected enum ContrastChanger { HScale, SpinButton }
+		protected enum AnticrownChanger { HScale, SpinButton }
 		protected enum RadiusChanger { HScale, SpinButton }
 
 		protected void ChangePressure(double new_value, PressureChanger changer)
@@ -53,24 +53,24 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 
-		protected void ChangeContrast(double new_value, ContrastChanger changer)
+		protected void ChangeAnticrown(double new_value, AnticrownChanger changer)
 		{
-			if (!_ContrastIsChanging)
+			if (!_AnticrownIsChanging)
 			{
-				_ContrastIsChanging = true;
+				_AnticrownIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != ContrastChanger.HScale)
-					contrast_hscale.Value = new_value;
+				if (changer != AnticrownChanger.HScale)
+					anticrown_hscale.Value = new_value;
 				
-				if (changer != ContrastChanger.SpinButton)
-					contrast_spinbutton.Value = new_value;
+				if (changer != AnticrownChanger.SpinButton)
+					anticrown_spinbutton.Value = new_value;
 				
-				((LocalContrastStageOperationParameters)Parameters).Contrast = new_value;
+				((LocalContrastStageOperationParameters)Parameters).Anticrown = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_ContrastIsChanging = false;
+				_AnticrownIsChanging = false;
 			}
 		}
 
@@ -115,10 +115,10 @@ namespace CatEye.UI.Gtk.Widgets
 			pressure_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Pressure;
 			_PressureIsChanging = false;
 			
-			_ContrastIsChanging = true;
-			contrast_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Contrast;
-			contrast_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Contrast;
-			_ContrastIsChanging = false;
+			_AnticrownIsChanging = true;
+			anticrown_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Anticrown;
+			anticrown_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Anticrown;
+			_AnticrownIsChanging = false;
 			
 			_RadiusIsChanging = true;
 			radius_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Radius;
@@ -168,14 +168,14 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 
-		protected void OnContrastHscaleChangeValue (object o, ChangeValueArgs args)
+		protected void OnAnticrownHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeContrast(contrast_hscale.Value, ContrastChanger.HScale);
+			ChangeAnticrown(anticrown_hscale.Value, AnticrownChanger.HScale);
 		}
 
-		protected void OnContrastSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnAnticrownSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeContrast(contrast_spinbutton.Value, ContrastChanger.SpinButton);
+			ChangeAnticrown(anticrown_spinbutton.Value, AnticrownChanger.SpinButton);
 		}
 	}
 }

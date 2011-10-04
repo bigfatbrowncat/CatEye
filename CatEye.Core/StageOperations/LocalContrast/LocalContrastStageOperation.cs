@@ -8,7 +8,7 @@ namespace CatEye.Core
 	{
 		// TODO: There should be some quality configuration which should calculate
 		// points number value
-		int points = 300; // 260 is perfect
+		int points = 150; // 260 is perfect
 
 		public LocalContrastStageOperation (StageOperationParameters parameters)
 			: base (parameters)
@@ -26,16 +26,12 @@ namespace CatEye.Core
 			
 			Console.WriteLine("Applying Local Contrast...");
 			
-			// Making delta0 from base
-			//double delta0 = Math.Pow(10, -pm.Base);
-			
-			
 			double pressure = pm.Pressure;
-			double contrast = pm.Contrast;
+			double anticrown = pm.Anticrown;
 			if (pm.Type == LocalContrastStageOperationParameters.SharpType.Soft) 
 				pressure *= -1;
 			
-			hdp.SharpenLight(pm.Radius, pressure, contrast, points, 
+			hdp.SharpenLight(pm.Radius, pressure, anticrown, points, 
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}
