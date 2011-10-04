@@ -346,6 +346,22 @@ namespace CatEye.Core
 		
 		public unsafe void SharpenLight(double radius_part, double pressure, double contrast, int points, ProgressReporter callback)
 		{
+			float[,] oldr = r_chan; 
+			float[,] oldg = g_chan; 
+			float[,] oldb = b_chan;
+			
+			r_chan = new float[mWidth, mHeight];
+			g_chan = new float[mWidth, mHeight];
+			b_chan = new float[mWidth, mHeight];
+			
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
+			{
+				r_chan[i, j] = oldr[i, j];
+				g_chan[i, j] = oldg[i, j];
+				b_chan[i, j] = oldb[i, j];
+			}
+
 			double[,] light = new double[mWidth, mHeight];
 			double maxlight = 0;
 	
@@ -405,7 +421,7 @@ namespace CatEye.Core
 							{
 								if (i < mWidth)
 								{
-									// Dispersion
+									// Dispersion & Scale
 									int avg = 0;
 									for (int p = 0; p < points; p++)
 									{
@@ -418,35 +434,30 @@ namespace CatEye.Core
 										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
 										{
 											double delta = (light[i, j] - light[u, v]) / maxlight;
+
+											// Dispersion
 											dispersion_matrix[i, j] += delta * delta;
-											avg ++;
-										}
-									}
-									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1))/* * sgn_delta*/;  // (avg + 1) to avoid div by zero
-									
-									// Average
-									avg = 0;
-									for (int p = 0; p < points; p++)
-									{
-										double phi = rnd.NextDouble() * 2 * Math.PI;
-										//double alpha = 3;
-										double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-									
-										int u = i + (int)(rad * Math.Cos(phi));
-										int v = j + (int)(rad * Math.Sin(phi));
-										
-										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
-										{
-											double delta = (light[i, j] - light[u, v]) / maxlight;
+											
+											// Scale
 											double f = Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
-											
 											scale_matrix[i, j] += f;
-											
+
 											avg ++;
 										}
 									}
+									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
 									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
 									
+									// Making draft preview with "crowns"
+									double kcomp = Math.Pow(0.1 * scale_matrix[i, j] + 1, pressure);
+
+									lock (this)
+									{
+										r_chan[i, j] = oldr[i, j] * (float)kcomp;
+										g_chan[i, j] = oldg[i, j] * (float)kcomp;
+										b_chan[i, j] = oldb[i, j] * (float)kcomp;
+									}
+
 									// Adding point to scale-dispersion diagram
 									lock (dispersion_pos)
 									{
@@ -476,7 +487,14 @@ namespace CatEye.Core
 			{
 				thread_data td = new thread_data();
 				td.i1 = (mWidth / threads_num) * q;
-				td.i2 = (mWidth / threads_num) * (q + 1);
+				if (q < threads_num - 1)
+				{
+					td.i2 = (mWidth / threads_num) * (q + 1);
+				}
+				else
+				{
+					td.i2 = mWidth;
+				}
 				
 				threads[q].Priority = ThreadPriority.BelowNormal;
 				threads[q].Start(td);
@@ -493,7 +511,7 @@ namespace CatEye.Core
 			
 			
 			// Searching for scale tails
-			double tail_val = contrast;
+			double tail_val = 0.87;
 			double[] scale_tails = new double[disp_lines];
 			for (int i = 0; i < disp_lines; i++)
 			{
@@ -621,9 +639,9 @@ namespace CatEye.Core
 
 					lock (this)
 					{
-						r_chan[i, j] = r_chan[i, j] * (float)kcomp;
-						g_chan[i, j] = g_chan[i, j] * (float)kcomp;
-						b_chan[i, j] = b_chan[i, j] * (float)kcomp;
+						r_chan[i, j] = oldr[i, j] * (float)kcomp;
+						g_chan[i, j] = oldg[i, j] * (float)kcomp;
+						b_chan[i, j] = oldb[i, j] * (float)kcomp;
 					}
 				}
 			}
@@ -1108,7 +1126,14 @@ namespace CatEye.Core
 			{
 				thread_data td = new thread_data();
 				td.i1 = (oldH / threads_num) * q;
-				td.i2 = (oldH / threads_num) * (q + 1);
+				if (q < threads_num - 1)
+				{
+					td.i2 = (oldH / threads_num) * (q + 1);
+				}
+				else
+				{
+					td.i2 = oldH;
+				}
 				
 				threads[q].Start(td);
 			}
