@@ -675,10 +675,9 @@
         <property name="ColumnSpacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
-          <widget class="Gtk.HScale" id="contrast_hscale">
+          <widget class="Gtk.HScale" id="anticrown_hscale">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">0.1</property>
             <property name="Upper">1</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.1</property>
@@ -686,7 +685,7 @@
             <property name="DrawValue">False</property>
             <property name="Digits">3</property>
             <property name="ValuePos">Right</property>
-            <signal name="ChangeValue" handler="OnContrastHscaleChangeValue" />
+            <signal name="ChangeValue" handler="OnAnticrownHscaleChangeValue" />
           </widget>
           <packing>
             <property name="TopAttach">2</property>
@@ -705,10 +704,9 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.SpinButton" id="contrast_spinbutton">
+          <widget class="Gtk.SpinButton" id="anticrown_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Lower">0.1</property>
             <property name="Upper">1</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.001</property>
@@ -716,7 +714,7 @@
             <property name="Digits">3</property>
             <property name="Numeric">True</property>
             <property name="Value">0.1</property>
-            <signal name="ValueChanged" handler="OnContrastSpinbuttonValueChanged" />
+            <signal name="ValueChanged" handler="OnAnticrownSpinbuttonValueChanged" />
           </widget>
           <packing>
             <property name="TopAttach">2</property>
@@ -834,7 +832,7 @@
           <widget class="Gtk.Label" id="label8">
             <property name="MemberName" />
             <property name="Xalign">1</property>
-            <property name="LabelProp" translatable="yes">Contrast:</property>
+            <property name="LabelProp" translatable="yes">Anticrown:</property>
           </widget>
           <packing>
             <property name="TopAttach">2</property>
