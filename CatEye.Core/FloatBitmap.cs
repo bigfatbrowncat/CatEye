@@ -346,31 +346,31 @@ namespace CatEye.Core
 		
 		private float[,] BuildPhi(float[,] H, double alpha, double beta, int dn)
 		{
-			int w = H.GetLength(0);
-			int h = H.GetLength(1);
+			int Hw = H.GetLength(0);
+			int Hh = H.GetLength(1);
 			
 			// Building H0
-			int size = Math.Max(w + 1, h + 1);
+			int size = Math.Max(Hw, Hh);
 			int K = (int)(Math.Log(size, 2)) + 1;
 			int new_size = (int)(Math.Round (Math.Pow(2, K)));
 			
 			float[,] H_cur = new float[new_size, new_size];
-			for (int i = 0; i < w; i++)
-			for (int j = 0; j < h; j++)
+			for (int i = 0; i < Hw; i++)
+			for (int j = 0; j < Hh; j++)
 			{
 				H_cur[i, j] = H[i, j];
 			}
 			
-			for (int i = w; i < new_size; i++)
-			for (int j = 0; j < h; j++)
+			for (int i = Hw; i < new_size; i++)
+			for (int j = 0; j < Hh; j++)
 			{
-				H_cur[i, j] = H_cur[w, j];
+				H_cur[i, j] = H_cur[Hw, j];
 			}
 			
-			for (int i = 0; i < w; i++)
-			for (int j = h; j < new_size; j++)
+			for (int i = 0; i < Hw; i++)
+			for (int j = Hh; j < new_size; j++)
 			{
-				H_cur[i, j] = H_cur[i, h];
+				H_cur[i, j] = H_cur[i, Hh];
 			}
 			
 			double avg_grad_H0 = 0;
@@ -398,24 +398,18 @@ namespace CatEye.Core
 				// Calculating grad_H_cur
 				float[,] grad_H_cur_x = new float[k_size, k_size];
 				float[,] grad_H_cur_y = new float[k_size, k_size];
-				for (int i = 0; i < k_size; i++)
-				for (int j = 0; j < k_size; j++)
+				for (int i = 0; i < k_size - 1; i++)
+				for (int j = 0; j < k_size - 1; j++)
 				{
 					if (k_size == 1)
 					{
-						grad_H_cur_x[i, j] = 0; grad_H_cur_y[i, j] = 0;
+						grad_H_cur_x[i, j] = 0; 
+						grad_H_cur_y[i, j] = 0;
 					}
 					else
 					{					
-						if (i + 1 < k_size)
-							grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
-						else
-							grad_H_cur_x[i, j] = 0;// (float)((H_cur[i, j] - H_cur[i - 1, j]) / Math.Pow(2, k));
-						
-						if (j + 1 < k_size)
-							grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
-						else
-							grad_H_cur_y[i, j] = 0; //(float)((H_cur[i, j] - H_cur[i, j - 1]) / Math.Pow(2, k));
+						grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
+						grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
 						
 						if (k == 0)
 						{
@@ -424,7 +418,10 @@ namespace CatEye.Core
 						}
 					}
 				}	
-				if (k == 0) avg_grad_H0 /= k_size * k_size;
+				if (k == 0)
+				{
+					avg_grad_H0 /= (k_size - 1) * (k_size - 1);
+				}
 				
 				// Calculating phi_k
 				float[,] phi_k = new float[H_cur.GetLength(0), H_cur.GetLength(1)];
@@ -470,29 +467,66 @@ namespace CatEye.Core
 					}
 					
 					// Blurring
-					for (int i = 1; i < 2 * cur_size - 1; i++)
-					for (int j = 1; j < 2 * cur_size - 1; j++)
+					Phi = new float[2 * cur_size, 2 * cur_size];
+					for (int i = 0; i < 2 * cur_size - 1; i++)
+					for (int j = 0; j < 2 * cur_size - 1; j++)
 					{
-						Phi_new[i, j] = (float)((Phi_new[i, j] + 
-						                   0.5 * Phi_new[i - 1, j] +
-						                   0.5 * Phi_new[i, j - 1] +
-						                   0.5 * Phi_new[i + 1, j] +
-						                   0.5 * Phi_new[i, j + 1] +
-						                  0.25 * Phi_new[i - 1, j - 1] +
-						                  0.25 * Phi_new[i + 1, j - 1] +
-						                  0.25 * Phi_new[i - 1, j + 1] +
-						                  0.25 * Phi_new[i + 1, j + 1]) * 0.25);
+						Phi[i, j] = 0;
+						float diver = 0;
+						
+						if (i > 0 && j > 0)
+						{
+							diver += 0.25f;
+							Phi[i, j] += 0.25f * Phi_new[i - 1, j - 1];
+						}
+						else
+						{
+							diver += 0.25f;
+							Phi[i, j] += 0.25f * Phi_new[i, j];
+						}
+							
+						if (i > 0)
+						{
+							diver += 0.75f;
+						    Phi[i, j] += 0.5f * Phi_new[i - 1, j] +
+						                0.25f * Phi_new[i - 1, j + 1];
+						}
+						else
+						{
+							diver += 0.75f;
+						    Phi[i, j] += 0.5f * Phi_new[i, j] +
+						                0.25f * Phi_new[i, j + 1];
+						}
+						
+						if (j > 0)
+						{
+							diver += 0.75f;
+						    Phi[i, j] += 0.5f * Phi_new[i, j - 1] +
+							            0.25f * Phi_new[i + 1, j - 1];
+						}
+						else
+						{
+							diver += 0.75f;
+						    Phi[i, j] += 0.5f * Phi_new[i, j] +
+							            0.25f * Phi_new[i + 1, j];
+						}
+						
+						diver += 2.25f;
+						Phi[i, j] += Phi_new[i, j] + 
+						      0.5f * Phi_new[i + 1, j] +
+						      0.5f * Phi_new[i, j + 1] +
+						     0.25f * Phi_new[i + 1, j + 1];
+						
+						Phi[i, j] /= diver;
 					}
 					
-					
-					Phi = Phi_new;
 				}
 			}
 			
 			// Extracting the correct size
-			float[,] Phi_cut = new float[w, h];
-			for (int i = 0; i < w; i++)
-			for (int j = 0; j < h; j++)
+			float[,] Phi_cut = new float[Hw, Hh];
+			for (int i = 0; i < Hw; i++)
+			for (int j = 0; j < Hh; j++)
 			{
 				Phi_cut[i, j] = Phi[i, j];
 			}
@@ -520,12 +554,12 @@ namespace CatEye.Core
 				}
 				
 				// Restoring Neiman boundary conditions
-				for (int i = 1; i < w + 1; i++)
+				for (int i = 0; i < w + 2; i++)
 				{
 					Inew[i, 0] = Inew[i, 1];
 					Inew[i, h + 1] = Inew[i, h];
 				}
-				for (int j = 1; j < h + 1; j++)
+				for (int j = 0; j < h + 2; j++)
 				{
 					Inew[0, j] = Inew[1, j];
 					Inew[w + 1, j] = Inew[w, j];
@@ -533,15 +567,15 @@ namespace CatEye.Core
 				
 				// Controlling the constant
 				float m = 0;
-				for (int i = 1; i < w + 1; i++)
-				for (int j = 1; j < h + 1; j++)
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
 				{
 					m += Inew[i, j];
 				}
-				m /= w * h;
+				m /= (w+2) * (h+2);
 
-				for (int i = 1; i < w + 1; i++)
-				for (int j = 1; j < h + 1; j++)
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
 				{
 					I[i, j] = Inew[i, j] - m;
 				}
@@ -575,11 +609,13 @@ namespace CatEye.Core
 				b_chan[i, j] = oldb[i, j];
 			}
 			
-			float[,] H = new float[mWidth, mHeight];
+			int Hw = mWidth;
+			int Hh = mHeight;
+			float[,] H = new float[Hw, Hh];
 	
 			// Сalculating logarithmic luminosity
-			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
+			for (int i = 0; i < Hw; i++)
+			for (int j = 0; j < Hh; j++)
 			{
 				double light = Math.Sqrt((r_chan[i, j] * r_chan[i, j] + 
 				                          g_chan[i, j] * g_chan[i, j] + 
@@ -588,32 +624,25 @@ namespace CatEye.Core
 				H[i, j] = (float)(Math.Log(light + 0.00001));
 			}
 			
-			float[,] grad_H_x = new float[mWidth, mHeight];
-			float[,] grad_H_y = new float[mWidth, mHeight];
+			float[,] grad_H_x = new float[Hw, Hh];
+			float[,] grad_H_y = new float[Hw, Hh];
 			
 			// Calculating gradient of H
-			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
+			for (int i = 1; i < Hw - 1; i++)
+			for (int j = 1; j < Hh - 1; j++)
 			{
-				if (i + 1 < mWidth)
-					grad_H_x[i, j] = (float)(H[i + 1, j] - H[i, j]);
-				else
-					grad_H_x[i, j] = 0;//(float)(H[i, j] - H[i - 1, j]);
-				
-				if (j + 1 < mHeight)
-					grad_H_y[i, j] = (float)(H[i, j + 1] - H[i, j]);
-				else
-					grad_H_y[i, j] = 0;//(float)(H[i, j] - H[i, j - 1]);
+				grad_H_x[i, j] = (float)(H[i + 1, j] - H[i, j]);
+				grad_H_y[i, j] = (float)(H[i, j + 1] - H[i, j]);
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1, 0.85, 3);
+			float[,] Phi = BuildPhi(H, 0.1, 0.85, 6);
 			
 			
 			// Calculating G and div_G
-			float[,] div_G = new float[mWidth, mHeight];
-			for (int i = 1; i < mWidth - 1; i++)
-			for (int j = 1; j < mHeight - 1; j++)
+			float[,] div_G = new float[Hw, Hh];
+			for (int i = 1; i < Hw; i++)
+			for (int j = 1; j < Hh; j++)
 			{
 				float G_x_ij = grad_H_x[i, j] * Phi[i, j];
 				float G_y_ij = grad_H_y[i, j] * Phi[i, j];
@@ -628,7 +657,7 @@ namespace CatEye.Core
 			
 			// Solving Poisson equation Delta I = div G
 			float[,] I;
-			I = SolvePoissonNeiman(div_G, 700, delegate (float progress, float[,] solution)
+			I = SolvePoissonNeiman(div_G, 15000, delegate (float progress, float[,] solution)
 			{
 				I = solution;
 
@@ -655,41 +684,6 @@ namespace CatEye.Core
 				}
 			
 			});
-			
-			
-			/*for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
-			{
-				r_chan[i, j] = 0.5f * Phi[i, j];
-				g_chan[i, j] = 0.5f * Phi[i, j];
-				b_chan[i, j] = 0.5f * Phi[i, j];
-			}
-			*/
-			/*
-			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
-			{
-				double Lold = Math.Exp(H[i, j]);
-				double L = Lold + Math.Exp(I[i, j]);
-				
-				r_chan[i, j] = 0.1f * (float)(Math.Pow(oldr[i, j] / Lold, s) * L);
-				g_chan[i, j] = 0.1f * (float)(Math.Pow(oldg[i, j] / Lold, s) * L);
-				b_chan[i, j] = 0.1f * (float)(Math.Pow(oldb[i, j] / Lold, s) * L);
-			}*/
-			
-			/*
-			// Plotting gradient map
-			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
-			for (int j = 0; j < Phi.GetLength(1); j += 2)
-			{
-				for (int i = 0; i < Phi.GetLength(0); i += 2)
-				{
-					sw.Write(Phi[i, j] + "\t");
-				}
-				sw.WriteLine();
-			}
-			sw.Close();
-			*/
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
