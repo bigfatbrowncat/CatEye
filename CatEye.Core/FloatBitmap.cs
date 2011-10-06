@@ -344,8 +344,221 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
+		private float[,] BuildPhi(float[,] H, double alpha, double beta, int dn)
+		{
+			int w = H.GetLength(0);
+			int h = H.GetLength(1);
+			
+			// Building H0
+			int size = Math.Max(w + 1, h + 1);
+			int K = (int)(Math.Log(size, 2)) + 1;
+			int new_size = (int)(Math.Round (Math.Pow(2, K)));
+			
+			float[,] H_cur = new float[new_size, new_size];
+			for (int i = 0; i < w; i++)
+			for (int j = 0; j < h; j++)
+			{
+				H_cur[i, j] = H[i, j];
+			}
+			
+			for (int i = w; i < new_size; i++)
+			for (int j = 0; j < h; j++)
+			{
+				H_cur[i, j] = H_cur[w, j];
+			}
+			
+			for (int i = 0; i < w; i++)
+			for (int j = h; j < new_size; j++)
+			{
+				H_cur[i, j] = H_cur[i, h];
+			}
+			
+			double avg_grad_H0 = 0;
+			
+			// Building phi_k			
+			List<float[,]> phi = new List<float[,]>();
+
+			for (int k = 0; k <= K - dn; k++)	      // k is the index of H_cur
+			{
+				int k_size = (int)(new_size / Math.Pow(2, k));
+	
+				if (k > 0)
+				{
+					// Calculating the new H_cur
+					float[,] H_cur_new = new float[k_size, k_size];
+					for (int i = 0; i < k_size; i++)
+					for (int j = 0; j < k_size; j++)
+					{
+						H_cur_new[i, j] = (float)(0.25 * (H_cur[2 * i, 2 * j] + H_cur[2 * i + 1, 2 * j] +
+						                                  H_cur[2 * i, 2 * j + 1] + H_cur[2 * i + 1, 2 * j + 1]));
+					}
+					H_cur = H_cur_new;
+				}
+				
+				// Calculating grad_H_cur
+				float[,] grad_H_cur_x = new float[k_size, k_size];
+				float[,] grad_H_cur_y = new float[k_size, k_size];
+				for (int i = 0; i < k_size; i++)
+				for (int j = 0; j < k_size; j++)
+				{
+					if (k_size == 1)
+					{
+						grad_H_cur_x[i, j] = 0; grad_H_cur_y[i, j] = 0;
+					}
+					else
+					{					
+						if (i + 1 < k_size)
+							grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
+						else
+							grad_H_cur_x[i, j] = 0;// (float)((H_cur[i, j] - H_cur[i - 1, j]) / Math.Pow(2, k));
+						
+						if (j + 1 < k_size)
+							grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
+						else
+							grad_H_cur_y[i, j] = 0; //(float)((H_cur[i, j] - H_cur[i, j - 1]) / Math.Pow(2, k));
+						
+						if (k == 0)
+						{
+							avg_grad_H0 += Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
+							                         grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
+						}
+					}
+				}	
+				if (k == 0) avg_grad_H0 /= k_size * k_size;
+				
+				// Calculating phi_k
+				float[,] phi_k = new float[H_cur.GetLength(0), H_cur.GetLength(1)];
+				for (int i = 0; i < phi_k.GetLength(0); i++)
+				for (int j = 0; j < phi_k.GetLength(1); j++)
+				{
+					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
+					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
+					abs_grad_H_cur += 0.000001;	// To avoid infinity
+					
+					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha * avg_grad_H0), beta - 1));
+				}
+				phi.Add(phi_k);
+			}
+			
+			// Building Phi from phi_k
+			float[,] Phi = new float[phi[phi.Count - 1].GetLength(0), phi[phi.Count - 1].GetLength(1)];
+			for (int i = 0; i < Phi.GetLength(0); i++)
+			for (int j = 0; j < Phi.GetLength(1); j++)
+				Phi[i, j] = 1;
+			
+			for (int k = K - dn; k >= 0; k--)
+			{
+				int cur_size = Phi.GetLength(0);
+				// Multiplying
+				for (int i = 0; i < cur_size; i++)
+				for (int j = 0; j < cur_size; j++)
+				{
+					Phi[i, j] *= phi[k][i, j];
+				}
+				
+				if (k > 0)
+				{
+					// Upsampling with squares
+					float[,] Phi_new = new float[2 * cur_size, 2 * cur_size];
+					for (int i = 0; i < cur_size; i++)
+					for (int j = 0; j < cur_size; j++)
+					{
+						Phi_new[2 * i, 2 * j] = Phi[i, j];
+						Phi_new[2 * i + 1, 2 * j] = Phi[i, j];
+						Phi_new[2 * i, 2 * j + 1] = Phi[i, j];
+						Phi_new[2 * i + 1, 2 * j + 1] = Phi[i, j];
+					}
+					
+					// Blurring
+					for (int i = 1; i < 2 * cur_size - 1; i++)
+					for (int j = 1; j < 2 * cur_size - 1; j++)
+					{
+						Phi_new[i, j] = (float)((Phi_new[i, j] + 
+						                   0.5 * Phi_new[i - 1, j] +
+						                   0.5 * Phi_new[i, j - 1] +
+						                   0.5 * Phi_new[i + 1, j] +
+						                   0.5 * Phi_new[i, j + 1] +
+						                  0.25 * Phi_new[i - 1, j - 1] +
+						                  0.25 * Phi_new[i + 1, j - 1] +
+						                  0.25 * Phi_new[i - 1, j + 1] +
+						                  0.25 * Phi_new[i + 1, j + 1]) * 0.25);
+					}
+					
+					
+					Phi = Phi_new;
+				}
+			}
+			
+			// Extracting the correct size
+			float[,] Phi_cut = new float[w, h];
+			for (int i = 0; i < w; i++)
+			for (int j = 0; j < h; j++)
+			{
+				Phi_cut[i, j] = Phi[i, j];
+			}
+			
+			return Phi_cut;
+		}
+		
+		private delegate void SolutionReporter(float progress, float[,] solution);
+		private static float[,] SolvePoissonNeiman(float[,] rho, int steps, SolutionReporter callback)
+		{
+			int w = rho.GetLength(0), h = rho.GetLength(1);
+			float[,] I = new float[w + 2, h + 2];
+			
+			// Initial conditions are zeroes
+			
+			float[,] Inew = new float[w + 2, h + 2];
+			for (int step = 0; step < steps; step ++)
+			{
+				
+				// Applying the difference scheme
+				for (int i = 1; i < w + 1; i++)
+				for (int j = 1; j < h + 1; j++)
+				{
+					Inew[i, j] = 0.25f * (I[i + 1, j] + I[i - 1, j] + I[i, j + 1] + I[i, j - 1] - 2 * rho[i - 1, j - 1]);
+				}
+				
+				// Restoring Neiman boundary conditions
+				for (int i = 1; i < w + 1; i++)
+				{
+					Inew[i, 0] = Inew[i, 1];
+					Inew[i, h + 1] = Inew[i, h];
+				}
+				for (int j = 1; j < h + 1; j++)
+				{
+					Inew[0, j] = Inew[1, j];
+					Inew[w + 1, j] = Inew[w, j];
+				}
+				
+				// Controlling the constant
+				float m = 0;
+				for (int i = 1; i < w + 1; i++)
+				for (int j = 1; j < h + 1; j++)
+				{
+					m += Inew[i, j];
+				}
+				m /= w * h;
+
+				for (int i = 1; i < w + 1; i++)
+				for (int j = 1; j < h + 1; j++)
+				{
+					I[i, j] = Inew[i, j] - m;
+				}
+				
+				if (callback != null && step % 10 == 0)
+				{
+					callback((float)step / steps, I);
+				}
+			
+			}
+			
+			return I;
+		}
+		
 		public unsafe void SharpenLight(double radius_part, double pressure, double anticrown, int points, ProgressReporter callback)
 		{
+			
 			float[,] oldr = r_chan; 
 			float[,] oldg = g_chan; 
 			float[,] oldb = b_chan;
@@ -361,313 +574,122 @@ namespace CatEye.Core
 				g_chan[i, j] = oldg[i, j];
 				b_chan[i, j] = oldb[i, j];
 			}
-
-			double[,] light = new double[mWidth, mHeight];
-			double maxlight = 0;
+			
+			float[,] H = new float[mWidth, mHeight];
 	
-			// Сalculating light
+			// Сalculating logarithmic luminosity
 			for (int i = 0; i < mWidth; i++)
 			for (int j = 0; j < mHeight; j++)
 			{
-				light[i, j] = (Math.Sqrt(r_chan[i, j] * r_chan[i, j] + 
-				                                g_chan[i, j] * g_chan[i, j] + 
-				                                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3));
-				if (light[i, j] > maxlight) maxlight = light[i, j];
+				double light = Math.Sqrt((r_chan[i, j] * r_chan[i, j] + 
+				                          g_chan[i, j] * g_chan[i, j] + 
+				                          b_chan[i, j] * b_chan[i, j]) / 3);
 				
-			}
-						
-			double[,] scale_matrix = new double[mWidth, mHeight];
-			double[,] dispersion_matrix = new double[mWidth, mHeight];
-			
-			int disp_lines = 1000;
-			int scale_lines = 1500;
-			double disp_max = 1f;
-			double scale_max = 1f;
-			int[,] dispersion_pos = new int[disp_lines, scale_lines];
-			
-			int radius = (int)((mWidth + mHeight) / 2 * radius_part + 1);
-			
-			// Full progress
-			int full_i = 0;
-			object full_i_lock = new object();
-			
-			// Initializing threads
-			int threads_num = 6;
-			Thread[] threads = new Thread[threads_num];
-			
-			bool user_cancel = false;
-			
-			for (int q = 0; q < threads_num; q++)
-			{
-				threads[q] = new Thread(delegate (object obj)
-				{
-					try
-					{
-						Random rnd = new Random();
-			
-						int i1 = ((thread_data)obj).i1;
-						int i2 = ((thread_data)obj).i2;
-						
-						
-						for (int i = i1; i < i2; i++)
-						{
-							if (callback != null)
-							{
-								if (!callback((double)full_i / (mWidth)))
-									throw new UserCancelException();
-							}
-			
-							for (int j = 0; j < mHeight; j++)
-							{
-								if (i < mWidth)
-								{
-									// Dispersion & Scale
-									int avg = 0;
-									for (int p = 0; p < points; p++)
-									{
-										double phi = rnd.NextDouble() * 2 * Math.PI;
-										double rad = radius * rnd.NextDouble(); //-radius / alpha * Math.Log(rnd.NextDouble() + Math.Exp(-alpha));
-									
-										int u = i + (int)(rad * Math.Cos(phi));
-										int v = j + (int)(rad * Math.Sin(phi));
-										
-										if (u >= 0 && u < mWidth && v >= 0 && v < mHeight)
-										{
-											double delta = (light[i, j] - light[u, v]) / maxlight;
-
-											// Dispersion
-											dispersion_matrix[i, j] += delta * delta;
-											
-											// Scale
-											double f = delta; // Math.Log(Math.Abs(delta) + 1) * Math.Sign(delta);
-											scale_matrix[i, j] += f;
-
-											avg ++;
-										}
-									}
-									dispersion_matrix[i, j] = Math.Sqrt(dispersion_matrix[i, j] / (avg + 1));  // (avg + 1) to avoid div by zero
-									scale_matrix[i, j] /= avg + 1;	// (avg + 1) to avoid div by zero
-									
-									// Making draft preview with "crowns"
-									double kcomp = Math.Pow(0.1 * scale_matrix[i, j] + 1, pressure);
-
-									lock (this)
-									{
-										r_chan[i, j] = oldr[i, j] * (float)kcomp;
-										g_chan[i, j] = oldg[i, j] * (float)kcomp;
-										b_chan[i, j] = oldb[i, j] * (float)kcomp;
-									}
-
-									// Adding point to scale-dispersion diagram
-									lock (dispersion_pos)
-									{
-										double val = Math.Abs(scale_matrix[i, j]);
-										if (dispersion_matrix[i, j] < disp_max && val < scale_max)
-										{
-											dispersion_pos[(int)(dispersion_matrix[i, j] * disp_lines / disp_max),
-											               (int)(val * scale_lines / scale_max)] ++;
-										}
-									}
-									
-								}
-								
-							}
-							lock (full_i_lock) full_i ++;						
-						}
-					}
-					catch (UserCancelException)
-					{
-						user_cancel = true;
-					}						
-				});
+				H[i, j] = (float)(Math.Log(light + 0.00001));
 			}
 			
-			// Starting threads
-			for (int q = 0; q < threads_num; q++)
-			{
-				thread_data td = new thread_data();
-				td.i1 = (mWidth / threads_num) * q;
-				if (q < threads_num - 1)
-				{
-					td.i2 = (mWidth / threads_num) * (q + 1);
-				}
-				else
-				{
-					td.i2 = mWidth;
-				}
-				
-				threads[q].Priority = ThreadPriority.BelowNormal;
-				threads[q].Start(td);
-			}
+			float[,] grad_H_x = new float[mWidth, mHeight];
+			float[,] grad_H_y = new float[mWidth, mHeight];
 			
-			// Waiting for threads
-			for (int q = 0; q < threads_num; q++)
-			{
-				threads[q].Join();
-			}
-			
-			
-			if (user_cancel) throw new UserCancelException();
-			
-			
-			// Searching for scale tails
-			double tail_val = (anticrown * 0.495 + 0.5);
-			double[] scale_tails = new double[disp_lines];
-			for (int i = 0; i < disp_lines; i++)
-			{
-				// Searching for the line max value
-				double max = 0;
-				for (int j = 0; j < scale_lines; j++)
-				{
-					if (Math.Log(dispersion_pos[i, j] + 1) > max) 
-						max = Math.Log(dispersion_pos[i, j] + 1);
-				}
-				if (max > 0.000001)
-				{
-					// Searching for the lower tail
-					double min_scale = 0;
-					for (int j = 0; j < scale_lines; j++)
-					{
-						if (Math.Log(dispersion_pos[i, j] + 1) > tail_val * max)
-						{
-							min_scale = j * scale_max / scale_lines;
-							break;
-						}
-					}
-					scale_tails[i] = min_scale;
-				}
-				else
-					scale_tails[i] = -0.005;	// Actually, any negative value is OK here
-			}
-			
-			// Enumerating gaps
-			List<int> gaps = new List<int>();
-			bool starts_with_gap = scale_tails[0] < 0;
-			bool current_is_gap = starts_with_gap;
-			for (int i = 1; i < disp_lines; i++)
-			{
-				if ((scale_tails[i] < 0) != current_is_gap)
-				{
-					current_is_gap = (scale_tails[i] < 0);
-					gaps.Add(i);
-				}
-			}
-			// Interpolating the points inside the gaps
-			if (starts_with_gap && gaps.Count > 0) gaps.RemoveAt(0);	// Ignoring the starting gap if any
-			for (int i = 0; i < gaps.Count / 2; i++)
-			{
-				double val1 = scale_tails[gaps[2 * i] - 1];	// Left shore
-				double val2 = scale_tails[gaps[2 * i + 1]];	// Right shore
-				for (int k = gaps[2 * i]; k < gaps[2 * i + 1]; k++)
-				{
-					double val_k = val1 + (val2 - val1) * (k - gaps[2 * i + 1]) / (gaps[2 * i + 1] - (gaps[2 * i] - 1));
-					scale_tails[k] = val_k;
-				}
-			}
-			
-			// Extrapolating the last
-			int extr_base = disp_lines / 10;
-			if (gaps.Count % 2 == 1)
-			{
-				double val1 = scale_tails[gaps[gaps.Count - 1] - extr_base];		// Left shore
-				double val2 = scale_tails[gaps[gaps.Count - 1] - 1];				// Right shore
-				for (int k = gaps[gaps.Count - 1]; k < disp_lines; k++)
-				{
-					double val_k = val1 + (val2 - val1) * (k - (gaps[gaps.Count - 1] - extr_base)) / extr_base;
-					scale_tails[k] = val_k;
-				}
-			}
-						
-			// Dubbing the tails
-			double[] new_scale_tails = new double[disp_lines];
-			for (int i = 0; i < disp_lines; i++)
-			{
-				int tail_Delta = disp_lines / 10;
-				//tail_Delta += 4 * tail_Delta * i * 2 / disp_lines;
-				
-				double norm = 0;
-				double val = 0;
-				for (int k = -tail_Delta + 1; k <= tail_Delta - 1; k++)
-				{
-					if (i + k >= 0)
-					{
-						if (i + k < disp_lines && scale_tails[i + k] >= 0)
-						{
-							// Real point
-							double f = (Math.Exp(1.0 - Math.Abs(k) / tail_Delta) - 1) / (Math.E - 1);
-							norm += f;
-							val += f * scale_tails[i + k];
-						}
-						else if (i + k >= disp_lines)
-						{
-							// Linear extrapolation (for greatest dispersion values)
-							double f = (Math.Exp(1.0 - Math.Abs(k) / tail_Delta) - 1) / (Math.E - 1);
-							norm += f;
-
-							double tg = (scale_tails[i] - scale_tails[i - tail_Delta]) / tail_Delta;
-							val += f * (scale_tails[i] + tg * k);
-						}
-						// else scale_tails[i + k] == 0 -- do nothing
-					}
-				}
-				val /= norm + 0.00001;
-				new_scale_tails[i] = val;
-			}
-			
-			// The tails are beautiful now (I hope). Let's cut them out.
+			// Calculating gradient of H
 			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
+				if (i + 1 < mWidth)
+					grad_H_x[i, j] = (float)(H[i + 1, j] - H[i, j]);
+				else
+					grad_H_x[i, j] = 0;//(float)(H[i, j] - H[i - 1, j]);
+				
+				if (j + 1 < mHeight)
+					grad_H_y[i, j] = (float)(H[i, j + 1] - H[i, j]);
+				else
+					grad_H_y[i, j] = 0;//(float)(H[i, j] - H[i, j - 1]);
+			}
+			
+			// Calculating Phi
+			float[,] Phi = BuildPhi(H, 0.1, 0.85, 3);
+			
+			
+			// Calculating G and div_G
+			float[,] div_G = new float[mWidth, mHeight];
+			for (int i = 1; i < mWidth - 1; i++)
+			for (int j = 1; j < mHeight - 1; j++)
+			{
+				float G_x_ij = grad_H_x[i, j] * Phi[i, j];
+				float G_y_ij = grad_H_y[i, j] * Phi[i, j];
+				
+				float G_x_im1j = grad_H_x[i - 1, j] * Phi[i - 1, j];
+				float G_y_ijm1 = grad_H_y[i, j - 1] * Phi[i, j - 1];
+				
+				div_G[i, j] = G_x_ij - G_x_im1j + G_y_ij - G_y_ijm1;
+			}
+
+			double s = 0.5;
+			
+			// Solving Poisson equation Delta I = div G
+			float[,] I;
+			I = SolvePoissonNeiman(div_G, 700, delegate (float progress, float[,] solution)
+			{
+				I = solution;
+
+				for (int i = 0; i < mWidth; i++)
 				for (int j = 0; j < mHeight; j++)
 				{
-					// Cutting tails
+					double Lold = Math.Exp(H[i, j]);
+					double L = Math.Exp(8 * I[i, j] - 1);
 					
-					double sgn = Math.Sign(scale_matrix[i, j]);
-					double val = Math.Abs(scale_matrix[i, j]);
+					r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
+					g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
+					b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
 					
-					int disp_line = (int)(dispersion_matrix[i, j] * disp_lines);
-					double disp_line_delta = dispersion_matrix[i, j] * disp_lines - disp_line;
+					//r_chan[i, j] = (float)(Math.Pow(oldr[i, j] / (Lold + 0.00001), s) * L);
+					//g_chan[i, j] = (float)(Math.Pow(oldg[i, j] / (Lold + 0.00001), s) * L);
+					//b_chan[i, j] = (float)(Math.Pow(oldb[i, j] / (Lold + 0.00001), s) * L);
 					
-					val -= (new_scale_tails[disp_line] * (1 - disp_line_delta) +
-					       new_scale_tails[disp_line + 1] * disp_line_delta);
-					
-					val = Math.Log(val + 1);
-					if (val < 0) val = 0;	// Horay! I'm an idiot.
-					
-					scale_matrix[i, j] = val * sgn;
-					
-					double kcomp = Math.Pow(0.2 * scale_matrix[i, j] + 1, pressure);
-
-					lock (this)
-					{
-						r_chan[i, j] = oldr[i, j] * (float)kcomp;
-						g_chan[i, j] = oldg[i, j] * (float)kcomp;
-						b_chan[i, j] = oldb[i, j] * (float)kcomp;
-					}
 				}
-			}
+				
+				if (callback != null)
+				{
+					if (!callback(progress))
+						throw new UserCancelException();
+				}
 			
+			});
+			
+			
+			/*for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
+			{
+				r_chan[i, j] = 0.5f * Phi[i, j];
+				g_chan[i, j] = 0.5f * Phi[i, j];
+				b_chan[i, j] = 0.5f * Phi[i, j];
+			}
+			*/
+			/*
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
+			{
+				double Lold = Math.Exp(H[i, j]);
+				double L = Lold + Math.Exp(I[i, j]);
+				
+				r_chan[i, j] = 0.1f * (float)(Math.Pow(oldr[i, j] / Lold, s) * L);
+				g_chan[i, j] = 0.1f * (float)(Math.Pow(oldg[i, j] / Lold, s) * L);
+				b_chan[i, j] = 0.1f * (float)(Math.Pow(oldb[i, j] / Lold, s) * L);
+			}*/
+			
+			/*
 			// Plotting gradient map
 			System.IO.TextWriter sw = new System.IO.StreamWriter("test.txt");
-			for (int j = 0; j < scale_lines - 1; j+=2)
+			for (int j = 0; j < Phi.GetLength(1); j += 2)
 			{
-				for (int i = 0; i < disp_lines - 1; i+=2)
+				for (int i = 0; i < Phi.GetLength(0); i += 2)
 				{
-					double sum = (dispersion_pos[i, j] + dispersion_pos[i+1, j] + dispersion_pos[i, j+1] + dispersion_pos[i+1, j+1]);
-					sum = Math.Log(sum + 1);
-					sw.Write(sum  + "\t");
+					sw.Write(Phi[i, j] + "\t");
 				}
 				sw.WriteLine();
 			}
 			sw.Close();
-			
-			// Plotting tails
-			System.IO.TextWriter sw2 = new System.IO.StreamWriter("test2.txt");
-			for (int i = 0; i < disp_lines - 1; i+=2)
-			{
-				sw2.WriteLine((double)i * disp_max / disp_lines + "\t" + scale_tails[i] + "\t" + new_scale_tails[i]);
-			}
-			sw2.Close();
-			
+			*/
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
