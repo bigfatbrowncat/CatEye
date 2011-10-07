@@ -474,48 +474,45 @@ namespace CatEye.Core
 						Phi[i, j] = 0;
 						float diver = 0;
 						
+						diver += 0.125f;
 						if (i > 0 && j > 0)
 						{
-							diver += 0.25f;
-							Phi[i, j] += 0.25f * Phi_new[i - 1, j - 1];
+							Phi[i, j] += 0.125f * Phi_new[i - 1, j - 1];
 						}
 						else
 						{
-							diver += 0.25f;
-							Phi[i, j] += 0.25f * Phi_new[i, j];
+							Phi[i, j] += 0.125f * Phi_new[i, j];
 						}
 							
+						diver += 0.375f;
 						if (i > 0)
 						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i - 1, j] +
-						                0.25f * Phi_new[i - 1, j + 1];
+						    Phi[i, j] += 0.25f * Phi_new[i - 1, j] +
+						                0.125f * Phi_new[i - 1, j + 1];
 						}
 						else
 						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j] +
-						                0.25f * Phi_new[i, j + 1];
+						    Phi[i, j] += 0.25f * Phi_new[i, j] +
+						                0.125f * Phi_new[i, j + 1];
 						}
 						
+						diver += 0.375f;
 						if (j > 0)
 						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j - 1] +
-							            0.25f * Phi_new[i + 1, j - 1];
+						    Phi[i, j] += 0.25f * Phi_new[i, j - 1] +
+							            0.125f * Phi_new[i + 1, j - 1];
 						}
 						else
 						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j] +
-							            0.25f * Phi_new[i + 1, j];
+						    Phi[i, j] += 0.25f * Phi_new[i, j] +
+							            0.125f * Phi_new[i + 1, j];
 						}
 						
-						diver += 2.25f;
+						diver += 1.125f;
 						Phi[i, j] += Phi_new[i, j] + 
-						      0.5f * Phi_new[i + 1, j] +
-						      0.5f * Phi_new[i, j + 1] +
-						     0.25f * Phi_new[i + 1, j + 1];
+						     0.25f * Phi_new[i + 1, j] +
+						     0.25f * Phi_new[i, j + 1] +
+						    0.125f * Phi_new[i + 1, j + 1];
 						
 						Phi[i, j] /= diver;
 					}
@@ -534,8 +531,14 @@ namespace CatEye.Core
 			return Phi_cut;
 		}
 		
-		private delegate void SolutionReporter(float progress, float[,] solution);
-		private static float[,] SolvePoissonNeiman(float[,] rho, int steps, SolutionReporter callback)
+		/// <summary>
+		/// Solution reporter.
+		/// </summary>
+		/// <returns>
+		/// Should return "true" when searching is completed and "false" to continue the process
+		/// </returns>
+		private delegate bool SolutionReporter(float delta, float[,] solution);
+		private static float[,] SolvePoissonNeiman(float[,] rho, int steps_max, SolutionReporter callback)
 		{
 			int w = rho.GetLength(0), h = rho.GetLength(1);
 			float[,] I = new float[w + 2, h + 2];
@@ -543,14 +546,17 @@ namespace CatEye.Core
 			// Initial conditions are zeroes
 			
 			float[,] Inew = new float[w + 2, h + 2];
-			for (int step = 0; step < steps; step ++)
+			
+			double delta = 0;
+			for (int step = 0; step < steps_max; step ++)
 			{
-				
 				// Applying the difference scheme
 				for (int i = 1; i < w + 1; i++)
 				for (int j = 1; j < h + 1; j++)
 				{
-					Inew[i, j] = 0.25f * (I[i + 1, j] + I[i - 1, j] + I[i, j + 1] + I[i, j - 1] - 2 * rho[i - 1, j - 1]);
+					double iold = Inew[i, j];
+					Inew[i, j] = 0.25f * (I[i + 1, j] + Inew[i - 1, j] + I[i, j + 1] + Inew[i, j - 1] - 2 * rho[i - 1, j - 1]);
+					delta += Math.Abs(Inew[i, j] - iold);
 				}
 				
 				// Restoring Neiman boundary conditions
@@ -580,9 +586,13 @@ namespace CatEye.Core
 					I[i, j] = Inew[i, j] - m;
 				}
 				
-				if (callback != null && step % 10 == 0)
+				if (callback != null)
 				{
-					callback((float)step / steps, I);
+					delta /= w * h;
+					if (callback((float)delta, I))
+					{
+						break;
+					}
 				}
 			
 			}
@@ -641,50 +651,62 @@ namespace CatEye.Core
 			
 			// Calculating G and div_G
 			float[,] div_G = new float[Hw, Hh];
-			for (int i = 1; i < Hw; i++)
-			for (int j = 1; j < Hh; j++)
+			for (int i = 0; i < Hw - 1; i++)
+			for (int j = 0; j < Hh - 1; j++)
 			{
 				float G_x_ij = grad_H_x[i, j] * Phi[i, j];
 				float G_y_ij = grad_H_y[i, j] * Phi[i, j];
 				
-				float G_x_im1j = grad_H_x[i - 1, j] * Phi[i - 1, j];
-				float G_y_ijm1 = grad_H_y[i, j - 1] * Phi[i, j - 1];
+				float G_x_ip1j = grad_H_x[i + 1, j] * Phi[i + 1, j];
+				float G_y_ijp1 = grad_H_y[i, j + 1] * Phi[i, j + 1];
 				
-				div_G[i, j] = G_x_ij - G_x_im1j + G_y_ij - G_y_ijm1;
+				div_G[i, j] = - (G_x_ij - G_x_ip1j + G_y_ij - G_y_ijp1);
 			}
 
 			double s = 0.5;
 			
 			// Solving Poisson equation Delta I = div G
 			float[,] I;
-			I = SolvePoissonNeiman(div_G, 15000, delegate (float progress, float[,] solution)
+			int step = 0;
+			double progress = 0;
+			double epsilon = 0.00005;
+			I = SolvePoissonNeiman(div_G, 10000, delegate (float delta, float[,] solution)
 			{
-				I = solution;
-
-				for (int i = 0; i < mWidth; i++)
-				for (int j = 0; j < mHeight; j++)
+				bool result = false;
+				if (delta < epsilon) result = true;
+				
+				if (step % 10 == 0 || result)
 				{
-					double Lold = Math.Exp(H[i, j]);
-					double L = Math.Exp(4 * anticrown * I[i, j] - 1);
-					
-					L = L * pressure / 100 + Lold * (1 - pressure / 100);
-					
-					r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
-					g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
-					b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
-					
-					//r_chan[i, j] = (float)(Math.Pow(oldr[i, j] / (Lold + 0.00001), s) * L);
-					//g_chan[i, j] = (float)(Math.Pow(oldg[i, j] / (Lold + 0.00001), s) * L);
-					//b_chan[i, j] = (float)(Math.Pow(oldb[i, j] / (Lold + 0.00001), s) * L);
-					
+					I = solution;
+	
+					for (int i = 0; i < mWidth; i++)
+					for (int j = 0; j < mHeight; j++)
+					{
+						double global_contrast_k = pressure / 100 * 0.8 + 0.2;
+						double local_contrast_k = anticrown * anticrown;
+	
+						double Lold = Math.Exp(H[i, j]);
+						double L = Math.Exp((2 + 1.5 * local_contrast_k * (2.0 / (global_contrast_k + 1)) ) * I[i, j] - 1);
+						
+						L = L * global_contrast_k + Lold * (1 - global_contrast_k);
+						
+						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
+						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
+						b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
+					}
+					step ++;
 				}
 				
 				if (callback != null)
 				{
+					double progress_new = Math.Min(Math.Log(epsilon + 1) / Math.Log(delta + 1), 0.999);
+					if (progress < progress_new) progress = progress_new;
+					
 					if (!callback(progress))
 						throw new UserCancelException();
 				}
 			
+				return result;
 			});
 		}
 		
