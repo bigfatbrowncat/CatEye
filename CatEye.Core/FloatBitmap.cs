@@ -665,7 +665,9 @@ namespace CatEye.Core
 				for (int j = 0; j < mHeight; j++)
 				{
 					double Lold = Math.Exp(H[i, j]);
-					double L = Math.Exp(8 * I[i, j] - 1);
+					double L = Math.Exp(4 * anticrown * I[i, j] - 1);
+					
+					L = L * pressure / 100 + Lold * (1 - pressure / 100);
 					
 					r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
 					g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
