@@ -552,11 +552,33 @@ namespace CatEye.Core
 			{
 				// Applying the difference scheme
 				for (int i = 1; i < w + 1; i++)
-				for (int j = 1; j < h + 1; j++)
 				{
-					double iold = Inew[i, j];
-					Inew[i, j] = 0.25f * (I[i + 1, j] + Inew[i - 1, j] + I[i, j + 1] + Inew[i, j - 1] - 2 * rho[i - 1, j - 1]);
-					delta += Math.Abs(Inew[i, j] - iold);
+					// Run, Thomas, run!
+					float[] alpha = new float[h + 3];
+					float[] beta = new float[h + 3];
+					
+					alpha[1] = 0.25f; beta[1] = 0.25f * (I[i + 1, 0] + I[i - 1, 0]);
+					for (int j = 1; j < h + 2; j++)
+					{
+						alpha[j + 1] = 1.0f / (4 - alpha[j]);
+						float Fj;
+						if (j < h + 1)
+							Fj = I[i + 1, j] + I[i - 1, j] - 2 * rho[i - 1, j - 1];
+						else
+							Fj = I[i + 1, j] + I[i - 1, j];
+						
+						beta[j + 1] = (Fj + beta[j]) / (4f - alpha[j]);
+					}
+					
+					I[i, h + 1] = beta[h + 2];
+					
+					for (int j = h; j >= 0; j--)
+					{
+						double iold = Inew[i, j];
+						Inew[i, j] = alpha[j + 1] * I[i, j + 1] + beta[j + 1];
+						delta += Math.Abs(Inew[i, j] - iold);
+					}
+					
 				}
 				
 				// Restoring Neiman boundary conditions
