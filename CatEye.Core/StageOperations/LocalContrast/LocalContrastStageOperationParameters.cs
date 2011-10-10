@@ -10,7 +10,7 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mAnticrown = 0.5, mRadius = 0.1;
+		private double mPressure = 10, mAnticrown = 0.5, mContrast = 0.1;
 		private SharpType mType = SharpType.Sharp;
 
 		public double Anticrown
@@ -33,12 +33,12 @@ namespace CatEye.Core
 			}
 		}
 
-		public double Radius
+		public double Contrast
 		{
-			get { return mRadius; }
+			get { return mContrast; }
 			set 
 			{
-				mRadius = value;
+				mContrast = value;
 				OnChanged();
 			}
 		}
@@ -58,7 +58,7 @@ namespace CatEye.Core
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Anticrown")).Value = mAnticrown.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Radius")).Value = mRadius.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
 				st = "sharp";
@@ -92,14 +92,14 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Anticrown value");
 			}
-			if (node.Attributes["Radius"] != null)
+			if (node.Attributes["Contrast"] != null)
 			{
-				if (double.TryParse(node.Attributes["Radius"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["Contrast"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mRadius = res;
+					mContrast = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Radius value");
+					throw new IncorrectNodeValueException("Can't parse Contrast value");
 			}
 			if (node.Attributes["SharpType"] != null)
 			{
@@ -113,7 +113,7 @@ namespace CatEye.Core
 					mType = SharpType.Soft;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse LimitDown value");
+					throw new IncorrectNodeValueException("Can't parse SharpType value");
 			}
 			OnChanged();
 		}
@@ -133,7 +133,7 @@ namespace CatEye.Core
 			LocalContrastStageOperationParameters t = (LocalContrastStageOperationParameters)target;
 			t.mPressure = mPressure;
 			t.mAnticrown = mAnticrown;
-			t.mRadius = mRadius;
+			t.mContrast = mContrast;
 			t.mType = mType;
 			t.OnChanged();
 		}
