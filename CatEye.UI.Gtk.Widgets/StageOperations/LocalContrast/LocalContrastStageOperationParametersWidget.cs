@@ -15,14 +15,36 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Build ();
 		}
 		
+		private bool _CompressionIsChanging = false;
+		private bool _CurveIsChanging = false;
 		private bool _PressureIsChanging = false;
-		private bool _AnticrownIsChanging = false;
 		private bool _ContrastIsChanging = false;
 
+		protected enum CompressionChanger { HScale, SpinButton }
 		protected enum PressureChanger { HScale, SpinButton }
-		protected enum AnticrownChanger { HScale, SpinButton }
+		protected enum CurveChanger { HScale, SpinButton }
 		protected enum ContrastChanger { HScale, SpinButton }
-
+		
+/*		protected void ChangeCompression(double new_value, CompressionChanger changer)
+		{
+			if (!_CompressionIsChanging)
+			{
+				_CompressionIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != CompressionChanger.HScale)
+					compression_hscale.Value = new_value;
+				
+				if (changer != CompressionChanger.SpinButton)
+					compression_spinbutton.Value = new_value;
+				
+				((LocalContrastStageOperationParameters)Parameters).Compression = new_value;
+				EndChangingParameters();
+				OnUserModified();
+				_CompressionIsChanging = false;
+			}
+		}*/		
 		protected void ChangePressure(double new_value, PressureChanger changer)
 		{
 			if (!_PressureIsChanging)
@@ -53,26 +75,27 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 
-		protected void ChangeAnticrown(double new_value, AnticrownChanger changer)
+		protected void ChangeCurve(double new_value, CurveChanger changer)
 		{
-			if (!_AnticrownIsChanging)
+			if (!_CurveIsChanging)
 			{
-				_AnticrownIsChanging = true;
+				_CurveIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != AnticrownChanger.HScale)
-					anticrown_hscale.Value = new_value;
+				if (changer != CurveChanger.HScale)
+					curve_hscale.Value = new_value;
 				
-				if (changer != AnticrownChanger.SpinButton)
-					anticrown_spinbutton.Value = new_value;
+				if (changer != CurveChanger.SpinButton)
+					curve_spinbutton.Value = new_value;
 				
-				((LocalContrastStageOperationParameters)Parameters).Anticrown = new_value;
+				((LocalContrastStageOperationParameters)Parameters).Curve = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_AnticrownIsChanging = false;
+				_CurveIsChanging = false;
 			}
 		}
+
 
 		protected void ChangeContrast(double new_value, ContrastChanger changer)
 		{
@@ -114,11 +137,16 @@ namespace CatEye.UI.Gtk.Widgets
 				
 			pressure_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Pressure;
 			_PressureIsChanging = false;
+
+/*			_CompressionIsChanging = true;
+			compression_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Compression;
+			compression_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Compression;
+			_CompressionIsChanging = false;*/
 			
-			_AnticrownIsChanging = true;
-			anticrown_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Anticrown;
-			anticrown_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Anticrown;
-			_AnticrownIsChanging = false;
+			_CurveIsChanging = true;
+			curve_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Curve;
+			curve_spinbutton.Value = ((LocalContrastStageOperationParameters)Parameters).Curve;
+			_CurveIsChanging = false;
 			
 			_ContrastIsChanging = true;
 			contrast_hscale.Value = ((LocalContrastStageOperationParameters)Parameters).Contrast;
@@ -168,14 +196,24 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 
-		protected void OnAnticrownHscaleChangeValue (object o, ChangeValueArgs args)
+		protected void OnCurveHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeAnticrown(anticrown_hscale.Value, AnticrownChanger.HScale);
+			ChangeCurve(curve_hscale.Value, CurveChanger.HScale);
 		}
 
-		protected void OnAnticrownSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnCurveSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeAnticrown(anticrown_spinbutton.Value, AnticrownChanger.SpinButton);
+			ChangeCurve(curve_spinbutton.Value, CurveChanger.SpinButton);
+		}
+
+		protected void OnCompressionSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+//			ChangeCompression(compression_spinbutton.Value, CompressionChanger.SpinButton);
+		}
+
+		protected void OnCompressionHscaleChangeValue (object o, ChangeValueArgs args)
+		{
+//			ChangeCompression(compression_hscale.Value, CompressionChanger.HScale);
 		}
 	}
 }

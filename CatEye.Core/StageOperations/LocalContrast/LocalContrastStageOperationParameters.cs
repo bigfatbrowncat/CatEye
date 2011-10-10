@@ -10,15 +10,25 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mAnticrown = 0.5, mContrast = 0.1;
+		private double mPressure = 10, mCurve = 0.5, /*mCompression = 0.5,*/ mContrast = 0.1;
 		private SharpType mType = SharpType.Sharp;
 
-		public double Anticrown
+/*		public double Compression
 		{
-			get { return mAnticrown; }
+			get { return mCompression; }
 			set 
 			{
-				mAnticrown = value;
+				mCompression = value;
+				OnChanged();
+			}
+		}*/
+
+		public double Curve
+		{
+			get { return mCurve; }
+			set 
+			{
+				mCurve = value;
 				OnChanged();
 			}
 		}
@@ -56,8 +66,9 @@ namespace CatEye.Core
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
+//			xn.Attributes.Append(xdoc.CreateAttribute("Compression")).Value = mCompression.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Curve")).Value = mCurve.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Anticrown")).Value = mAnticrown.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
@@ -74,6 +85,24 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
+/*			if (node.Attributes["Compression"] != null)
+			{
+				if (double.TryParse(node.Attributes["Compression"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mCompression = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse Compression value");
+			}*/
+			if (node.Attributes["Curve"] != null)
+			{
+				if (double.TryParse(node.Attributes["Curve"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mCurve = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse Curve value");
+			}
 			if (node.Attributes["Pressure"] != null)
 			{
 				if (double.TryParse(node.Attributes["Pressure"].Value, NumberStyles.Float, nfi, out res))
@@ -82,15 +111,6 @@ namespace CatEye.Core
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse Pressure value");
-			}
-			if (node.Attributes["Anticrown"] != null)
-			{
-				if (double.TryParse(node.Attributes["Anticrown"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mAnticrown = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse Anticrown value");
 			}
 			if (node.Attributes["Contrast"] != null)
 			{
@@ -131,8 +151,9 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			LocalContrastStageOperationParameters t = (LocalContrastStageOperationParameters)target;
+//			t.mCompression = mCompression;
+			t.mCurve = mCurve;
 			t.mPressure = mPressure;
-			t.mAnticrown = mAnticrown;
 			t.mContrast = mContrast;
 			t.mType = mType;
 			t.OnChanged();

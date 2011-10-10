@@ -420,7 +420,7 @@ namespace CatEye.Core
 				}	
 				if (k == 0)
 				{
-					avg_grad_H0 /= (k_size - 1) * (k_size - 1);
+					avg_grad_H0 /= Hw * Hh;
 				}
 				
 				// Calculating phi_k
@@ -665,7 +665,7 @@ namespace CatEye.Core
 			return I;
 		}
 		
-		public unsafe void SharpenLight(double contrast, double pressure, double anticrown, int points, ProgressReporter callback)
+		public unsafe void SharpenLight(double curve, double contrast, double pressure, ProgressReporter callback)
 		{
 			
 			float[,] oldr = r_chan; 
@@ -711,7 +711,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1, 0.75 + 0.15 * contrast, 6);
+			float[,] Phi = BuildPhi(H, 0.1, 0.85, 5);
 			
 			
 			// Calculating G and div_G
@@ -728,38 +728,55 @@ namespace CatEye.Core
 				div_G[i, j] = - (G_x_ij - G_x_ip1j + G_y_ij - G_y_ijp1);
 			}
 
+			// Preparing the compressor
+			
+			double a, b;
+			if (curve > 0)
+			{
+				a = Math.Log(2);
+				b = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			else
+			{
+				b = Math.Log(2);
+				a = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			double p = Math.Pow(100, curve * 1.5);
+
+			
 			// Solving Poisson equation Delta I = div G
 			float[,] I;
 			int step = 0;
 			double progress = 0;
-			double epsilon = 0.00008;
-			I = SolvePoissonNeiman(div_G, 20000, delegate (float delta, float[,] solution)
+			
+			double epsilon = 0.0005;	// TODO: Should be configured somehow...
+			
+			SolutionReporter srep = delegate (float delta, float[,] solution)
 			{
 				bool result = false;
 				if (delta < epsilon) result = true;
 				
 				if (step % 30 == 0 || result)
 				{
-					I = solution;
-	
 					// Draw it
 					for (int i = 0; i < mWidth; i++)
 					for (int j = 0; j < mHeight; j++)
 					{
-						double global_contrast_k = pressure / 100 * pressure / 100;
-						double local_contrast_k = anticrown * anticrown;
 	
 						double Lold = Math.Exp(H[i, j]);
-						double L = Math.Exp((2 + local_contrast_k * (2.0 / (global_contrast_k + 1)) ) * I[i, j] - 1);
 						
-						L = L * global_contrast_k + Lold * (1 - global_contrast_k);
+						double Lcomp = Math.Log(p * (Math.Exp(a * Lold) - 1.0) + 1.0) / b;
+						
+						double L = Math.Exp(2 * pressure * solution[i, j] - 2);
+						
+						L = L * contrast + Lcomp * (1 - contrast);
 						
 						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
 						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
 						b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
 					}
-					step ++;
 				}
+				step ++;
 				
 				if (callback != null)
 				{
@@ -771,24 +788,11 @@ namespace CatEye.Core
 				}
 			
 				return result;
-			});
+			};
+			
+			I = SolvePoissonNeiman(div_G, 20000, srep);
 
-			// Draw it again
-			for (int i = 0; i < mWidth; i++)
-			for (int j = 0; j < mHeight; j++)
-			{
-				double global_contrast_k = pressure / 100;
-				double local_contrast_k = anticrown * anticrown;
-
-				double Lold = Math.Exp(H[i, j]);
-				double L = Math.Exp((2 + 1.5 * local_contrast_k * (2.0 / (global_contrast_k + 1)) ) * I[i, j] - 1);
-				
-				L = L * global_contrast_k + Lold * (1 - global_contrast_k);
-				
-				r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
-				g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
-				b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
-			}			
+			srep(0, I);
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
