@@ -711,7 +711,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1, 0.85, 5);
+			float[,] Phi = BuildPhi(H, 0.1, 0.8 + 0.1 * contrast, 4);
 			
 			
 			// Calculating G and div_G
@@ -767,9 +767,7 @@ namespace CatEye.Core
 						
 						double Lcomp = Math.Log(p * (Math.Exp(a * Lold) - 1.0) + 1.0) / b;
 						
-						double L = Math.Exp(2 * pressure * solution[i, j] - 2);
-						
-						L = L * contrast + Lcomp * (1 - contrast);
+						double L = Math.Exp(pressure * solution[i, j]) * Lcomp;
 						
 						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
 						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
