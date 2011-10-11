@@ -373,7 +373,7 @@ namespace CatEye.Core
 				H_cur[i, j] = H_cur[i, Hh];
 			}
 			
-			double avg_grad_H0 = 0;
+			float avg_grad = 0;
 			
 			// Building phi_k			
 			List<float[,]> phi = new List<float[,]>();
@@ -411,18 +411,11 @@ namespace CatEye.Core
 						grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
 						grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
 						
-						if (k == 0)
-						{
-							avg_grad_H0 += Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
-							                         grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-						}
+						avg_grad += (float)Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
+						                             grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
 					}
 				}	
-				if (k == 0)
-				{
-					avg_grad_H0 /= Hw * Hh;
-				}
-				
+
 				// Calculating phi_k
 				float[,] phi_k = new float[H_cur.GetLength(0), H_cur.GetLength(1)];
 				for (int i = 0; i < phi_k.GetLength(0); i++)
@@ -430,12 +423,15 @@ namespace CatEye.Core
 				{
 					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-					abs_grad_H_cur += 0.000001;	// To avoid infinity
+					abs_grad_H_cur += 0.001;	// To avoid infinity
 					
-					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha * avg_grad_H0), beta - 1));
+					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha), beta - 1));
 				}
 				phi.Add(phi_k);
 			}
+			
+			avg_grad /= new_size * new_size / (K - dn);
+			Console.WriteLine("avg_grad= " + avg_grad);
 			
 			// Building Phi from phi_k
 			float[,] Phi = new float[phi[phi.Count - 1].GetLength(0), phi[phi.Count - 1].GetLength(1)];
@@ -450,7 +446,7 @@ namespace CatEye.Core
 				for (int i = 0; i < cur_size; i++)
 				for (int j = 0; j < cur_size; j++)
 				{
-					Phi[i, j] *= phi[k][i, j];
+					Phi[i, j] *= phi[k][i, j] * avg_grad;
 				}
 				
 				if (k > 0)
@@ -551,6 +547,8 @@ namespace CatEye.Core
 			object delta_lock = new object();
 			for (int step = 0; step < steps_max; step ++)
 			{
+				//float delta_old = delta;
+				
 				int threads_num = 4;
 				Thread[] threads = new Thread[threads_num];
 				
@@ -587,7 +585,7 @@ namespace CatEye.Core
 							
 							for (int j = h; j >= 0; j--)
 							{
-								double iold = Inew[i, j];
+								double iold = I[i, j];
 								Inew[i, j] = alpha[j + 1] * Inew[i, j + 1] + beta[j + 1];
 								my_delta += (float)Math.Abs(Inew[i, j] - iold);
 							}
@@ -653,11 +651,12 @@ namespace CatEye.Core
 				
 				if (callback != null)
 				{
-					delta /= w * h;
+					delta /= (float)Math.Sqrt(w * h);
 					if (callback(delta, I))
 					{
 						break;
 					}
+					delta = 0;
 				}
 			
 			}
@@ -711,7 +710,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1, 0.8 + 0.1 * contrast, 4);
+			float[,] Phi = BuildPhi(H, pressure * pressure * 1000, 0.8 + 0.1 * contrast, 5);
 			
 			
 			// Calculating G and div_G
@@ -749,13 +748,15 @@ namespace CatEye.Core
 			int step = 0;
 			double progress = 0;
 			
-			double epsilon = 0.0005;	// TODO: Should be configured somehow...
+//			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
+//			double epsilon = 0.00008f;	// TODO: Should be configured somehow...
+			double epsilon = 0.15f;	// TODO: Should be configured somehow...
 			
 			SolutionReporter srep = delegate (float delta, float[,] solution)
 			{
 				bool result = false;
 				if (delta < epsilon) result = true;
-				
+				Console.WriteLine(delta);
 				if (step % 30 == 0 || result)
 				{
 					// Draw it
@@ -767,7 +768,7 @@ namespace CatEye.Core
 						
 						double Lcomp = Math.Log(p * (Math.Exp(a * Lold) - 1.0) + 1.0) / b;
 						
-						double L = Math.Exp(pressure * solution[i, j]) * Lcomp;
+						double L = Math.Exp(solution[i, j]) * Lcomp;
 						
 						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
 						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));

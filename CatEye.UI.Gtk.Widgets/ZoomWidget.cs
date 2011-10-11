@@ -69,6 +69,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		private double mValue = 1;
 		private double mMaxValue = 1;
+		private double mMinValue = 0.1;
 		private bool setting_divider = false;
 		private WarningTooltip mWarningTooltip;
 		private bool mChangingSelf = false;
@@ -107,10 +108,14 @@ namespace CatEye.UI.Gtk.Widgets
 			set
 			{
 				double oldValue = mValue;
+				mValue = value;
+
 				if (value > mMaxValue) 
 					mValue = mMaxValue;
-				else
-					mValue = value;
+				
+				if (value < mMinValue)
+					mValue = mMinValue;
+				
 				
 				if (mValue < mGoodValues[0]) mValue = mGoodValues[0];
 				if (mValue > mGoodValues[mGoodValues.Length - 1]) 
