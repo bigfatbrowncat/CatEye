@@ -344,33 +344,17 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
-		private float[,] BuildPhi(float[,] H, double alpha, double beta, int dn)
+		private float[,] BuildPhi(float[,] H, double alpha, double beta, int divides)
 		{
 			int Hw = H.GetLength(0);
 			int Hh = H.GetLength(1);
 			
 			// Building H0
-			int size = Math.Max(Hw, Hh);
-			int K = (int)(Math.Log(size, 2)) + 1;
-			int new_size = (int)(Math.Round (Math.Pow(2, K)));
-			
-			float[,] H_cur = new float[new_size, new_size];
+			float[,] H_cur = new float[Hw, Hh];
 			for (int i = 0; i < Hw; i++)
 			for (int j = 0; j < Hh; j++)
 			{
 				H_cur[i, j] = H[i, j];
-			}
-			
-			for (int i = Hw; i < new_size; i++)
-			for (int j = 0; j < Hh; j++)
-			{
-				H_cur[i, j] = H_cur[Hw, j];
-			}
-			
-			for (int i = 0; i < Hw; i++)
-			for (int j = Hh; j < new_size; j++)
-			{
-				H_cur[i, j] = H_cur[i, Hh];
 			}
 			
 			float avg_grad = 0;
@@ -378,16 +362,17 @@ namespace CatEye.Core
 			// Building phi_k			
 			List<float[,]> phi = new List<float[,]>();
 
-			for (int k = 0; k <= K - dn; k++)	      // k is the index of H_cur
+			for (int k = 0; k <= divides; k++)	      // k is the index of H_cur
 			{
-				int k_size = (int)(new_size / Math.Pow(2, k));
+				int w = (int)(Hw / Math.Pow(2, k));
+				int h = (int)(Hh / Math.Pow(2, k));
 	
 				if (k > 0)
 				{
 					// Calculating the new H_cur
-					float[,] H_cur_new = new float[k_size, k_size];
-					for (int i = 0; i < k_size; i++)
-					for (int j = 0; j < k_size; j++)
+					float[,] H_cur_new = new float[w, h];
+					for (int i = 0; i < w; i++)
+					for (int j = 0; j < h; j++)
 					{
 						H_cur_new[i, j] = (float)(0.25 * (H_cur[2 * i, 2 * j] + H_cur[2 * i + 1, 2 * j] +
 						                                  H_cur[2 * i, 2 * j + 1] + H_cur[2 * i + 1, 2 * j + 1]));
@@ -396,12 +381,12 @@ namespace CatEye.Core
 				}
 				
 				// Calculating grad_H_cur
-				float[,] grad_H_cur_x = new float[k_size, k_size];
-				float[,] grad_H_cur_y = new float[k_size, k_size];
-				for (int i = 0; i < k_size - 1; i++)
-				for (int j = 0; j < k_size - 1; j++)
+				float[,] grad_H_cur_x = new float[w, h];
+				float[,] grad_H_cur_y = new float[w, h];
+				for (int i = 0; i < w - 1; i++)
+				for (int j = 0; j < h - 1; j++)
 				{
-					if (k_size == 1)
+					if (w == 1 || h == 1)
 					{
 						grad_H_cur_x[i, j] = 0; 
 						grad_H_cur_y[i, j] = 0;
@@ -417,9 +402,9 @@ namespace CatEye.Core
 				}	
 
 				// Calculating phi_k
-				float[,] phi_k = new float[H_cur.GetLength(0), H_cur.GetLength(1)];
-				for (int i = 0; i < phi_k.GetLength(0); i++)
-				for (int j = 0; j < phi_k.GetLength(1); j++)
+				float[,] phi_k = new float[w, h];
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
 				{
 					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
@@ -430,7 +415,7 @@ namespace CatEye.Core
 				phi.Add(phi_k);
 			}
 			
-			avg_grad /= new_size * new_size / (K - dn);
+			avg_grad /= Hw * Hh / divides;
 			Console.WriteLine("avg_grad= " + avg_grad);
 			
 			// Building Phi from phi_k
@@ -439,12 +424,13 @@ namespace CatEye.Core
 			for (int j = 0; j < Phi.GetLength(1); j++)
 				Phi[i, j] = 1;
 			
-			for (int k = K - dn; k >= 0; k--)
+			for (int k = divides; k >= 0; k--)
 			{
-				int cur_size = Phi.GetLength(0);
+				int w = phi[k].GetLength(0);
+				int h = phi[k].GetLength(1);
 				// Multiplying
-				for (int i = 0; i < cur_size; i++)
-				for (int j = 0; j < cur_size; j++)
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
 				{
 					Phi[i, j] *= phi[k][i, j] * avg_grad;
 				}
@@ -452,9 +438,9 @@ namespace CatEye.Core
 				if (k > 0)
 				{
 					// Upsampling with squares
-					float[,] Phi_new = new float[2 * cur_size, 2 * cur_size];
-					for (int i = 0; i < cur_size; i++)
-					for (int j = 0; j < cur_size; j++)
+					float[,] Phi_new = new float[2 * w + 1, 2 * h + 1];
+					for (int i = 0; i < w; i++)
+					for (int j = 0; j < h; j++)
 					{
 						Phi_new[2 * i, 2 * j] = Phi[i, j];
 						Phi_new[2 * i + 1, 2 * j] = Phi[i, j];
@@ -463,9 +449,9 @@ namespace CatEye.Core
 					}
 					
 					// Blurring
-					Phi = new float[2 * cur_size, 2 * cur_size];
-					for (int i = 0; i < 2 * cur_size - 1; i++)
-					for (int j = 0; j < 2 * cur_size - 1; j++)
+					Phi = new float[2 * w + 1, 2 * h + 1];
+					for (int i = 0; i < 2 * w; i++)
+					for (int j = 0; j < 2 * h; j++)
 					{
 						Phi[i, j] = 0;
 						float diver = 0;
@@ -710,7 +696,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, pressure * pressure * 1000, 0.8 + 0.1 * contrast, 5);
+			float[,] Phi = BuildPhi(H, pressure * pressure * 10, 0.8 + 0.1 * contrast, 5);
 			
 			
 			// Calculating G and div_G
