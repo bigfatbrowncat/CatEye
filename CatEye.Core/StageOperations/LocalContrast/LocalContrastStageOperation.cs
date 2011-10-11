@@ -13,7 +13,9 @@ namespace CatEye.Core
 		
 		public override double CalculateEfforts (IBitmapCore hdp)
 		{
-			return (double)hdp.Width * hdp.Height;
+			LocalContrastStageOperationParameters pm = (LocalContrastStageOperationParameters)Parameters;
+
+			return (double)hdp.Width * hdp.Height * (5 * pm.Pressure + 1) * 3;
 		}
 		
 		public override void OnDo (IBitmapCore hdp)

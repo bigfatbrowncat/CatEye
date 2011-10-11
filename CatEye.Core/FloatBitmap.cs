@@ -357,13 +357,13 @@ namespace CatEye.Core
 				H_cur[i, j] = H[i, j];
 			}
 			
-			float avg_grad = 0;
-			
 			// Building phi_k			
 			List<float[,]> phi = new List<float[,]>();
 
 			for (int k = 0; k <= divides; k++)	      // k is the index of H_cur
 			{
+				float avg_grad = 0;
+
 				int w = (int)(Hw / Math.Pow(2, k));
 				int h = (int)(Hh / Math.Pow(2, k));
 	
@@ -402,6 +402,7 @@ namespace CatEye.Core
 				}	
 
 				// Calculating phi_k
+				avg_grad /= w * h;
 				float[,] phi_k = new float[w, h];
 				for (int i = 0; i < w; i++)
 				for (int j = 0; j < h; j++)
@@ -410,13 +411,11 @@ namespace CatEye.Core
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
 					abs_grad_H_cur += 0.001;	// To avoid infinity
 					
-					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha), beta - 1));
+					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha * avg_grad), beta - 1));
 				}
 				phi.Add(phi_k);
 			}
 			
-			avg_grad /= Hw * Hh / divides;
-			Console.WriteLine("avg_grad= " + avg_grad);
 			
 			// Building Phi from phi_k
 			float[,] Phi = new float[phi[phi.Count - 1].GetLength(0), phi[phi.Count - 1].GetLength(1)];
@@ -432,7 +431,7 @@ namespace CatEye.Core
 				for (int i = 0; i < w; i++)
 				for (int j = 0; j < h; j++)
 				{
-					Phi[i, j] *= phi[k][i, j] * avg_grad;
+					Phi[i, j] *= phi[k][i, j];
 				}
 				
 				if (k > 0)
@@ -533,8 +532,7 @@ namespace CatEye.Core
 			object delta_lock = new object();
 			for (int step = 0; step < steps_max; step ++)
 			{
-				//float delta_old = delta;
-				
+				// *** Horizontal iterations ***
 				int threads_num = 4;
 				Thread[] threads = new Thread[threads_num];
 				
@@ -547,7 +545,6 @@ namespace CatEye.Core
 									
 						float my_delta = 0;
 							
-						// Applying the difference scheme
 						for (int i = i1; i < i2; i++)
 						{
 							// Run, Thomas, run!
@@ -576,6 +573,7 @@ namespace CatEye.Core
 								my_delta += (float)Math.Abs(Inew[i, j] - iold);
 							}
 						}
+						
 
 						lock (delta_lock)
 						{
@@ -585,7 +583,7 @@ namespace CatEye.Core
 					});
 				}
 				
-				// Starting threads
+				// Starting horizontal threads
 				for (int q = 0; q < threads_num; q++)
 				{
 					thread_data td = new thread_data();
@@ -602,13 +600,13 @@ namespace CatEye.Core
 					threads[q].Start(td);
 				}
 				
-				// Waiting for threads
+				// Waiting for horizontal threads
 				for (int q = 0; q < threads_num; q++)
 				{
 					threads[q].Join();
-				}					
+				}
 				
-				// Restoring Neiman boundary conditions
+				// Restoring Neiman boundary conditions after horizontal iterations
 				for (int i = 0; i < w + 2; i++)
 				{
 					Inew[i, 0] = Inew[i, 1];
@@ -620,8 +618,109 @@ namespace CatEye.Core
 					Inew[w + 1, j] = Inew[w, j];
 				}
 				
-				// Controlling the constant
+				// Controlling the constant after horizontal iterations
 				float m = 0;
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
+				{
+					m += Inew[i, j];
+				}
+				m /= (w+2) * (h+2);
+
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
+				{
+					I[i, j] = Inew[i, j] - m;
+				}				
+			
+				// *** Vertical iterations ***
+				threads = new Thread[threads_num];
+				
+				for (int q = 0; q < threads_num; q++)
+				{
+					threads[q] = new Thread(delegate (object obj)
+					{
+						int j1 = ((thread_data)obj).i1;
+						int j2 = ((thread_data)obj).i2;
+									
+						float my_delta = 0;
+							
+						for (int j = j1; j < j2; j++)
+						{
+							// Run, Thomas, run!
+							float[] alpha = new float[w + 3];
+							float[] beta = new float[w + 3];
+							
+							alpha[1] = 0.25f; beta[1] = 0.25f * (I[0, j + 1] + Inew[0, j - 1]);
+							for (int i = 1; i < w + 2; i++)
+							{
+								alpha[i + 1] = 1.0f / (4 - alpha[i]);
+								float Fi;
+								if (i < w + 1)
+									Fi = I[i, j + 1] + Inew[i, j - 1] - 2 * rho[i - 1, j - 1];
+								else
+									Fi = I[i, j + 1] + Inew[i, j - 1];
+								
+								beta[i + 1] = (Fi + beta[i]) / (4f - alpha[i]);
+							}
+							
+							Inew[w + 1, j] = beta[w + 2];
+							
+							for (int i = w; i >= 0; i--)
+							{
+								double iold = I[i, j];
+								Inew[i, j] = alpha[i + 1] * Inew[i + 1, j] + beta[i + 1];
+								my_delta += (float)Math.Abs(Inew[i, j] - iold);
+							}
+						}
+						
+
+						lock (delta_lock)
+						{
+							delta += my_delta;
+						}
+						
+					});
+				}
+				
+				// Starting vertical threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					thread_data td = new thread_data();
+					td.i1 = (h / threads_num) * q + 1;
+					if (q < threads_num - 1)
+					{
+						td.i2 = (h / threads_num) * (q + 1) + 1;
+					}
+					else
+					{
+						td.i2 = h + 1;
+					}
+					
+					threads[q].Start(td);
+				}
+				
+				// Waiting for vertical threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					threads[q].Join();
+				}				
+				
+				
+				// Restoring Neiman boundary conditions after vertical iterations
+				for (int i = 0; i < w + 2; i++)
+				{
+					Inew[i, 0] = Inew[i, 1];
+					Inew[i, h + 1] = Inew[i, h];
+				}
+				for (int j = 0; j < h + 2; j++)
+				{
+					Inew[0, j] = Inew[1, j];
+					Inew[w + 1, j] = Inew[w, j];
+				}
+				
+				// Controlling the constant after vertical iterations
+				m = 0;
 				for (int i = 0; i < w + 2; i++)
 				for (int j = 0; j < h + 2; j++)
 				{
@@ -696,7 +795,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, pressure * pressure * 10, 0.8 + 0.1 * contrast, 5);
+			float[,] Phi = BuildPhi(H, pressure * pressure, 0.8 + 0.1 * contrast, 5);
 			
 			
 			// Calculating G and div_G
@@ -736,13 +835,17 @@ namespace CatEye.Core
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
 //			double epsilon = 0.00008f;	// TODO: Should be configured somehow...
-			double epsilon = 0.15f;	// TODO: Should be configured somehow...
+			double epsilon = 0.0002f;	// TODO: Should be configured somehow...
 			
+			float delta_prev = 0;
 			SolutionReporter srep = delegate (float delta, float[,] solution)
 			{
 				bool result = false;
-				if (delta < epsilon) result = true;
-				Console.WriteLine(delta);
+				float dpd = Math.Abs(delta - delta_prev) / delta;
+				if (dpd < epsilon) result = true;
+				Console.WriteLine("d = " + delta + ", |d - d_prev| / d = " + dpd);
+				delta_prev = delta;
+				
 				if (step % 30 == 0 || result)
 				{
 					// Draw it
@@ -765,7 +868,7 @@ namespace CatEye.Core
 				
 				if (callback != null)
 				{
-					double progress_new = Math.Min(Math.Log(epsilon + 1) / Math.Log(delta + 1), 0.999);
+					double progress_new = Math.Min(Math.Log(epsilon + 1) / Math.Log(dpd + 1), 0.999);
 					if (progress < progress_new) progress = progress_new;
 					
 					if (!callback(progress))
@@ -777,7 +880,7 @@ namespace CatEye.Core
 			
 			I = SolvePoissonNeiman(div_G, 20000, srep);
 
-			srep(0, I);
+			srep(delta_prev, I);
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
