@@ -849,7 +849,7 @@ namespace CatEye.Core
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
 //			double epsilon = 0.00008f;	// TODO: Should be configured somehow...
-			double epsilon = 0.0002f;	// TODO: Should be configured somehow...
+			double epsilon = 0.001f;	// TODO: Should be configured somehow...
 			
 			float delta_prev = 0;
 			SolutionReporter srep = delegate (float delta, float[,] solution)
@@ -882,7 +882,8 @@ namespace CatEye.Core
 				
 				if (callback != null)
 				{
-					double progress_new = Math.Min(Math.Log(epsilon + 1) / Math.Log(dpd + 1), 0.999);
+					// This formula is found experimentally
+					double progress_new = Math.Min(Math.Pow(epsilon / (dpd + 0.000001), 0.78), 0.999);
 					if (progress < progress_new) progress = progress_new;
 					
 					if (!callback(progress))
