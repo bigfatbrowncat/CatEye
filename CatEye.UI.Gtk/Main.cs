@@ -17,44 +17,41 @@ namespace CatEye
 
 		public static readonly Type[] mStageOperationTypes = new Type[]
 		{
-			typeof(CompressionStageOperation),
+			typeof(HighlightStageOperation),
+			typeof(CompressSharpStageOperation),
 			typeof(BrightnessStageOperation),
-			typeof(LocalContrastStageOperation),
 			typeof(SaturationStageOperation),
 			typeof(ToneStageOperation),
-			typeof(BlackPointStageOperation),
-			//typeof(LimitSizeStageOperation),
+			//typeof(BlackPointStageOperation),		// Incomplete
+			//typeof(LimitSizeStageOperation),		// Incomplete
 			typeof(CrotateStageOperation),
-			typeof(HistogramStageOperation),
-			typeof(HighlightStageOperation)
+			//typeof(HistogramStageOperation),		// Incomplete
 		};
 
 		public static readonly Type[] mStageOperationParametersTypes = new Type[]
 		{
-			typeof(CompressionStageOperationParameters),
+			typeof(HighlightStageOperationParameters),
+			typeof(CompressSharpStageOperationParameters),
 			typeof(BrightnessStageOperationParameters),
-			typeof(LocalContrastStageOperationParameters),
 			typeof(SaturationStageOperationParameters),
 			typeof(ToneStageOperationParameters),
-			typeof(BlackPointStageOperationParameters),
-			//typeof(LimitSizeStageOperationParameters),
+			//typeof(BlackPointStageOperationParameters),		// Incomplete
+			//typeof(LimitSizeStageOperationParameters),		// Incomplete
 			typeof(CrotateStageOperationParameters),
-			typeof(HistogramStageOperationParameters),
-			typeof(HighlightStageOperationParameters)
+			//typeof(HistogramStageOperationParameters),		// Incomplete
 		};
 				
 		public static readonly Type[] mStageOperationParametersWidgetTypes = new Type[]
 		{
-			typeof(CompressionStageOperationParametersWidget),
+			typeof(HighlightStageOperationParametersWidget),
 			typeof(BrightnessStageOperationParametersWidget),
-			typeof(LocalContrastStageOperationParametersWidget),
+			typeof(CompressSharpStageOperationParametersWidget),
 			typeof(SaturationStageOperationParametersWidget),
 			typeof(ToneStageOperationParametersWidget),
-			typeof(BlackPointStageOperationParametersWidget),
-			//typeof(LimitSizeStageOperationParametersWidget),
+			//typeof(BlackPointStageOperationParametersWidget),	// Incomplete
+			//typeof(LimitSizeStageOperationParametersWidget),	// Incomplete
 			typeof(CrotateStageOperationParametersWidget),
-			typeof(HistogramStageOperationParametersWidget),
-			typeof(HighlightStageOperationParametersWidget)
+			//typeof(HistogramStageOperationParametersWidget),	// Incomplete
 		};
 		
 		public static StageOperation StageOperationFactory(StageOperationParameters parameters)

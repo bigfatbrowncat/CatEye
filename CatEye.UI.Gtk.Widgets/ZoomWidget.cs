@@ -69,7 +69,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		private double mValue = 1;
 		private double mMaxValue = 1;
-		private double mMinValue = 0.1;
+		private double mMinValue = 0.05;
 		private bool setting_divider = false;
 		private WarningTooltip mWarningTooltip;
 		private bool mChangingSelf = false;

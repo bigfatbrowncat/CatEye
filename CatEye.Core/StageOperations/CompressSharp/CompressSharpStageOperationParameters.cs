@@ -4,8 +4,8 @@ using System.Globalization;
 
 namespace CatEye.Core
 {
-	[StageOperationID("LocalContrastStageOperation")]
-	public class LocalContrastStageOperationParameters : StageOperationParameters
+	[StageOperationID("CompressSharpStageOperation")]
+	public class CompressSharpStageOperationParameters : StageOperationParameters
 	{
 		public enum SharpType { Sharp, Soft }
 		
@@ -138,19 +138,19 @@ namespace CatEye.Core
 			OnChanged();
 		}
 		
-		public LocalContrastStageOperationParameters ()
+		public CompressSharpStageOperationParameters ()
 		{
 		}
 
 		public override Type GetSOType ()
 		{
-			return typeof(LocalContrastStageOperation);
+			return typeof(CompressSharpStageOperation);
 		}
 
 		public override void CopyDataTo (StageOperationParameters target)
 		{
 			base.CopyDataTo (target);
-			LocalContrastStageOperationParameters t = (LocalContrastStageOperationParameters)target;
+			CompressSharpStageOperationParameters t = (CompressSharpStageOperationParameters)target;
 //			t.mCompression = mCompression;
 			t.mCurve = mCurve;
 			t.mPressure = mPressure;
@@ -161,7 +161,7 @@ namespace CatEye.Core
 		
 		public override object Clone ()
 		{
-			LocalContrastStageOperationParameters target = new LocalContrastStageOperationParameters();
+			CompressSharpStageOperationParameters target = new CompressSharpStageOperationParameters();
 			CopyDataTo(target);
 			return target;
 		}

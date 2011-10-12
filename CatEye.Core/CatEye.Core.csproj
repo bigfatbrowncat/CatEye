@@ -86,8 +86,6 @@
     <Compile Include="StageOperations\StageOperationParameters.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperation.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParameters.cs" />
-    <Compile Include="StageOperations\Compression\CompressionStageOperation.cs" />
-    <Compile Include="StageOperations\Compression\CompressionStageOperationParameters.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperation.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperationParameters.cs" />
     <Compile Include="StageOperations\Tone\ToneStageOperation.cs" />
@@ -111,27 +109,26 @@
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="FloatBitmap.cs" />
     <Compile Include="Attributes.cs" />
-    <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperation.cs" />
-    <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperationParameters.cs" />
     <Compile Include="HistogramCollector.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperation.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperationParameters.cs" />
     <Compile Include="StageOperations\Highlight\HighlightStageOperation.cs" />
     <Compile Include="StageOperations\Highlight\HighlightStageOperationParameters.cs" />
+    <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperation.cs" />
+    <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperationParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="StageOperations\" />
     <Folder Include="StageOperations\Brightness\" />
-    <Folder Include="StageOperations\Compression\" />
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Crotate\" />
     <Folder Include="StageOperations\LimitSize\" />
-    <Folder Include="StageOperations\LocalContrast\" />
     <Folder Include="StageOperations\Histogram\" />
     <Folder Include="StageOperations\Highlight\" />
+    <Folder Include="StageOperations\CompressSharp\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dcraw.c" />
