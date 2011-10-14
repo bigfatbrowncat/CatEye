@@ -344,69 +344,71 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
-		private static float[,] Upsample2(float[,] Q)
+		private static float[,] Upsample2(float[,] Q, int new_w, int new_h)
 		{
 			int w = Q.GetLength(0), h = Q.GetLength(1);
 			
-			float[,] Q2 = new float[2 * w + 1, 2 * h + 1];
-			for (int i = 0; i <= 2 * w; i++)
-			for (int j = 0; j <= 2 * h; j++)
+			float[,] Q2 = new float[new_w, new_h];
+			for (int i = 0; i < new_w; i++)
+			for (int j = 0; j < new_h; j++)
 			{
 				int i2 = i;
-				if (i2 == 2 * w) i2 = 2 * w - 1;
+				if (i2 / 2 >= w) i2 = 2 * w - 1;
 				int j2 = j;
-				if (j2 == 2 * h) j2 = 2 * h - 1;
+				if (j2 / 2 >= h) j2 = 2 * h - 1;
 				
 				Q2[i, j] = Q[i2 / 2, j2 / 2];
 			}
 			
 			// Blurring
-			float[,] Q22 = new float[2 * w + 1, 2 * h + 1];
-			for (int i = 0; i < 2 * w; i++)
-			for (int j = 0; j < 2 * h; j++)
+			float[,] Q22 = new float[new_w, new_h];
+			for (int i = 0; i < new_w - 1; i++)
+			for (int j = 0; j < new_h - 1; j++)
 			{
 				Q22[i, j] = 0;
 				float diver = 0;
 				
-				diver += 0.125f;
+				float mix_k = 0.5f;
+				
+				diver += 0.125f * mix_k;
 				if (i > 0 && j > 0)
 				{
-					Q22[i, j] += 0.125f * Q2[i - 1, j - 1];
+					Q22[i, j] += 0.125f * mix_k * Q2[i - 1, j - 1];
 				}
 				else
 				{
-					Q22[i, j] += 0.125f * Q2[i, j];
+					Q22[i, j] += 0.125f * mix_k * Q2[i, j];
 				}
 					
-				diver += 0.375f;
+				diver += 0.375f * mix_k;
 				if (i > 0)
 				{
-				    Q22[i, j] += 0.25f * Q2[i - 1, j] +
-				                0.125f * Q2[i - 1, j + 1];
+				    Q22[i, j] += 0.25f * mix_k * Q2[i - 1, j] +
+				                0.125f * mix_k * Q2[i - 1, j + 1];
 				}
 				else
 				{
-				    Q22[i, j] += 0.25f * Q2[i, j] +
-				                0.125f * Q2[i, j + 1];
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
+				                0.125f * mix_k * Q2[i, j + 1];
 				}
 				
 				diver += 0.375f;
 				if (j > 0)
 				{
-				    Q22[i, j] += 0.25f * Q2[i, j - 1] +
-					            0.125f * Q2[i + 1, j - 1];
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j - 1] +
+					            0.125f * mix_k * Q2[i + 1, j - 1];
 				}
 				else
 				{
-				    Q22[i, j] += 0.25f * Q2[i, j] +
-					            0.125f * Q2[i + 1, j];
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
+					            0.125f * mix_k * Q2[i + 1, j];
 				}
 				
-				diver += 1.125f;
+				diver += 0.125f * mix_k + 1;
 				Q22[i, j] += Q2[i, j] + 
-				     0.25f * Q2[i + 1, j] +
-				     0.25f * Q2[i, j + 1] +
-				    0.125f * Q2[i + 1, j + 1];
+				     0.25f * mix_k * Q2[i + 1, j] +
+				     0.25f * mix_k * Q2[i, j + 1] +
+				    0.125f * mix_k * Q2[i + 1, j + 1];
 				
 				Q22[i, j] /= diver;
 			}
@@ -419,7 +421,7 @@ namespace CatEye.Core
 			int Hh = H.GetLength(1);
 			
 			int divides = 0, wt = Hw, ht = Hh;
-			while (wt > 32 && ht > 32)
+			while (wt > 64 && ht > 64)
 			{
 				wt /= 2; ht /= 2;
 				divides ++;
@@ -494,7 +496,7 @@ namespace CatEye.Core
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
 					abs_grad_H_cur += 0.001;	// To avoid infinity
 					
-					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha * avg_grad), beta - 1));
+					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / alpha, beta - 1));
 				}
 				phi.Add(phi_k);
 			}
@@ -519,68 +521,7 @@ namespace CatEye.Core
 				
 				if (k > 0)
 				{
-					// Upsampling with squares
-					float[,] Phi_new = new float[2 * w + 1, 2 * h + 1];
-					for (int i = 0; i < w; i++)
-					for (int j = 0; j < h; j++)
-					{
-						Phi_new[2 * i, 2 * j] = Phi[i, j];
-						Phi_new[2 * i + 1, 2 * j] = Phi[i, j];
-						Phi_new[2 * i, 2 * j + 1] = Phi[i, j];
-						Phi_new[2 * i + 1, 2 * j + 1] = Phi[i, j];
-					}
-					
-					// Blurring
-					Phi = new float[2 * w + 1, 2 * h + 1];
-					for (int i = 0; i < 2 * w; i++)
-					for (int j = 0; j < 2 * h; j++)
-					{
-						Phi[i, j] = 0;
-						float diver = 0;
-						
-						diver += 0.125f;
-						if (i > 0 && j > 0)
-						{
-							Phi[i, j] += 0.125f * Phi_new[i - 1, j - 1];
-						}
-						else
-						{
-							Phi[i, j] += 0.125f * Phi_new[i, j];
-						}
-							
-						diver += 0.375f;
-						if (i > 0)
-						{
-						    Phi[i, j] += 0.25f * Phi_new[i - 1, j] +
-						                0.125f * Phi_new[i - 1, j + 1];
-						}
-						else
-						{
-						    Phi[i, j] += 0.25f * Phi_new[i, j] +
-						                0.125f * Phi_new[i, j + 1];
-						}
-						
-						diver += 0.375f;
-						if (j > 0)
-						{
-						    Phi[i, j] += 0.25f * Phi_new[i, j - 1] +
-							            0.125f * Phi_new[i + 1, j - 1];
-						}
-						else
-						{
-						    Phi[i, j] += 0.25f * Phi_new[i, j] +
-							            0.125f * Phi_new[i + 1, j];
-						}
-						
-						diver += 1.125f;
-						Phi[i, j] += Phi_new[i, j] + 
-						     0.25f * Phi_new[i + 1, j] +
-						     0.25f * Phi_new[i, j + 1] +
-						    0.125f * Phi_new[i + 1, j + 1];
-						
-						Phi[i, j] /= diver;
-					}
-					
+					Phi = Upsample2(Phi, 2 * w + 1, 2 * h + 1);
 				}
 			}
 			
@@ -601,18 +542,23 @@ namespace CatEye.Core
 		/// <returns>
 		/// Should return "true" when searching is completed and "false" to continue the process
 		/// </returns>
-		private delegate bool SolutionReporter(float delta, float[,] solution);
+		private delegate void SolutionReporter(float progress, float[,] solution);
 		
-		private static float[,] SolvePoissonNeimanMultiLattice(float[,] rho, int steps_max, SolutionReporter callback)
+		private static float[,] SolvePoissonNeimanMultiLattice(float[,] rho, int steps_max, float stop_dpd, SolutionReporter callback)
 		{
 			// Making lower resolutions
 			int W = rho.GetLength(0);
 			int H = rho.GetLength(1);
 			
+			List<int> ww = new List<int>();
+			List<int> hh = new List<int>();
+			
 			int divides = 0, wt = W, ht = H;
-			while (wt > 32 && ht > 32)
+			ww.Add(wt); hh.Add(ht);
+			while (wt > 64 && ht > 64)
 			{
 				wt /= 2; ht /= 2;
+				ww.Add(wt); hh.Add(ht);
 				divides ++;
 			}
 			
@@ -621,14 +567,15 @@ namespace CatEye.Core
 			
 			for (int p = 1; p <= divides; p++)
 			{
-				int w = Rho[p - 1].GetLength(0);
-				int h = Rho[p - 1].GetLength(1);
+				int w = ww[p - 1];
+				int h = hh[p - 1];
 				
-				float[,] rho_new = new float[w / 2 + 1, h / 2 + 1];
+				float[,] rho_new = new float[ww[p], hh[p]];
 				for (int i = 0; i < w; i++)
 				for (int j = 0; j < h; j++)
 				{
-					rho_new[i / 2, j / 2] += 0.25f * Rho[p - 1][i, j];
+					if (i / 2 < ww[p] && j / 2 < hh[p])
+						rho_new[i / 2, j / 2] += 0.25f * Rho[p - 1][i, j];
 				}
 				
 				Rho.Add(rho_new);
@@ -637,20 +584,38 @@ namespace CatEye.Core
 			float[,] I = new float[Rho[divides].GetLength(0), Rho[divides].GetLength(1)];
 			for (int p = divides; p >= 0; p--)
 			{
-				I = SolvePoissonNeiman(I, Rho[p], steps_max, callback);
+				SolvePoissonNeiman(I, Rho[p], steps_max, stop_dpd, delegate (float progress, float[,] solution)
+				{
+					if (callback != null)
+					{
+						float full_effort = 0;
+						for (int q = divides; q > p; q--)
+							full_effort += (float)ww[q] * hh[q];
+						
+						float full_progress = (full_effort + ww[p] * hh[p] * progress) / 
+							(full_effort + ww[p] * hh[p]);
+						
+						Console.WriteLine(full_effort + "; " + full_progress);
+						
+						callback(full_progress, solution);
+					}
+					
+				});
+				
 				if (p > 0)
 				{
-					I = Upsample2(I);
+					I = Upsample2(I, ww[p - 1], hh[p - 1]);
 				}
 			}
 			
 			return I;
 		}
 		
-		private static float[,] SolvePoissonNeiman(float[,] I0, float[,] rho, int steps_max, SolutionReporter callback)
+		private static bool SolvePoissonNeiman(float[,] I0, float[,] rho, int steps_max, float stop_dpd, SolutionReporter callback)
 		{
 			int w = rho.GetLength(0), h = rho.GetLength(1);
 			float[,] I = new float[w + 2, h + 2];
+			float[,] Inew = new float[w + 2, h + 2];
 			
 			// Setting initial values
 			for (int i = 0; i < w + 2; i++)
@@ -664,11 +629,11 @@ namespace CatEye.Core
 				if (j == h + 1) j1 = h;
 				
 				I[i, j] = I0[i1 - 1, j1 - 1];
+				Inew[i, j] = I0[i1 - 1, j1 - 1];
 			}						
 			
-			float[,] Inew = new float[w + 2, h + 2];
 			
-			float delta = 0;
+			float delta = 0; float delta_prev = 10000;
 			object delta_lock = new object();
 			for (int step = 0; step < steps_max; step ++)
 			{
@@ -880,19 +845,24 @@ namespace CatEye.Core
 					I0[i - 1, j - 1] = I[i, j];
 				}
 				
+				delta /= (float)Math.Sqrt(w * h);
+				float dpd = Math.Abs(delta - delta_prev) / delta;
+				float progress = (float)Math.Min(Math.Pow(stop_dpd / (dpd + 0.000001), 0.78), 0.999);
+
 				if (callback != null)
 				{
-					delta /= (float)Math.Sqrt(w * h);
-					if (callback(delta, I0))
-					{
-						break;
-					}
-					delta = 0;
+					callback(progress, I0);
 				}
-			
+				
+				if (Math.Abs(delta - delta_prev) / delta < stop_dpd)
+				{
+					return true;
+				}
+				delta_prev = delta;
+				delta = 0;
 			}
 			
-			return I0;
+			return false;
 		}
 		
 		public unsafe void SharpenLight(double curve, double contrast, double pressure, ProgressReporter callback)
@@ -941,7 +911,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1 * pressure * pressure, 0.8 + 0.1 * contrast);
+			float[,] Phi = BuildPhi(H, 0.01 * pressure * pressure, 0.8 + 0.1 * contrast);
 			
 			
 			// Calculating G and div_G
@@ -977,33 +947,32 @@ namespace CatEye.Core
 			// Solving Poisson equation Delta I = div G
 			float[,] I;
 			int step = 0;
-			double progress = 0;
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
 //			double epsilon = 0.1f;	// TODO: Should be configured somehow...
-			double epsilon = 0.001f;	// TODO: Should be configured somehow...
+			float epsilon = 0.002f;	// TODO: Should be configured somehow...
 			
 			float delta_prev = 0;
-			SolutionReporter srep = delegate (float delta, float[,] solution)
+			SolutionReporter srep = delegate (float progress, float[,] solution)
 			{
-				bool result = false;
-				float dpd = Math.Abs(delta - delta_prev) / delta;
-				if (dpd < epsilon) result = true;
-				Console.WriteLine("d = " + delta + ", |d - d_prev| / d = " + dpd);
-				delta_prev = delta;
-				
-				if (step % 30 == 0 || result)
+				if (step % 30 == 0 || progress > 0.999)
 				{
+					double kw = H.GetLength(0) / solution.GetLength(0);
+					double kh = H.GetLength(1) / solution.GetLength(1);
+					
 					// Draw it
-					for (int i = 0; i < Math.Min(solution.GetLength(0), H.GetLength(0)); i++)
-					for (int j = 0; j < Math.Min(solution.GetLength(1), H.GetLength(1)); j++)
+					for (int i = 0; i < mWidth; i++)
+					for (int j = 0; j < mHeight; j++)
 					{
 	
 						double Lold = Math.Exp(H[i, j]);
 						
 						double Lcomp = Math.Log(p * (Math.Exp(a * Lold) - 1.0) + 1.0) / b;
 						
-						double L = Math.Exp(10 * solution[i, j]) * Lcomp;
+						int i1 = (int)(Math.Min (i / kw, solution.GetLength(0) - 1));
+						int j1 = (int)(Math.Min (j / kh, solution.GetLength(1) - 1));
+						
+						double L = Math.Exp(solution[i1, j1]) * Lcomp;
 						
 						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
 						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
@@ -1015,19 +984,15 @@ namespace CatEye.Core
 				if (callback != null)
 				{
 					// This formula is found experimentally
-					double progress_new = Math.Min(Math.Pow(epsilon / (dpd + 0.000001), 0.78), 0.999);
-					if (progress < progress_new) progress = progress_new;
-					
 					if (!callback(progress))
 						throw new UserCancelException();
 				}
 			
-				return result;
 			};
 			
-			I = SolvePoissonNeimanMultiLattice(div_G, 20000, srep);
+			I = SolvePoissonNeimanMultiLattice(div_G, 20000, epsilon, srep);
 
-			srep(delta_prev, I);
+			srep(1, I);
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
