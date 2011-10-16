@@ -55,7 +55,6 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.StageOperationTitleWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.ZoomWidget.cs" />
     <Compile Include="FloatBitmapGtk.cs" />
-    <Compile Include="StageOperations\Compression\CompressionStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Brightness\BrightnessStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\StageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Saturation\SaturationStageOperationParametersWidget.cs" />
@@ -65,7 +64,6 @@
     <Compile Include="StageOperations\Scale\LimitSizeStageOperationParametersWidget.cs" />
     <Compile Include="StageOperationHolderWidget.cs" />
     <Compile Include="FrozenPanel.cs" />
-    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.CompressionStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.BrightnessStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.SaturationStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.ToneStageOperationParametersWidget.cs" />
@@ -80,13 +78,13 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.RawPreviewWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.PreScaleSelectorWidget.cs" />
     <Compile Include="ForeColoredSymbol.cs" />
-    <Compile Include="StageOperations\LocalContrast\LocalContrastStageOperationParametersWidget.cs" />
-    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.LocalContrastStageOperationParametersWidget.cs" />
     <Compile Include="FontHelpers.cs" />
     <Compile Include="StageOperations\Histogram\HistogramStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.HistogramStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\Highlight\HighlightStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.HighlightStageOperationParametersWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.CompressSharpStageOperationParametersWidget.cs" />
+    <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperationParametersWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -123,16 +121,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />
-    <Folder Include="StageOperations\Compression\" />
     <Folder Include="StageOperations\Brightness\" />
     <Folder Include="StageOperations\Tone\" />
     <Folder Include="StageOperations\Saturation\" />
     <Folder Include="StageOperations\BlackPoint\" />
     <Folder Include="StageOperations\Scale\" />
     <Folder Include="StageOperations\Crotate\" />
-    <Folder Include="StageOperations\LocalContrast\" />
     <Folder Include="StageOperations\Histogram\" />
     <Folder Include="StageOperations\Highlight\" />
+    <Folder Include="StageOperations\CompressSharp\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\src\chain.svg" />

@@ -344,98 +344,163 @@ namespace CatEye.Core
 			public int i1, i2;
 		}
 		
-		private float[,] BuildPhi(float[,] H, double alpha, double beta, int dn)
+		private static float[,] Upsample2(float[,] Q, int new_w, int new_h)
+		{
+			int w = Q.GetLength(0), h = Q.GetLength(1);
+			
+			float[,] Q2 = new float[new_w, new_h];
+			for (int i = 0; i < new_w; i++)
+			for (int j = 0; j < new_h; j++)
+			{
+				int i2 = i;
+				if (i2 / 2 >= w) i2 = 2 * w - 1;
+				int j2 = j;
+				if (j2 / 2 >= h) j2 = 2 * h - 1;
+				
+				Q2[i, j] = Q[i2 / 2, j2 / 2];
+			}
+			
+			// Blurring
+			float[,] Q22 = new float[new_w, new_h];
+			for (int i = 0; i < new_w - 1; i++)
+			for (int j = 0; j < new_h - 1; j++)
+			{
+				Q22[i, j] = 0;
+				float diver = 0;
+				
+				float mix_k = 0.5f;
+				
+				diver += 0.125f * mix_k;
+				if (i > 0 && j > 0)
+				{
+					Q22[i, j] += 0.125f * mix_k * Q2[i - 1, j - 1];
+				}
+				else
+				{
+					Q22[i, j] += 0.125f * mix_k * Q2[i, j];
+				}
+					
+				diver += 0.375f * mix_k;
+				if (i > 0)
+				{
+				    Q22[i, j] += 0.25f * mix_k * Q2[i - 1, j] +
+				                0.125f * mix_k * Q2[i - 1, j + 1];
+				}
+				else
+				{
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
+				                0.125f * mix_k * Q2[i, j + 1];
+				}
+				
+				diver += 0.375f;
+				if (j > 0)
+				{
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j - 1] +
+					            0.125f * mix_k * Q2[i + 1, j - 1];
+				}
+				else
+				{
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
+					            0.125f * mix_k * Q2[i + 1, j];
+				}
+				
+				diver += 0.125f * mix_k + 1;
+				Q22[i, j] += Q2[i, j] + 
+				     0.25f * mix_k * Q2[i + 1, j] +
+				     0.25f * mix_k * Q2[i, j + 1] +
+				    0.125f * mix_k * Q2[i + 1, j + 1];
+				
+				Q22[i, j] /= diver;
+			}
+			return Q22;
+		}
+		
+		private float[,] BuildPhi(float[,] H, double alpha, double beta)
 		{
 			int Hw = H.GetLength(0);
 			int Hh = H.GetLength(1);
 			
-			// Building H0
-			int size = Math.Max(Hw, Hh);
-			int K = (int)(Math.Log(size, 2)) + 1;
-			int new_size = (int)(Math.Round (Math.Pow(2, K)));
+			int divides = 0, wt = Hw, ht = Hh;
+			while (wt > 64 && ht > 64)
+			{
+				wt /= 2; ht /= 2;
+				divides ++;
+			}
 			
-			float[,] H_cur = new float[new_size, new_size];
+			// Building H0
+			float[,] H_cur = new float[Hw, Hh];
 			for (int i = 0; i < Hw; i++)
 			for (int j = 0; j < Hh; j++)
 			{
 				H_cur[i, j] = H[i, j];
 			}
 			
-			for (int i = Hw; i < new_size; i++)
-			for (int j = 0; j < Hh; j++)
-			{
-				H_cur[i, j] = H_cur[Hw, j];
-			}
-			
-			for (int i = 0; i < Hw; i++)
-			for (int j = Hh; j < new_size; j++)
-			{
-				H_cur[i, j] = H_cur[i, Hh];
-			}
-			
-			double avg_grad_H0 = 0;
-			
 			// Building phi_k			
 			List<float[,]> phi = new List<float[,]>();
 
-			for (int k = 0; k <= K - dn; k++)	      // k is the index of H_cur
+			for (int k = 0; k <= divides; k++)	      // k is the index of H_cur
 			{
-				int k_size = (int)(new_size / Math.Pow(2, k));
+				float avg_grad = 0;
+
+				int w = (int)(Hw / Math.Pow(2, k));
+				int h = (int)(Hh / Math.Pow(2, k));
 	
 				if (k > 0)
 				{
 					// Calculating the new H_cur
-					float[,] H_cur_new = new float[k_size, k_size];
-					for (int i = 0; i < k_size; i++)
-					for (int j = 0; j < k_size; j++)
+					float[,] H_cur_new = new float[w, h];
+					for (int i = 0; i < w; i++)
+					for (int j = 0; j < h; j++)
 					{
-						H_cur_new[i, j] = (float)(0.25 * (H_cur[2 * i, 2 * j] + H_cur[2 * i + 1, 2 * j] +
+						H_cur_new[i, j] = (float)(0.25 * (H_cur[2 * i, 2 * j]     + H_cur[2 * i + 1, 2 * j] +
 						                                  H_cur[2 * i, 2 * j + 1] + H_cur[2 * i + 1, 2 * j + 1]));
 					}
 					H_cur = H_cur_new;
 				}
 				
 				// Calculating grad_H_cur
-				float[,] grad_H_cur_x = new float[k_size, k_size];
-				float[,] grad_H_cur_y = new float[k_size, k_size];
-				for (int i = 0; i < k_size - 1; i++)
-				for (int j = 0; j < k_size - 1; j++)
+				float[,] grad_H_cur_x = new float[w, h];
+				float[,] grad_H_cur_y = new float[w, h];
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
 				{
-					if (k_size == 1)
+					if (w == 1 || h == 1)
 					{
 						grad_H_cur_x[i, j] = 0; 
 						grad_H_cur_y[i, j] = 0;
 					}
 					else
-					{					
-						grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
-						grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
+					{
+						if (i < w - 1)
+							grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
+						else
+							grad_H_cur_x[i, j] = (float)((H_cur[i, j] - H_cur[i - 1, j]) / Math.Pow(2, k));
 						
-						if (k == 0)
-						{
-							avg_grad_H0 += Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
-							                         grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-						}
+						if (j < h - 1)
+							grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
+						else
+							grad_H_cur_y[i, j] = (float)((H_cur[i, j] - H_cur[i, j - 1]) / Math.Pow(2, k));
+						
+						avg_grad += (float)Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
+						                             grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
 					}
 				}	
-				if (k == 0)
-				{
-					avg_grad_H0 /= (k_size - 1) * (k_size - 1);
-				}
-				
+
 				// Calculating phi_k
-				float[,] phi_k = new float[H_cur.GetLength(0), H_cur.GetLength(1)];
-				for (int i = 0; i < phi_k.GetLength(0); i++)
-				for (int j = 0; j < phi_k.GetLength(1); j++)
+				avg_grad /= w * h;
+				float[,] phi_k = new float[w, h];
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
 				{
 					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-					abs_grad_H_cur += 0.000001;	// To avoid infinity
+					abs_grad_H_cur += 0.001;	// To avoid infinity
 					
-					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / (alpha * avg_grad_H0), beta - 1));
+					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / alpha, beta - 1));
 				}
 				phi.Add(phi_k);
 			}
+			
 			
 			// Building Phi from phi_k
 			float[,] Phi = new float[phi[phi.Count - 1].GetLength(0), phi[phi.Count - 1].GetLength(1)];
@@ -443,83 +508,20 @@ namespace CatEye.Core
 			for (int j = 0; j < Phi.GetLength(1); j++)
 				Phi[i, j] = 1;
 			
-			for (int k = K - dn; k >= 0; k--)
+			for (int k = divides; k >= 0; k--)
 			{
-				int cur_size = Phi.GetLength(0);
+				int w = phi[k].GetLength(0);
+				int h = phi[k].GetLength(1);
 				// Multiplying
-				for (int i = 0; i < cur_size; i++)
-				for (int j = 0; j < cur_size; j++)
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
 				{
 					Phi[i, j] *= phi[k][i, j];
 				}
 				
 				if (k > 0)
 				{
-					// Upsampling with squares
-					float[,] Phi_new = new float[2 * cur_size, 2 * cur_size];
-					for (int i = 0; i < cur_size; i++)
-					for (int j = 0; j < cur_size; j++)
-					{
-						Phi_new[2 * i, 2 * j] = Phi[i, j];
-						Phi_new[2 * i + 1, 2 * j] = Phi[i, j];
-						Phi_new[2 * i, 2 * j + 1] = Phi[i, j];
-						Phi_new[2 * i + 1, 2 * j + 1] = Phi[i, j];
-					}
-					
-					// Blurring
-					Phi = new float[2 * cur_size, 2 * cur_size];
-					for (int i = 0; i < 2 * cur_size - 1; i++)
-					for (int j = 0; j < 2 * cur_size - 1; j++)
-					{
-						Phi[i, j] = 0;
-						float diver = 0;
-						
-						if (i > 0 && j > 0)
-						{
-							diver += 0.25f;
-							Phi[i, j] += 0.25f * Phi_new[i - 1, j - 1];
-						}
-						else
-						{
-							diver += 0.25f;
-							Phi[i, j] += 0.25f * Phi_new[i, j];
-						}
-							
-						if (i > 0)
-						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i - 1, j] +
-						                0.25f * Phi_new[i - 1, j + 1];
-						}
-						else
-						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j] +
-						                0.25f * Phi_new[i, j + 1];
-						}
-						
-						if (j > 0)
-						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j - 1] +
-							            0.25f * Phi_new[i + 1, j - 1];
-						}
-						else
-						{
-							diver += 0.75f;
-						    Phi[i, j] += 0.5f * Phi_new[i, j] +
-							            0.25f * Phi_new[i + 1, j];
-						}
-						
-						diver += 2.25f;
-						Phi[i, j] += Phi_new[i, j] + 
-						      0.5f * Phi_new[i + 1, j] +
-						      0.5f * Phi_new[i, j + 1] +
-						     0.25f * Phi_new[i + 1, j + 1];
-						
-						Phi[i, j] /= diver;
-					}
-					
+					Phi = Upsample2(Phi, 2 * w + 1, 2 * h + 1);
 				}
 			}
 			
@@ -534,26 +536,182 @@ namespace CatEye.Core
 			return Phi_cut;
 		}
 		
+		/// <summary>
+		/// Solution reporter.
+		/// </summary>
+		/// <returns>
+		/// Should return "true" when searching is completed and "false" to continue the process
+		/// </returns>
 		private delegate void SolutionReporter(float progress, float[,] solution);
-		private static float[,] SolvePoissonNeiman(float[,] rho, int steps, SolutionReporter callback)
+		
+		private static float[,] SolvePoissonNeimanMultiLattice(float[,] rho, int steps_max, float stop_dpd, SolutionReporter callback)
+		{
+			// Making lower resolutions
+			int W = rho.GetLength(0);
+			int H = rho.GetLength(1);
+			
+			List<int> ww = new List<int>();
+			List<int> hh = new List<int>();
+			
+			int divides = 0, wt = W, ht = H;
+			ww.Add(wt); hh.Add(ht);
+			while (wt > 64 && ht > 64)
+			{
+				wt /= 2; ht /= 2;
+				ww.Add(wt); hh.Add(ht);
+				divides ++;
+			}
+			
+			List<float[,]> Rho = new List<float[,]>();
+			Rho.Add(rho);
+			
+			for (int p = 1; p <= divides; p++)
+			{
+				int w = ww[p - 1];
+				int h = hh[p - 1];
+				
+				float[,] rho_new = new float[ww[p], hh[p]];
+				for (int i = 0; i < w; i++)
+				for (int j = 0; j < h; j++)
+				{
+					if (i / 2 < ww[p] && j / 2 < hh[p])
+						rho_new[i / 2, j / 2] += 0.25f * Rho[p - 1][i, j];
+				}
+				
+				Rho.Add(rho_new);
+			}
+		
+			float[,] I = new float[Rho[divides].GetLength(0), Rho[divides].GetLength(1)];
+			for (int p = divides; p >= 0; p--)
+			{
+				SolvePoissonNeiman(I, Rho[p], steps_max, stop_dpd, delegate (float progress, float[,] solution)
+				{
+					if (callback != null)
+					{
+						float full_effort = 0;
+						for (int q = divides; q > p; q--)
+							full_effort += (float)ww[q] * hh[q];
+						
+						float full_progress = (full_effort + ww[p] * hh[p] * progress) / 
+							(full_effort + ww[p] * hh[p]);
+						
+						Console.WriteLine(full_effort + "; " + full_progress);
+						
+						callback(full_progress, solution);
+					}
+					
+				});
+				
+				if (p > 0)
+				{
+					I = Upsample2(I, ww[p - 1], hh[p - 1]);
+				}
+			}
+			
+			return I;
+		}
+		
+		private static bool SolvePoissonNeiman(float[,] I0, float[,] rho, int steps_max, float stop_dpd, SolutionReporter callback)
 		{
 			int w = rho.GetLength(0), h = rho.GetLength(1);
 			float[,] I = new float[w + 2, h + 2];
-			
-			// Initial conditions are zeroes
-			
 			float[,] Inew = new float[w + 2, h + 2];
-			for (int step = 0; step < steps; step ++)
+			
+			// Setting initial values
+			for (int i = 0; i < w + 2; i++)
+			for (int j = 0; j < h + 2; j++)
 			{
+				int i1 = i;
+				if (i == 0) i1 = 1;
+				if (i == w + 1) i1 = w;
+				int j1 = j;
+				if (j == 0) j1 = 1;
+				if (j == h + 1) j1 = h;
 				
-				// Applying the difference scheme
-				for (int i = 1; i < w + 1; i++)
-				for (int j = 1; j < h + 1; j++)
+				I[i, j] = I0[i1 - 1, j1 - 1];
+				Inew[i, j] = I0[i1 - 1, j1 - 1];
+			}						
+			
+			
+			float delta = 0; float delta_prev = 10000;
+			object delta_lock = new object();
+			for (int step = 0; step < steps_max; step ++)
+			{
+				// *** Horizontal iterations ***
+				int threads_num = 4;
+				Thread[] threads = new Thread[threads_num];
+				
+				for (int q = 0; q < threads_num; q++)
 				{
-					Inew[i, j] = 0.25f * (I[i + 1, j] + I[i - 1, j] + I[i, j + 1] + I[i, j - 1] - 2 * rho[i - 1, j - 1]);
+					threads[q] = new Thread(delegate (object obj)
+					{
+						int i1 = ((thread_data)obj).i1;
+						int i2 = ((thread_data)obj).i2;
+									
+						float my_delta = 0;
+							
+						for (int i = i1; i < i2; i++)
+						{
+							// Run, Thomas, run!
+							float[] alpha = new float[h + 3];
+							float[] beta = new float[h + 3];
+							
+							alpha[1] = 0.25f; beta[1] = 0.25f * (I[i + 1, 0] + Inew[i - 1, 0]);
+							for (int j = 1; j < h + 2; j++)
+							{
+								alpha[j + 1] = 1.0f / (4 - alpha[j]);
+								float Fj;
+								if (j < h + 1)
+									Fj = I[i + 1, j] + Inew[i - 1, j] - 2 * rho[i - 1, j - 1];
+								else
+									Fj = I[i + 1, j] + Inew[i - 1, j];
+								
+								beta[j + 1] = (Fj + beta[j]) / (4f - alpha[j]);
+							}
+							
+							Inew[i, h + 1] = beta[h + 2];
+							
+							for (int j = h; j >= 0; j--)
+							{
+								double iold = I[i, j];
+								Inew[i, j] = alpha[j + 1] * Inew[i, j + 1] + beta[j + 1];
+								my_delta += (float)Math.Abs(Inew[i, j] - iold);
+							}
+						}
+						
+
+						lock (delta_lock)
+						{
+							delta += my_delta;
+						}
+						
+					});
 				}
 				
-				// Restoring Neiman boundary conditions
+				// Starting horizontal threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					thread_data td = new thread_data();
+					td.i1 = (w / threads_num) * q + 1;
+					if (q < threads_num - 1)
+					{
+						td.i2 = (w / threads_num) * (q + 1) + 1;
+					}
+					else
+					{
+						td.i2 = w + 1;
+					}
+					
+					threads[q].Start(td);
+				}
+				
+				// Waiting for horizontal threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					threads[q].Join();
+				}
+				
+				// Restoring Neiman boundary conditions after horizontal iterations
 				for (int i = 0; i < w + 2; i++)
 				{
 					Inew[i, 0] = Inew[i, 1];
@@ -565,8 +723,109 @@ namespace CatEye.Core
 					Inew[w + 1, j] = Inew[w, j];
 				}
 				
-				// Controlling the constant
+				// Controlling the constant after horizontal iterations
 				float m = 0;
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
+				{
+					m += Inew[i, j];
+				}
+				m /= (w+2) * (h+2);
+
+				for (int i = 0; i < w + 2; i++)
+				for (int j = 0; j < h + 2; j++)
+				{
+					I[i, j] = Inew[i, j] - m;
+				}				
+			
+				// *** Vertical iterations ***
+				threads = new Thread[threads_num];
+				
+				for (int q = 0; q < threads_num; q++)
+				{
+					threads[q] = new Thread(delegate (object obj)
+					{
+						int j1 = ((thread_data)obj).i1;
+						int j2 = ((thread_data)obj).i2;
+									
+						float my_delta = 0;
+							
+						for (int j = j1; j < j2; j++)
+						{
+							// Run, Thomas, run!
+							float[] alpha = new float[w + 3];
+							float[] beta = new float[w + 3];
+							
+							alpha[1] = 0.25f; beta[1] = 0.25f * (I[0, j + 1] + Inew[0, j - 1]);
+							for (int i = 1; i < w + 2; i++)
+							{
+								alpha[i + 1] = 1.0f / (4 - alpha[i]);
+								float Fi;
+								if (i < w + 1)
+									Fi = I[i, j + 1] + Inew[i, j - 1] - 2 * rho[i - 1, j - 1];
+								else
+									Fi = I[i, j + 1] + Inew[i, j - 1];
+								
+								beta[i + 1] = (Fi + beta[i]) / (4f - alpha[i]);
+							}
+							
+							Inew[w + 1, j] = beta[w + 2];
+							
+							for (int i = w; i >= 0; i--)
+							{
+								double iold = I[i, j];
+								Inew[i, j] = alpha[i + 1] * Inew[i + 1, j] + beta[i + 1];
+								my_delta += (float)Math.Abs(Inew[i, j] - iold);
+							}
+						}
+						
+
+						lock (delta_lock)
+						{
+							delta += my_delta;
+						}
+						
+					});
+				}
+				
+				// Starting vertical threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					thread_data td = new thread_data();
+					td.i1 = (h / threads_num) * q + 1;
+					if (q < threads_num - 1)
+					{
+						td.i2 = (h / threads_num) * (q + 1) + 1;
+					}
+					else
+					{
+						td.i2 = h + 1;
+					}
+					
+					threads[q].Start(td);
+				}
+				
+				// Waiting for vertical threads
+				for (int q = 0; q < threads_num; q++)
+				{
+					threads[q].Join();
+				}				
+				
+				
+				// Restoring Neiman boundary conditions after vertical iterations
+				for (int i = 0; i < w + 2; i++)
+				{
+					Inew[i, 0] = Inew[i, 1];
+					Inew[i, h + 1] = Inew[i, h];
+				}
+				for (int j = 0; j < h + 2; j++)
+				{
+					Inew[0, j] = Inew[1, j];
+					Inew[w + 1, j] = Inew[w, j];
+				}
+				
+				// Controlling the constant after vertical iterations
+				m = 0;
 				for (int i = 0; i < w + 2; i++)
 				for (int j = 0; j < h + 2; j++)
 				{
@@ -580,17 +839,33 @@ namespace CatEye.Core
 					I[i, j] = Inew[i, j] - m;
 				}
 				
-				if (callback != null && step % 10 == 0)
+				for (int i = 1; i < w + 1; i++)
+				for (int j = 1; j < h + 1; j++)
 				{
-					callback((float)step / steps, I);
+					I0[i - 1, j - 1] = I[i, j];
 				}
-			
+				
+				delta /= (float)Math.Sqrt(w * h);
+				float dpd = Math.Abs(delta - delta_prev) / delta;
+				float progress = (float)Math.Min(Math.Pow(stop_dpd / (dpd + 0.000001), 0.78), 0.999);
+
+				if (callback != null)
+				{
+					callback(progress, I0);
+				}
+				
+				if (Math.Abs(delta - delta_prev) / delta < stop_dpd)
+				{
+					return true;
+				}
+				delta_prev = delta;
+				delta = 0;
 			}
 			
-			return I;
+			return false;
 		}
 		
-		public unsafe void SharpenLight(double radius_part, double pressure, double anticrown, int points, ProgressReporter callback)
+		public unsafe void SharpenLight(double curve, double contrast, double pressure, ProgressReporter callback)
 		{
 			
 			float[,] oldr = r_chan; 
@@ -636,56 +911,88 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.1, 0.85, 6);
+			float[,] Phi = BuildPhi(H, 0.01 * pressure * pressure, 0.8 + 0.1 * contrast);
 			
 			
 			// Calculating G and div_G
 			float[,] div_G = new float[Hw, Hh];
-			for (int i = 1; i < Hw; i++)
-			for (int j = 1; j < Hh; j++)
+			for (int i = 0; i < Hw - 1; i++)
+			for (int j = 0; j < Hh - 1; j++)
 			{
 				float G_x_ij = grad_H_x[i, j] * Phi[i, j];
 				float G_y_ij = grad_H_y[i, j] * Phi[i, j];
 				
-				float G_x_im1j = grad_H_x[i - 1, j] * Phi[i - 1, j];
-				float G_y_ijm1 = grad_H_y[i, j - 1] * Phi[i, j - 1];
+				float G_x_ip1j = grad_H_x[i + 1, j] * Phi[i + 1, j];
+				float G_y_ijp1 = grad_H_y[i, j + 1] * Phi[i, j + 1];
 				
-				div_G[i, j] = G_x_ij - G_x_im1j + G_y_ij - G_y_ijm1;
+				div_G[i, j] = - (G_x_ij - G_x_ip1j + G_y_ij - G_y_ijp1);
 			}
 
-			double s = 0.5;
+			// Preparing the compressor
+			
+			double a, b;
+			if (curve > 0)
+			{
+				a = Math.Log(2);
+				b = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			else
+			{
+				b = Math.Log(2);
+				a = Math.Log(1.0 + Math.Pow(100, Math.Abs(curve * 1.5)));
+			}
+			double p = Math.Pow(100, curve * 1.5);
+
 			
 			// Solving Poisson equation Delta I = div G
 			float[,] I;
-			I = SolvePoissonNeiman(div_G, 15000, delegate (float progress, float[,] solution)
+			int step = 0;
+			
+//			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
+//			double epsilon = 0.1f;	// TODO: Should be configured somehow...
+			float epsilon = 0.002f;	// TODO: Should be configured somehow...
+			
+			float delta_prev = 0;
+			SolutionReporter srep = delegate (float progress, float[,] solution)
 			{
-				I = solution;
-
-				for (int i = 0; i < mWidth; i++)
-				for (int j = 0; j < mHeight; j++)
+				if (step % 30 == 0 || progress > 0.999)
 				{
-					double Lold = Math.Exp(H[i, j]);
-					double L = Math.Exp(4 * anticrown * I[i, j] - 1);
+					double kw = H.GetLength(0) / solution.GetLength(0);
+					double kh = H.GetLength(1) / solution.GetLength(1);
 					
-					L = L * pressure / 100 + Lold * (1 - pressure / 100);
-					
-					r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
-					g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
-					b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
-					
-					//r_chan[i, j] = (float)(Math.Pow(oldr[i, j] / (Lold + 0.00001), s) * L);
-					//g_chan[i, j] = (float)(Math.Pow(oldg[i, j] / (Lold + 0.00001), s) * L);
-					//b_chan[i, j] = (float)(Math.Pow(oldb[i, j] / (Lold + 0.00001), s) * L);
-					
+					// Draw it
+					for (int i = 0; i < mWidth; i++)
+					for (int j = 0; j < mHeight; j++)
+					{
+	
+						double Lold = Math.Exp(H[i, j]);
+						
+						double Lcomp = Math.Log(p * (Math.Exp(a * Lold) - 1.0) + 1.0) / b;
+						
+						int i1 = (int)(Math.Min (i / kw, solution.GetLength(0) - 1));
+						int j1 = (int)(Math.Min (j / kh, solution.GetLength(1) - 1));
+						
+						double L = Math.Exp(solution[i1, j1]) * Lcomp;
+						
+						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
+						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
+						b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
+					}
 				}
+				step ++;
 				
 				if (callback != null)
 				{
+					// This formula is found experimentally
 					if (!callback(progress))
 						throw new UserCancelException();
 				}
 			
-			});
+			};
+			
+			I = SolvePoissonNeimanMultiLattice(div_G, 20000, epsilon, srep);
+
+			srep(1, I);
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)

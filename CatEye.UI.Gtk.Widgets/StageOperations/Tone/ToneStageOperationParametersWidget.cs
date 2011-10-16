@@ -228,6 +228,7 @@ namespace CatEye.UI.Gtk.Widgets
 			
 			
 			Gdk.GC gc = new Gdk.GC(target);
+			
 			gc.Function = Gdk.Function.Copy;
 			
 			if (pms.AutoDarkTone)

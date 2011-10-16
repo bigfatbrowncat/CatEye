@@ -16,7 +16,7 @@ namespace CatEye.UI.Gtk.Widgets
 			set
 			{ 
 				_Title = value;
-				title_label.Markup = "<b>" + _Title + "</b>"; 
+				title_label.Markup = "<b>" + _Title.Replace("&", "&amp;") + "</b>"; 
 			}
 		}
 		

@@ -12,6 +12,5 @@
     <Point X="0" Y="0" Name="AutoLightCenter" />
   </StageOperationParameters>
   <StageOperationParameters ID="SaturationStageOperation" Active="False" Saturation="1" />
-  <StageOperationParameters ID="CompressionStageOperation" Active="True" Curve="0.5" />
-  <StageOperationParameters ID="LocalContrastStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
+  <StageOperationParameters ID="CompressSharpStageOperation" Active="True" Pressure="20" Contrast="0.4" Radius="0.1" SharpType="sharp" />
 </Stage>
