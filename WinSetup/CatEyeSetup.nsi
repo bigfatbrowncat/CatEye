@@ -294,6 +294,21 @@ Function un.ResDelete
 FunctionEnd
 
 ;--------------------------------
+
+!macro UnRegisterExtension extenstion
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+   ; default application for current user (for NT6.0 and newer)
+   GetVersion::WindowsVersion
+   Pop $winver
+   ${If} $winver >= "6.0"
+     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
+   ${EndIf}
+!macroend
+
+
 Section "un.Installer section"
   
   SetShellVarContext all
@@ -345,15 +360,3 @@ Section "un.Installer section"
   
 SectionEnd
 
-!macro UnRegisterExtension extenstion
-  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
-   ; default application for current user (for NT6.0 and newer)
-   GetVersion::WindowsVersion
-   Pop $winver
-   ${If} $winver >= "6.0"
-     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
-   ${EndIf}
-!macroend
