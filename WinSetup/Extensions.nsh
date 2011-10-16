@@ -55,83 +55,83 @@ Function ExtensionsCreate
     
     ${NSD_LV_InsertItem}  $listview 0   ""
     ${NSD_LV_SetItemText} $listview 0 1 ".CR2"
-    ${NSD_LV_SetItemText} $listview 0 2 "Canon camera raw file"
+    ${NSD_LV_SetItemText} $listview 0 2 "$(cr2_description)"
     
     ${NSD_LV_InsertItem}  $listview 1   ""
     ${NSD_LV_SetItemText} $listview 1 1 ".CRW"
-    ${NSD_LV_SetItemText} $listview 1 2 "Canon camera raw file"
+    ${NSD_LV_SetItemText} $listview 1 2 "$(crw_description)"
     
     ${NSD_LV_InsertItem}  $listview 2   ""
     ${NSD_LV_SetItemText} $listview 2 1 ".PEF"
-    ${NSD_LV_SetItemText} $listview 2 2 "Pentax camera raw file"
+    ${NSD_LV_SetItemText} $listview 2 2 "$(pef_description)"
     
     ${NSD_LV_InsertItem}  $listview 3   ""
     ${NSD_LV_SetItemText} $listview 3 1 ".PTX"
-    ${NSD_LV_SetItemText} $listview 3 2 "Pentax camera raw file"
+    ${NSD_LV_SetItemText} $listview 3 2 "$(ptx_description)"
     
     ${NSD_LV_InsertItem}  $listview 4   ""
     ${NSD_LV_SetItemText} $listview 4 1 ".NEF"
-    ${NSD_LV_SetItemText} $listview 4 2 "Nicon camera raw file"
+    ${NSD_LV_SetItemText} $listview 4 2 "$(nef_description)"
     
     ${NSD_LV_InsertItem}  $listview 5   ""
     ${NSD_LV_SetItemText} $listview 5 1 ".NRF"
-    ${NSD_LV_SetItemText} $listview 5 2 "Nicon camera raw file"
+    ${NSD_LV_SetItemText} $listview 5 2 "$(nrf_description)"
     
     ${NSD_LV_InsertItem}  $listview 6   ""
     ${NSD_LV_SetItemText} $listview 6 1 ".ARW"
-    ${NSD_LV_SetItemText} $listview 6 2 "Sony camera raw file"
+    ${NSD_LV_SetItemText} $listview 6 2 "$(arw_description)"
     
     ${NSD_LV_InsertItem}  $listview 7   ""
     ${NSD_LV_SetItemText} $listview 7 1 ".SRF"
-    ${NSD_LV_SetItemText} $listview 7 2 "Sony camera raw file"
+    ${NSD_LV_SetItemText} $listview 7 2 "$(srf_description)"
     
     ${NSD_LV_InsertItem}  $listview 8   ""
     ${NSD_LV_SetItemText} $listview 8 1 ".SR2"
-    ${NSD_LV_SetItemText} $listview 8 2 "Sony camera raw file"
+    ${NSD_LV_SetItemText} $listview 8 2 "$(sr2_description)"
     
     ${NSD_LV_InsertItem}  $listview 9   ""
     ${NSD_LV_SetItemText} $listview 9 1 ".DCR"
-    ${NSD_LV_SetItemText} $listview 9 2 "Kodak camera raw file"
+    ${NSD_LV_SetItemText} $listview 9 2 "$(dcr_description)"
     
     ${NSD_LV_InsertItem}  $listview 10   ""
     ${NSD_LV_SetItemText} $listview 10 1 ".KDC"
-    ${NSD_LV_SetItemText} $listview 10 2 "Kodak camera raw file"
+    ${NSD_LV_SetItemText} $listview 10 2 "$(kdc_description)"
     
     ${NSD_LV_InsertItem}  $listview 11   ""
     ${NSD_LV_SetItemText} $listview 11 1 ".ORF"
-    ${NSD_LV_SetItemText} $listview 11 2 "Olympus camera raw file"
+    ${NSD_LV_SetItemText} $listview 11 2 "$(orf_description)"
     
     ${NSD_LV_InsertItem}  $listview 12   ""
     ${NSD_LV_SetItemText} $listview 12 1 ".MRW"
-    ${NSD_LV_SetItemText} $listview 12 2 "Minolta camera raw file"
+    ${NSD_LV_SetItemText} $listview 12 2 "$(mrw_description)"
     
     ${NSD_LV_InsertItem}  $listview 13   ""
     ${NSD_LV_SetItemText} $listview 13 1 ".RAF"
-    ${NSD_LV_SetItemText} $listview 13 2 "Fujifilm camera raw file"
+    ${NSD_LV_SetItemText} $listview 13 2 "$(raf_description)"
     
     ${NSD_LV_InsertItem}  $listview 14   ""
     ${NSD_LV_SetItemText} $listview 14 1 ".RAW"
-    ${NSD_LV_SetItemText} $listview 14 2 "Panasonic camera raw file"
+    ${NSD_LV_SetItemText} $listview 14 2 "$(raw_description)"
     
     ${NSD_LV_InsertItem}  $listview 15   ""
     ${NSD_LV_SetItemText} $listview 15 1 ".RW2"
-    ${NSD_LV_SetItemText} $listview 15 2 "Panasonic camera raw file"
+    ${NSD_LV_SetItemText} $listview 15 2 "$(rw2_description)"
     
     ${NSD_LV_InsertItem}  $listview 16   ""
     ${NSD_LV_SetItemText} $listview 16 1 ".SRW"
-    ${NSD_LV_SetItemText} $listview 16 2 "Samsung camera raw file"
+    ${NSD_LV_SetItemText} $listview 16 2 "$(srw_description)"
     
     ${NSD_LV_InsertItem}  $listview 17   ""
     ${NSD_LV_SetItemText} $listview 17 1 ".BAY"
-    ${NSD_LV_SetItemText} $listview 17 2 "Casio camera raw file"
+    ${NSD_LV_SetItemText} $listview 17 2 "$(bay_description)"
     
     ${NSD_LV_InsertItem}  $listview 18   ""
     ${NSD_LV_SetItemText} $listview 18 1 ".X3F"
-    ${NSD_LV_SetItemText} $listview 18 2 "Sigma camera raw file"
+    ${NSD_LV_SetItemText} $listview 18 2 "$(x3f_description)"
     
     ${NSD_LV_InsertItem}  $listview 19   ""
     ${NSD_LV_SetItemText} $listview 19 1 ".3FR"
-    ${NSD_LV_SetItemText} $listview 19 2 "Hasselblad camera raw file"
+    ${NSD_LV_SetItemText} $listview 19 2 "$(3fr_description)"
     
     ; Note: SendMessage command doesn't support pipe symbol.
     ; Therefore, using !define with "/math" option to set more.

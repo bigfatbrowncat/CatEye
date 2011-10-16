@@ -67,14 +67,10 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
-;!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye_en_US.txt"
 !insertmacro MUI_PAGE_LICENSE $(license)
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 !insertmacro MUI_PAGE_EXTENSIONS    ; my page for extensions registration
-
-;!define MUI_COMPONENTSPAGE_SMALLDESC
-;!insertmacro MUI_PAGE_COMPONENTS
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -112,7 +108,7 @@ FunctionEnd
 
 !macro RegisterCestage extenstion
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.CestageFile"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "${PRODUCT_NAME} Stage Operations File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "$(cestage_description)" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\DefaultIcon" "" "$INSTDIR\res\ico\cestage.ico"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
   ; default application for current user (for NT6.0 and newer)
