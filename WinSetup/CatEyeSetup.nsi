@@ -203,6 +203,20 @@ Section  "Installer section"
   ; Registering .cestage file
   !insertmacro RegisterCestage "cestage"
   
+  ; Registering extensions
+  ${If} $ext_cr2_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "CR2"
+  ${EndIf}
+  ${If} $ext_crw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "CRW"
+  ${EndIf}
+  ${If} $ext_pef_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "PEF"
+  ${EndIf}
+  ${If} $ext_pef_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "PTX"
+  ${EndIf}
+  
   WriteUninstaller $INSTDIR\Uninstall.exe
 
 SectionEnd
@@ -323,5 +337,23 @@ Section "un.Installer section"
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage" 
   ${EndIf}
   
+  ; Unregistering extensions
+  !insertmacro UnRegisterExtension "CR2"
+  !insertmacro UnRegisterExtension "CRW"
+  !insertmacro UnRegisterExtension "PEF"
+  !insertmacro UnRegisterExtension "PTX"
+  
 SectionEnd
 
+!macro UnRegisterExtension extenstion
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+   ; default application for current user (for NT6.0 and newer)
+   GetVersion::WindowsVersion
+   Pop $winver
+   ${If} $winver >= "6.0"
+     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
+   ${EndIf}
+!macroend
