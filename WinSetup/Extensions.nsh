@@ -14,6 +14,22 @@ var /global ext_cr2_state
 var /global ext_crw_state
 var /global ext_pef_state
 var /global ext_ptx_state
+var /global ext_nef_state
+var /global ext_nrf_state
+var /global ext_arw_state
+var /global ext_srf_state
+var /global ext_sr2_state
+var /global ext_dcr_state
+var /global ext_kdc_state
+var /global ext_orf_state
+var /global ext_mrw_state
+var /global ext_raf_state
+var /global ext_raw_state
+var /global ext_rw2_state
+var /global ext_srw_state
+var /global ext_bay_state
+var /global ext_x3f_state
+var /global ext_3fr_state
 
 
 !macro MUI_PAGE_EXTENSIONS
@@ -31,7 +47,7 @@ Function ExtensionsCreate
     
     ${NSD_LV_InsertColumn} $listview 0 20u " "
     ${NSD_LV_InsertColumn} $listview 1 60u "Extension"
-    ${NSD_LV_InsertColumn} $listview 2 350u "Description"
+    ${NSD_LV_InsertColumn} $listview 2 349u "Description"
     
 ;    ${NSD_LV_InsertItem}  $listview 0   ""
 ;    ${NSD_LV_SetItemText} $listview 0 1 ".cestage"
@@ -53,6 +69,70 @@ Function ExtensionsCreate
     ${NSD_LV_SetItemText} $listview 3 1 ".PTX"
     ${NSD_LV_SetItemText} $listview 3 2 "Pentax camera raw file"
     
+    ${NSD_LV_InsertItem}  $listview 4   ""
+    ${NSD_LV_SetItemText} $listview 4 1 ".NEF"
+    ${NSD_LV_SetItemText} $listview 4 2 "Nicon camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 5   ""
+    ${NSD_LV_SetItemText} $listview 5 1 ".NRF"
+    ${NSD_LV_SetItemText} $listview 5 2 "Nicon camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 6   ""
+    ${NSD_LV_SetItemText} $listview 6 1 ".ARW"
+    ${NSD_LV_SetItemText} $listview 6 2 "Sony camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 7   ""
+    ${NSD_LV_SetItemText} $listview 7 1 ".SRF"
+    ${NSD_LV_SetItemText} $listview 7 2 "Sony camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 8   ""
+    ${NSD_LV_SetItemText} $listview 8 1 ".SR2"
+    ${NSD_LV_SetItemText} $listview 8 2 "Sony camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 9   ""
+    ${NSD_LV_SetItemText} $listview 9 1 ".DCR"
+    ${NSD_LV_SetItemText} $listview 9 2 "Kodak camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 10   ""
+    ${NSD_LV_SetItemText} $listview 10 1 ".KDC"
+    ${NSD_LV_SetItemText} $listview 10 2 "Kodak camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 11   ""
+    ${NSD_LV_SetItemText} $listview 11 1 ".ORF"
+    ${NSD_LV_SetItemText} $listview 11 2 "Olympus camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 12   ""
+    ${NSD_LV_SetItemText} $listview 12 1 ".MRW"
+    ${NSD_LV_SetItemText} $listview 12 2 "Minolta camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 13   ""
+    ${NSD_LV_SetItemText} $listview 13 1 ".RAF"
+    ${NSD_LV_SetItemText} $listview 13 2 "Fujifilm camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 14   ""
+    ${NSD_LV_SetItemText} $listview 14 1 ".RAW"
+    ${NSD_LV_SetItemText} $listview 14 2 "Panasonic camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 15   ""
+    ${NSD_LV_SetItemText} $listview 15 1 ".RW2"
+    ${NSD_LV_SetItemText} $listview 15 2 "Panasonic camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 16   ""
+    ${NSD_LV_SetItemText} $listview 16 1 ".SRW"
+    ${NSD_LV_SetItemText} $listview 16 2 "Samsung camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 17   ""
+    ${NSD_LV_SetItemText} $listview 17 1 ".BAY"
+    ${NSD_LV_SetItemText} $listview 17 2 "Casio camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 18   ""
+    ${NSD_LV_SetItemText} $listview 18 1 ".X3F"
+    ${NSD_LV_SetItemText} $listview 18 2 "Sigma camera raw file"
+    
+    ${NSD_LV_InsertItem}  $listview 19   ""
+    ${NSD_LV_SetItemText} $listview 19 1 ".3FR"
+    ${NSD_LV_SetItemText} $listview 19 2 "Hasselblad camera raw file"
+    
     ; Note: SendMessage command doesn't support pipe symbol.
     ; Therefore, using !define with "/math" option to set more.
     ; Send a message to set checkboxes style to listview.
@@ -68,6 +148,22 @@ Function ExtensionsCreate
     ${NSD_LV_SetCheckState} $listview 1 $ext_crw_state
     ${NSD_LV_SetCheckState} $listview 2 $ext_pef_state
     ${NSD_LV_SetCheckState} $listview 3 $ext_ptx_state
+    ${NSD_LV_SetCheckState} $listview 4 $ext_nef_state
+    ${NSD_LV_SetCheckState} $listview 5 $ext_nrf_state
+    ${NSD_LV_SetCheckState} $listview 6 $ext_arw_state
+    ${NSD_LV_SetCheckState} $listview 7 $ext_srf_state
+    ${NSD_LV_SetCheckState} $listview 8 $ext_sr2_state
+    ${NSD_LV_SetCheckState} $listview 9 $ext_dcr_state
+    ${NSD_LV_SetCheckState} $listview 10 $ext_kdc_state
+    ${NSD_LV_SetCheckState} $listview 11 $ext_orf_state
+    ${NSD_LV_SetCheckState} $listview 12 $ext_mrw_state
+    ${NSD_LV_SetCheckState} $listview 13 $ext_raf_state
+    ${NSD_LV_SetCheckState} $listview 14 $ext_raw_state
+    ${NSD_LV_SetCheckState} $listview 15 $ext_rw2_state
+    ${NSD_LV_SetCheckState} $listview 16 $ext_srw_state
+    ${NSD_LV_SetCheckState} $listview 17 $ext_bay_state
+    ${NSD_LV_SetCheckState} $listview 18 $ext_x3f_state
+    ${NSD_LV_SetCheckState} $listview 19 $ext_3fr_state
     
     ${NSD_CreateButton} 150u 125u 70u 15u "Check all"
     Pop $select
@@ -87,6 +183,22 @@ Function SelectButtonChange
         ${NSD_LV_SetCheckState} $listview 1 1
         ${NSD_LV_SetCheckState} $listview 2 1
         ${NSD_LV_SetCheckState} $listview 3 1
+        ${NSD_LV_SetCheckState} $listview 4 1
+        ${NSD_LV_SetCheckState} $listview 5 1
+        ${NSD_LV_SetCheckState} $listview 6 1
+        ${NSD_LV_SetCheckState} $listview 7 1
+        ${NSD_LV_SetCheckState} $listview 8 1
+        ${NSD_LV_SetCheckState} $listview 9 1
+        ${NSD_LV_SetCheckState} $listview 10 1
+        ${NSD_LV_SetCheckState} $listview 11 1
+        ${NSD_LV_SetCheckState} $listview 12 1
+        ${NSD_LV_SetCheckState} $listview 13 1
+        ${NSD_LV_SetCheckState} $listview 14 1
+        ${NSD_LV_SetCheckState} $listview 15 1
+        ${NSD_LV_SetCheckState} $listview 16 1
+        ${NSD_LV_SetCheckState} $listview 17 1
+        ${NSD_LV_SetCheckState} $listview 18 1
+        ${NSD_LV_SetCheckState} $listview 19 1
 FunctionEnd
 
 
@@ -96,6 +208,22 @@ Function UnselectButtonChange
         ${NSD_LV_SetCheckState} $listview 1 0
         ${NSD_LV_SetCheckState} $listview 2 0
         ${NSD_LV_SetCheckState} $listview 3 0
+        ${NSD_LV_SetCheckState} $listview 4 0
+        ${NSD_LV_SetCheckState} $listview 5 0
+        ${NSD_LV_SetCheckState} $listview 6 0
+        ${NSD_LV_SetCheckState} $listview 7 0
+        ${NSD_LV_SetCheckState} $listview 8 0
+        ${NSD_LV_SetCheckState} $listview 9 0
+        ${NSD_LV_SetCheckState} $listview 10 0
+        ${NSD_LV_SetCheckState} $listview 11 0
+        ${NSD_LV_SetCheckState} $listview 12 0
+        ${NSD_LV_SetCheckState} $listview 13 0
+        ${NSD_LV_SetCheckState} $listview 14 0
+        ${NSD_LV_SetCheckState} $listview 15 0
+        ${NSD_LV_SetCheckState} $listview 16 0
+        ${NSD_LV_SetCheckState} $listview 17 0
+        ${NSD_LV_SetCheckState} $listview 18 0
+        ${NSD_LV_SetCheckState} $listview 19 0
 FunctionEnd
 
 
@@ -105,5 +233,21 @@ Function ExtensionsDestroy
     ${NSD_LV_GetCheckState} $listview 1 $ext_crw_state
     ${NSD_LV_GetCheckState} $listview 2 $ext_pef_state
     ${NSD_LV_GetCheckState} $listview 3 $ext_ptx_state
+    ${NSD_LV_GetCheckState} $listview 4 $ext_nef_state
+    ${NSD_LV_GetCheckState} $listview 5 $ext_nrf_state
+    ${NSD_LV_GetCheckState} $listview 6 $ext_arw_state
+    ${NSD_LV_GetCheckState} $listview 7 $ext_srf_state
+    ${NSD_LV_GetCheckState} $listview 8 $ext_sr2_state
+    ${NSD_LV_GetCheckState} $listview 9 $ext_dcr_state
+    ${NSD_LV_GetCheckState} $listview 10 $ext_kdc_state
+    ${NSD_LV_GetCheckState} $listview 11 $ext_orf_state
+    ${NSD_LV_GetCheckState} $listview 12 $ext_mrw_state
+    ${NSD_LV_GetCheckState} $listview 13 $ext_raf_state
+    ${NSD_LV_GetCheckState} $listview 14 $ext_raw_state
+    ${NSD_LV_GetCheckState} $listview 15 $ext_rw2_state
+    ${NSD_LV_GetCheckState} $listview 16 $ext_srw_state
+    ${NSD_LV_GetCheckState} $listview 17 $ext_bay_state
+    ${NSD_LV_GetCheckState} $listview 18 $ext_x3f_state
+    ${NSD_LV_GetCheckState} $listview 19 $ext_3fr_state
 FunctionEnd
 
