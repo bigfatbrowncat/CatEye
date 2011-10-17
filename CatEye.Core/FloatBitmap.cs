@@ -415,7 +415,7 @@ namespace CatEye.Core
 			return Q22;
 		}
 		
-		private float[,] BuildPhi(float[,] H, double alpha, double beta)
+		private float[,] BuildPhi(float[,] H, double alpha, double beta, double noise_gate)
 		{
 			int Hw = H.GetLength(0);
 			int Hh = H.GetLength(1);
@@ -488,15 +488,23 @@ namespace CatEye.Core
 
 				// Calculating phi_k
 				avg_grad /= w * h;
+				Console.WriteLine("avg_grad = " + avg_grad);
 				float[,] phi_k = new float[w, h];
 				for (int i = 0; i < w; i++)
 				for (int j = 0; j < h; j++)
 				{
 					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-					abs_grad_H_cur += 0.001;	// To avoid infinity
+					abs_grad_H_cur += 0.001;	// Noise gate
 					
 					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / alpha, beta - 1));
+					
+					// Noise gate
+					//float k0 = 0.01f, nf_edge = 0.005f;
+					//float nf_softness = k0 * nf_edge * nf_edge;
+					//phi_k[i, j] *= (float)(1.0 / Math.PI * Math.Atan2(nf_softness * abs_grad_H_cur, nf_edge * nf_edge - abs_grad_H_cur * abs_grad_H_cur));
+					float nf_edge = (float)(noise_gate * noise_gate);
+					phi_k[i, j] *= (float)(1 - Math.Exp(-abs_grad_H_cur * abs_grad_H_cur / nf_edge / nf_edge));
 				}
 				phi.Add(phi_k);
 			}
@@ -582,22 +590,25 @@ namespace CatEye.Core
 			}
 		
 			float[,] I = new float[Rho[divides].GetLength(0), Rho[divides].GetLength(1)];
+			float old_progress = 0;
 			for (int p = divides; p >= 0; p--)
 			{
 				SolvePoissonNeiman(I, Rho[p], steps_max, stop_dpd, delegate (float progress, float[,] solution)
 				{
 					if (callback != null)
 					{
-						float full_effort = 0;
+						float complete_effort = 0;
 						for (int q = divides; q > p; q--)
+							complete_effort += (float)ww[q] * hh[q];
+						
+						float full_effort = complete_effort;
+						for (int q = p; q >= 0; q--)
 							full_effort += (float)ww[q] * hh[q];
 						
-						float full_progress = (full_effort + ww[p] * hh[p] * progress) / 
-							(full_effort + ww[p] * hh[p]);
+						float new_progress = (complete_effort + ww[p] * hh[p] * progress) / full_effort;
+						if (new_progress > old_progress) old_progress = new_progress;
 						
-						Console.WriteLine(full_effort + "; " + full_progress);
-						
-						callback(full_progress, solution);
+						callback(old_progress, solution);
 					}
 					
 				});
@@ -865,7 +876,7 @@ namespace CatEye.Core
 			return false;
 		}
 		
-		public unsafe void SharpenLight(double curve, double contrast, double pressure, ProgressReporter callback)
+		public unsafe void SharpenLight(double curve, double noise_gate, double pressure, ProgressReporter callback)
 		{
 			
 			float[,] oldr = r_chan; 
@@ -911,7 +922,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.01 * pressure * pressure, 0.8 + 0.1 * contrast);
+			float[,] Phi = BuildPhi(H, 0.01 * pressure * pressure, 0.8, noise_gate);
 			
 			
 			// Calculating G and div_G

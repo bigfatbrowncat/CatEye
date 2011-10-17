@@ -10,7 +10,7 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mCurve = 0.5, /*mCompression = 0.5,*/ mContrast = 0.1;
+		private double mPressure = 10, mCurve = 0.5, /*mCompression = 0.5,*/ mNoiseGate = 0.001;
 		private SharpType mType = SharpType.Sharp;
 
 /*		public double Compression
@@ -43,12 +43,12 @@ namespace CatEye.Core
 			}
 		}
 
-		public double Contrast
+		public double NoiseGate
 		{
-			get { return mContrast; }
+			get { return mNoiseGate; }
 			set 
 			{
-				mContrast = value;
+				mNoiseGate = value;
 				OnChanged();
 			}
 		}
@@ -69,7 +69,7 @@ namespace CatEye.Core
 //			xn.Attributes.Append(xdoc.CreateAttribute("Compression")).Value = mCompression.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Curve")).Value = mCurve.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
-			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("NoiseGate")).Value = mNoiseGate.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
 				st = "sharp";
@@ -112,14 +112,14 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Pressure value");
 			}
-			if (node.Attributes["Contrast"] != null)
+			if (node.Attributes["NoiseGate"] != null)
 			{
-				if (double.TryParse(node.Attributes["Contrast"].Value, NumberStyles.Float, nfi, out res))
+				if (double.TryParse(node.Attributes["NoiseGate"].Value, NumberStyles.Float, nfi, out res))
 				{
-					mContrast = res;
+					mNoiseGate = res;
 				}
 				else
-					throw new IncorrectNodeValueException("Can't parse Contrast value");
+					throw new IncorrectNodeValueException("Can't parse NoiseGate value");
 			}
 			if (node.Attributes["SharpType"] != null)
 			{
@@ -154,7 +154,7 @@ namespace CatEye.Core
 //			t.mCompression = mCompression;
 			t.mCurve = mCurve;
 			t.mPressure = mPressure;
-			t.mContrast = mContrast;
+			t.mNoiseGate = mNoiseGate;
 			t.mType = mType;
 			t.OnChanged();
 		}

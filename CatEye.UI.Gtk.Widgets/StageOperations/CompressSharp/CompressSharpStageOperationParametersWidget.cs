@@ -15,15 +15,15 @@ namespace CatEye.UI.Gtk.Widgets
 			this.Build ();
 		}
 		
-		private bool _CompressionIsChanging = false;
+//		private bool _CompressionIsChanging = false;
 		private bool _CurveIsChanging = false;
 		private bool _PressureIsChanging = false;
-		private bool _ContrastIsChanging = false;
+		private bool _NoiseGateIsChanging = false;
 
-		protected enum CompressionChanger { HScale, SpinButton }
+//		protected enum CompressionChanger { HScale, SpinButton }
 		protected enum PressureChanger { HScale, SpinButton }
 		protected enum CurveChanger { HScale, SpinButton }
-		protected enum ContrastChanger { HScale, SpinButton }
+		protected enum NoiseGateChanger { HScale, SpinButton }
 		
 /*		protected void ChangeCompression(double new_value, CompressionChanger changer)
 		{
@@ -97,24 +97,24 @@ namespace CatEye.UI.Gtk.Widgets
 		}
 
 
-		protected void ChangeContrast(double new_value, ContrastChanger changer)
+		protected void ChangeNoiseGate(double new_value, NoiseGateChanger changer)
 		{
-			if (!_ContrastIsChanging)
+			if (!_NoiseGateIsChanging)
 			{
-				_ContrastIsChanging = true;
+				_NoiseGateIsChanging = true;
 				StartChangingParameters();
 				
 				// Setting all editors to the value
-				if (changer != ContrastChanger.HScale)
-					contrast_hscale.Value = new_value;
+				if (changer != NoiseGateChanger.HScale)
+					noiseGate_hscale.Value = new_value;
 				
-				if (changer != ContrastChanger.SpinButton)
-					contrast_spinbutton.Value = new_value;
+				if (changer != NoiseGateChanger.SpinButton)
+					noiseGate_spinbutton.Value = new_value;
 				
-				((CompressSharpStageOperationParameters)Parameters).Contrast = new_value;
+				((CompressSharpStageOperationParameters)Parameters).NoiseGate = new_value;
 				EndChangingParameters();
 				OnUserModified();
-				_ContrastIsChanging = false;
+				_NoiseGateIsChanging = false;
 			}
 		}
 		
@@ -148,10 +148,10 @@ namespace CatEye.UI.Gtk.Widgets
 			curve_spinbutton.Value = ((CompressSharpStageOperationParameters)Parameters).Curve;
 			_CurveIsChanging = false;
 			
-			_ContrastIsChanging = true;
-			contrast_hscale.Value = ((CompressSharpStageOperationParameters)Parameters).Contrast;
-			contrast_spinbutton.Value = ((CompressSharpStageOperationParameters)Parameters).Contrast;
-			_ContrastIsChanging = false;
+			_NoiseGateIsChanging = true;
+			noiseGate_hscale.Value = ((CompressSharpStageOperationParameters)Parameters).NoiseGate;
+			noiseGate_spinbutton.Value = ((CompressSharpStageOperationParameters)Parameters).NoiseGate;
+			_NoiseGateIsChanging = false;
 			
 		}
 
@@ -168,14 +168,14 @@ namespace CatEye.UI.Gtk.Widgets
 			ChangePressure(pressure_spinbutton.Value, PressureChanger.SpinButton);
 		}
 
-		protected void OnContrastHscaleChangeValue (object o, ChangeValueArgs args)
+		protected void OnNoiseGateHscaleChangeValue (object o, ChangeValueArgs args)
 		{
-			ChangeContrast(contrast_hscale.Value, ContrastChanger.HScale);
+			ChangeNoiseGate(noiseGate_hscale.Value, NoiseGateChanger.HScale);
 		}
 
-		protected void OnContrastSpinbuttonValueChanged (object sender, System.EventArgs e)
+		protected void OnNoiseGateSpinbuttonValueChanged (object sender, System.EventArgs e)
 		{
-			ChangeContrast(contrast_spinbutton.Value, ContrastChanger.SpinButton);
+			ChangeNoiseGate(noiseGate_spinbutton.Value, NoiseGateChanger.SpinButton);
 		}
 
 		protected void OnSharpSoftToggled (object sender, System.EventArgs e)

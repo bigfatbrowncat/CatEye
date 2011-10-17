@@ -27,7 +27,7 @@ namespace CatEye.Core
 			//if (pm.Type == LocalContrastStageOperationParameters.SharpType.Soft) 
 			//	pressure *= -1;
 			
-			hdp.SharpenLight(pm.Curve, pm.Contrast, pm.Pressure, 
+			hdp.SharpenLight(pm.Curve, pm.NoiseGate, pm.Pressure, 
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}

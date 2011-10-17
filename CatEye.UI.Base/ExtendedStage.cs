@@ -129,6 +129,15 @@ namespace CatEye.UI.Base
 						}
 					}
 				}
+				else
+				{
+					// Re-analyzs image for change in EditingOperation
+					if (_TheUIState == UIState.Idle && CurrentImage != null)
+					{
+						_Holders[_EditingOperation].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
+						Console.WriteLine("AnalyzeImage");
+					}
+				}
 			}
 			else
 			{
@@ -246,7 +255,7 @@ namespace CatEye.UI.Base
 					
 					for (int i = start_index; i < StageQueue.Count; i++)
 					{
-						if (StageQueue[i] != _EditingOperation) 
+						if (StageQueue[i] != _EditingOperation)
 						{
 							// Don't add inactives
 							if (StageQueue[i].Active == false) continue;
@@ -282,6 +291,7 @@ namespace CatEye.UI.Base
 					// Executing
 					for (int k = 0; k < operationsToApply.Count; k++)
 					{
+						Console.WriteLine("AnalyzeImage Calling for " + operationsToApply[k].GetType().Name);
 						_Holders[operationsToApply[k].Parameters].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
 						operationsToApply[k].OnDo(CurrentImage);
 						if (operationsToApply[k].Parameters == FrozenAt)
@@ -291,6 +301,12 @@ namespace CatEye.UI.Base
 							mFrozenImage = (IBitmapCore)CurrentImage.Clone();
 						}
 					}
+					if (_EditingOperation != null)
+					{
+						Console.WriteLine("AnalyzeImage Calling for " + _EditingOperation.GetType().Name);
+						_Holders[_EditingOperation].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
+					}
+					
 					OnImageUpdatingCompleted();
 					SetUIState(UIState.Idle);
 				}
@@ -437,8 +453,11 @@ namespace CatEye.UI.Base
 		void HandleSohwOperationParametersEditorUserModified (object sender, EventArgs e)
 		{
 			// If the user modified some property in editing ("pen") mode,
-			// refresh the picture
-			OnViewNeedsUpdate();
+			if (_EditingOperation != null && (sender as IStageOperationHolder) == _Holders[_EditingOperation])
+			{
+				// refresh the picture
+				OnViewNeedsUpdate();
+			}
 			/*IStageOperationParametersEditor editor = (IStageOperationParametersEditor)sender;
 			if (_EditingOperation != null && _Holders[_EditingOperation].StageOperationParametersEditor == editor)
 				OnImageUpdatingCompleted();*/
