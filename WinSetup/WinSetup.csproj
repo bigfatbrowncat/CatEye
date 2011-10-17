@@ -208,6 +208,7 @@
     <None Include="res\svg-inkscape\CatEyeSetup-small.svg" />
     <None Include="res\svg-inkscape\CatEyeSetup-TopPane.svg" />
     <None Include="CommCtrl.nsh" />
+    <None Include="makefile" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />

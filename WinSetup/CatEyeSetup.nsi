@@ -67,14 +67,10 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_WELCOME
 
 !define MUI_LICENSEPAGE_CHECKBOX
-;!insertmacro MUI_PAGE_LICENSE "${PKGDIR}licenses\license_cateye_en_US.txt"
 !insertmacro MUI_PAGE_LICENSE $(license)
 
 !insertmacro MUI_PAGE_DOTNET        ; my page for .NetFramework warning
 !insertmacro MUI_PAGE_EXTENSIONS    ; my page for extensions registration
-
-;!define MUI_COMPONENTSPAGE_SMALLDESC
-;!insertmacro MUI_PAGE_COMPONENTS
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -112,7 +108,7 @@ FunctionEnd
 
 !macro RegisterCestage extenstion
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.CestageFile"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "${PRODUCT_NAME} Stage Operations File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "$(cestage_description)" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\DefaultIcon" "" "$INSTDIR\res\ico\cestage.ico"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
   ; default application for current user (for NT6.0 and newer)
@@ -141,10 +137,6 @@ FunctionEnd
 
 
 ;--------------------------------
-
-;SectionGroup "Files types associations"
-
-;SectionGroupEnd
 
 Section  "Installer section"
   
@@ -202,6 +194,68 @@ Section  "Installer section"
   
   ; Registering .cestage file
   !insertmacro RegisterCestage "cestage"
+  
+  ; Registering extensions
+  ${If} $ext_cr2_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "CR2"
+  ${EndIf}
+  ${If} $ext_crw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "CRW"
+  ${EndIf}
+  ${If} $ext_pef_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "PEF"
+  ${EndIf}
+  ${If} $ext_ptx_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "PTX"
+  ${EndIf}
+  ${If} $ext_nef_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "NEF"
+  ${EndIf}
+  ${If} $ext_nrf_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "NRF"
+  ${EndIf}
+  ${If} $ext_arw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "ARW"
+  ${EndIf}
+  ${If} $ext_srf_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "SRF"
+  ${EndIf}
+  ${If} $ext_sr2_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "SR2"
+  ${EndIf}
+  ${If} $ext_dcr_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "DCR"
+  ${EndIf}
+  ${If} $ext_kdc_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "KDC"
+  ${EndIf}
+  ${If} $ext_orf_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "ORF"
+  ${EndIf}
+  ${If} $ext_mrw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "MRW"
+  ${EndIf}
+  ${If} $ext_raf_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "RAF"
+  ${EndIf}
+  ${If} $ext_raw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "RAW"
+  ${EndIf}
+  ${If} $ext_rw2_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "RW2"
+  ${EndIf}
+  ${If} $ext_srw_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "SRW"
+  ${EndIf}
+  ${If} $ext_bay_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "BAY"
+  ${EndIf}
+  ${If} $ext_x3f_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "X3F"
+  ${EndIf}
+  ${If} $ext_3fr_state == ${LVIS_CHECKED}
+    !insertmacro RegisterExtension "3FR"
+  ${EndIf}
   
   WriteUninstaller $INSTDIR\Uninstall.exe
 
@@ -279,7 +333,23 @@ Function un.ResDelete
   RmDir /r "$INSTDIR\res\ico"
 FunctionEnd
 
+
+!macro UnRegisterExtension extenstion
+  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+   ; default application for current user (for NT6.0 and newer)
+   GetVersion::WindowsVersion
+   Pop $winver
+   ${If} $winver >= "6.0"
+     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
+   ${EndIf}
+!macroend
+
+
 ;--------------------------------
+
 Section "un.Installer section"
   
   SetShellVarContext all
@@ -322,6 +392,28 @@ Section "un.Installer section"
   ${If} $winver >= "6.0"
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.cestage" 
   ${EndIf}
+  
+  ; Unregistering extensions
+  !insertmacro UnRegisterExtension "CR2"
+  !insertmacro UnRegisterExtension "CRW"
+  !insertmacro UnRegisterExtension "PEF"
+  !insertmacro UnRegisterExtension "PTX"
+  !insertmacro UnRegisterExtension "NEF"
+  !insertmacro UnRegisterExtension "NRF"
+  !insertmacro UnRegisterExtension "ARW"
+  !insertmacro UnRegisterExtension "SRF"
+  !insertmacro UnRegisterExtension "SR2"
+  !insertmacro UnRegisterExtension "DCR"
+  !insertmacro UnRegisterExtension "KDC"
+  !insertmacro UnRegisterExtension "ORF"
+  !insertmacro UnRegisterExtension "MRW"
+  !insertmacro UnRegisterExtension "RAF"
+  !insertmacro UnRegisterExtension "RAW"
+  !insertmacro UnRegisterExtension "RW2"
+  !insertmacro UnRegisterExtension "SRW"
+  !insertmacro UnRegisterExtension "BAY"
+  !insertmacro UnRegisterExtension "X3F"
+  !insertmacro UnRegisterExtension "3FR"
   
 SectionEnd
 
