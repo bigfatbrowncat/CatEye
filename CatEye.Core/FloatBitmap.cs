@@ -495,7 +495,7 @@ namespace CatEye.Core
 				{
 					double abs_grad_H_cur = Math.Sqrt(grad_H_cur_x[i, j] * grad_H_cur_x[i, j] +
 					                                  grad_H_cur_y[i, j] * grad_H_cur_y[i, j]);
-					abs_grad_H_cur += 0.001;	// Noise gate
+					abs_grad_H_cur += 0.001;	// Avoiding zero
 					
 					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / alpha, beta - 1));
 					
@@ -956,7 +956,7 @@ namespace CatEye.Core
 
 			
 			// Solving Poisson equation Delta I = div G
-			float[,] I;
+			float[,] I = null;
 			int step = 0;
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
@@ -1002,6 +1002,7 @@ namespace CatEye.Core
 			};
 			
 			I = SolvePoissonNeimanMultiLattice(div_G, 20000, epsilon, srep);
+			//SolvePoissonNeiman(H, div_G, 20000, epsilon, srep);
 
 			srep(1, I);
 		}
@@ -1021,7 +1022,7 @@ namespace CatEye.Core
 			for (int p = 0; p < points; p++)
 			{
 				double phi = rnd.NextDouble() * 2 * Math.PI;
-				double rad = light_radius * rnd.NextDouble();
+				double rad = light_radius * (Width + Height) / 2 * rnd.NextDouble();
 			
 				int u = i + (int)(rad * Math.Cos(phi));
 				int v = j + (int)(rad * Math.Sin(phi));
@@ -1034,8 +1035,8 @@ namespace CatEye.Core
 			}
 			
 			// Searching for minimum tone distance to (1, 1, 1)
-			int steps_count = 1000;
-			double dc = 0.001;
+			int steps_count = 100;
+			double dc = 0.01;
 			Tone cur_light_tone = new Tone(1, 1, 1);
 			
 			for (int step = 0; step < steps_count; step++)
@@ -1117,9 +1118,10 @@ namespace CatEye.Core
 				//	Pdist_dB = 0;
 				
 				// Moving up the gradient
-				double newR = cur_light_tone.R - Pdist_dR * dc;
-				double newG = cur_light_tone.G - Pdist_dG * dc;
-				double newB = cur_light_tone.B - Pdist_dB * dc;
+				double delta = 0.01;
+				double newR = cur_light_tone.R - Pdist_dR * delta;
+				double newG = cur_light_tone.G - Pdist_dG * delta;
+				double newB = cur_light_tone.B - Pdist_dB * delta;
 				
 				newR = Math.Max(newR, 0);
 				newG = Math.Max(newG, 0);
@@ -1146,7 +1148,7 @@ namespace CatEye.Core
 			for (int p = 0; p < points; p++)
 			{
 				double phi = rnd.NextDouble() * 2 * Math.PI;
-				double rad = dark_radius * rnd.NextDouble();
+				double rad = dark_radius * (Width + Height) / 2 * rnd.NextDouble();
 			
 				int u = i + (int)(rad * Math.Cos(phi));
 				int v = j + (int)(rad * Math.Sin(phi));
@@ -1159,7 +1161,7 @@ namespace CatEye.Core
 			}
 			
 			// Searching for minimum tone distance to (1, 1, 1)
-			int steps_count = 1000;
+			int steps_count = 100;
 			double dc = 0.001;
 			Tone cur_dark_tone = new Tone(1, 1, 1);
 			
@@ -1242,9 +1244,10 @@ namespace CatEye.Core
 				//	Pdist_dB = 0;
 				
 				// Moving up the gradient
-				double newR = cur_dark_tone.R - Pdist_dR * dc;
-				double newG = cur_dark_tone.G - Pdist_dG * dc;
-				double newB = cur_dark_tone.B - Pdist_dB * dc;
+				double delta = 0.01;
+				double newR = cur_dark_tone.R - Pdist_dR * delta;
+				double newG = cur_dark_tone.G - Pdist_dG * delta;
+				double newB = cur_dark_tone.B - Pdist_dB * delta;
 				
 				newR = Math.Max(newR, 0);
 				newG = Math.Max(newG, 0);

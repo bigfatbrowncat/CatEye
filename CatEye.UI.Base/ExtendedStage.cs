@@ -22,6 +22,7 @@ namespace CatEye.UI.Base
 		private StageOperationHolderFactory mSOHolderFactory;
 
 		private volatile bool mUpdatePending = false;
+		private volatile bool mProcessImageDuringUpdate = false;
 		private volatile bool mLoadPending = false;
 		private volatile string mLoadPendingFilename;
 		private volatile int mLoadPendingDownscale;
@@ -136,6 +137,7 @@ namespace CatEye.UI.Base
 					{
 						_Holders[_EditingOperation].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
 						Console.WriteLine("AnalyzeImage");
+						AskUpdate(false);
 					}
 				}
 			}
@@ -223,84 +225,88 @@ namespace CatEye.UI.Base
 
 					CancelProcessingPending = false;
 					
-					// Checking if the stage is frozen or not and is there a frozen image.
-					if (FrozenAt == null || mFrozenImage == null)
+					if (mProcessImageDuringUpdate)
 					{
-						CurrentImage = (IBitmapCore)SourceImage.Clone();
-
-						if (mZoomAfterPrescaleValue < 0.999 || mZoomAfterPrescaleValue > 1.001)
+						// Checking if the stage is frozen or not and is there a frozen image.
+						if (FrozenAt == null || mFrozenImage == null)
 						{
-							CurrentImage.ScaleFast(mZoomAfterPrescaleValue, delegate (double progress) {
-								OnProgressMessageReport(true, progress, "Applying zoom (downscaling)...", false);
-								return !CancelProcessingPending;			
-							});
-						}
-						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-					}
-					else
-					{
-						CurrentImage = (IBitmapCore)mFrozenImage.Clone();
-						if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
-
-					}
-					
-					// Making the list of stage operations to apply
-					List<StageOperation> operationsToApply = new List<StageOperation>();
-					List<double> efforts = new List<double>();
-					double full_efforts = 0;
-
-					int start_index = 0;
-					if (FrozenAt != null && mFrozenImage != null)
-						start_index = StageQueue.IndexOf(FrozenAt) + 1;
-					
-					for (int i = start_index; i < StageQueue.Count; i++)
-					{
-						if (StageQueue[i] != _EditingOperation)
-						{
-							// Don't add inactives
-							if (StageQueue[i].Active == false) continue;
-							
-							StageOperation newOperation = CallStageOperationFactory(StageQueue[i]);
-							operationsToApply.Add(newOperation);
-							efforts.Add(newOperation.CalculateEfforts(CurrentImage));
-							full_efforts += efforts[efforts.Count - 1];
-							
-							newOperation.ReportProgress += delegate(object sender, ReportStageOperationProgressEventArgs e) {
-								double cur_eff = 0;
-								int j = 0;
-								while (operationsToApply[j] != (StageOperation)sender)
-								{
-									cur_eff += efforts[j];
-									j++;
-								}
-								cur_eff += e.Progress * efforts[j];
-								string desc = StageOperationDescriptionAttribute.GetName(sender.GetType());
-								
-								OnProgressMessageReport(true,
-									cur_eff / full_efforts, 
-									"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...", true);
-								
-								if (CancelProcessingPending)
-									e.Cancel = true;
-							};
+							CurrentImage = (IBitmapCore)SourceImage.Clone();
+	
+							if (mZoomAfterPrescaleValue < 0.999 || mZoomAfterPrescaleValue > 1.001)
+							{
+								CurrentImage.ScaleFast(mZoomAfterPrescaleValue, delegate (double progress) {
+									OnProgressMessageReport(true, progress, "Applying zoom (downscaling)...", false);
+									return !CancelProcessingPending;			
+								});
+							}
+							if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
 						}
 						else
-							break;
-					}
-					
-					// Executing
-					for (int k = 0; k < operationsToApply.Count; k++)
-					{
-						Console.WriteLine("AnalyzeImage Calling for " + operationsToApply[k].GetType().Name);
-						_Holders[operationsToApply[k].Parameters].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
-						operationsToApply[k].OnDo(CurrentImage);
-						if (operationsToApply[k].Parameters == FrozenAt)
 						{
-							// After the frozen line is reached,
-							// setting the current frozen image
-							mFrozenImage = (IBitmapCore)CurrentImage.Clone();
+							CurrentImage = (IBitmapCore)mFrozenImage.Clone();
+							if (ImageChanged != null) ImageChanged(this, EventArgs.Empty);
+	
+						}
+						
+						// Making the list of stage operations to apply
+						List<StageOperation> operationsToApply = new List<StageOperation>();
+						List<double> efforts = new List<double>();
+						double full_efforts = 0;
+	
+						int start_index = 0;
+						if (FrozenAt != null && mFrozenImage != null)
+							start_index = StageQueue.IndexOf(FrozenAt) + 1;
+						
+						for (int i = start_index; i < StageQueue.Count; i++)
+						{
+							if (StageQueue[i] != _EditingOperation)
+							{
+								// Don't add inactives
+								if (StageQueue[i].Active == false) continue;
+								
+								StageOperation newOperation = CallStageOperationFactory(StageQueue[i]);
+								operationsToApply.Add(newOperation);
+								efforts.Add(newOperation.CalculateEfforts(CurrentImage));
+								full_efforts += efforts[efforts.Count - 1];
+								
+								newOperation.ReportProgress += delegate(object sender, ReportStageOperationProgressEventArgs e) {
+									double cur_eff = 0;
+									int j = 0;
+									while (operationsToApply[j] != (StageOperation)sender)
+									{
+										cur_eff += efforts[j];
+										j++;
+									}
+									cur_eff += e.Progress * efforts[j];
+									string desc = StageOperationDescriptionAttribute.GetName(sender.GetType());
+									
+									OnProgressMessageReport(true,
+										cur_eff / full_efforts, 
+										"" + (j + 1) + " of " + efforts.Count +  ": " + desc + "...", true);
+									
+									if (CancelProcessingPending)
+										e.Cancel = true;
+								};
+							}
+							else
+								break;
+						}
+						
+						// Executing
+						for (int k = 0; k < operationsToApply.Count; k++)
+						{
+							Console.WriteLine("AnalyzeImage Calling for " + operationsToApply[k].GetType().Name);
+							_Holders[operationsToApply[k].Parameters].StageOperationParametersEditor.AnalyzeImage(CurrentImage);
+							operationsToApply[k].OnDo(CurrentImage);
+							if (operationsToApply[k].Parameters == FrozenAt)
+							{
+								// After the frozen line is reached,
+								// setting the current frozen image
+								mFrozenImage = (IBitmapCore)CurrentImage.Clone();
+							}
 						}
 					}
+					
 					if (_EditingOperation != null)
 					{
 						Console.WriteLine("AnalyzeImage Calling for " + _EditingOperation.GetType().Name);
@@ -334,11 +340,17 @@ namespace CatEye.UI.Base
 			}
 		}
 		
-		public void AskUpdate()
+		public void AskUpdate(bool processImage)
 		{
 			CancelProcessing();
-			if (UpdateQueued != null) UpdateQueued(this, EventArgs.Empty);
+			mProcessImageDuringUpdate = processImage;
 			mUpdatePending = true;
+			if (UpdateQueued != null) UpdateQueued(this, EventArgs.Empty);
+		}
+		
+		public void AskUpdate()
+		{
+			AskUpdate(true);
 		}
 		
 		public StageOperationParameters FrozenAt

@@ -292,7 +292,7 @@ namespace CatEye.UI.Gtk.Widgets
 		
 		public override void AnalyzeImage (IBitmapCore image)
 		{
-			int points = 200;	// TODO: Make option
+			int points = 100;	// TODO: Make option
 			
 			ToneStageOperationParameters pm = (ToneStageOperationParameters)Parameters;
 			if (pm.AutoDarkTone)
