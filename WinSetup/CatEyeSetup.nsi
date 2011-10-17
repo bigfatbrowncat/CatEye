@@ -121,7 +121,9 @@ FunctionEnd
 !macroend
 
 
-!macro RegisterExtension extenstion
+!macro RegisterExtension extenstion ext_state
+;MessageBox MB_OK "${extenstion} == ${ext_state}"
+${If} ${ext_state} == 1
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
@@ -133,7 +135,8 @@ FunctionEnd
      DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" 
      WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}\UserChoice" "Progid" "${PRODUCT_NAME}.File" 
    ${EndIf}
- !macroend
+${EndIf}
+!macroend
 
 
 ;--------------------------------
@@ -196,66 +199,26 @@ Section  "Installer section"
   !insertmacro RegisterCestage "cestage"
   
   ; Registering extensions
-  ${If} $ext_cr2_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "CR2"
-  ${EndIf}
-  ${If} $ext_crw_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "CRW"
-  ${EndIf}
-  ${If} $ext_pef_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "PEF"
-  ${EndIf}
-  ${If} $ext_ptx_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "PTX"
-  ${EndIf}
-  ${If} $ext_nef_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "NEF"
-  ${EndIf}
-  ${If} $ext_nrf_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "NRF"
-  ${EndIf}
-  ${If} $ext_arw_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "ARW"
-  ${EndIf}
-  ${If} $ext_srf_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "SRF"
-  ${EndIf}
-  ${If} $ext_sr2_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "SR2"
-  ${EndIf}
-  ${If} $ext_dcr_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "DCR"
-  ${EndIf}
-  ${If} $ext_kdc_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "KDC"
-  ${EndIf}
-  ${If} $ext_orf_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "ORF"
-  ${EndIf}
-  ${If} $ext_mrw_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "MRW"
-  ${EndIf}
-  ${If} $ext_raf_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "RAF"
-  ${EndIf}
-  ${If} $ext_raw_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "RAW"
-  ${EndIf}
-  ${If} $ext_rw2_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "RW2"
-  ${EndIf}
-  ${If} $ext_srw_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "SRW"
-  ${EndIf}
-  ${If} $ext_bay_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "BAY"
-  ${EndIf}
-  ${If} $ext_x3f_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "X3F"
-  ${EndIf}
-  ${If} $ext_3fr_state == ${LVIS_CHECKED}
-    !insertmacro RegisterExtension "3FR"
-  ${EndIf}
+    !insertmacro RegisterExtension "CR2" $ext_cr2_state
+    !insertmacro RegisterExtension "CRW" $ext_crw_state
+    !insertmacro RegisterExtension "PEF" $ext_pef_state
+    !insertmacro RegisterExtension "PTX" $ext_ptx_state
+    !insertmacro RegisterExtension "NEF" $ext_nef_state
+    !insertmacro RegisterExtension "NRF" $ext_nrf_state
+    !insertmacro RegisterExtension "ARW" $ext_arw_state
+    !insertmacro RegisterExtension "SRF" $ext_srf_state
+    !insertmacro RegisterExtension "SR2" $ext_sr2_state
+    !insertmacro RegisterExtension "DCR" $ext_dcr_state
+    !insertmacro RegisterExtension "KDC" $ext_kdc_state
+    !insertmacro RegisterExtension "ORF" $ext_orf_state
+    !insertmacro RegisterExtension "MRW" $ext_mrw_state
+    !insertmacro RegisterExtension "RAF" $ext_raf_state
+    !insertmacro RegisterExtension "RAW" $ext_raw_state
+    !insertmacro RegisterExtension "RW2" $ext_rw2_state
+    !insertmacro RegisterExtension "SRW" $ext_srw_state
+    !insertmacro RegisterExtension "BAY" $ext_bay_state
+    !insertmacro RegisterExtension "X3F" $ext_x3f_state
+    !insertmacro RegisterExtension "3FR" $ext_3fr_state
   
   WriteUninstaller $INSTDIR\Uninstall.exe
 
