@@ -362,53 +362,64 @@ namespace CatEye.Core
 			
 			// Blurring
 			float[,] Q22 = new float[new_w, new_h];
-			for (int i = 0; i < new_w - 1; i++)
-			for (int j = 0; j < new_h - 1; j++)
+			for (int i = 0; i < new_w; i++)
+			for (int j = 0; j < new_h; j++)
 			{
 				Q22[i, j] = 0;
 				float diver = 0;
 				
 				float mix_k = 0.5f;
 				
-				diver += 0.125f * mix_k;
 				if (i > 0 && j > 0)
 				{
+					diver += 0.125f * mix_k;
 					Q22[i, j] += 0.125f * mix_k * Q2[i - 1, j - 1];
 				}
-				else
+				
+				if (i > 0 && j < new_h - 1)
 				{
-					Q22[i, j] += 0.125f * mix_k * Q2[i, j];
+					diver += 0.125f * mix_k;
+					Q22[i, j] += 0.125f * mix_k * Q2[i - 1, j + 1];
 				}
-					
-				diver += 0.375f * mix_k;
+
+				if (i < new_w - 1 && j > 0)
+				{
+					diver += 0.125f * mix_k;
+					Q22[i, j] += 0.125f * mix_k * Q2[i + 1, j - 1];
+				}
+
+				if (i < new_w - 1 && j < new_h - 1)
+				{
+					diver += 0.125f * mix_k;
+					Q22[i, j] += 0.125f * mix_k * Q2[i + 1, j + 1];
+				}
+				
 				if (i > 0)
 				{
-				    Q22[i, j] += 0.25f * mix_k * Q2[i - 1, j] +
-				                0.125f * mix_k * Q2[i - 1, j + 1];
+					diver += 0.25f * mix_k;
+				    Q22[i, j] += 0.25f * mix_k * Q2[i - 1, j];
 				}
-				else
+
+				if (i < new_w - 1)
 				{
-				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
-				                0.125f * mix_k * Q2[i, j + 1];
+					diver += 0.25f * mix_k;
+				    Q22[i, j] += 0.25f * mix_k * Q2[i + 1, j];
 				}
-				
-				diver += 0.375f;
+
 				if (j > 0)
 				{
-				    Q22[i, j] += 0.25f * mix_k * Q2[i, j - 1] +
-					            0.125f * mix_k * Q2[i + 1, j - 1];
-				}
-				else
-				{
-				    Q22[i, j] += 0.25f * mix_k * Q2[i, j] +
-					            0.125f * mix_k * Q2[i + 1, j];
+					diver += 0.25f * mix_k;
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j - 1];
 				}
 				
-				diver += 0.125f * mix_k + 1;
-				Q22[i, j] += Q2[i, j] + 
-				     0.25f * mix_k * Q2[i + 1, j] +
-				     0.25f * mix_k * Q2[i, j + 1] +
-				    0.125f * mix_k * Q2[i + 1, j + 1];
+				if (j < new_h - 1)
+				{
+					diver += 0.25f * mix_k;
+				    Q22[i, j] += 0.25f * mix_k * Q2[i, j + 1];
+				}
+
+				diver += 1;
+				Q22[i, j] += Q2[i, j];
 				
 				Q22[i, j] /= diver;
 			}
@@ -420,10 +431,15 @@ namespace CatEye.Core
 			int Hw = H.GetLength(0);
 			int Hh = H.GetLength(1);
 			
+			List<int> ww = new List<int>();
+			List<int> hh = new List<int>();
+			
 			int divides = 0, wt = Hw, ht = Hh;
-			while (wt > 64 && ht > 64)
+			ww.Add(wt); hh.Add(ht);
+			while (wt > 1 && ht > 1 && divides < 5)
 			{
 				wt /= 2; ht /= 2;
+				ww.Add(wt); hh.Add(ht);
 				divides ++;
 			}
 			
@@ -471,12 +487,16 @@ namespace CatEye.Core
 					}
 					else
 					{
-						if (i < w - 1)
+						if (i < w - 1 && i > 0)
+							grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i - 1, j]) / Math.Pow(2, k + 1));
+						else if (i == 0)
 							grad_H_cur_x[i, j] = (float)((H_cur[i + 1, j] - H_cur[i, j]) / Math.Pow(2, k));
-						else
+						else	
 							grad_H_cur_x[i, j] = (float)((H_cur[i, j] - H_cur[i - 1, j]) / Math.Pow(2, k));
 						
-						if (j < h - 1)
+						if (j < h - 1 && j > 0)
+							grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j - 1]) / Math.Pow(2, k + 1));
+						else if (j == 0)
 							grad_H_cur_y[i, j] = (float)((H_cur[i, j + 1] - H_cur[i, j]) / Math.Pow(2, k));
 						else
 							grad_H_cur_y[i, j] = (float)((H_cur[i, j] - H_cur[i, j - 1]) / Math.Pow(2, k));
@@ -529,7 +549,7 @@ namespace CatEye.Core
 				
 				if (k > 0)
 				{
-					Phi = Upsample2(Phi, 2 * w + 1, 2 * h + 1);
+					Phi = Upsample2(Phi, ww[k - 1], hh[k - 1]);
 				}
 			}
 			
@@ -563,7 +583,7 @@ namespace CatEye.Core
 			
 			int divides = 0, wt = W, ht = H;
 			ww.Add(wt); hh.Add(ht);
-			while (wt > 64 && ht > 64)
+			while (wt > 1 && ht > 1 && divides < 5)
 			{
 				wt /= 2; ht /= 2;
 				ww.Add(wt); hh.Add(ht);
@@ -961,7 +981,7 @@ namespace CatEye.Core
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
 //			double epsilon = 0.1f;	// TODO: Should be configured somehow...
-			float epsilon = 0.002f;	// TODO: Should be configured somehow...
+			float epsilon = 0.0005f;	// TODO: Should be configured somehow...
 			
 			float delta_prev = 0;
 			SolutionReporter srep = delegate (float progress, float[,] solution)

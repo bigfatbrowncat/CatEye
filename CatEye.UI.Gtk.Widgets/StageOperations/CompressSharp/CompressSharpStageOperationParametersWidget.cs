@@ -13,6 +13,9 @@ namespace CatEye.UI.Gtk.Widgets
 			base(parameters)
 		{
 			this.Build ();
+			
+			noiseGate_hscale.Adjustment.Lower = 0.001;
+			noiseGate_spinbutton.Adjustment.Lower = 0.001;
 		}
 		
 //		private bool _CompressionIsChanging = false;
