@@ -658,6 +658,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Sharp</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">False</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -768,9 +769,9 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Lower">0.01</property>
-            <property name="Upper">0.2</property>
+            <property name="Upper">0.5</property>
             <property name="PageIncrement">0.01</property>
-            <property name="StepIncrement">0.001</property>
+            <property name="StepIncrement">1</property>
             <property name="Value">0.01</property>
             <property name="DrawValue">False</property>
             <property name="Digits">3</property>
@@ -796,12 +797,14 @@
           <widget class="Gtk.SpinButton" id="noiseGate_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Upper">0.2</property>
+            <property name="Lower">0.01</property>
+            <property name="Upper">0.5</property>
             <property name="PageIncrement">0.001</property>
             <property name="StepIncrement">0.001</property>
             <property name="ClimbRate">1</property>
-            <property name="Digits">3</property>
+            <property name="Digits">2</property>
             <property name="Numeric">True</property>
+            <property name="Value">0.01</property>
             <signal name="ValueChanged" handler="OnNoiseGateSpinbuttonValueChanged" />
           </widget>
           <packing>

@@ -523,7 +523,7 @@ namespace CatEye.Core
 					//float k0 = 0.01f, nf_edge = 0.005f;
 					//float nf_softness = k0 * nf_edge * nf_edge;
 					//phi_k[i, j] *= (float)(1.0 / Math.PI * Math.Atan2(nf_softness * abs_grad_H_cur, nf_edge * nf_edge - abs_grad_H_cur * abs_grad_H_cur));
-					float nf_edge = (float)(noise_gate * noise_gate);
+					float nf_edge = (float)(noise_gate * noise_gate) * avg_grad;
 					phi_k[i, j] *= (float)(1 - Math.Exp(-abs_grad_H_cur * abs_grad_H_cur / nf_edge / nf_edge));
 				}
 				phi.Add(phi_k);
@@ -669,7 +669,7 @@ namespace CatEye.Core
 			for (int step = 0; step < steps_max; step ++)
 			{
 				// *** Horizontal iterations ***
-				int threads_num = 4;
+				int threads_num = 6;
 				Thread[] threads = new Thread[threads_num];
 				
 				for (int q = 0; q < threads_num; q++)
@@ -878,6 +878,8 @@ namespace CatEye.Core
 				
 				delta /= (float)Math.Sqrt(w * h);
 				float dpd = Math.Abs(delta - delta_prev) / delta;
+
+				// This formula is found experimentally
 				float progress = (float)Math.Min(Math.Pow(stop_dpd / (dpd + 0.000001), 0.78), 0.999);
 
 				if (callback != null)
@@ -981,9 +983,8 @@ namespace CatEye.Core
 			
 //			double epsilon = 5e-8f;	// TODO: Should be configured somehow...
 //			double epsilon = 0.1f;	// TODO: Should be configured somehow...
-			float epsilon = 0.0005f;	// TODO: Should be configured somehow...
+			float epsilon = 0.003f;	// TODO: Should be configured somehow...
 			
-			float delta_prev = 0;
 			SolutionReporter srep = delegate (float progress, float[,] solution)
 			{
 				if (step % 30 == 0 || progress > 0.999)
@@ -1014,7 +1015,6 @@ namespace CatEye.Core
 				
 				if (callback != null)
 				{
-					// This formula is found experimentally
 					if (!callback(progress))
 						throw new UserCancelException();
 				}
