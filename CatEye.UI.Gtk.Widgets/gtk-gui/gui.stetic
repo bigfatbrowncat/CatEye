@@ -827,7 +827,7 @@
           <widget class="Gtk.HScale" id="pressure_hscale">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Upper">2</property>
+            <property name="Upper">4</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.1</property>
             <property name="DrawValue">False</property>
@@ -854,7 +854,7 @@
           <widget class="Gtk.SpinButton" id="pressure_spinbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Upper">2</property>
+            <property name="Upper">4</property>
             <property name="PageIncrement">0.01</property>
             <property name="StepIncrement">0.1</property>
             <property name="ClimbRate">1</property>

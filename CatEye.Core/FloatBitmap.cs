@@ -453,7 +453,6 @@ namespace CatEye.Core
 			
 			// Building phi_k			
 			List<float[,]> phi = new List<float[,]>();
-
 			for (int k = 0; k <= divides; k++)	      // k is the index of H_cur
 			{
 				float avg_grad = 0;
@@ -520,11 +519,8 @@ namespace CatEye.Core
 					phi_k[i, j] = (float)(Math.Pow(abs_grad_H_cur / alpha, beta - 1));
 					
 					// Noise gate
-					//float k0 = 0.01f, nf_edge = 0.005f;
-					//float nf_softness = k0 * nf_edge * nf_edge;
-					//phi_k[i, j] *= (float)(1.0 / Math.PI * Math.Atan2(nf_softness * abs_grad_H_cur, nf_edge * nf_edge - abs_grad_H_cur * abs_grad_H_cur));
-					float nf_edge = (float)(noise_gate * noise_gate) * avg_grad;
-					phi_k[i, j] *= (float)(1 - Math.Exp(-abs_grad_H_cur * abs_grad_H_cur / nf_edge / nf_edge));
+					float nf_edge = (float)(noise_gate) * avg_grad;
+					phi_k[i, j] *= (float)(1 - Math.Exp(-Math.Pow(abs_grad_H_cur / nf_edge, 0.8)));
 				}
 				phi.Add(phi_k);
 			}
@@ -944,7 +940,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.01 * pressure * pressure, 0.8, noise_gate);
+			float[,] Phi = BuildPhi(H, 0.01 * pressure, 0.8, noise_gate);
 			
 			
 			// Calculating G and div_G
