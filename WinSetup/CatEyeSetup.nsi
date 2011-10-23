@@ -75,7 +75,8 @@ BrandingText /TRIMLEFT " "
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
-!define MUI_FINISHPAGE_RUN "$INSTDIR\CatEye.exe"
+;!define MUI_FINISHPAGE_TEXT_REBOOTNOW "Reboot now"
+;!define MUI_FINISHPAGE_RUN "$INSTDIR\CatEye.exe"
 !insertmacro MUI_PAGE_FINISH
 
 
@@ -103,6 +104,7 @@ LicenseData $(license)
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
+  SetRebootFlag true
 FunctionEnd
 
 
@@ -122,12 +124,8 @@ FunctionEnd
 
 
 !macro RegisterExtension extenstion ext_state
-;MessageBox MB_OK "${extenstion} == ${ext_state}"
 ${If} ${ext_state} == 1
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
    ; default application for current user (for NT6.0 and newer)
    GetVersion::WindowsVersion
    Pop $winver
@@ -195,6 +193,11 @@ Section  "Installer section"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "DisplayIcon" "$INSTDIR\res\ico\cateye.ico"
   WriteRegStr HKLM SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} "UninstallString" "$INSTDIR\Uninstall.exe"
   
+  ; Registering open with CatEye
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+  
   ; Registering .cestage file
   !insertmacro RegisterCestage "cestage"
   
@@ -230,6 +233,7 @@ SectionEnd
 
 Function un.onInit
   !insertmacro MUI_UNGETLANGUAGE
+  SetRebootFlag true
 FunctionEnd
 
 
@@ -298,16 +302,15 @@ FunctionEnd
 
 
 !macro UnRegisterExtension extenstion
-  WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.File"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
-   ; default application for current user (for NT6.0 and newer)
-   GetVersion::WindowsVersion
-   Pop $winver
-   ${If} $winver >= "6.0"
-     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
-   ${EndIf}
+
+  DeleteRegKey HKLM "Software\Classes\.${extenstion}"
+  ; default application for current user (for NT6.0 and newer)
+  GetVersion::WindowsVersion
+  Pop $winver
+  ${If} $winver >= "6.0"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.${extenstion}"
+  ${EndIf}
+
 !macroend
 
 
@@ -377,6 +380,11 @@ Section "un.Installer section"
   !insertmacro UnRegisterExtension "BAY"
   !insertmacro UnRegisterExtension "X3F"
   !insertmacro UnRegisterExtension "3FR"
+  
+  ; Unregistering opening with CatEye
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command"
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon"
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File"
   
 SectionEnd
 
