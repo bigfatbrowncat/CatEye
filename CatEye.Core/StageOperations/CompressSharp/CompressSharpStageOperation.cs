@@ -15,7 +15,7 @@ namespace CatEye.Core
 		{
 			CompressSharpStageOperationParameters pm = (CompressSharpStageOperationParameters)Parameters;
 
-			return (double)hdp.Width * hdp.Height * (5 * pm.Pressure + 1) * 5;
+			return (double)hdp.Width * hdp.Height * (5 * pm.Pressure + 1) * 20;
 		}
 		
 		public override void OnDo (IBitmapCore hdp)
@@ -27,11 +27,12 @@ namespace CatEye.Core
 			//if (pm.Type == LocalContrastStageOperationParameters.SharpType.Soft) 
 			//	pressure *= -1;
 			
-			hdp.SharpenLight(pm.Curve, pm.NoiseGate, pm.Pressure, 
+			hdp.SharpenLight(pm.Curve, pm.NoiseGate, pm.Pressure, pm.Contrast,
 				delegate (double progress) {
 					return OnReportProgress(progress);
 				}
 			);
+			hdp.SharpenEdges(pm.EdgePressure, 1, null);
 		}
 
 	}

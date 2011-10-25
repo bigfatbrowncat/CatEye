@@ -8,7 +8,7 @@ namespace CatEye.Core
 	public class BlackPointStageOperationParameters : StageOperationParameters
 	{
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mCut = 0.0;
+		private double mCut = 0.5, mBlurDarkLevel = 0.2;
 		
 		public double Cut
 		{
@@ -16,6 +16,15 @@ namespace CatEye.Core
 			set 
 			{
 				mCut = value;
+				OnChanged();
+			}
+		}
+		public double BlurDarkLevel
+		{
+			get { return mBlurDarkLevel; }
+			set 
+			{
+				mBlurDarkLevel = value;
 				OnChanged();
 			}
 		}
@@ -28,6 +37,7 @@ namespace CatEye.Core
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
 			xn.Attributes.Append(xdoc.CreateAttribute("Cut")).Value = mCut.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("BlurDarkLevel")).Value = mBlurDarkLevel.ToString(nfi);
 			return xn;
 		}
 
@@ -44,6 +54,15 @@ namespace CatEye.Core
 				else
 					throw new IncorrectNodeValueException("Can't parse Cut value");
 			}
+			if (node.Attributes["BlurDarkLevel"] != null)
+			{
+				if (double.TryParse(node.Attributes["BlurDarkLevel"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mBlurDarkLevel = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse BlurDarkLevel value");
+			}
 			OnChanged();
 		}
 		
@@ -57,6 +76,7 @@ namespace CatEye.Core
 			base.CopyDataTo (target);
 			BlackPointStageOperationParameters t = (BlackPointStageOperationParameters)target;
 			t.mCut = mCut;
+			t.mBlurDarkLevel = mBlurDarkLevel;
 			t.OnChanged();
 		}
 		

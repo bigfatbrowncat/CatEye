@@ -6,6 +6,8 @@ namespace CatEye.Core
 	[StageOperationID("BlackPointStageOperation")]
 	public class BlackPointStageOperation : StageOperation
 	{
+		private int blur_radius = 1;
+		
 		public BlackPointStageOperation (StageOperationParameters parameters)
 			: base (parameters)
 		{
@@ -13,14 +15,14 @@ namespace CatEye.Core
 
 		public override double CalculateEfforts (IBitmapCore hdp)
 		{
-			return (double)hdp.Width * hdp.Height;
+			return (double)hdp.Width * hdp.Height * (2 * blur_radius * 2 * blur_radius + 1);
 		}
 		
 		public override void OnDo (IBitmapCore hdp)
 		{
 			BlackPointStageOperationParameters pm = (BlackPointStageOperationParameters)Parameters;
 			
-			hdp.CutBlackPoint(pm.Cut,
+			hdp.CutBlackPoint(pm.Cut, blur_radius, 0.2, 1024, 0.01,
 			         delegate (double progress) {
 				return OnReportProgress(progress);
 			});

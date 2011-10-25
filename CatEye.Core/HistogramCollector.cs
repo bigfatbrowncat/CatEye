@@ -44,6 +44,39 @@ namespace CatEye.Core
 			mBlueHistogramData = new double[lines];
 			mLines = lines;
 		}
+
+		public int FindLowTailLightness(double valueAtLeast)
+		{
+			for (int i = 0; i < mLines; i++)
+			{
+				if (GetLightHistogramLine(i) > valueAtLeast) return i;
+			}
+			return 0;
+		}
+		public int FindLowTailRed(double valueAtLeast)
+		{
+			for (int i = 0; i < mLines; i++)
+			{
+				if (GetRedHistogramLine(i) > valueAtLeast) return i;
+			}
+			return 0;
+		}
+		public int FindLowTailGreen(double valueAtLeast)
+		{
+			for (int i = 0; i < mLines; i++)
+			{
+				if (GetGreenHistogramLine(i) > valueAtLeast) return i;
+			}
+			return 0;
+		}
+		public int FindLowTailBlue(double valueAtLeast)
+		{
+			for (int i = 0; i < mLines; i++)
+			{
+				if (GetBlueHistogramLine(i) > valueAtLeast) return i;
+			}
+			return 0;
+		}
 		
 		public int FindHighTailLightness(double valueAtLeast)
 		{

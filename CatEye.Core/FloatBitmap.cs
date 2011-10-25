@@ -525,7 +525,6 @@ namespace CatEye.Core
 				phi.Add(phi_k);
 			}
 			
-			
 			// Building Phi from phi_k
 			float[,] Phi = new float[phi[phi.Count - 1].GetLength(0), phi[phi.Count - 1].GetLength(1)];
 			for (int i = 0; i < Phi.GetLength(0); i++)
@@ -873,7 +872,7 @@ namespace CatEye.Core
 				}
 				
 				delta /= (float)Math.Sqrt(w * h);
-				float dpd = Math.Abs(delta - delta_prev) / delta;
+				float dpd = Math.Abs((delta - delta_prev) / delta);
 
 				// This formula is found experimentally
 				float progress = (float)Math.Min(Math.Pow(stop_dpd / (dpd + 0.000001), 0.78), 0.999);
@@ -883,7 +882,7 @@ namespace CatEye.Core
 					callback(progress, I0);
 				}
 				
-				if (Math.Abs(delta - delta_prev) / delta < stop_dpd)
+				if (dpd < stop_dpd)
 				{
 					return true;
 				}
@@ -894,7 +893,7 @@ namespace CatEye.Core
 			return false;
 		}
 		
-		public unsafe void SharpenLight(double curve, double noise_gate, double pressure, ProgressReporter callback)
+		public unsafe void SharpenLight(double curve, double noise_gate, double pressure, double contrast, ProgressReporter callback)
 		{
 			
 			float[,] oldr = r_chan; 
@@ -940,7 +939,7 @@ namespace CatEye.Core
 			}
 			
 			// Calculating Phi
-			float[,] Phi = BuildPhi(H, 0.01 * pressure, 0.8, noise_gate);
+			float[,] Phi = BuildPhi(H, 0.01 * pressure, contrast, noise_gate);
 			
 			
 			// Calculating G and div_G
@@ -1002,9 +1001,12 @@ namespace CatEye.Core
 						
 						double L = Math.Exp(solution[i1, j1]) * Lcomp;
 						
-						r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
-						g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
-						b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
+						lock (this)
+						{
+							r_chan[i, j] = (float)(oldr[i, j] * L / (Lold + 0.00001));
+							g_chan[i, j] = (float)(oldg[i, j] * L / (Lold + 0.00001));
+							b_chan[i, j] = (float)(oldb[i, j] * L / (Lold + 0.00001));
+						}
 					}
 				}
 				step ++;
@@ -1017,10 +1019,17 @@ namespace CatEye.Core
 			
 			};
 			
-			I = SolvePoissonNeimanMultiLattice(div_G, 20000, epsilon, srep);
-			//SolvePoissonNeiman(H, div_G, 20000, epsilon, srep);
-
+			//if (pressure >= 0.001)
+			//{
+				I = SolvePoissonNeimanMultiLattice(div_G, 20000, epsilon, srep);
+			//}
+			//else
+			//{
+				//I = H;
+			//}
+			
 			srep(1, I);
+			
 		}
 		
 		public Tone FindLightTone(Tone dark_tone, double edge, double softness, Point light_center, double light_radius, int points)
@@ -1331,48 +1340,106 @@ namespace CatEye.Core
 			}
 		}
 		
-		public void CutBlackPoint(double cut, ProgressReporter callback)
+		public void SharpenEdges(double level, int blur_radius, ProgressReporter callback)
 		{
-			double max_light = CalcMaxLight();
-			double min_light = AmplitudeFindBlackPoint();
+			float[,] oldr = r_chan; 
+			float[,] oldg = g_chan; 
+			float[,] oldb = b_chan;
 			
-			if (cut < 0.00001)
+			r_chan = new float[mWidth, mHeight];
+			g_chan = new float[mWidth, mHeight];
+			b_chan = new float[mWidth, mHeight];
+			
+			for (int i = 0; i < mWidth; i++)
+			for (int j = 0; j < mHeight; j++)
 			{
-				cut = (cut + 1) * min_light;	
+				r_chan[i, j] = oldr[i, j];
+				g_chan[i, j] = oldg[i, j];
+				b_chan[i, j] = oldb[i, j];
 			}
-			else 
-			{
-				cut = min_light + (max_light - min_light) * cut;
-			}
 			
-			
-			lock (this)
+			for (int j = 0; j < mHeight; j++)
 			{
-				for (int j = 0; j < mHeight; j++)
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
 				{
-					if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+					if (!callback((double)j / this.mHeight)) return;
+				}
+				
+				for (int i = 0; i < mWidth; i++)
+				{
+					double lightC = Math.Sqrt(
+									oldr[i, j] * oldr[i, j] + 
+								  	oldr[i, j] * oldr[i, j] + 
+					                oldr[i, j] * oldr[i, j]) / Math.Sqrt(3);
+
+					double avg_div = 0;
+					double avgLight = 0;
+					for (int di = -blur_radius; di <= blur_radius; di++)
+					for (int dj = -blur_radius; dj <= blur_radius; dj++)
 					{
-						if (!callback((double)j / this.mHeight)) return;
+						if (i + di < mWidth && i + di >= 0 && 
+							j + dj < mHeight && j + dj >= 0 && (di != 0 || dj != 0))
+						{
+							double lightD = Math.Sqrt(
+											oldr[i + di, j + dj] * oldr[i + di, j + dj] + 
+										  	oldg[i + di, j + dj] * oldg[i + di, j + dj] + 
+							                oldb[i + di, j + dj] * oldb[i + di, j + dj]) / Math.Sqrt(3);
+							avgLight += lightD;
+							avg_div += 1;
+						}
+					}
+					avgLight /= avg_div;
+					
+
+					lock (this)
+					{
+						r_chan[i, j] *= (float)((1 - level) + level * (lightC / avgLight));
+						g_chan[i, j] *= (float)((1 - level) + level * (lightC / avgLight));
+						b_chan[i, j] *= (float)((1 - level) + level * (lightC / avgLight));
 					}
 					
-					for (int i = 0; i < mWidth; i++)
+				}
+			}
+		}
+		
+		public void CutBlackPoint(double cut, int blur_radius, double blur_dark_level, int lines, double tailValueAtLeast, ProgressReporter callback)
+		{
+			double max_light = CalcMaxLight();
+
+			HistogramCollector sc = new HistogramCollector(max_light, lines);
+			sc.CollectData(this);
+			double min_tail = sc.LineToScale(sc.FindLowTailLightness(tailValueAtLeast));
+			double max_tail = sc.LineToScale(sc.FindHighTailLightness(tailValueAtLeast));
+
+			for (int j = 0; j < mHeight; j++)
+			{
+				if (j % REPORT_EVERY_NTH_LINE == 0 && callback != null)
+				{
+					if (!callback((double)j / this.mHeight * 0.3)) return;
+				}
+				
+				for (int i = 0; i < mWidth; i++)
+				{
+					double light = Math.Sqrt(
+									r_chan[i, j] * r_chan[i, j] + 
+								  	g_chan[i, j] * g_chan[i, j] + 
+					                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
+					
+					Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
+					
+					double newlight = light - min_tail * cut;
+					if (newlight < 0) newlight = 0;
+					
+					lock (this)
 					{
-						double light = Math.Sqrt(
-										r_chan[i, j] * r_chan[i, j] + 
-									  	g_chan[i, j] * g_chan[i, j] + 
-						                b_chan[i, j] * b_chan[i, j]) / Math.Sqrt(3);
-						
-						Tone curtone = new Tone(r_chan[i, j], g_chan[i, j], b_chan[i, j]);
-						
-						double newlight = light - cut;
-						if (newlight < 0) newlight = 0;
-						
 						r_chan[i, j] = (float)(curtone.R * newlight);
 						g_chan[i, j] = (float)(curtone.G * newlight);
 						b_chan[i, j] = (float)(curtone.B * newlight);
 					}
 				}
 			}
+			
+			
 		}
 				
 		public void Crotate(double beta, Point c, int crop_w, int crop_h, int quality, ProgressReporter callback)

@@ -16,8 +16,10 @@ namespace CatEye.UI.Gtk.Widgets
 		}
 
 		private bool _CutIsChanging = false;
+//		private bool _BlurDarkIsChanging = false;
 		
 		protected enum CutChanger { HScale, SpinButton }
+//		protected enum BlurDarkChanger { HScale, SpinButton }
 		
 		protected void ChangeCut(double new_value, CutChanger changer)
 		{
@@ -28,10 +30,10 @@ namespace CatEye.UI.Gtk.Widgets
 				
 				// Setting all editors to the value
 				if (changer != CutChanger.HScale)			
-					cut_hscale.Value = 2 * Math.Log(2 * new_value + 3, 5) - 1;
+					cut_hscale.Value = new_value;
 				
 				if (changer != CutChanger.SpinButton)
-					cut_spinbutton.Value = (Math.Pow(5, (new_value + 1) / 2.0) - 3) / 2.0;
+					cut_spinbutton.Value = new_value;
 				
 				((BlackPointStageOperationParameters)Parameters).Cut = new_value;
 				
@@ -41,14 +43,39 @@ namespace CatEye.UI.Gtk.Widgets
 			}
 		}
 
-
+/*		protected void ChangeBlurDark(double new_value, BlurDarkChanger changer)
+		{
+			if (!_BlurDarkIsChanging)
+			{
+				_BlurDarkIsChanging = true;
+				StartChangingParameters();
+				
+				// Setting all editors to the value
+				if (changer != BlurDarkChanger.HScale)			
+					blurDark_hscale.Value = new_value;
+				
+				if (changer != BlurDarkChanger.SpinButton)
+					blurDark_spinbutton.Value = new_value;
+				
+				((BlackPointStageOperationParameters)Parameters).BlurDarkLevel = new_value;
+				
+				EndChangingParameters();
+				OnUserModified();
+				_BlurDarkIsChanging = false;
+			}
+		}
+*/
 		protected override void HandleParametersChangedNotByUI ()
 		{
 			_CutIsChanging = true;
-			cut_hscale.Value = 2 * Math.Log(2 * ((BlackPointStageOperationParameters)Parameters).Cut + 3, 5) - 1;
+			cut_hscale.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
 			cut_spinbutton.Value = ((BlackPointStageOperationParameters)Parameters).Cut;
 			_CutIsChanging = false;
-			
+
+/*			_BlurDarkIsChanging = true;
+			blurDark_hscale.Value = ((BlackPointStageOperationParameters)Parameters).BlurDarkLevel;
+			blurDark_spinbutton.Value = ((BlackPointStageOperationParameters)Parameters).BlurDarkLevel;
+			_BlurDarkIsChanging = false;*/
 		}
 		
 		protected void OnCutHscaleChangeValue (object o, ChangeValueArgs args)
@@ -61,5 +88,15 @@ namespace CatEye.UI.Gtk.Widgets
 			ChangeCut(cut_spinbutton.Value, CutChanger.SpinButton);
 		}
 
+/*		protected void OnBlurDarkHscaleChangeValue (object o, ChangeValueArgs args)
+		{
+			ChangeBlurDark(blurDark_hscale.Value, BlurDarkChanger.HScale);
+		}
+
+		protected void OnBlurDarkSpinbuttonValueChanged (object sender, System.EventArgs e)
+		{
+			ChangeBlurDark(blurDark_spinbutton.Value, BlurDarkChanger.HScale);
+		}
+*/
 	}
 }

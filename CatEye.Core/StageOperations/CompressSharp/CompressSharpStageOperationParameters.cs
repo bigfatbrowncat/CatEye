@@ -10,18 +10,8 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mCurve = 0.5, /*mCompression = 0.5,*/ mNoiseGate = 0.001;
+		private double mPressure = 10, mCurve = 0.5, mNoiseGate = 0.001, mContrast = 0.75, mEdgePressure = 0.4;
 		private SharpType mType = SharpType.Sharp;
-
-/*		public double Compression
-		{
-			get { return mCompression; }
-			set 
-			{
-				mCompression = value;
-				OnChanged();
-			}
-		}*/
 
 		public double Curve
 		{
@@ -62,14 +52,35 @@ namespace CatEye.Core
 				OnChanged();
 			}
 		}
+
+		public double Contrast
+		{
+			get { return mContrast; }
+			set 
+			{
+				mContrast = value;
+				OnChanged();
+			}
+		}
 		
+		public double EdgePressure
+		{
+			get { return mEdgePressure; }
+			set 
+			{
+				mEdgePressure = value;
+				OnChanged();
+			}
+		}
+
 		public override XmlNode SerializeToXML (XmlDocument xdoc)
 		{
 			XmlNode xn = base.SerializeToXML (xdoc);
-//			xn.Attributes.Append(xdoc.CreateAttribute("Compression")).Value = mCompression.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Curve")).Value = mCurve.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("Pressure")).Value = mPressure.ToString(nfi);
 			xn.Attributes.Append(xdoc.CreateAttribute("NoiseGate")).Value = mNoiseGate.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("Contrast")).Value = mContrast.ToString(nfi);
+			xn.Attributes.Append(xdoc.CreateAttribute("EdgePressure")).Value = mEdgePressure.ToString(nfi);
 			string st = "";
 			if (mType == SharpType.Sharp)
 				st = "sharp";
@@ -85,15 +96,6 @@ namespace CatEye.Core
 		{
 			base.DeserializeFromXML (node);
 			double res = 0;
-/*			if (node.Attributes["Compression"] != null)
-			{
-				if (double.TryParse(node.Attributes["Compression"].Value, NumberStyles.Float, nfi, out res))
-				{
-					mCompression = res;
-				}
-				else
-					throw new IncorrectNodeValueException("Can't parse Compression value");
-			}*/
 			if (node.Attributes["Curve"] != null)
 			{
 				if (double.TryParse(node.Attributes["Curve"].Value, NumberStyles.Float, nfi, out res))
@@ -120,6 +122,24 @@ namespace CatEye.Core
 				}
 				else
 					throw new IncorrectNodeValueException("Can't parse NoiseGate value");
+			}
+			if (node.Attributes["Contrast"] != null)
+			{
+				if (double.TryParse(node.Attributes["Contrast"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mContrast = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse Contrast value");
+			}
+			if (node.Attributes["EdgePressure"] != null)
+			{
+				if (double.TryParse(node.Attributes["EdgePressure"].Value, NumberStyles.Float, nfi, out res))
+				{
+					mEdgePressure = res;
+				}
+				else
+					throw new IncorrectNodeValueException("Can't parse EdgePressure value");
 			}
 			if (node.Attributes["SharpType"] != null)
 			{
@@ -151,10 +171,11 @@ namespace CatEye.Core
 		{
 			base.CopyDataTo (target);
 			CompressSharpStageOperationParameters t = (CompressSharpStageOperationParameters)target;
-//			t.mCompression = mCompression;
 			t.mCurve = mCurve;
 			t.mPressure = mPressure;
 			t.mNoiseGate = mNoiseGate;
+			t.mContrast = mContrast;
+			t.mEdgePressure = mEdgePressure;
 			t.mType = mType;
 			t.OnChanged();
 		}

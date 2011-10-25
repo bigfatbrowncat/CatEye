@@ -150,7 +150,7 @@
             <child>
               <widget class="Gtk.Label" id="label8">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Ilya Mizus, Vasilij Litvinov&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Ilya Mizus, Irene Mizus&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
                 <property name="Wrap">True</property>
               </widget>
