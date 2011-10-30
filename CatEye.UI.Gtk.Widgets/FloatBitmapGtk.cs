@@ -7,7 +7,7 @@ namespace CatEye.UI.Gtk.Widgets
 {
 	public class FloatBitmapGtk : FloatBitmap
 	{
-		public static new FloatBitmapGtk FromPPM(PPMLoader ppm, ProgressReporter callback)
+		public static new FloatBitmapGtk FromPPM(RawLoader ppm, ProgressReporter callback)
 		{
 			FloatBitmapGtk fbg = new FloatBitmapGtk();
 			

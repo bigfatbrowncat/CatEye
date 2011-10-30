@@ -104,7 +104,6 @@
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
     <Compile Include="DCRawConnection.cs" />
-    <Compile Include="PPMLoader.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="FloatBitmap.cs" />
@@ -116,6 +115,7 @@
     <Compile Include="StageOperations\Highlight\HighlightStageOperationParameters.cs" />
     <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperation.cs" />
     <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperationParameters.cs" />
+    <Compile Include="RawLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -99,7 +99,7 @@ namespace CatEye
 			return pwid;
 		}
 		
-		public static IBitmapCore FloatBitmapGtkFactory(PPMLoader ppl, ProgressReporter callback)
+		public static IBitmapCore FloatBitmapGtkFactory(RawLoader ppl, ProgressReporter callback)
 		{
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
@@ -274,7 +274,7 @@ namespace CatEye
 					
 					sew.Show();
 					sew.LoadRaw(rawFileName, prescale);
-					sew.LoadCEStage(cestageFileName);
+					sew.LoadCEStage(cestageFileName, false);
 				});
 			}
 			else if (e.Command == "StageEditor_CEStage")
@@ -299,7 +299,7 @@ namespace CatEye
 					mStageEditorWindows.Add(sew);
 					
 					sew.Show();
-					sew.LoadCEStage(cestageFileName);
+					sew.LoadCEStage(cestageFileName, true);
 				});
 			}
 			else if (e.Command == "StageEditor_RAW")
@@ -591,7 +591,15 @@ namespace CatEye
 							string target_name = System.IO.Path.ChangeExtension(argslist[i], target_type);
 							target_name = CheckIfFileExistsAndAddIndex(target_name);
 							
-							string[] raws = FindRawsForCEStage(argslist[i]);
+							string[] raws = new string[] {};
+							try
+							{
+								raws = FindRawsForCEStage(argslist[i]);
+							}
+							catch (System.IO.DirectoryNotFoundException dnfe)
+							{
+								Console.WriteLine("Error: " + dnfe.Message);			
+							}
 							if (raws.Length > 0)
 							{
 								// At least one found
@@ -840,222 +848,5 @@ namespace CatEye
 			}
 			mRemoteControlService.Stop();
 		}
-
-
-		
-
-					/* OLD MAIN 		
-		public static void Main (string[] args)
-		{
-			Application.Init ();
-			
-			List<string> argslist = new List<string>(args);
-			if (argslist.Count > 0 && (argslist[0] == "--queue" || argslist[0] == "-q"))
-			{
-				bool queue_server_created = RemotingObject.RunQueueServiceOrConnectToIt();
-				
-				if (argslist.Count > 1)
-				{
-					// Trying to load something
-					
-					// Options
-					string cestage_filename = null, raw_filename = null, output_filename = null, type = "jpeg";
-					int prescale = 2;
-					
-					int inx = argslist.IndexOf("--cestage");
-					if (inx > -1)
-					{
-						try
-						{
-							cestage_filename = argslist[inx + 1];
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Incorrect cestage argument. It should be \"--cestage <file_name>\"");
-							return;
-						}
-					}
-					inx = argslist.IndexOf("--raw");
-					if (inx > -1)
-					{
-						try
-						{
-							raw_filename = argslist[inx + 1];
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Incorrect raw argument. It should be \"--raw <file_name>\"");
-							return;
-						}
-					}
-					inx = argslist.IndexOf("--output");
-					if (inx > -1)
-					{
-						try
-						{
-							output_filename = argslist[inx + 1];
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Incorrect output argument. It should be \"--output <file_name>\"");
-							return;
-						}
-					}
-					inx = argslist.IndexOf("--type");
-					if (inx > -1)
-					{
-						try
-						{
-							type = argslist[inx + 1];
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Incorrect type argument. It should be \"--type (jpeg, png, bmp)\"");
-							return;
-						}
-					}
-					inx = argslist.IndexOf("--prescale");
-					if (inx > -1)
-					{
-						try
-						{
-							prescale = int.Parse(argslist[inx + 1]);
-							if (prescale < 1 || prescale > 10) throw new Exception();
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Incorrect prescale argument. It should be a positive integer lower or equal than 10");
-							return;
-						}
-					}
-					
-					// Guessing missed arguments
-					if (cestage_filename == null && raw_filename != null)
-					{
-						cestage_filename = System.IO.Path.ChangeExtension(raw_filename, ".cestage");
-					}
-					if (raw_filename == null && cestage_filename != null)
-					{
-						try
-						{
-							raw_filename = FindRawsForCEStage(cestage_filename)[0];
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("No RAW files found for " + cestage_filename);
-							return;
-						}
-					}
-					if (output_filename == null && cestage_filename != null)
-					{
-						output_filename = System.IO.Path.ChangeExtension(cestage_filename, ".jpeg");
-					}
-					
-					if (cestage_filename == null || raw_filename == null || output_filename == null)
-					{
-						Console.WriteLine("Incorrect parameters");
-						return;
-					}
-
-					// Initializing rendering queue and it's window
-					
-					Stage stage = new Stage(StageOperationFactory, StageOperationParametersFactoryFromID, FloatBitmapGtkFactory);
-					stage.LoadStage(cestage_filename);
-					RemotingObject.rob.rq.Add(stage, raw_filename, prescale, output_filename, type);
-				}
-				if (queue_server_created)
-				{
-					
-					while (!mQuitFlag)
-					{
-						Gtk.Application.RunIteration();
-					}
-				}
-			}
-			else
-			{	
-				// ** Starting main editor window **
-				
-				// Initializing stage and main window
-				ExtendedStage stage = new ExtendedStage(
-					StageOperationFactory, 
-					StageOperationParametersFactoryFromID,
-					StageOperationParametersEditorFactory, 
-					StageOperationHolderFactory, 
-					FloatBitmapGtkFactory);
-				
-			
-				DateTime lastUpdateQueuedTime = DateTime.Now;
-				
-				stage.UpdateQueued += delegate {
-					lastUpdateQueuedTime = DateTime.Now;
-				};
-				
-				win = new StageEditorWindow (stage, mStageOperationTypes);
-				win.Show ();
-				
-				bool just_started = true;
-				
-				while (!mQuitFlag)
-				{
-					if (just_started)
-					{
-						just_started = false;
-						// Parsing command line arguments
-						if (args.Length > 0)
-						{
-							if (args.Length == 1)
-							{
-								bool exists = System.IO.File.Exists(args[0]);
-								bool is_cestage = System.IO.Path.GetExtension(args[0]).ToLower() == ".cestage";
-								bool is_raw = DCRawConnection.IsRaw(args[0]);
-								if (!exists)
-								{
-									Gtk.MessageDialog md = new Gtk.MessageDialog(win, DialogFlags.Modal,
-									                                             MessageType.Error, ButtonsType.Ok, 
-									                                             "Can not find file \"{0}\".", args[0]);
-									md.Title = APP_NAME;
-									md.Run();
-									md.Destroy();
-								}
-								else if (is_cestage)
-								{
-									// Loading cestage
-									stage.LoadStage(args[0]);
-									
-									string raw_filename; int prescale;
-									if (FindRawsForCestageAndAskToOpen(args[0], out raw_filename, out prescale))
-									{
-										stage.LoadImage(raw_filename, prescale);
-									}
-								}
-								else if (is_raw)
-								{
-									// TODO: handle raw file in command-line arguments
-								}
-								else // exists, but neither cestage nor raw
-								{
-									Gtk.MessageDialog md = new Gtk.MessageDialog(win, DialogFlags.Modal,
-									                                             MessageType.Error, ButtonsType.Ok, 
-									                                             "Incorrect file \"{0}\".", args[0]);
-									md.Title = APP_NAME;
-									md.Run();
-									md.Destroy();
-								}
-							}
-						}
-						
-					}
-					
-					Gtk.Application.RunIteration();
-					if ((DateTime.Now - lastUpdateQueuedTime).TotalMilliseconds > mDelayBeforeUpdate)
-					{
-						stage.ProcessQueued();
-					}
-				}
-			}
-		}
-*/
-
 	}
 }

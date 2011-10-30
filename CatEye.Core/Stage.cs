@@ -397,89 +397,77 @@ namespace CatEye.Core
 #endif
 			mCancelLoadingPending = false;
 			OnProgressMessageReport(false, 0, "Waiting for dcraw...", false);
-			
-			System.Diagnostics.Process prc = DCRawConnection.CreateDCRawProcess("-4 -H 9 -n 100 -c \"" + filename.Replace("\"", "\\\"") + "\"");
-			try
+/*			
+			//if (prc.Start())
 			{
-				if (prc.Start())
+				int cnt = 0;
+				int readed = 0;
+				int readed_all = 0;
+				System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open);
+				System.IO.MemoryStream ms = new System.IO.MemoryStream();
+				try
 				{
-					int cnt = 0;
-					int readed = 0;
-					int readed_all = 0;
-					System.IO.MemoryStream ms = new System.IO.MemoryStream();
-					try
+					byte[] buf = new byte[1024 * 4];
+					do
 					{
-						byte[] buf = new byte[1024 * 4];
-						do
+						cnt++;
+						if (cnt % 100 == 0)
 						{
-							cnt++;
-							if (cnt % 100 == 0)
+							OnProgressMessageReport(false, 0, "Reading data: " + (readed_all / (1024 * 1024)) + " M", false);
+							if (mCancelLoadingPending)
 							{
-								OnProgressMessageReport(false, 0, "Reading data: " + (readed_all / (1024 * 1024)) + " M", false);
-								if (mCancelLoadingPending)
-								{
 #if DEBUG
-									Console.WriteLine("Data processing cancelled. ProcessRawFromDCRaw is returning null.");
+								Console.WriteLine("Data processing cancelled. ProcessRawFromDCRaw is returning null.");
 #endif								
-									return null;
-								}
+								return null;
 							}
-							readed = prc.StandardOutput.BaseStream.Read(buf, 0, buf.Length);
-							ms.Write(buf, 0, readed);
-							readed_all += readed;
 						}
-						while (readed > 0);
-			
-						OnProgressMessageReport(false, 0, "Data reading complete.", false);
-						ms.Seek(0, System.IO.SeekOrigin.Begin);
-						
+						readed = fs.Read(buf, 0, buf.Length);
+						ms.Write(buf, 0, readed);
+						readed_all += readed;
+					}
+					while (readed > 0);
+		
+					OnProgressMessageReport(false, 0, "Data reading complete.", false);
+					ms.Seek(0, System.IO.SeekOrigin.Begin);
+					
 #if DEBUG
-						Console.WriteLine("Loading raw from " + filename);
-#endif								
-						return LoadRaw(ms, downscale_by);
-					}
-					catch (Exception ex)
-					{
-						Console.WriteLine("Exception occured during loading process: " + ex.Message + "\n" + ex.StackTrace);
-						
-						//Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
-						return null;
-					}
-					finally
-					{
-#if DEBUG
-						Console.WriteLine("Closing and disposing the memory stream");
-#endif
-						ms.Close();
-						ms.Dispose();
-					}
-				}
-				else
+					Console.WriteLine("Loading raw from " + filename);
+#endif			
+*/					
+					return LoadRaw(filename, downscale_by);
+/*				}
+				catch (Exception ex)
 				{
-#if DEBUG
-					Console.WriteLine("The DCRaw process isn't started.");
-#endif
+					Console.WriteLine("Exception occured during loading process: " + ex.Message + "\n" + ex.StackTrace);
+					
+					//Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
 					return null;
 				}
-			}
-			finally
-			{
-				prc.StandardOutput.BaseStream.Dispose();
-				prc.StandardOutput.Dispose();
-				prc.WaitForExit(-1);	// R.I.P.
-				prc.Close();
+				finally
+				{
 #if DEBUG
-				GC.Collect();
-				Console.WriteLine("Closing and disposing the dcraw process. I'm using " + System.GC.GetTotalMemory(true) / 1024 + " Kbytes of memory now");
+					Console.WriteLine("Closing and disposing the memory stream");
 #endif
-			}
+					ms.Close();
+					ms.Dispose();
+				}
+			}*/
 		}
 		
-		public IBitmapCore LoadRaw(System.IO.MemoryStream stream, int downscale_by)
+		public IBitmapCore LoadRaw(string filename, int downscale_by)
 		{
+			// Checkig if downscale divides by 2
+			bool div_by_2 = false;
+			if (downscale_by % 2 == 0) 
+			{
+				div_by_2 = true;
+				downscale_by /= 2;
+			}
+			
 			mCancelLoadingPending = false;
-			PPMLoader ppl = PPMLoader.FromStream(stream, delegate (double progress) {
-				OnProgressMessageReport(true, progress / 3, "1 of 3: Parsing image...", false);
+			RawLoader ppl = RawLoader.FromFile(filename, div_by_2, delegate (double progress) {
+				OnProgressMessageReport(true, 6 * progress / 8, "1 of 3: Parsing image...", false);
 				return !mCancelLoadingPending;
 			});
 	
@@ -492,7 +480,7 @@ namespace CatEye.Core
 				if (downscale_by != 1)		
 				{
 					bool dsres = ppl.Downscale(downscale_by, delegate (double progress) {
-						OnProgressMessageReport(true, 0.333 + progress / 3, "2 of 3: Downscaling...", false);
+						OnProgressMessageReport(true, 6.0 / 8 + progress / 8, "2 of 3: Downscaling...", false);
 						return !mCancelLoadingPending;
 					});
 					
@@ -505,7 +493,7 @@ namespace CatEye.Core
 				
 				return mBitmapCoreFactory(ppl, 
 					delegate (double progress) {
-						OnProgressMessageReport(true, 0.666 + progress / 3, "3 of 3: Converting to editable format...", false);
+						OnProgressMessageReport(true, 7.0 / 8 + progress / 8, "3 of 3: Converting to editable format...", false);
 						return !mCancelLoadingPending;
 					}
 				);

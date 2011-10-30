@@ -458,10 +458,32 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.AskLoadImage(filename, prescale);
 	}
 	
-	public void LoadCEStage(string filename)
+	public void LoadCEStage(string filename, bool findRawForCEStage)
 	{
-		mStage.LoadStage(filename);
-		
+		try
+		{
+			mStage.LoadStage(filename);
+
+			string raw_filename; int prescale = 2;
+			if (mStage.Prescale != 0) prescale = mStage.Prescale;
+			
+			if (findRawForCEStage && MainClass.FindRawsForCestageAndAskToOpen(filename, out raw_filename, ref prescale))
+			{
+				mStage.AskLoadImage(raw_filename, prescale);
+			}
+		}
+		catch (StageDeserializationException sdex)
+		{
+			Gtk.MessageDialog md = new Gtk.MessageDialog(
+				this, DialogFlags.Modal,
+				MessageType.Error, ButtonsType.Ok, 
+				false, "Can't load stage from the file \"{0}\".\n{1}", filename, sdex.Message);
+			
+			md.Title = MainClass.APP_NAME;
+			
+			md.Run();
+			md.Destroy();
+		}
 	}
 	
 	protected void LoadRawImageActionPicked()
@@ -650,30 +672,7 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.Destroy();
 		if (ok)
 		{
-			try
-			{
-				mStage.LoadStage(fn);
-
-				string raw_filename; int prescale = 2;
-				if (mStage.Prescale != 0) prescale = mStage.Prescale;
-				
-				if (MainClass.FindRawsForCestageAndAskToOpen(fn, out raw_filename, ref prescale))
-				{
-					mStage.AskLoadImage(raw_filename, prescale);
-				}
-			}
-			catch (StageDeserializationException sdex)
-			{
-				Gtk.MessageDialog md = new Gtk.MessageDialog(
-					this, DialogFlags.Modal,
-					MessageType.Error, ButtonsType.Ok, 
-					false, "Can't load stage from the file \"{0}\".\n{1}", fn, sdex.Message);
-				
-				md.Title = MainClass.APP_NAME;
-				
-				md.Run();
-				md.Destroy();
-			}
+			LoadCEStage(fn, true);
 		}
 	}
 

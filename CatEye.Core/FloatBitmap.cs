@@ -63,7 +63,7 @@ namespace CatEye.Core
 			return new FloatBitmap(this);
 		}
 		
-		public static FloatBitmap FromPPM(PPMLoader ppm, ProgressReporter callback)
+		public static FloatBitmap FromPPM(RawLoader ppm, ProgressReporter callback)
 		{
 			FloatBitmap fbg = new FloatBitmap();
 			
@@ -73,10 +73,10 @@ namespace CatEye.Core
 				return null;
 		}
 		
-		protected bool LoadDataFromPPM(PPMLoader ppm, ProgressReporter callback)
+		protected bool LoadDataFromPPM(RawLoader ppm, ProgressReporter callback)
 		{
-			mWidth = ppm.Header.Width;
-			mHeight = ppm.Header.Height;
+			mWidth = ppm.RChannel.GetLength(0);
+			mHeight = ppm.RChannel.GetLength(1);
 			
 			r_chan = new float[mWidth, mHeight];
 			g_chan = new float[mWidth, mHeight];

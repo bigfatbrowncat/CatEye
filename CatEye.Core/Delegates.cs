@@ -4,7 +4,7 @@ namespace CatEye.Core
 {
 #region Factory delegates
 	public delegate IStageOperationParametersEditor StageOperationParametersEditorFactory(StageOperationParameters so);
-	public delegate IBitmapCore BitmapCoreFactory(PPMLoader ppl, ProgressReporter callback);
+	public delegate IBitmapCore BitmapCoreFactory(RawLoader ppl, ProgressReporter callback);
 	public delegate StageOperation StageOperationFactory(StageOperationParameters parameters);
 	public delegate StageOperationParameters StageOperationParametersFactory(string id);
 	public delegate IStageOperationHolder StageOperationHolderFactory(IStageOperationParametersEditor editor);

@@ -2,3 +2,5 @@
 *.pidb
 bin
 */gtk-gui/*.cs
+ssrl/Debug
+ssrl/Release
