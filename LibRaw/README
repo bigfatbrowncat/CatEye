@@ -1,0 +1,3 @@
+This is the LibRaw library, simplified and adapted to be easily built and used with other applications. 
+
+The default ./configure changed with a simple makefile.
