@@ -33,4 +33,4 @@ $(target_bin):
 	mkdir -p $(target_bin)
 
 $(target_bin)/$(libssrl_shared): $(target_bin)
-	g++ -static -shared ssrl.cpp -o $@ $(COMMON_CPPFLAGS) -L$(libraw_r_OUT) -lraw $(LIBS)  
+	g++ -shared ssrl.cpp -o $@ $(COMMON_CPPFLAGS) $(libraw_r_OUT)/libraw.a $(LIBS)  
