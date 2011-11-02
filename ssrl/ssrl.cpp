@@ -1,5 +1,6 @@
-#include <libraw.h>
+#include <libraw/libraw.h>
 #include <math.h>
+#include <stdio.h>
 
 #include "ssrl.h"
 

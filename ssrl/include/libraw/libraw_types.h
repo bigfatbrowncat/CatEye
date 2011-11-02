@@ -80,6 +80,8 @@ typedef unsigned long long UINT64;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 
+#define LIBRAW_NODLL
+
 #ifdef WIN32
 #ifdef LIBRAW_NODLL
 # define DllDef

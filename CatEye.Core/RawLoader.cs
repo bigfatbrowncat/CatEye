@@ -39,7 +39,7 @@ namespace CatEye.Core
 			
 			internal delegate bool ExtractingProgressReporter(float progress);
 			
-			[DllImport("libssrl.so", CallingConvention = CallingConvention.Cdecl)]
+			[DllImport("ssrl", CallingConvention = CallingConvention.Cdecl)]
 			internal extern static ExtractedRawImage ExtractRawImageFromFile(
 				[MarshalAs(UnmanagedType.LPStr)]
 				string filename, 

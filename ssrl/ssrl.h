@@ -1,6 +1,13 @@
 #ifndef SSRL_H_
 #define SSRL_H_
 
+#ifdef WIN32
+#define DllDef __declspec(dllexport)
+#else
+#define DllDef
+#endif
+
+
 using namespace std;
 
 struct ExtractedRawImage {
@@ -13,8 +20,11 @@ struct ExtractedRawImage {
 
 typedef bool ExtractingProgressReporter(float progress);
 
-extern "C" ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
-extern "C" void FreeExtractedRawImage(ExtractedRawImage img);
+extern "C"
+{
+	DllDef ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
+	DllDef void FreeExtractedRawImage(ExtractedRawImage img);
+}
 
 
 #endif /* SSRL_H_ */

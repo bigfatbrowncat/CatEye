@@ -3,6 +3,7 @@
 	<name>ssrl</name>
 	<comment></comment>
 	<projects>
+		<project>LibRaw</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -31,7 +32,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildLocation</key>
-					<value>${build_project}/../bin/Release</value>
+					<value>${build_project}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>
