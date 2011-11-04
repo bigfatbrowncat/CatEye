@@ -1,22 +1,8 @@
 OSTYPE := $(shell uname)
 
-ifneq (,$(findstring MINGW32, $(OSTYPE)))	# OS type is MinGW 32
-	# In Windows we need to link to libws2_32
-	LIBS = -lws2_32 -lm
-else										# any other case assumed as a POSIX system
-	LIBS = -lm
-endif
-
-COMMON_CPPFLAGS = -fopenmp -I"$(PWD)"
+COMMON_CPPFLAGS = -fopenmp -I"$(PWD)" -O4
 
 libraw_a_CPPFLAGS = -DLIBRAW_NOTHREADS $(COMMON_CPPFLAGS)
-
-ifneq (,$(findstring MINGW32, $(OSTYPE)))   # OS type is MinGW 32
-	# In Windows there is no pthread library
-	libraw_r_CPPFLAGS = $(COMMON_CPPFLAGS)
-else										# any other case assumed as a POSIX system
-	libraw_r_CPPFLAGS = -pthread $(COMMON_CPPFLAGS)
-endif
 
 libraw_a_OUT = lib/a
 libraw_r_OUT = lib/r
@@ -26,18 +12,6 @@ objects_r_OUT = obj/r
 
 samples_a_OUT = bin/a
 samples_r_OUT = bin/r
-
-ifneq (,$(findstring MINGW32, $(OSTYPE)))   # OS type is MinGW 32
-	# In Windows shared library is a dll
-	libraw_a_shared = raw.dll
-	libraw_r_shared = raw.dll
-else										# any other case assumed as a POSIX system
-	libraw_a_shared = libraw.so
-	libraw_r_shared = libraw.so
-endif
-
-
-global_bin = ../bin
 
 SOURCES = internal/dcraw_common.cpp \
           internal/dcraw_fileio.cpp \
@@ -60,6 +34,23 @@ libraw_r_OBJECTS = $(objects_r_OUT)/dcraw_common.o \
                    $(objects_r_OUT)/libraw_datastream.o \
                    $(objects_r_OUT)/libraw_c_api.o
 
+ifneq (,$(findstring MINGW32, $(OSTYPE)))			# OS type is MinGW 32
+	# In Windows we need to link to libws2_32
+	LIBS = -lws2_32 -lm
+	# In Windows there is no pthread library
+	libraw_r_CPPFLAGS = $(COMMON_CPPFLAGS)
+	# In Windows shared library is a dll
+	libraw_a_shared = raw.dll
+	libraw_r_shared = raw.dll
+else												# any other case assumed as a POSIX system
+	LIBS = -lm
+	libraw_r_CPPFLAGS = -pthread $(COMMON_CPPFLAGS)
+	libraw_a_shared = libraw.so
+	libraw_r_shared = libraw.so
+endif
+
+
+
 all: library-a library-r samples-a samples-r
 
 
@@ -76,23 +67,6 @@ clean-r:
 	rm -rf $(libraw_r_OUT)
 	rm -rf $(objects_r_OUT)
 	rm -rf $(samples_r_OUT)
-
-# ===== Installation =====
-
-$(global_bin):
-	mkdir -p $@
-
-install-a-shared: $(libraw_a_OUT)/libraw.so $(global_bin)
-	cp -f $(libraw_a_OUT)/libraw.so $(global_bin)
-
-install-r-shared: $(libraw_r_OUT)/libraw.so $(global_bin)
-	cp -f $(libraw_r_OUT)/libraw.so $(global_bin)
-
-install-a-static: $(libraw_a_OUT)/libraw.a $(global_bin)
-	cp -f $(libraw_a_OUT)/libraw.a $(global_bin)
-
-install-r-static: $(libraw_r_OUT)/libraw.a $(global_bin)
-	cp -f $(libraw_r_OUT)/libraw.a $(global_bin)
 
 # ===== Library =====
 

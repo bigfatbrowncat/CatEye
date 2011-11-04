@@ -10,7 +10,7 @@ namespace CatEye.Core
 		public enum SharpType { Sharp, Soft }
 		
 		private NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
-		private double mPressure = 10, mCurve = 0.5, mNoiseGate = 0.001, mContrast = 0.75, mEdgePressure = 0.4;
+		private double mPressure = 1, mCurve = 0.5, mNoiseGate = 0.1, mContrast = 0.75, mEdgePressure = 0.4;
 		private SharpType mType = SharpType.Sharp;
 
 		public double Curve

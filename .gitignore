@@ -1,6 +1,6 @@
 *.userprefs
 *.pidb
 bin
+lib
+obj
 */gtk-gui/*.cs
-ssrl/Debug
-ssrl/Release

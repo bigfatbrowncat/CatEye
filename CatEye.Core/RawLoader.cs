@@ -10,19 +10,21 @@ namespace CatEye.Core
 		{
 			/* *** That's how it looks in the SSRL library header ***
 			
-			struct ExtractedRawImage
-			{
+			struct ExtractedRawImage {
 				int width;
 				int height;
 				int bitsPerChannel;
 				void* data;
 				libraw_processed_image_t* libraw_image;
 			};
-			
+
 			typedef bool ExtractingProgressReporter(float progress);
-			
-			extern "C" ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
-			extern "C" void FreeExtractedRawImage(ExtractedRawImage img);
+
+			extern "C"
+			{
+				DllDef ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
+				DllDef void FreeExtractedRawImage(ExtractedRawImage img);
+			}
 			
 			*/
 			
