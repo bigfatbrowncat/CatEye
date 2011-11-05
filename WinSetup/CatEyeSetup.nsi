@@ -179,6 +179,7 @@ Section  "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
   File "..\${PKGDIR}bin\${config}\dcraw.exe"
+  File "..\${PKGDIR}bin\${config}\ssrl.dll"
 
 
   CreateShortCut  $DESKTOP\${PRODUCT_NAME}.lnk $INSTDIR\CatEye.exe
@@ -325,6 +326,7 @@ Section "un.Installer section"
   call un.ResDelete
   call un.GtkDelete
   
+  Delete $INSTDIR\ssrl.dll
   Delete $INSTDIR\dcraw.exe
   Delete $INSTDIR\CatEye.Core.dll
   Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
