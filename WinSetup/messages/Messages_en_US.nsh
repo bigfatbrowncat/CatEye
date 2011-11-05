@@ -36,3 +36,5 @@ LangString srw_description ${LANG_ENGLISH} "Samsung camera raw file"
 LangString bay_description ${LANG_ENGLISH} "Casio camera raw file"
 LangString x3f_description ${LANG_ENGLISH} "Sigma camera raw file"
 LangString 3fr_description ${LANG_ENGLISH} "Hasselblad camera raw file"
+
+LangString queue ${LANG_ENGLISH} "Add to queue of ${PRODUCT_NAME}"

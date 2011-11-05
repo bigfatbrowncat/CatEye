@@ -36,3 +36,5 @@ LangString srw_description ${LANG_RUSSIAN} "Ôאיכ ךאלונû Samsung"
 LangString bay_description ${LANG_RUSSIAN} "Ôאיכ ךאלונû Casio"
 LangString x3f_description ${LANG_RUSSIAN} "Ôאיכ ךאלונû Sigma"
 LangString 3fr_description ${LANG_RUSSIAN} "Ôאיכ ךאלונû Hasselblad"
+
+LangString queue ${LANG_RUSSIAN} "Äמבאגטעü ג מקונוהü ${PRODUCT_NAME}"

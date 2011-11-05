@@ -197,6 +197,7 @@ Section  "Installer section"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File" "" "${PRODUCT_NAME} File" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon" "" "$INSTDIR\res\ico\cateye-raw.ico"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\$(queue)\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"-q$\" $\"%1$\""
   
   ; Registering .cestage file
   !insertmacro RegisterCestage "cestage"
@@ -382,6 +383,7 @@ Section "un.Installer section"
   !insertmacro UnRegisterExtension "3FR"
   
   ; Unregistering opening with CatEye
+  DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\$(queue)\command"
   DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File\shell\open\command"
   DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File\DefaultIcon"
   DeleteRegKey HKLM "Software\Classes\${PRODUCT_NAME}.File"
