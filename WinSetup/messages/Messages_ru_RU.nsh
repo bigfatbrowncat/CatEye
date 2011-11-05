@@ -15,6 +15,9 @@ LangString DotNetDownloadCrashWarning ${LANG_RUSSIAN} "Для работы ${PRODUCT_NAME
 LangString ExtensionsPage_HeaderText ${LANG_RUSSIAN} "Ассоциация расширений файлов"
 LangString ExtensionsPage_SubHeaderText ${LANG_RUSSIAN} "Выберите типы файлов, которые будут открываться с помощью ${PRODUCT_NAME}"
 
+LangString extension ${LANG_RUSSIAN} "     Расширение"
+LangString description ${LANG_RUSSIAN} "Описание"
+
 LangString cestage_description ${LANG_RUSSIAN} "Файл настроек ${PRODUCT_NAME}"
 LangString cr2_description ${LANG_RUSSIAN} "Файл камеры Canon"
 LangString crw_description ${LANG_RUSSIAN} "Файл камеры Canon"
