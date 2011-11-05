@@ -61,7 +61,6 @@
   <ItemGroup>
     <None Include="res\CatEyeRemove.ico" />
     <None Include="res\CatEyeSetup.ico" />
-    <None Include="licenses\license_cateye.txt" />
     <None Include="licenses\license_glut32.txt" />
     <None Include="licenses\license_gpl.txt" />
     <None Include="licenses\license_gtk+.txt" />
@@ -209,6 +208,9 @@
     <None Include="res\svg-inkscape\CatEyeSetup-TopPane.svg" />
     <None Include="CommCtrl.nsh" />
     <None Include="makefile" />
+    <None Include="licenses\LICENSE.LibRaw.pdf" />
+    <None Include="licenses\license_CDDL.txt" />
+    <None Include="licenses\license_LGPL_v2.1.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gtk-embedded\" />
