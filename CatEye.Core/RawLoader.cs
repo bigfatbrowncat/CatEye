@@ -6,76 +6,11 @@ namespace CatEye.Core
 {
 	public class RawLoader
 	{
-		private static class SSRLWrapper
-		{
-			/* *** That's how it looks in the SSRL library header ***
-			
-			struct ExtractedRawImage {
-				int width;
-				int height;
-				int bitsPerChannel;
-				void* data;
-				libraw_processed_image_t* libraw_image;
-			};
-
-			typedef bool ExtractingProgressReporter(float progress);
-
-			extern "C"
-			{
-				DllDef ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
-				DllDef void FreeExtractedRawImage(ExtractedRawImage img);
-			}
-			
-			*/
-			
-			
-			[StructLayout(LayoutKind.Sequential)]
-			internal struct ExtractedRawImage 
-			{
-				public int width;
-				public int height;
-				public int bitsPerChannel;
-				public IntPtr data;
-				IntPtr libraw_image;
-			}
-			
-			internal delegate bool ExtractingProgressReporter(float progress);
-			
-			[DllImport("ssrl", CallingConvention = CallingConvention.Cdecl)]
-			internal extern static ExtractedRawImage ExtractRawImageFromFile(
-				[MarshalAs(UnmanagedType.LPStr)]
-				string filename, 
-				bool divide_by_2,
-				[MarshalAs(UnmanagedType.FunctionPtr)]
-				ExtractingProgressReporter callback
-			);
-			
-			[DllImport("ssrl", CallingConvention = CallingConvention.Cdecl)]
-			internal extern static void FreeExtractedRawImage(
-				[MarshalAs(UnmanagedType.Struct)]
-				ExtractedRawImage img
-			);
-		}
-		
 		private ushort[,] r_channel, g_channel, b_channel;
 		
 		public ushort[,] RChannel { get { return r_channel; } }
 		public ushort[,] GChannel { get { return g_channel; } }
 		public ushort[,] BChannel { get { return b_channel; } }
-		
-        private int bytesPerPixel;
-        /// <summary>
-        /// The number of bytes per pixel.
-        /// </summary>
-        public int BytesPerPixel
-        {
-            get { return bytesPerPixel; }
-        }
-
-		public int BytesPerChannel
-		{
-			get { return bytesPerPixel / 3; }
-		}
 		
 		protected RawLoader(int width, int height)
 		{

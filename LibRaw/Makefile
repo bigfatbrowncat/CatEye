@@ -34,7 +34,7 @@ libraw_r_OBJECTS = $(objects_r_OUT)/dcraw_common.o \
                    $(objects_r_OUT)/libraw_datastream.o \
                    $(objects_r_OUT)/libraw_c_api.o
 
-ifneq (,$(findstring MINGW32, $(OSTYPE)))			# OS type is MinGW 32
+ifneq (,$(findstring MINGW, $(OSTYPE)))			# OS type is MinGW 32
 	# In Windows we need to link to libws2_32
 	LIBS = -lws2_32 -lm
 	# In Windows there is no pthread library

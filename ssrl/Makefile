@@ -1,8 +1,12 @@
 OSTYPE := $(shell uname)
-libraw_r_OUT = ../LibRaw/lib/r
-target_bin = ../bin/Release
+libraw_path = ../LibRaw/lib/a
+target_bin_R = ../bin/Release
+target_bin_D = ../bin/Debug
 
-COMMON_CPPFLAGS = -fopenmp -I"$(PWD)/include" -O4
+COMMON_CPPFLAGS = -fopenmp -I"$(PWD)/include"
+
+R_FLAGS = -O4
+D_FLAGS = -O0 -g3
 
 libraw_a_CPPFLAGS = -DLIBRAW_NOTHREADS $(COMMON_CPPFLAGS)
 
@@ -19,10 +23,21 @@ else												# any other case assumed as a POSIX system
 	libssrl_shared = libssrl.so
 endif
 
-all: $(target_bin)/$(libssrl_shared)
+all: debug release
 
-$(target_bin):
-	mkdir -p $(target_bin)
+debug: $(target_bin_D)/$(libssrl_shared)
 
-$(target_bin)/$(libssrl_shared): $(target_bin)
-	g++ -shared ssrl.cpp -o $@ $(COMMON_CPPFLAGS) $(libraw_r_OUT)/libraw.a $(LIBS)  
+release: $(target_bin_R)/$(libssrl_shared)
+
+$(target_bin_D):
+	mkdir -p $(target_bin_D)
+
+$(target_bin_R):
+	mkdir -p $(target_bin_R)
+
+$(target_bin_D)/$(libssrl_shared): $(target_bin_D)
+	g++ -shared ssrl.cpp -o $@ $(COMMON_CPPFLAGS) $(D_FLAGS) $(libraw_path)/libraw.a $(LIBS)  
+
+$(target_bin_R)/$(libssrl_shared): $(target_bin_R)
+	g++ -shared ssrl.cpp -o $@ $(COMMON_CPPFLAGS) $(R_FLAGS) $(libraw_path)/libraw.a $(LIBS)  
+	

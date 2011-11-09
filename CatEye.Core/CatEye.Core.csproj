@@ -19,12 +19,6 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
-        <Command type="BeforeClean" command="cmd /c &quot;del /f dcraw.exe&quot;" workingdir="${TargetDir}" />
-      </CustomCommands>
-    </CustomCommands>
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG</DefineConstants>
@@ -36,12 +30,6 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="gcc -o &quot;${TargetDir}\dcraw.exe&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS -Dbzero(ptr,size)=memset(ptr,0,size) -Dgetc_unlocked(fp)=getc(fp) -Dfseeko=fseek -Dftello=ftell -lwsock32" workingdir="${ProjectDir}" />
-        <Command type="BeforeClean" command="cmd /c &quot;del /f dcraw.exe&quot;" workingdir="${TargetDir}" />
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Unix|x86' ">
     <DebugType>full</DebugType>
@@ -50,12 +38,6 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
-        <Command type="BeforeClean" command="rm -f dcraw" workingdir="${TargetDir}" />
-      </CustomCommands>
-    </CustomCommands>
     <DefineConstants>DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
@@ -67,12 +49,6 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="/usr/bin/gcc -o &quot;${TargetDir}/dcraw&quot; -O4 dcraw.c -lm -DNO_JPEG -DNO_LCMS" workingdir="${ProjectDir}" />
-        <Command type="BeforeClean" command="rm -f dcraw" workingdir="${TargetDir}" />
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -116,6 +92,8 @@
     <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperation.cs" />
     <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperationParameters.cs" />
     <Compile Include="RawLoader.cs" />
+    <Compile Include="SSRLWrapper.cs" />
+    <Compile Include="RawDescriptionLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -129,8 +107,5 @@
     <Folder Include="StageOperations\Histogram\" />
     <Folder Include="StageOperations\Highlight\" />
     <Folder Include="StageOperations\CompressSharp\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="dcraw.c" />
   </ItemGroup>
 </Project>
