@@ -112,7 +112,8 @@ FunctionEnd
   WriteRegStr HKLM "Software\Classes\.${extenstion}" "" "${PRODUCT_NAME}.CestageFile"
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile" "" "$(cestage_description)" 
   WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\DefaultIcon" "" "$INSTDIR\res\ico\cestage.ico"
-  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\"" 
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\open\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"%1$\""
+  WriteRegStr HKLM "Software\Classes\${PRODUCT_NAME}.CestageFile\shell\$(queue)\command" "" "$\"$INSTDIR\${PRODUCT_NAME}.exe$\" $\"-q$\" $\"%1$\""
   ; default application for current user (for NT6.0 and newer)
   GetVersion::WindowsVersion
   Pop $winver
@@ -178,7 +179,7 @@ Section  "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.UI.Base.dll"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
   File "..\${PKGDIR}bin\${config}\default.cestage"
-  File "..\${PKGDIR}bin\${config}\dcraw.exe"
+;  File "..\${PKGDIR}bin\${config}\dcraw.exe"
   File "..\${PKGDIR}bin\${config}\ssrl.dll"
 
 
@@ -327,7 +328,7 @@ Section "un.Installer section"
   call un.GtkDelete
   
   Delete $INSTDIR\ssrl.dll
-  Delete $INSTDIR\dcraw.exe
+;  Delete $INSTDIR\dcraw.exe
   Delete $INSTDIR\CatEye.Core.dll
   Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
   Delete $INSTDIR\CatEye.UI.Base.dll

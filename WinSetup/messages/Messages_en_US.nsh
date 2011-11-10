@@ -15,7 +15,7 @@ LAngString DotNetDownloadCrashWarning ${LANG_ENGLISH} "${PRODUCT_NAME} requires 
 LangString ExtensionsPage_HeaderText ${LANG_ENGLISH} "File types associations"
 LangString ExtensionsPage_SubHeaderText ${LANG_ENGLISH} "Please select file types for opening with ${PRODUCT_NAME}"
 
-LangString extension ${LANG_ENGLISH} "     Extension"
+LangString extension ${LANG_ENGLISH} "Extension"
 LangString description ${LANG_ENGLISH} "Description"
 
 LangString cestage_description ${LANG_ENGLISH} "${PRODUCT_NAME} Stage Operations File"
