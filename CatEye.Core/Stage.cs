@@ -29,6 +29,7 @@ namespace CatEye.Core
 		public event EventHandler<StageOperationParametersEventArgs> ItemChanged;
 		public event EventHandler<EventArgs> ImageLoadingCompleted;
 		public event EventHandler<EventArgs> ImageLoadingCancelled;
+		public event EventHandler<EventArgs> ImageLoadingError;
 		public event EventHandler<EventArgs> ImageUpdatingCompleted;
 #endregion
 #region Protected factory methods
@@ -247,18 +248,29 @@ namespace CatEye.Core
 		{
 			CancelProcessing();
 			
-			IBitmapCore ibc = ProcessRawFromDCRaw(filename, downscale_by);
+			IBitmapCore ibc = LoadRaw(filename, downscale_by);
 			if (ibc != null)
 			{
+				// Result is not null, image is loaded successfully
 				if (ImageLoadingCompleted != null) ImageLoadingCompleted(this, EventArgs.Empty);
 				SourceImage = ibc;
 				return true;
 			}
 			else
 			{
-				if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
-				SourceImage = ibc;
-				return false;
+				if (mCancelLoadingPending)
+				{
+					// Result is null and mCancelLoadingPending flag is set
+					if (ImageLoadingCancelled != null) ImageLoadingCancelled(this, EventArgs.Empty);
+					SourceImage = ibc;
+					return false;
+				}
+				else
+				{
+					if (ImageLoadingError != null) ImageLoadingError(this, EventArgs.Empty);
+					SourceImage = ibc;
+					return false;
+				}
 			}
 		}
 		
@@ -382,79 +394,6 @@ namespace CatEye.Core
 			mCancelLoadingPending = true;
 		}
 				
-		/// <summary>
-		/// Launching dcraw to process the raw file, loads the result into a memory stream
-		/// </summary>
-		/// <returns>
-		/// A stream to read the decoded PPM data from. 
-		/// Should be closed by user.
-		/// </returns>
-		protected IBitmapCore ProcessRawFromDCRaw(string filename, int downscale_by)
-		{
-#if DEBUG
-			GC.Collect();
-			Console.WriteLine("Starting raw processing. I'm using " + System.GC.GetTotalMemory(true) / 1024 + " Kbytes of memory now");
-#endif
-			mCancelLoadingPending = false;
-			OnProgressMessageReport(false, 0, "Waiting for dcraw...", false);
-/*			
-			//if (prc.Start())
-			{
-				int cnt = 0;
-				int readed = 0;
-				int readed_all = 0;
-				System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open);
-				System.IO.MemoryStream ms = new System.IO.MemoryStream();
-				try
-				{
-					byte[] buf = new byte[1024 * 4];
-					do
-					{
-						cnt++;
-						if (cnt % 100 == 0)
-						{
-							OnProgressMessageReport(false, 0, "Reading data: " + (readed_all / (1024 * 1024)) + " M", false);
-							if (mCancelLoadingPending)
-							{
-#if DEBUG
-								Console.WriteLine("Data processing cancelled. ProcessRawFromDCRaw is returning null.");
-#endif								
-								return null;
-							}
-						}
-						readed = fs.Read(buf, 0, buf.Length);
-						ms.Write(buf, 0, readed);
-						readed_all += readed;
-					}
-					while (readed > 0);
-		
-					OnProgressMessageReport(false, 0, "Data reading complete.", false);
-					ms.Seek(0, System.IO.SeekOrigin.Begin);
-					
-#if DEBUG
-					Console.WriteLine("Loading raw from " + filename);
-#endif			
-*/					
-					return LoadRaw(filename, downscale_by);
-/*				}
-				catch (Exception ex)
-				{
-					Console.WriteLine("Exception occured during loading process: " + ex.Message + "\n" + ex.StackTrace);
-					
-					//Console.WriteLine("DCRaw error output: " + prc.StandardError.ReadToEnd());
-					return null;
-				}
-				finally
-				{
-#if DEBUG
-					Console.WriteLine("Closing and disposing the memory stream");
-#endif
-					ms.Close();
-					ms.Dispose();
-				}
-			}*/
-		}
-		
 		public IBitmapCore LoadRaw(string filename, int downscale_by)
 		{
 			// Checkig if downscale divides by 2
@@ -497,7 +436,6 @@ namespace CatEye.Core
 						return !mCancelLoadingPending;
 					}
 				);
-				
 			}
 		}
 		

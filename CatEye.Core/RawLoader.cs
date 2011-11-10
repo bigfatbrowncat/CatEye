@@ -43,9 +43,19 @@ namespace CatEye.Core
 		
         public unsafe static RawLoader FromFile(string filename, bool divide_by_2, ProgressReporter callback)
         {
-			SSRLWrapper.ExtractedRawImage eximg = SSRLWrapper.ExtractRawImageFromFile(filename, divide_by_2, delegate (float progress) {
+			IntPtr eximg_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SSRLWrapper.ExtractedRawImage)));
+			int err = SSRLWrapper.ExtractRawImageFromFile(filename, divide_by_2, eximg_ptr, delegate (float progress) {
 				return callback(progress);
 			});
+#if DEBUG
+			Console.WriteLine("ExtractRawImageFromFile returned " + err);
+#endif
+			if (err != 0)
+			{
+				return null;
+			}
+
+			SSRLWrapper.ExtractedRawImage eximg = (SSRLWrapper.ExtractedRawImage)Marshal.PtrToStructure(eximg_ptr, typeof(SSRLWrapper.ExtractedRawImage));
 			
 			RawLoader ppml = new RawLoader(eximg.width, eximg.height);
 			

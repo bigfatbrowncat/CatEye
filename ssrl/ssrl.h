@@ -44,7 +44,7 @@ typedef bool ExtractingProgressReporter(float progress);
 
 extern "C"
 {
-	DllDef ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback);
+	DllDef int ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractedRawImage* res, ExtractingProgressReporter* callback);
 	DllDef int ExtractDescriptionFromFile(char* filename, ExtractedDescription* res);
 	DllDef void FreeExtractedRawImage(ExtractedRawImage img);
 	DllDef void FreeExtractedDescription(ExtractedDescription img);

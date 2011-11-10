@@ -168,6 +168,7 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.ImageLoadingCompleted += HandleStageImageLoadingCompleted;
 		mStage.ImageUpdatingCompleted += HandleStageImageUpdatingCompleted;
 		mStage.ImageLoadingCancelled += HandleStageImageLoadingCancelled;
+		mStage.ImageLoadingError += HandleStageImageLoadingError;
 		mStage.RawFileNameChanged += HandleStageRawFileNameChanged;
 		mStage.StageFileNameChanged += HandleStageStageFileNameChanged;
 		mStage.PreScaleChanged += HandleStagePrescaleChanged;
@@ -195,6 +196,22 @@ public partial class StageEditorWindow : Gtk.Window
 			md.Destroy();
 		}
 		
+	}
+
+	void HandleStageImageLoadingError (object sender, EventArgs e)
+	{
+		Application.Invoke(delegate {
+			status_label.Text = "Image loading error";
+			enqueueRenderAction.Sensitive = false;
+			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
+			                                             MessageType.Warning, ButtonsType.Ok, 
+			                                             "Error occured during the image loading process. " +
+				                                         "Maybe the file is corrupted or you have insufficient rights to access it.");
+			
+			md.Title = MainClass.APP_NAME;
+			md.Run();
+			md.Destroy();
+		});		
 	}
 
 #region Handlers called from other thread. 

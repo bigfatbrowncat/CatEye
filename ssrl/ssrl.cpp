@@ -19,10 +19,9 @@ int internal_callback(void *d, enum LibRaw_progress p, int iteration, int expect
 
 // ** Public functions **
 
-ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractingProgressReporter* callback)
+int ExtractRawImageFromFile(char* filename, bool divide_by_2, ExtractedRawImage* res, ExtractingProgressReporter* callback)
 {
-	ExtractedRawImage res;
-	res.data = 0;	// data = 0 means "error during processing"
+	res->data = 0;	// data = 0 means "error during processing"
 
 	LibRaw RawProcessor;
 
@@ -45,35 +44,35 @@ ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, Extr
 	if (ret != LIBRAW_SUCCESS)
 	{
 		fprintf(stderr,"Cannot open the data buffer: %s\n", libraw_strerror(ret));
-		return res; // no recycle b/c open_file will recycle itself
+		return 1; // no recycle b/c open_file will recycle itself
 	}
 	if ((ret = RawProcessor.unpack()) != LIBRAW_SUCCESS)
 	{
 		fprintf(stderr,"Cannot unpack the data: %s\n", libraw_strerror(ret));
-		return res;
+		return 2;
 	}
 	if (LIBRAW_SUCCESS != (ret = RawProcessor.dcraw_process()))
 	{
 		fprintf(stderr,"Cannot do postprocessing on the data: %s\n", libraw_strerror(ret));
 		if(LIBRAW_FATAL_ERROR(ret))
-			return res;
+			return 3;
 	}
 
     libraw_processed_image_t *image = RawProcessor.dcraw_make_mem_image(&ret);
     if (image == 0)
     {
-    	return res;
+    	return 4;
     }
 
-    res.bitsPerChannel = image->bits;
-    res.width = image->width;
-    res.height = image->height;
-    res.data = image->data;
-    res.libraw_image = image;
+    res->bitsPerChannel = image->bits;
+    res->width = image->width;
+    res->height = image->height;
+    res->data = image->data;
+    res->libraw_image = image;
 
 	RawProcessor.recycle(); // just for show this call
 
-	return res;
+	return 0;
 }
 
 int ExtractDescriptionFromFile(char* filename, ExtractedDescription* res)

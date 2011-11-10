@@ -87,10 +87,11 @@ namespace CatEye.Core
 		internal delegate bool ExtractingProgressReporter(float progress);
 		
 		[DllImport("ssrl", CallingConvention = CallingConvention.Cdecl)]
-		internal extern static ExtractedRawImage ExtractRawImageFromFile(
+		internal extern static int ExtractRawImageFromFile(
 			[MarshalAs(UnmanagedType.LPStr)]
 			string filename, 
 			bool divide_by_2,
+			IntPtr res,
 			[MarshalAs(UnmanagedType.FunctionPtr)]
 			ExtractingProgressReporter callback
 		);
