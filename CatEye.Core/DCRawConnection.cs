@@ -28,7 +28,9 @@ namespace CatEye.Core
 			bool res = false;
 			if (raw_exts.Contains(System.IO.Path.GetExtension(filename).ToLower()))
 			{
-				Process dcproc = CreateDCRawProcess("-i \"" + filename.Replace("\"", "\\\"") + "\"");
+				// TODO: Check with libraw
+				return true;
+			/*	Process dcproc = CreateDCRawProcess("-i \"" + filename.Replace("\"", "\\\"") + "\"");
 				if (dcproc.Start())
 				{
 					dcproc.WaitForExit(-1);
@@ -36,6 +38,7 @@ namespace CatEye.Core
 						res = true;
 					dcproc.Close();
 				}
+			*/
 			}
 			
 			return res;

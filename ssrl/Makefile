@@ -3,7 +3,7 @@ libraw_path = ../LibRaw/lib/a
 target_bin_R = ../bin/Release
 target_bin_D = ../bin/Debug
 
-COMMON_CPPFLAGS = -fopenmp -I"$(PWD)/include"
+COMMON_CPPFLAGS = -fopenmp -I"$(PWD)/include" -static-libgcc -static-libstdc++
 
 R_FLAGS = -O4
 D_FLAGS = -O0 -g3

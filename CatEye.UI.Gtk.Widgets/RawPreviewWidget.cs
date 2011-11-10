@@ -57,16 +57,34 @@ namespace CatEye.UI.Gtk.Widgets
 		
 						RawDescriptionLoader rdl = RawDescriptionLoader.FromFile(mFilename);
 						
+						string idtext = "";
 						try
 						{
-							pb = new Gdk.Pixbuf(rdl.RgbData);
+							idtext += "Shot taken\n" +
+								      "   on <b>" + rdl.TimeStamp.ToString("MMMM, d, yyyy") + "</b> at <b>" + rdl.TimeStamp.ToString("h:mm:ss") + "</b>,\n";
+
+							idtext += "   with <b>" + rdl.CameraMaker + " " + rdl.CameraModel + "</b>\n\n";
+							idtext += "ISO speed: <b>" + rdl.ISOSpeed.ToString("0") + "</b>\n";
+							if (rdl.Shutter > 1)
+								idtext += "Shutter: <b>" + rdl.Shutter.ToString("0.0") + "</b> sec\n";
+							else
+								idtext += "Shutter: <b>1/" + (1.0 / (rdl.Shutter + 0.000001)).ToString("0") + "</b> sec\n";
+								
+							idtext += "Aperture: <b>" + rdl.Aperture.ToString("0.0") + "</b>\n" +
+								      "Focal length: <b>" + rdl.FocalLength.ToString("0") + "</b> mm\n";
+							
+							if (rdl.Artist != "") idtext += "Artist: <b>" + rdl.Artist + "</b>\n";
+							if (rdl.Description != "") idtext += "Description: <b>" + rdl.Description + "</b>\n";
+							
+							// Displaying the thumbnail
+							pb = new Gdk.Pixbuf(rdl.ThumbnailData);
 						}
-						catch (GLib.GException ex)
+						catch (Exception ex)
 						{
 							Console.WriteLine("Can't load the thumbnail: " + ex.Message);
-							identification_label.Markup = "Can't load the thumbnail.";
+							idtext += "\n<i>Can't load the thumbnail.</i>";
 						}
-						
+						identification_label.Markup = idtext;
 						
 						if (pb != null)
 						{

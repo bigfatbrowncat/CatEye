@@ -99,16 +99,20 @@ int ExtractDescriptionFromFile(char* filename, ExtractedDescription* res)
     	return 3;
     }
 
-    ret = RawProcessor.dcraw_thumb_writer("test.jpeg");
+/*    ret = RawProcessor.dcraw_thumb_writer("test.jpeg");
     if (ret != 0)
     {
     	return 10 + ret;
-    }
+    }*/
 
     res->data = image->data;
     res->data_size = image->data_size;
     res->libraw_image = image;
     res->is_jpeg = image->type == LIBRAW_IMAGE_JPEG;
+
+    // Extracting the main data
+    res->camera_maker = RawProcessor.imgdata.idata.make;
+    res->camera_model = RawProcessor.imgdata.idata.model;
 
     // Extracting the other data
     res->aperture = RawProcessor.imgdata.other.aperture;

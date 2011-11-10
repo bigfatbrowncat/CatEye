@@ -33,6 +33,8 @@ struct ExtractedDescription
     unsigned*   gpsdata;
     char*       desc;
     char*       artist;
+    char*       camera_maker;
+    char*       camera_model;
 
 	libraw_processed_image_t* libraw_image;
 };

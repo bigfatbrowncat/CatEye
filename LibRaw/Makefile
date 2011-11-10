@@ -1,6 +1,6 @@
 OSTYPE := $(shell uname)
 
-COMMON_CPPFLAGS = -fopenmp -I"$(PWD)" -O4
+COMMON_CPPFLAGS = -fopenmp -I"$(PWD)" -O4 -static-libgcc -static-libstdc++
 
 libraw_a_CPPFLAGS = -DLIBRAW_NOTHREADS $(COMMON_CPPFLAGS)
 

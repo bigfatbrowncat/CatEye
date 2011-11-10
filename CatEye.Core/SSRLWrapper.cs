@@ -27,12 +27,15 @@ namespace CatEye.Core
 		    float       focal_len;
 		    time_t      timestamp;
 		    unsigned    shot_order;
-		    unsigned    gpsdata[32];
-		    char        desc[512];
-		    char        artist[64];
+		    unsigned*   gpsdata;
+		    char*       desc;
+		    char*       artist;
+		    char*       camera_maker;
+		    char*       camera_model;
 		
 			libraw_processed_image_t* libraw_image;
 		};
+
 		
 		typedef bool ExtractingProgressReporter(float progress);
 		
@@ -73,6 +76,8 @@ namespace CatEye.Core
 		    public IntPtr gpsdata;
 		    public IntPtr desc;
 		    public IntPtr artist;
+			public IntPtr camera_maker;
+			public IntPtr camera_model;
 			
 			IntPtr libraw_image;
 		}
