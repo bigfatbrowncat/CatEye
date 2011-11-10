@@ -79,7 +79,6 @@
     <Compile Include="IBitmapCore.cs" />
     <Compile Include="UserCancelException.cs" />
     <Compile Include="IBitmapView.cs" />
-    <Compile Include="DCRawConnection.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="FloatBitmap.cs" />

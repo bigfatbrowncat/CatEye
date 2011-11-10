@@ -145,7 +145,7 @@ namespace CatEye
 			string[] files = System.IO.Directory.GetFiles(dir);
 			for (int i = 0; i < files.Length; i++)
 			{
-				if (DCRawConnection.IsRaw(files[i]) &&
+				if (RawLoader.IsRaw(files[i]) &&
 					System.IO.Path.GetFileNameWithoutExtension(files[i]).ToLower() == cut_ext_low)
 				{
 					res.Add(files[i]);
@@ -500,14 +500,14 @@ namespace CatEye
 				
 				// Now when all the additional parameters are parsed and removed, 
 				// we're analysing, what's left. The options:
-				if (argslist.Count == 2 && ((IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1])) ||
-										   (IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))))
+				if (argslist.Count == 2 && ((IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1])) ||
+										   (IsCEStageFile(argslist[1]) && RawLoader.IsRaw(argslist[0]))))
 				{
 					// Two file names: one cestage and one raw
 
 					string cestage_filename;
 					string raw_filename;
-					if (IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
+					if (IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1]))
 					{
 						cestage_filename = argslist[0];
 						raw_filename = argslist[1];
@@ -539,7 +539,7 @@ namespace CatEye
 					// Searching for cestage for each raw and for raws for each cestage
 					for (int i = 0; i < argslist.Count; i++)
 					{
-						if (DCRawConnection.IsRaw(argslist[i]))
+						if (RawLoader.IsRaw(argslist[i]))
 						{
 							// The current file is a raw
 
@@ -684,7 +684,7 @@ namespace CatEye
 					}
 				}
 						
-				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && DCRawConnection.IsRaw(argslist[1]))
+				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
 					commands.Add("StageEditor_CEStage_RAW");
@@ -696,7 +696,7 @@ namespace CatEye
 					}));
 				}
 				else
-				if (argslist.Count == 2 && IsCEStageFile(argslist[1]) && DCRawConnection.IsRaw(argslist[0]))
+				if (argslist.Count == 2 && IsCEStageFile(argslist[1]) && RawLoader.IsRaw(argslist[0]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
 					commands.Add("StageEditor_CEStage_RAW");
@@ -712,7 +712,7 @@ namespace CatEye
 					// Searching for cestage for each raw and for raws for each cestage
 					for (int i = 0; i < argslist.Count; i++)
 					{
-						if (DCRawConnection.IsRaw(argslist[i]))
+						if (RawLoader.IsRaw(argslist[i]))
 						{
 							// The current file is a raw
 							

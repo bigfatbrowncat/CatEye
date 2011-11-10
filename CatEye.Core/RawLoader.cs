@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
 
@@ -6,6 +7,27 @@ namespace CatEye.Core
 {
 	public class RawLoader
 	{
+		private static readonly string [] RAW_EXTENSIONS = {
+				".arw",
+				".crw",
+				".cr2",
+				".dng",
+				".mrw",
+				".nef",
+				".orf",
+				".pef",
+				".raw",
+				".raf",
+				".rw2"
+		};
+		
+		private static readonly List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
+		
+		public static bool IsRaw(string filename)
+		{
+			return raw_exts.Contains(System.IO.Path.GetExtension(filename).ToLower());
+		}
+		
 		private ushort[,] r_channel, g_channel, b_channel;
 		
 		public ushort[,] RChannel { get { return r_channel; } }
