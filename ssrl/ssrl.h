@@ -35,6 +35,7 @@ struct ExtractedDescription
     char*       artist;
     char*       camera_maker;
     char*       camera_model;
+    int         flip;
 
 	libraw_processed_image_t* libraw_image;
 };

@@ -61,7 +61,7 @@ namespace CatEye.UI.Gtk.Widgets
 						try
 						{
 							idtext += "Shot taken\n" +
-								      "   on <b>" + rdl.TimeStamp.ToString("MMMM, d, yyyy") + "</b> at <b>" + rdl.TimeStamp.ToString("h:mm:ss") + "</b>,\n";
+								      "   on <b>" + rdl.TimeStamp.ToString("MMMM, d, yyyy") + "</b> at <b>" + rdl.TimeStamp.ToString("h:mm:ss tt") + "</b>,\n";
 
 							idtext += "   with <b>" + rdl.CameraMaker + " " + rdl.CameraModel + "</b>\n\n";
 							idtext += "ISO speed: <b>" + rdl.ISOSpeed.ToString("0") + "</b>\n";
@@ -76,8 +76,11 @@ namespace CatEye.UI.Gtk.Widgets
 							if (rdl.Artist != "") idtext += "Artist: <b>" + rdl.Artist + "</b>\n";
 							if (rdl.Description != "") idtext += "Description: <b>" + rdl.Description + "</b>\n";
 							
-							// Displaying the thumbnail
+							Console.WriteLine(rdl.Flip);
+							
+							// Creating the thumbnail pixbuf
 							pb = new Gdk.Pixbuf(rdl.ThumbnailData);
+
 						}
 						catch (Exception ex)
 						{
@@ -88,8 +91,9 @@ namespace CatEye.UI.Gtk.Widgets
 						
 						if (pb != null)
 						{
+							// Scaling the thumbnail
 							Gdk.Pixbuf pbold = pb;
-							origsize_label.Markup = "Image size: <b>" + pb.Width + "</b> x <b>" + pb.Height + "</b>";
+							int imgw = pb.Width, imgh = pb.Height;
 							if (pb.Width > pb.Height)
 								pb = pb.ScaleSimple(size, (int)((double)pb.Height / pb.Width * size), Gdk.InterpType.Bilinear);
 							else
@@ -97,7 +101,32 @@ namespace CatEye.UI.Gtk.Widgets
 								
 							pbold.Dispose();
 							
+							// Rotating the thumbnail
+							if (rdl.Flip != RawDescriptionLoader.FlipValues.None)
+							{
+								pbold = pb;
+							
+								if (rdl.Flip == RawDescriptionLoader.FlipValues.UpsideDown)
+									pb = pb.RotateSimple(Gdk.PixbufRotation.Upsidedown);
+								else if (rdl.Flip == RawDescriptionLoader.FlipValues.Clockwise)
+								{
+									int t = imgw;
+									imgw = imgh;
+									imgh = t;
+									pb = pb.RotateSimple(Gdk.PixbufRotation.Clockwise);
+								}
+								else if (rdl.Flip == RawDescriptionLoader.FlipValues.Counterclockwise)
+								{
+									int t = imgw;
+									imgw = imgh;
+									imgh = t;
+									pb = pb.RotateSimple(Gdk.PixbufRotation.Counterclockwise);
+								}
+								
+								pbold.Dispose();
+							}							
 		
+							origsize_label.Markup = "Image size: <b>" + imgw + "</b> x <b>" + imgh + "</b>";
 							pm.DrawPixbuf(gc, pb, 0, 0, 
 							              (size + margins) / 2 - pb.Width / 2, 
 							              (size + margins) / 2 - pb.Height / 2, 

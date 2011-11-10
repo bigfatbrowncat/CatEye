@@ -32,6 +32,7 @@ namespace CatEye.Core
 		    char*       artist;
 		    char*       camera_maker;
 		    char*       camera_model;
+		    int         flip;
 		
 			libraw_processed_image_t* libraw_image;
 		};
@@ -78,6 +79,7 @@ namespace CatEye.Core
 		    public IntPtr artist;
 			public IntPtr camera_maker;
 			public IntPtr camera_model;
+			public int flip;
 			
 			IntPtr libraw_image;
 		}

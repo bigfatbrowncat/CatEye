@@ -32,7 +32,7 @@ ExtractedRawImage ExtractRawImageFromFile(char* filename, bool divide_by_2, Extr
 	                                      RawProcessor.imgdata.params.no_auto_bright = 1;
 	RawProcessor.imgdata.params.output_bps = 16;
 	RawProcessor.imgdata.params.highlight  = 9;
-	RawProcessor.imgdata.params.threshold  = (float)100;
+	RawProcessor.imgdata.params.threshold  = (float)200;
 
 	if (divide_by_2)
 	{
@@ -99,16 +99,12 @@ int ExtractDescriptionFromFile(char* filename, ExtractedDescription* res)
     	return 3;
     }
 
-/*    ret = RawProcessor.dcraw_thumb_writer("test.jpeg");
-    if (ret != 0)
-    {
-    	return 10 + ret;
-    }*/
-
+    // Extracting the picture
     res->data = image->data;
     res->data_size = image->data_size;
     res->libraw_image = image;
     res->is_jpeg = image->type == LIBRAW_IMAGE_JPEG;
+    res->flip = RawProcessor.imgdata.sizes.flip;	// 0 - no rotation; 3 - 180-deg rotation; 5 - 90-deg counterclockwise, 6 - 90-deg clockwise
 
     // Extracting the main data
     res->camera_maker = RawProcessor.imgdata.idata.make;
@@ -121,6 +117,7 @@ int ExtractDescriptionFromFile(char* filename, ExtractedDescription* res)
     res->iso_speed = RawProcessor.imgdata.other.iso_speed;
     res->shot_order = RawProcessor.imgdata.other.shot_order;
     res->timestamp = RawProcessor.imgdata.other.timestamp;
+
 
     res->artist = new char[64];
     strcpy(res->artist, RawProcessor.imgdata.other.artist);
