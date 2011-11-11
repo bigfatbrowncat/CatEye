@@ -620,7 +620,7 @@ namespace CatEye.UI.Base
 		
 		public void DrawEditor(IBitmapView target)
 		{
-			if (EditingOperation != null &&
+			if (EditingOperation != null && CurrentImage != null &&
 				Holders[EditingOperation].StageOperationParametersEditor != null)
 			{
 				Holders[EditingOperation].StageOperationParametersEditor.DrawEditor(target);

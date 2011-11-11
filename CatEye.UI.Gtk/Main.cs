@@ -180,7 +180,7 @@ namespace CatEye
 			return false;
 		}
 		
-		private static WindowsGtkStyle windowsGtkStyle;
+		internal static WindowsGtkStyle windowsGtkStyle;
 		
 		private static List<StageEditorWindow> mStageEditorWindows = new List<StageEditorWindow>();
 		private static RenderingQueue mRenderingQueue;
@@ -794,7 +794,6 @@ namespace CatEye
 				                                      Path.DirectorySeparatorChar + 
 				                                      "win-gtkrc");
 				Application.Init ();
-				windowsGtkStyle.UpdateStyle();
 				
 				// Creating render queue and its window
 				mRenderingQueue = new RenderingQueue();

@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="CatEyeIcon">
@@ -770,6 +770,7 @@
     <property name="Icon">resource:CatEye.UI.Gtk.res.png.cateye-small-16x16.png</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <signal name="Shown" handler="OnShown" />
+    <signal name="ExposeEvent" handler="OnExposeEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />

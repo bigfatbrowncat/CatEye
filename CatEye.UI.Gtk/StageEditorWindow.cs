@@ -935,4 +935,10 @@ public partial class StageEditorWindow : Gtk.Window
 			stage_vbox.QueueDrawArea(0, b, stage_vbox.Allocation.Width, stage_vbox.Allocation.Height);
 		}
 	}
+
+	protected void OnExposeEvent (object o, Gtk.ExposeEventArgs args)
+	{
+		MainClass.windowsGtkStyle.UpdateStyle(this.GdkWindow, main_menubar);
+
+	}
 }
