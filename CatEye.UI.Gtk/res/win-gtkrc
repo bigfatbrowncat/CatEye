@@ -111,7 +111,7 @@ style "clearlooks-menu" = "clearlooks-default"
 {
   xthickness = 0
   ythickness = 0
-  bg[NORMAL] = "#000000" #shade (1.08, @bg_color) # "#f9f7f3"
+  bg[NORMAL] = shade (1.08, @bg_color) # "#f9f7f3"
 }
 
 style "clearlooks-menubar-item" = "clearlooks-default"
