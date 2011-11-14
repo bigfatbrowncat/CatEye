@@ -6,8 +6,8 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../bin/Release/CatEye.Gtk.UI.Widgets.dll" />
-    <widget-library name="../../bin/Release/CatEye.exe" internal="true" />
+    <widget-library name="../../bin/Debug/CatEye.Gtk.UI.Widgets.dll" />
+    <widget-library name="../../bin/Debug/CatEye.exe" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="CatEyeIcon">
@@ -678,7 +678,7 @@
       <action id="loadRawAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Control&gt;o</property>
-        <property name="Label" translatable="yes">Load raw image...</property>
+        <property name="Label" translatable="yes">Load image...</property>
         <property name="ShortLabel" translatable="yes">Import from DCRaw...</property>
         <property name="StockId">gtk-open</property>
         <signal name="Activated" handler="OnImportFromDCRawActionActivated" />
@@ -720,7 +720,6 @@
         <property name="Label" translatable="yes">Load stage...</property>
         <property name="ShortLabel" translatable="yes">Load stage...</property>
         <property name="StockId">gtk-open</property>
-        <signal name="Activated" handler="OnLoadStageActionActivated" />
       </action>
       <action id="saveStageAction">
         <property name="Type">Action</property>
@@ -729,10 +728,11 @@
         <property name="ShortLabel" translatable="yes">Save stage as...</property>
         <property name="StockId">gtk-save-as</property>
       </action>
-      <action id="saveStageAsAction">
+      <action id="saveReceiptAsAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Save stage as...</property>
-        <property name="ShortLabel" translatable="yes">Save stage as...</property>
+        <property name="Label" translatable="yes">Save receipt as...</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">Save receipt as...</property>
         <property name="StockId">gtk-save-as</property>
         <signal name="Activated" handler="OnSaveStageAsActionActivated" />
       </action>
@@ -764,6 +764,14 @@
         <property name="Active">True</property>
         <signal name="Toggled" handler="OnRenderingQueueActionToggled" />
       </action>
+      <action id="saveReceiptAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Save receipt</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">Save receipt</property>
+        <property name="StockId">gtk-save</property>
+        <signal name="Activated" handler="OnSaveReceiptActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">CatEye</property>
@@ -779,10 +787,10 @@
             <property name="MemberName" />
             <node name="main_menubar" type="Menubar">
               <node type="Menu" action="FileAction">
-                <node type="Menuitem" action="loadStageAction" />
-                <node type="Menuitem" action="saveStageAsAction" />
-                <node type="Separator" />
                 <node type="Menuitem" action="loadRawAction" />
+                <node type="Menuitem" action="saveReceiptAction" />
+                <node type="Menuitem" action="saveReceiptAsAction" />
+                <node type="Separator" />
                 <node type="Menuitem" action="enqueueRenderAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="quitAction" />

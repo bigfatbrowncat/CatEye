@@ -87,6 +87,8 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.HighlightStageOperationParametersWidget.cs" />
     <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.CompressSharpStageOperationParametersWidget.cs" />
     <Compile Include="StageOperations\CompressSharp\CompressSharpStageOperationParametersWidget.cs" />
+    <Compile Include="ReceiptSelectorWidget.cs" />
+    <Compile Include="gtk-gui\CatEye.UI.Gtk.Widgets.ReceiptSelectorWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -120,6 +122,7 @@
     <EmbeddedResource Include="res\donut-white.png" />
     <EmbeddedResource Include="res\dot-black.png" />
     <EmbeddedResource Include="res\dot-white.png" />
+    <EmbeddedResource Include="res\cestage-small-24x24.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res\" />

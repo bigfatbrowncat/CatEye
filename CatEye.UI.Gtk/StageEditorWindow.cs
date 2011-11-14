@@ -177,7 +177,8 @@ public partial class StageEditorWindow : Gtk.Window
 		mStage.ZoomAfterPrescaleValue = zoomWidget.Value * mStage.Prescale;
 		
 		mStageThread.Start();
-		
+
+		/*
 		// Loading default stage
 		string mylocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 		string defaultstage = mylocation + System.IO.Path.DirectorySeparatorChar.ToString() + "default.cestage";
@@ -195,7 +196,7 @@ public partial class StageEditorWindow : Gtk.Window
 			md.Run();
 			md.Destroy();
 		}
-		
+		*/
 	}
 
 	void HandleStageImageLoadingError (object sender, EventArgs e)
@@ -339,8 +340,8 @@ public partial class StageEditorWindow : Gtk.Window
 			if (mStage.TheUIState == UIState.Idle)
 			{
 				loadRawAction.Sensitive = true;
-				loadStageAction.Sensitive = true;
-				saveStageAsAction.Sensitive = true;
+				saveReceiptAction.Sensitive = true;
+				saveReceiptAsAction.Sensitive = true;
 				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 				cancel_button.Visible = false;
 				progressbar.Visible = false;
@@ -349,8 +350,8 @@ public partial class StageEditorWindow : Gtk.Window
 			else if (mStage.TheUIState == UIState.Loading)
 			{
 				loadRawAction.Sensitive = false;
-				loadStageAction.Sensitive = false;
-				saveStageAsAction.Sensitive = false;
+				saveReceiptAction.Sensitive = true;
+				saveReceiptAsAction.Sensitive = true;
 				enqueueRenderAction.Sensitive = false;
 				cancel_button.Visible = true;
 				cancel_button.Sensitive = true;
@@ -361,8 +362,8 @@ public partial class StageEditorWindow : Gtk.Window
 			else if (mStage.TheUIState == UIState.Processing)
 			{
 				loadRawAction.Sensitive = true;
-				loadStageAction.Sensitive = true;
-				saveStageAsAction.Sensitive = true;
+				saveReceiptAction.Sensitive = true;
+				saveReceiptAsAction.Sensitive = true;
 				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
 				cancel_button.Visible = false;
 				progressbar.Visible = true;
@@ -509,7 +510,7 @@ public partial class StageEditorWindow : Gtk.Window
 		{
 			Gtk.MessageDialog md = new Gtk.MessageDialog(this, DialogFlags.Modal,
 			                                             MessageType.Error, ButtonsType.Ok, 
-			                                             "Can not start DCRaw process");
+			                                             "Loading is in progress");
 			md.Title = MainClass.APP_NAME;
 			md.Run();
 			md.Destroy();
@@ -540,25 +541,40 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			
 			// Adding preview widget
+			
+			VBox preview_box = new VBox(false, 4);
+			ReceiptSelectorWidget rsw = new ReceiptSelectorWidget();
 			RawPreviewWidget rpw = new RawPreviewWidget();
 			
-			fcd.PreviewWidget = rpw;
 			fcd.UpdatePreview += delegate {
 				rpw.Filename = fcd.Filename;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
+				Console.WriteLine("UpdatePreview " + (rpw.Filename != null ? rpw.Filename : "null") + "; " + rpw.FileIsGood);
 			};
 			fcd.SelectionChanged += delegate {
 				rpw.Filename = fcd.Filename;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
+				Console.WriteLine("SelectionChanged " + (rpw.Filename != null ? rpw.Filename : "null") + "; " + rpw.FileIsGood);
 			};
+			preview_box.PackStart(rpw, true, true, 0);
+			
+			
+			fcd.SelectionChanged += delegate {
+				rsw.RawFileName = fcd.Filename;
+			};
+			preview_box.PackEnd(rsw, false, false, 0);
+			preview_box.ShowAll();
 			
 			if (mStage.RawFileName != null)
 			{
 				fcd.SetFilename(mStage.RawFileName);
 				rpw.Filename = mStage.RawFileName;
+				rsw.RawFileName = mStage.RawFileName;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
+				
 			}
-			
+			fcd.PreviewWidget = preview_box;
+		
 			// Adding prescale widget
 			PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
 			pssw.Value = 2;
@@ -577,7 +593,11 @@ public partial class StageEditorWindow : Gtk.Window
 			fcd.Destroy();
 			if (ok)
 			{
-				mStage.AskLoadImage(filename, prescale);
+				if (mStage.RawFileName != filename)
+				{
+					mStage.AskLoadImage(filename, prescale);
+				}
+				mStage.LoadStage(rsw.SelectedReceiptFileName);
 			}
 		}
 	}
@@ -585,10 +605,10 @@ public partial class StageEditorWindow : Gtk.Window
 
 	protected virtual void OnImportFromDCRawActionActivated (object sender, System.EventArgs e)
 	{
-		GLib.Timeout.Add(1, delegate {
+		//GLib.Timeout.Add(1, delegate {
 			LoadRawImageActionPicked();
-			return false;
-		});
+		//	return false;
+		//});
 	}
 	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
@@ -660,38 +680,6 @@ public partial class StageEditorWindow : Gtk.Window
 		fcd.Destroy();
 	}
 	
-		
-	
-	protected void OnLoadStageActionActivated (object sender, System.EventArgs e)
-	{
-		Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog("Load stage description", 
-		                                                      this, 
-		                                                      FileChooserAction.Open,
-		                                                      "Cancel", ResponseType.Cancel,
-		                                                      "Open", ResponseType.Accept);
-		FileFilter[] ffs = new FileFilter[1];
-		ffs[0] = new FileFilter();
-		ffs[0].AddCustom(FileFilterFlags.Filename, delegate (Gtk.FileFilterInfo ffi) {
-			return System.IO.Path.GetExtension(ffi.Filename).ToLower() == ".cestage";
-		});
-		ffs[0].Name = "CatEye Stage file";
-
-		fcd.AddFilter(ffs[0]);
-		fcd.SetCurrentFolder(System.IO.Path.GetDirectoryName(mStage.RawFileName));
-		
-		string fn = "";
-		bool ok = false;
-		if (fcd.Run() == (int)Gtk.ResponseType.Accept)
-		{
-			ok = true;
-			fn = fcd.Filename;
-		}
-		fcd.Destroy();
-		if (ok)
-		{
-			LoadCEStage(fn, true);
-		}
-	}
 
 	[GLib.ConnectBefore()]
 	protected void OnStageVboxExposeEvent (object o, Gtk.ExposeEventArgs args)
@@ -941,4 +929,20 @@ public partial class StageEditorWindow : Gtk.Window
 		MainClass.windowsGtkStyle.UpdateStyle(this.GdkWindow, main_menubar);
 
 	}
+
+	protected void OnSaveReceiptActionActivated (object sender, System.EventArgs e)
+	{
+		if (ReceiptsManager.DetermineReceiptType(mStage.StageFileName, mStage.RawFileName) == ReceiptsManager.ReceiptType.Default ||
+			ReceiptsManager.DetermineReceiptType(mStage.StageFileName, mStage.RawFileName) == ReceiptsManager.ReceiptType.Custom)
+		{
+			mStage.SaveStage();
+		}
+		else
+		{
+			mStage.SaveStage(ReceiptsManager.MakeReceiptFilename(mStage.RawFileName, null));
+		}
+		//mStage.StageFileName
+		
+	}
+
 }

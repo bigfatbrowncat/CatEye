@@ -44,7 +44,7 @@ namespace CatEye.UI.Gtk.Widgets
 
 				file_is_good = true;
 				
-				GLib.Timeout.Add(100, new GLib.TimeoutHandler(delegate {
+				//GLib.Timeout.Add(100, new GLib.TimeoutHandler(delegate {
 		
 					Gdk.Pixmap pm = null;
 					Gdk.GC gc = null;
@@ -146,14 +146,15 @@ namespace CatEye.UI.Gtk.Widgets
 						Console.WriteLine("Exception occured during the thumbnail loading process: " + ex.Message);
 #endif								
 						identification_label.Text = "Cannot decode selected file";
+						file_is_good = false;
 					}
 					finally
 					{
 						if (gc != null) gc.Dispose();
 						if (pm != null) pm.Dispose();
 					}
-					return false;
-				}));
+					//return false;
+				//}));
 			}
 			return file_is_good;
 		}

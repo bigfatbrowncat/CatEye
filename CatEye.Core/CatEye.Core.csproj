@@ -93,6 +93,7 @@
     <Compile Include="RawLoader.cs" />
     <Compile Include="SSRLWrapper.cs" />
     <Compile Include="RawDescriptionLoader.cs" />
+    <Compile Include="ReceiptsManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

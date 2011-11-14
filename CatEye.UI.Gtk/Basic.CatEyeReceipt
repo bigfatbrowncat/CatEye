@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Stage>
+  <StageOperationParameters ID="HighlightStageOperation" Active="True" Cut="1" Softness="0.1" />
+  <StageOperationParameters ID="BrightnessStageOperation" Active="True" Brightness="1" Normalize="True" />
+  <StageOperationParameters ID="CrotateStageOperation" Active="False" Angle="45" CropWidth="1" CropHeight="1" AspectRatio="1" AspectRatioPreset="0" AspectRatioCustom="False" Mode="0">
+    <Point X="0.5" Y="0.5" Name="Center" />
+  </StageOperationParameters>
+  <StageOperationParameters ID="ToneStageOperation" Active="True" Edge="0.5" Softness="0.5" AutoDarkTone="True" AutoLightTone="True" AutoDarkRadius="0.6" AutoLightRadius="0.6">
+    <Tone R="1" G="1" B="1" Name="DarkTone" />
+    <Tone R="1" G="1" B="1" Name="LightTone" />
+    <Point X="0.5" Y="0.5" Name="AutoDarkCenter" />
+    <Point X="0.5" Y="0.5" Name="AutoLightCenter" />
+  </StageOperationParameters>
+  <StageOperationParameters ID="CompressSharpStageOperation" Active="True" Curve="0.5" Pressure="1" NoiseGate="0.1" Contrast="0.75" EdgePressure="0.4" SharpType="sharp" />
+</Stage>

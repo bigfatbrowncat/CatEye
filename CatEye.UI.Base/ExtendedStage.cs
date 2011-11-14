@@ -197,6 +197,11 @@ namespace CatEye.UI.Base
 			base.SaveStage(filename);
 			StageFileName = filename;
 		}
+
+		public void SaveStage()
+		{
+			base.SaveStage(StageFileName);
+		}
 		
 		public void LoadStage(string filename, bool setStageFilename)
 		{
