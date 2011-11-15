@@ -178,7 +178,7 @@ Section  "Installer section"
   File "..\${PKGDIR}bin\${config}\CatEye.Core.dll"
   File "..\${PKGDIR}bin\${config}\CatEye.UI.Base.dll"
   File "..\${PKGDIR}bin\${config}\CatEye.Gtk.UI.Widgets.dll"
-  File "..\${PKGDIR}bin\${config}\default.cestage"
+  File "..\${PKGDIR}bin\${config}\Basic.CatEyeReceipt"
 ;  File "..\${PKGDIR}bin\${config}\dcraw.exe"
   File "..\${PKGDIR}bin\${config}\ssrl.dll"
 
@@ -333,7 +333,7 @@ Section "un.Installer section"
   Delete $INSTDIR\CatEye.Gtk.UI.Widgets.dll
   Delete $INSTDIR\CatEye.UI.Base.dll
   Delete $INSTDIR\CatEye.Widgets.dll"
-  Delete $INSTDIR\default.cestage
+  Delete $INSTDIR\Basic.CatEyeReceipt
   Delete $INSTDIR\CatEye.exe.config
   Delete $INSTDIR\CatEye.exe
   Delete $INSTDIR\Uninstall.exe

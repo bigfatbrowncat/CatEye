@@ -302,6 +302,10 @@ namespace CatEye.UI.Gtk
 			if (mListener != null)
 			{
 				mListener.Stop();
+				while (mListener.Server.IsBound)
+				{
+					Thread.Sleep(10);
+				}
 				mListener = null;
 			}
 			mListeningThreadStopPending = true;

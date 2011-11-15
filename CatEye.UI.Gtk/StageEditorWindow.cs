@@ -31,21 +31,26 @@ public partial class StageEditorWindow : Gtk.Window
 	
 	private void UpdateTitle()
 	{
-		if (mStage.RawFileName != null || mStage.StageFileName != null)
+		string t = "";
+		if ((mStage.StageFileName == null || mStage.StageFileName == "") && mStage.RawFileName != null) 
 		{
-			string t = "";
-			if (mStage.StageFileName != null) t += System.IO.Path.GetFileName(mStage.StageFileName);
-			if (mStage.StageFileName != null && mStage.RawFileName != null) t += " / ";
-			if (mStage.RawFileName != null) 
+			t = System.IO.Path.GetFileName(mStage.RawFileName) + " — " + MainClass.APP_NAME;
+		} 
+		else if (mStage.RawFileName != null)
+		{
+			string ern = ReceiptsManager.ExtractReceiptName(mStage.StageFileName, mStage.RawFileName);
+			if (ern != null && ern != "")
 			{
-				t += System.IO.Path.GetFileName(mStage.RawFileName);
+				t = System.IO.Path.GetFileName(mStage.RawFileName) + " (" + ern + ") — " + MainClass.APP_NAME;
 			}
-			
-			t += " — " + MainClass.APP_NAME;
-			Title = t;
-		}
+			else 
+				t = System.IO.Path.GetFileName(mStage.RawFileName) + " — " + MainClass.APP_NAME;
+		} 
 		else
-			Title = MainClass.APP_NAME;
+		{
+			t = MainClass.APP_NAME;
+		}
+		Title = t;
 	}
 	
 	private void StageThreadStart()
@@ -120,22 +125,6 @@ public partial class StageEditorWindow : Gtk.Window
 		Microsoft.Win32.SystemEvents.DisplaySettingsChanged += delegate {
 			SetColorsUpdatingPending();
 		};
-		
-		// Preparing stage operation adding store
-		/*
-		ListStore ls = new ListStore(typeof(string), typeof(int));
-		for (int i = 0; i < mStageOperationTypes.Length; i++)
-		{
-			string desc = StageOperationDescriptionAttribute.GetSOName(mStageOperationTypes[i]);
-			if (desc == null) desc = mStageOperationTypes[i].Name;
-		
-			ls.AppendValues(desc, i);
-		}
-		stageOperationToAdd_combobox.Model = ls;
-		Gtk.TreeIter ti;
-		ls.GetIterFirst(out ti);
-		stageOperationToAdd_combobox.SetActiveIter(ti);
-		*/
 		
 		// Setting view widget events
 		viewWidget.ExposeEvent += HandleViewWidgetExposeEvent;
@@ -339,7 +328,7 @@ public partial class StageEditorWindow : Gtk.Window
 		Application.Invoke(delegate {
 			if (mStage.TheUIState == UIState.Idle)
 			{
-				loadRawAction.Sensitive = true;
+				openAction.Sensitive = true;
 				saveReceiptAction.Sensitive = true;
 				saveReceiptAsAction.Sensitive = true;
 				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
@@ -349,9 +338,9 @@ public partial class StageEditorWindow : Gtk.Window
 			}
 			else if (mStage.TheUIState == UIState.Loading)
 			{
-				loadRawAction.Sensitive = false;
-				saveReceiptAction.Sensitive = true;
-				saveReceiptAsAction.Sensitive = true;
+				openAction.Sensitive = false;
+				saveReceiptAction.Sensitive = false;
+				saveReceiptAsAction.Sensitive = false;
 				enqueueRenderAction.Sensitive = false;
 				cancel_button.Visible = true;
 				cancel_button.Sensitive = true;
@@ -361,7 +350,7 @@ public partial class StageEditorWindow : Gtk.Window
 			}
 			else if (mStage.TheUIState == UIState.Processing)
 			{
-				loadRawAction.Sensitive = true;
+				openAction.Sensitive = true;
 				saveReceiptAction.Sensitive = true;
 				saveReceiptAsAction.Sensitive = true;
 				enqueueRenderAction.Sensitive = File.Exists(mStage.RawFileName);
@@ -504,7 +493,7 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 	}
 	
-	protected void LoadRawImageActionPicked()
+	public bool ShowLoadImageDialog()
 	{
 		if (mStage.TheUIState == UIState.Loading)
 		{
@@ -542,44 +531,49 @@ public partial class StageEditorWindow : Gtk.Window
 			
 			// Adding preview widget
 			
-			VBox preview_box = new VBox(false, 4);
 			ReceiptSelectorWidget rsw = new ReceiptSelectorWidget();
 			RawPreviewWidget rpw = new RawPreviewWidget();
 			
+			// Adding options widget
+			
+			PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
+			pssw.Value = 2;
+			if (mStage.Prescale != 0) pssw.Value = mStage.Prescale;
+			
+			VBox preview_box = new VBox(false, 4);
+			preview_box.PackStart(rpw, true, true, 0);
+			preview_box.ShowAll();
+			fcd.PreviewWidget = preview_box;
+			
+			HBox options_box = new HBox(false, 20);
+			options_box.PackStart(rsw, true, true, 0);
+			options_box.PackEnd(pssw, false, true, 0);
+			fcd.ExtraWidget = options_box;
+			options_box.ShowAll();
+			
+			// Adding events
+			
 			fcd.UpdatePreview += delegate {
 				rpw.Filename = fcd.Filename;
-				fcd.PreviewWidgetActive = rpw.FileIsGood;
-				Console.WriteLine("UpdatePreview " + (rpw.Filename != null ? rpw.Filename : "null") + "; " + rpw.FileIsGood);
 			};
 			fcd.SelectionChanged += delegate {
 				rpw.Filename = fcd.Filename;
-				fcd.PreviewWidgetActive = rpw.FileIsGood;
-				Console.WriteLine("SelectionChanged " + (rpw.Filename != null ? rpw.Filename : "null") + "; " + rpw.FileIsGood);
-			};
-			preview_box.PackStart(rpw, true, true, 0);
-			
-			
-			fcd.SelectionChanged += delegate {
 				rsw.RawFileName = fcd.Filename;
 			};
-			preview_box.PackEnd(rsw, false, false, 0);
-			preview_box.ShowAll();
+			rpw.FileIsGoodChanged += delegate {
+				options_box.Sensitive = rpw.FileIsGood;
+				fcd.PreviewWidgetActive = rpw.FileIsGood;
+			};
 			
+
 			if (mStage.RawFileName != null)
 			{
 				fcd.SetFilename(mStage.RawFileName);
 				rpw.Filename = mStage.RawFileName;
 				rsw.RawFileName = mStage.RawFileName;
 				fcd.PreviewWidgetActive = rpw.FileIsGood;
-				
-			}
-			fcd.PreviewWidget = preview_box;
-		
-			// Adding prescale widget
-			PreScaleSelectorWidget pssw = new PreScaleSelectorWidget();
-			pssw.Value = 2;
-			if (mStage.Prescale != 0) pssw.Value = mStage.Prescale;
-			fcd.ExtraWidget = pssw;
+				options_box.Sensitive = rpw.FileIsGood;
+			}			
 			
 			string filename = ""; int prescale = 2;
 			bool ok = false;
@@ -590,7 +584,9 @@ public partial class StageEditorWindow : Gtk.Window
 				filename = fcd.Filename;
 				prescale = pssw.Value;
 			}
+			
 			fcd.Destroy();
+			
 			if (ok)
 			{
 				if (mStage.RawFileName != filename)
@@ -598,34 +594,27 @@ public partial class StageEditorWindow : Gtk.Window
 					mStage.AskLoadImage(filename, prescale);
 				}
 				mStage.LoadStage(rsw.SelectedReceiptFileName);
+				return true;
 			}
 		}
+		return false;
 	}
 
-
-	protected virtual void OnImportFromDCRawActionActivated (object sender, System.EventArgs e)
-	{
-		//GLib.Timeout.Add(1, delegate {
-			LoadRawImageActionPicked();
-		//	return false;
-		//});
-	}
-	
 	protected virtual void OnCancelButtonClicked (object sender, System.EventArgs e)
 	{
 		cancel_button.Sensitive = false;
 		mStage.CancelLoading();
 	}
 	
-	private void CloseStageEditor()
+	public void CloseStageEditor()
 	{
 		// Stopping stage thread
 		mStageThreadStopFlag = true;
 		mStage.CancelAll();
 		
 		Destroy();
-
 		mIsDestroyed = true;
+		
 	}
 	
 	protected virtual void OnQuitActionActivated (object sender, System.EventArgs e)
@@ -807,7 +796,9 @@ public partial class StageEditorWindow : Gtk.Window
 			Menu menu = new Menu();
 			int w, h;
 			menu.GetSizeRequest(out w, out h);
-			menu.SetSizeRequest(addNewOperation_togglebutton.Allocation.Width, h);
+			int menu_width = left_vbox.Allocation.Width;
+			
+			menu.SetSizeRequest(menu_width, h);
 	
 			Dictionary<MenuItem, Type> stage_operation_types = new Dictionary<MenuItem, Type>();
 			
@@ -880,7 +871,7 @@ public partial class StageEditorWindow : Gtk.Window
 			menu.Popup(null, null, delegate (Menu m, out int x, out int y, out bool push_in) {
 				int x1, y1, x0, y0;
 				GdkWindow.GetOrigin(out x0, out y0);
-				addNewOperation_togglebutton.TranslateCoordinates(this, 0, 0, out x1, out y1);
+				left_vbox.TranslateCoordinates(this, 0, 0, out x1, out y1);
 				x = x0 + x1;
 				y = y0 + y1;
 				push_in = false;
@@ -939,10 +930,54 @@ public partial class StageEditorWindow : Gtk.Window
 		}
 		else
 		{
-			mStage.SaveStage(ReceiptsManager.MakeReceiptFilename(mStage.RawFileName, null));
+			mStage.SaveStage(ReceiptsManager.MakeDefaultOrCustomReceiptFilename(mStage.RawFileName, null));
 		}
 		//mStage.StageFileName
 		
 	}
 
+	protected void OnSaveReceiptAsActionActivated (object sender, System.EventArgs e)
+	{
+		ReceiptSaveDialog rsd = new ReceiptSaveDialog(this, mStage.RawFileName);
+
+		if (ReceiptsManager.DetermineReceiptType(mStage.StageFileName, mStage.RawFileName) == ReceiptsManager.ReceiptType.Custom) 
+		{
+			rsd.SelectedType = ReceiptSaveDialog.ReceiptType.Custom;
+		}
+		else if (ReceiptsManager.DetermineReceiptType(mStage.StageFileName, mStage.RawFileName) == ReceiptsManager.ReceiptType.Class)
+		{
+			rsd.SelectedType = ReceiptSaveDialog.ReceiptType.Class;
+		}
+		else
+		{
+			rsd.SelectedType = ReceiptSaveDialog.ReceiptType.Default;
+		}
+		
+		rsd.SelectedName = ReceiptsManager.ExtractReceiptName(mStage.StageFileName, mStage.RawFileName);
+		
+		if (rsd.Run() == (int)Gtk.ResponseType.Accept)
+		{
+			if (rsd.SelectedType == ReceiptSaveDialog.ReceiptType.Default)
+				mStage.SaveStage(ReceiptsManager.MakeDefaultOrCustomReceiptFilename(mStage.RawFileName, null));
+			else if (rsd.SelectedType == ReceiptSaveDialog.ReceiptType.Custom)
+				mStage.SaveStage(ReceiptsManager.MakeDefaultOrCustomReceiptFilename(mStage.RawFileName, rsd.SelectedName));
+			else if (rsd.SelectedType == ReceiptSaveDialog.ReceiptType.Class)
+				mStage.SaveStage(ReceiptsManager.MakeClassReceiptFilename(System.IO.Path.GetDirectoryName(mStage.RawFileName), rsd.SelectedName));
+			else
+				throw new Exception("Invalid rsd.SelectedType value");
+		}
+		rsd.Destroy();
+	}
+
+	protected void OnDestroyEvent (object o, Gtk.DestroyEventArgs args)
+	{
+	}
+
+	protected void OnOpenActionActivated (object sender, System.EventArgs e)
+	{
+		// Sending remote command to open new image window
+		string command = "StageEditor";
+		string[] arguments = new string[] {};
+		MainClass.RemoteControlService.SendCommand(RemoteControlService.PackCommand(command, arguments));
+	}
 }

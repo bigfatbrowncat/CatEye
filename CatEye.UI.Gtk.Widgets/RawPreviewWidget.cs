@@ -11,6 +11,8 @@ namespace CatEye.UI.Gtk.Widgets
 		private string mFilename;
 		private bool mFileIsGood;
 		
+		public event EventHandler<EventArgs> FileIsGoodChanged;
+		
 		public RawPreviewWidget ()
 		{
 			this.Build ();
@@ -22,19 +24,24 @@ namespace CatEye.UI.Gtk.Widgets
 			set
 			{
 				mFilename = value;
-				mFileIsGood = UpdatePreview();
+				UpdatePreview();
 			}
 		}
 		
 		public bool FileIsGood
 		{
+			protected set
+			{
+				mFileIsGood = value;
+				if (FileIsGoodChanged != null) FileIsGoodChanged(this, EventArgs.Empty);
+			}
 			get { return mFileIsGood; }
 		}
 		
-		protected bool UpdatePreview()
+		protected void UpdatePreview()
 		{
 			thumb_image.Clear();
-			bool file_is_good = false;
+			FileIsGood = false;
 			
 			int size = 200, margins = 30;
 	
@@ -42,9 +49,7 @@ namespace CatEye.UI.Gtk.Widgets
 			{
 				origsize_label.Markup = "";
 
-				file_is_good = true;
-				
-				//GLib.Timeout.Add(100, new GLib.TimeoutHandler(delegate {
+				GLib.Timeout.Add(100, new GLib.TimeoutHandler(delegate {
 		
 					Gdk.Pixmap pm = null;
 					Gdk.GC gc = null;
@@ -60,7 +65,7 @@ namespace CatEye.UI.Gtk.Widgets
 						string idtext = "";
 						try
 						{
-							idtext += "Shot taken\n" +
+							idtext += "Shot has been taken\n" +
 								      "   on <b>" + rdl.TimeStamp.ToString("MMMM, d, yyyy") + "</b> at <b>" + rdl.TimeStamp.ToString("h:mm:ss tt") + "</b>,\n";
 
 							idtext += "   with <b>" + rdl.CameraMaker + " " + rdl.CameraModel + "</b>\n\n";
@@ -134,7 +139,7 @@ namespace CatEye.UI.Gtk.Widgets
 							thumb_image.SetFromPixmap(pm, null);
 							pb.Dispose();
 						}
-		
+						FileIsGood = true;
 					}
 					catch (Exception 
 #if DEBUG
@@ -145,18 +150,19 @@ namespace CatEye.UI.Gtk.Widgets
 #if DEBUG
 						Console.WriteLine("Exception occured during the thumbnail loading process: " + ex.Message);
 #endif								
-						identification_label.Text = "Cannot decode selected file";
-						file_is_good = false;
+						identification_label.Wrap = true;
+						identification_label.Markup = "<i>Cannot decode the selected file. "+
+						                              "Maybe it's corrupted or the user hasn't enough access rights to open it.</i>";
+						FileIsGood = false;
 					}
 					finally
 					{
 						if (gc != null) gc.Dispose();
 						if (pm != null) pm.Dispose();
 					}
-					//return false;
-				//}));
+					return false;
+				}));
 			}
-			return file_is_good;
 		}
 	}
 	

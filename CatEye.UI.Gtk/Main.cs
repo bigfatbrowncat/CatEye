@@ -235,7 +235,6 @@ namespace CatEye
 				// No arguments
 				Application.Invoke(delegate
 				{
-					
 					StageEditorWindow sew = new StageEditorWindow(
 						mStageOperationTypes,
 						StageOperationFactory, 
@@ -243,9 +242,13 @@ namespace CatEye
 						StageOperationParametersEditorFactory, 
 						StageOperationHolderFactory, 
 						FloatBitmapGtkFactory);
-					
+
 					mStageEditorWindows.Add(sew);
-					sew.Show();
+					
+					if (sew.ShowLoadImageDialog())
+						sew.Show();
+					else
+						sew.CloseStageEditor();
 				});
 			} 
 			else if (e.Command == "StageEditor_CEStage_RAW")

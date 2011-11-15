@@ -47,7 +47,29 @@ namespace CatEye.Core
 			
 		}
 		
-		public static string MakeReceiptFilename(string rawFileName, string receiptName)
+		public static string ExtractReceiptName(string receiptFileName, string rawFileName)
+		{
+			string rawName = Path.GetFileNameWithoutExtension(Path.GetFullPath(rawFileName));
+			string rawPath = Path.GetDirectoryName(Path.GetFullPath(rawFileName));
+			string receiptName = Path.GetFileNameWithoutExtension(Path.GetFullPath(receiptFileName));
+			string receiptPath = Path.GetDirectoryName(Path.GetFullPath(receiptFileName));
+			ReceiptType rt = DetermineReceiptType(receiptFileName, rawFileName);
+			if (rt == ReceiptType.Default) return "";
+			if (rt == ReceiptType.Custom)
+			{
+				string rcp = System.IO.Path.GetFileNameWithoutExtension(receiptName);
+				rcp = rcp.Substring(rcp.IndexOf("--") + 2);
+				return rcp;
+			}
+			return System.IO.Path.GetFileNameWithoutExtension(receiptName);
+		}
+		
+		public static string MakeClassReceiptFilename(string path, string receiptName)
+		{
+			return path + Path.DirectorySeparatorChar + receiptName + ReceiptsExtension;
+		}
+		
+		public static string MakeDefaultOrCustomReceiptFilename(string rawFileName, string receiptName)
 		{
 			// extracting the paths and name
 			string name = Path.GetFileNameWithoutExtension(rawFileName);
@@ -77,26 +99,13 @@ namespace CatEye.Core
 			return others.ToArray();
 			
 		}
-		
-		public static string[] FindReceiptsForRaw(string rawFileName)
+
+		public static string[] FindClassReceiptsForRaw(string rawFileName)
 		{
-			List<string> receipts = new List<string>();
-			
-			// extracting the paths and name
-			string name = Path.GetFileNameWithoutExtension(rawFileName);
 			string path = Path.GetDirectoryName(rawFileName);
-			string catEyePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
+			string name = Path.GetFileNameWithoutExtension(rawFileName);
 			
-			// 1. searching for standard receipt
-			string receipt = path + Path.DirectorySeparatorChar + name + ReceiptsExtension;
-			if (File.Exists(receipt)) receipts.Add(receipt);
-			
-			// 2. searching for alternative receipts of the image
-			string[] alts = System.IO.Directory.GetFiles(path, name + "--*" + ReceiptsExtension);
-			
-			receipts.AddRange(alts);
-			
-			// 3. searching for the custom dockets in the current directory
+			List<string> receipts = new List<string>();
 			string[] all = System.IO.Directory.GetFiles(path, "*" + ReceiptsExtension);
 			// adding only the receipts that don't belong to other photos in the same dir
 			string[] other_raws = OtherRawsSameDirectory(rawFileName);
@@ -111,10 +120,48 @@ namespace CatEye.Core
 						belongs_to_other = true;
 					}
 				}
-				if (!belongs_to_other) receipts.Add(all[i]);
+				if (!belongs_to_other && 
+					(!Path.GetFileNameWithoutExtension(all[i]).StartsWith(name + "--")) && 
+					(!Path.GetFileNameWithoutExtension(all[i]).StartsWith(name))) receipts.Add(all[i]);
 			}
+			return receipts.ToArray();
+		}
+		
+		public static string[] FindCustomReceiptsForRaw(string rawFileName)
+		{
+			string name = Path.GetFileNameWithoutExtension(rawFileName);
+			string path = Path.GetDirectoryName(rawFileName);
+
+			List<string> receipts = new List<string>();
+			string[] alts = System.IO.Directory.GetFiles(path, name + "--*" + ReceiptsExtension);
+			
+			receipts.AddRange(alts);
+			return receipts.ToArray();
+		}
+		
+		public static string[] FindReceiptsForRaw(string rawFileName)
+		{
+			List<string> receipts = new List<string>();
+			
+			// extracting the paths and name
+			string name = Path.GetFileNameWithoutExtension(rawFileName);
+			string path = Path.GetDirectoryName(rawFileName);
+			string catEyePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
+			
+			// 1. searching for standard receipt
+			string receipt = path + Path.DirectorySeparatorChar + name + ReceiptsExtension;
+			if (File.Exists(receipt)) receipts.Add(receipt);
+			
+			// 2. searching for custom receipts of the image
+			receipts.AddRange(FindCustomReceiptsForRaw(rawFileName));
+			
+			// 3. searching for the class receipts in the current directory
+			receipts.AddRange(FindClassReceiptsForRaw(rawFileName));
 			
 			// 4. adding the templates
+			System.IO.TextWriter tw = new StreamWriter("out.txt");
+			tw.WriteLine(catEyePath);
+			tw.Close();
 			string[] templates = System.IO.Directory.GetFiles(catEyePath, "*" + ReceiptsExtension);
 			receipts.AddRange(templates);
 			

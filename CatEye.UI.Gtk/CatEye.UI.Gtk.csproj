@@ -93,6 +93,7 @@
     <Compile Include="gtk-gui\CatEye.UI.Gtk.AskToOpenRawDialog.cs" />
     <Compile Include="WindowsGtkStyle.cs" />
     <Compile Include="DwmApi.cs" />
+    <Compile Include="ReceiptSaveDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
