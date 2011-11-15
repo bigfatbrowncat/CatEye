@@ -464,7 +464,7 @@ public partial class StageEditorWindow : Gtk.Window
 	{
 		mStage.AskLoadImage(filename, prescale);
 	}
-	
+	/*
 	public void LoadCEStage(string filename, bool findRawForCEStage)
 	{
 		try
@@ -492,7 +492,7 @@ public partial class StageEditorWindow : Gtk.Window
 			md.Destroy();
 		}
 	}
-	
+	*/
 	public bool ShowLoadImageDialog()
 	{
 		if (mStage.TheUIState == UIState.Loading)

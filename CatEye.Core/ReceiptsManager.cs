@@ -7,7 +7,7 @@ namespace CatEye.Core
 {
 	public static class ReceiptsManager
 	{
-		public const string ReceiptsExtension = ".CatEyeReceipt";
+		public const string RECEIPT_EXTENSION = ".CatEyeReceipt";
 		
 		
 		public enum ReceiptType 
@@ -66,7 +66,7 @@ namespace CatEye.Core
 		
 		public static string MakeClassReceiptFilename(string path, string receiptName)
 		{
-			return path + Path.DirectorySeparatorChar + receiptName + ReceiptsExtension;
+			return path + Path.DirectorySeparatorChar + receiptName + RECEIPT_EXTENSION;
 		}
 		
 		public static string MakeDefaultOrCustomReceiptFilename(string rawFileName, string receiptName)
@@ -76,9 +76,9 @@ namespace CatEye.Core
 			string path = Path.GetDirectoryName(rawFileName);
 			
 			if (receiptName != null && receiptName.Trim() != "")
-				return path + Path.DirectorySeparatorChar + name + "--" + receiptName + ReceiptsExtension;
+				return path + Path.DirectorySeparatorChar + name + "--" + receiptName + RECEIPT_EXTENSION;
 			else
-				return path + Path.DirectorySeparatorChar + name + ReceiptsExtension;
+				return path + Path.DirectorySeparatorChar + name + RECEIPT_EXTENSION;
 				
 		}
 		
@@ -106,7 +106,7 @@ namespace CatEye.Core
 			string name = Path.GetFileNameWithoutExtension(rawFileName);
 			
 			List<string> receipts = new List<string>();
-			string[] all = System.IO.Directory.GetFiles(path, "*" + ReceiptsExtension);
+			string[] all = System.IO.Directory.GetFiles(path, "*" + RECEIPT_EXTENSION);
 			// adding only the receipts that don't belong to other photos in the same dir
 			string[] other_raws = OtherRawsSameDirectory(rawFileName);
 			for (int i = 0; i < all.Length; i++)
@@ -133,10 +133,58 @@ namespace CatEye.Core
 			string path = Path.GetDirectoryName(rawFileName);
 
 			List<string> receipts = new List<string>();
-			string[] alts = System.IO.Directory.GetFiles(path, name + "--*" + ReceiptsExtension);
+			string[] alts = System.IO.Directory.GetFiles(path, name + "--*" + RECEIPT_EXTENSION);
 			
 			receipts.AddRange(alts);
 			return receipts.ToArray();
+		}
+		
+		public static bool IsReceipt(string fileName)
+		{
+			return System.IO.Path.GetExtension(fileName) == RECEIPT_EXTENSION;
+		}
+		
+		public static string[] FindRawsForReceipt(string receiptFileName)
+		{
+			List<string> res = new List<string>();
+			
+			string name = Path.GetFileNameWithoutExtension(receiptFileName);
+			string path = Path.GetDirectoryName(receiptFileName);
+			
+			// Trying to find a raw file which owns this receipt as a default
+			bool found_default = false;
+			for (int i = 0; i < RawLoader.RAW_EXTENSIONS.Length; i++)
+			{
+				string checking_name = path + System.IO.Path.DirectorySeparatorChar + receiptFileName + RawLoader.RAW_EXTENSIONS[i];
+				if (System.IO.File.Exists(checking_name))
+				{
+					found_default = true;
+					res.Add(checking_name);
+				}
+			}
+			if (found_default) return res.ToArray();
+			
+			// Checking if this receipt can be a custom receipt for some photo
+			if (name.IndexOf("--") >= 0)
+			{
+				// Trying to find a raw file which owns this receipt as a default
+				bool found_custom = false;
+				for (int i = 0; i < RawLoader.RAW_EXTENSIONS.Length; i++)
+				{
+					string checking_name = name.Substring(0, name.IndexOf("--")) + RawLoader.RAW_EXTENSIONS[i];
+
+					if (System.IO.File.Exists(checking_name))
+					{
+						found_custom = true;
+						res.Add(checking_name);
+					}
+				}
+				if (found_custom) return res.ToArray();
+			}
+			
+			// TODO: Check for class too!!!
+			
+			return new string[] {};
 		}
 		
 		public static string[] FindReceiptsForRaw(string rawFileName)
@@ -149,7 +197,7 @@ namespace CatEye.Core
 			string catEyePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 			
 			// 1. searching for standard receipt
-			string receipt = path + Path.DirectorySeparatorChar + name + ReceiptsExtension;
+			string receipt = path + Path.DirectorySeparatorChar + name + RECEIPT_EXTENSION;
 			if (File.Exists(receipt)) receipts.Add(receipt);
 			
 			// 2. searching for custom receipts of the image
@@ -162,7 +210,7 @@ namespace CatEye.Core
 			System.IO.TextWriter tw = new StreamWriter("out.txt");
 			tw.WriteLine(catEyePath);
 			tw.Close();
-			string[] templates = System.IO.Directory.GetFiles(catEyePath, "*" + ReceiptsExtension);
+			string[] templates = System.IO.Directory.GetFiles(catEyePath, "*" + RECEIPT_EXTENSION);
 			receipts.AddRange(templates);
 			
 			List<string> unique = new List<string>();

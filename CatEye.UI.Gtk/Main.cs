@@ -104,82 +104,6 @@ namespace CatEye
 			return FloatBitmapGtk.FromPPM(ppl, callback);
 		}
 		
-		public static string[] FindCEStagesForRaw(string raw_filename)
-		{
-			List<string> res = new List<string>();
-			string cut_ext_low = System.IO.Path.GetFileNameWithoutExtension(raw_filename).ToLower();
-			string dir = System.IO.Path.GetDirectoryName(raw_filename);
-			
-			// "Empty" path points to current dir
-			if (dir == "") dir = System.IO.Directory.GetCurrentDirectory();
-			
-			string[] files = System.IO.Directory.GetFiles(dir);
-			for (int i = 0; i < files.Length; i++)
-			{
-				if (IsCEStageFile(files[i]) &&
-					System.IO.Path.GetFileNameWithoutExtension(files[i]).ToLower() == cut_ext_low)
-				{
-					res.Add(files[i]);
-				}
-			}
-#if DEBUG
-			Console.WriteLine("Found " + res.Count + " cestage files");
-#endif
-			return res.ToArray();
-		}
-		
-		public static bool IsCEStageFile(string filename)
-		{
-			return System.IO.Path.GetExtension(filename).ToLower() == ".cestage";
-		}
-		
-		public static string[] FindRawsForCEStage(string cestage_filename)
-		{
-			List<string> res = new List<string>();
-			string cut_ext_low = System.IO.Path.GetFileNameWithoutExtension(cestage_filename).ToLower();
-			string dir = System.IO.Path.GetDirectoryName(cestage_filename);
-			
-			// "Empty" path points to current dir
-			if (dir == "") dir = System.IO.Directory.GetCurrentDirectory();
-			
-			string[] files = System.IO.Directory.GetFiles(dir);
-			for (int i = 0; i < files.Length; i++)
-			{
-				if (RawLoader.IsRaw(files[i]) &&
-					System.IO.Path.GetFileNameWithoutExtension(files[i]).ToLower() == cut_ext_low)
-				{
-					res.Add(files[i]);
-				}
-			}
-#if DEBUG
-			Console.WriteLine("Found " + res.Count + " RAW files");
-#endif
-			return res.ToArray();
-		}
-		
-		public static bool FindRawsForCestageAndAskToOpen(string cestage_filename, out string raw_filename, ref int prescale)
-		{
-			raw_filename = "";
-			// Trying to find a proper RAW file
-			string[] raws = FindRawsForCEStage(cestage_filename);
-			
-			if (raws.Length > 0)
-			{
-				raw_filename = raws[0]; // TODO: support more than one found RAW file
-				
-				AskToOpenRawDialog ask_raw = new AskToOpenRawDialog();
-				ask_raw.Filename = raw_filename;
-				ask_raw.PreScale = prescale;
-				
-				bool yes = false;
-				if (ask_raw.Run() == (int)Gtk.ResponseType.Accept) yes = true;
-				prescale = ask_raw.PreScale;
-				ask_raw.Destroy();
-				return yes;
-			}
-			return false;
-		}
-		
 		internal static WindowsGtkStyle windowsGtkStyle;
 		
 		private static List<StageEditorWindow> mStageEditorWindows = new List<StageEditorWindow>();
@@ -277,7 +201,7 @@ namespace CatEye
 					
 					sew.Show();
 					sew.LoadRaw(rawFileName, prescale);
-					sew.LoadCEStage(cestageFileName, false);
+					//sew.LoadCEStage(cestageFileName, false);
 				});
 			}
 			else if (e.Command == "StageEditor_CEStage")
@@ -302,7 +226,7 @@ namespace CatEye
 					mStageEditorWindows.Add(sew);
 					
 					sew.Show();
-					sew.LoadCEStage(cestageFileName, true);
+					//sew.LoadCEStage(cestageFileName, true);
 				});
 			}
 			else if (e.Command == "StageEditor_RAW")
@@ -436,7 +360,7 @@ namespace CatEye
 						// Removing readed "-d"
 						argslist.RemoveRange(d_inx, 2);
 						
-						if (!IsCEStageFile(d_cestage_name))
+						if (!ReceiptsManager.IsReceipt(d_cestage_name))
 						{
 							Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
 							d_cestage_name = "";
@@ -503,14 +427,14 @@ namespace CatEye
 				
 				// Now when all the additional parameters are parsed and removed, 
 				// we're analysing, what's left. The options:
-				if (argslist.Count == 2 && ((IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1])) ||
-										   (IsCEStageFile(argslist[1]) && RawLoader.IsRaw(argslist[0]))))
+				if (argslist.Count == 2 && ((ReceiptsManager.IsReceipt(argslist[0]) && RawLoader.IsRaw(argslist[1])) ||
+										   (ReceiptsManager.IsReceipt(argslist[1]) && RawLoader.IsRaw(argslist[0]))))
 				{
 					// Two file names: one cestage and one raw
 
 					string cestage_filename;
 					string raw_filename;
-					if (IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1]))
+					if (ReceiptsManager.IsReceipt(argslist[0]) && RawLoader.IsRaw(argslist[1]))
 					{
 						cestage_filename = argslist[0];
 						raw_filename = argslist[1];
@@ -551,7 +475,7 @@ namespace CatEye
 							string target_name = System.IO.Path.ChangeExtension(argslist[i], target_type);
 							target_name = CheckIfFileExistsAndAddIndex(target_name);
 							
-							string[] cestages = FindCEStagesForRaw(argslist[i]);
+							string[] cestages = ReceiptsManager.FindReceiptsForRaw(argslist[i]);
 							if (cestages.Length > 0)
 							{
 								// At least one found
@@ -585,7 +509,7 @@ namespace CatEye
 								Console.WriteLine("Can't open " + argslist[i] + ": can't find it's .cestage file");
 							}
 						} 
-						else if (IsCEStageFile(argslist[i]))
+						else if (ReceiptsManager.IsReceipt(argslist[i]))
 						{
 							// The current file is a cestage
 
@@ -597,7 +521,7 @@ namespace CatEye
 							string[] raws = new string[] {};
 							try
 							{
-								raws = FindRawsForCEStage(argslist[i]);
+								raws = ReceiptsManager.FindRawsForReceipt(argslist[i]);
 							}
 							catch (System.IO.DirectoryNotFoundException dnfe)
 							{
@@ -649,7 +573,7 @@ namespace CatEye
 						// Removing readed "-d"
 						argslist.RemoveRange(d_inx, 2);
 						
-						if (!IsCEStageFile(d_cestage_name))
+						if (!ReceiptsManager.IsReceipt(d_cestage_name))
 						{
 							Console.WriteLine("Incorrect argument: " + d_cestage_name + " is not a .cestage file.");
 							d_cestage_name = "";
@@ -687,25 +611,25 @@ namespace CatEye
 					}
 				}
 						
-				if (argslist.Count == 2 && IsCEStageFile(argslist[0]) && RawLoader.IsRaw(argslist[1]))
+				if (argslist.Count == 2 && ReceiptsManager.IsReceipt(argslist[0]) && RawLoader.IsRaw(argslist[1]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
 					commands.Add("StageEditor_CEStage_RAW");
 					commands_arguments.Add(new List<string>(new string[] 
 					{ 
-						argslist[0], 
+						argslist[0],
 						argslist[1],
 						prescale.ToString()
 					}));
 				}
 				else
-				if (argslist.Count == 2 && IsCEStageFile(argslist[1]) && RawLoader.IsRaw(argslist[0]))
+				if (argslist.Count == 2 && ReceiptsManager.IsReceipt(argslist[1]) && RawLoader.IsRaw(argslist[0]))
 				{
 					// Launching StageEditor with the cestage file and the raw file
 					commands.Add("StageEditor_CEStage_RAW");
 					commands_arguments.Add(new List<string>(new string[] 
 					{
-						argslist[1], 
+						argslist[1],
 						argslist[0],
 						prescale.ToString()
 					}));
@@ -719,20 +643,7 @@ namespace CatEye
 						{
 							// The current file is a raw
 							
-							string[] cestages = FindCEStagesForRaw(argslist[i]);
-							if (cestages.Length > 0)
-							{
-								// At least one found
-								// Launching StageEditor with the cestage file and the raw file
-								commands.Add("StageEditor_CEStage_RAW");
-								commands_arguments.Add(new List<string>(new string[] 
-								{ 								
-									cestages[0],
-									argslist[i],
-									prescale.ToString()
-								}));
-							}
-							else if (d_cestage_name != "")
+							if (d_cestage_name != "")
 							{
 								// Nothing found, but default name is present
 								commands.Add("StageEditor_CEStage_RAW");
@@ -745,7 +656,6 @@ namespace CatEye
 							}
 							else
 							{
-								Console.WriteLine("Can't find .cestage file for " + argslist[i]);
 								commands.Add("StageEditor_RAW");
 								commands_arguments.Add(new List<string>(new string[] 
 								{
@@ -754,11 +664,11 @@ namespace CatEye
 								}));
 							}
 						} 
-						else if (IsCEStageFile(argslist[i]))
+						else if (ReceiptsManager.IsReceipt(argslist[i]))
 						{
 							// The current file is a cestage
 							
-							string[] raws = FindRawsForCEStage(argslist[i]);
+							string[] raws = ReceiptsManager.FindRawsForReceipt(argslist[i]);
 							if (raws.Length > 0)
 							{
 								// At least one found
@@ -771,14 +681,29 @@ namespace CatEye
 									prescale.ToString()
 								}));
 							}
-							else
+							else if (raws.Length == 0)
 							{
-								Console.WriteLine("Can't find raw file for " + argslist[i]);
-								commands.Add("StageEditor_CEStage");
-								commands_arguments.Add(new List<string>(new string[] 
-								{
-									argslist[i]
-								}));
+								Gtk.MessageDialog md = new Gtk.MessageDialog(
+									null, DialogFlags.Modal,
+									MessageType.Error, ButtonsType.Ok, 
+									false, "Can't find raw file for {0}", argslist[i]);
+								
+								md.Title = MainClass.APP_NAME;
+								
+								md.Run();
+								md.Destroy();
+							} 
+							else // raws.Length > 1
+							{
+								Gtk.MessageDialog md = new Gtk.MessageDialog(
+									null, DialogFlags.Modal,
+									MessageType.Error, ButtonsType.Ok, 
+									false, "More than one raw file found for {0}", argslist[i]);
+								
+								md.Title = MainClass.APP_NAME;
+								
+								md.Run();
+								md.Destroy();
 							}
 						}
 

@@ -7,21 +7,25 @@ namespace CatEye.Core
 {
 	public class RawLoader
 	{
-		private static readonly string [] RAW_EXTENSIONS = {
-				".arw",
-				".crw",
-				".cr2",
-				".dng",
-				".mrw",
-				".nef",
-				".orf",
-				".pef",
-				".raw",
-				".raf",
-				".rw2"
-		};
-		
-		private static readonly List<string> raw_exts = new List<string>(RAW_EXTENSIONS);
+		public static readonly string [] RAW_EXTENSIONS = null;
+		private static readonly List<string> raw_exts;
+		static RawLoader()
+		{
+			RAW_EXTENSIONS = new string[] {
+					".arw",
+					".crw",
+					".cr2",
+					".dng",
+					".mrw",
+					".nef",
+					".orf",
+					".pef",
+					".raw",
+					".raf",
+					".rw2"
+			};
+			raw_exts = new List<string>(RAW_EXTENSIONS);
+		}
 		
 		public static bool IsRaw(string filename)
 		{

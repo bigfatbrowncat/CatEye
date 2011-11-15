@@ -89,8 +89,6 @@
     <Compile Include="EventArgsTypes.cs" />
     <Compile Include="StageEditorWindow.cs" />
     <Compile Include="gtk-gui\StageEditorWindow.cs" />
-    <Compile Include="AskToOpenRawDialog.cs" />
-    <Compile Include="gtk-gui\CatEye.UI.Gtk.AskToOpenRawDialog.cs" />
     <Compile Include="WindowsGtkStyle.cs" />
     <Compile Include="DwmApi.cs" />
     <Compile Include="ReceiptSaveDialog.cs" />
