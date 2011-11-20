@@ -45,6 +45,8 @@ VIProductVersion "${PRODUCT_VERSION}"
 
 ; Variables
 var /global winver
+var /global instver
+var /global oldinstdir
 
 ;--------------------------------
 ;Interface Settings
@@ -105,6 +107,56 @@ LicenseData $(license)
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
   SetRebootFlag true
+  call VersionCheck
+FunctionEnd
+
+
+Function VersionCheck
+;  WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "Version" "${PRODUCT_VERSION}"
+  ReadRegStr $instver HKLM SOFTWARE\${PRODUCT_NAME} "Version"
+  StrCpy $R2 $instver 1
+  StrCpy $R3 $instver 1 2
+  StrCpy $R4 $instver 4 4
+  StrCpy $R5 $instver 5 9
+;  StrCpy $R0 (($R2*10+$R3)*10+$R4)*10000+$R5
+  IntOp $R0 $R2 * 10
+  IntOp $R0 $R0 + $R3
+  IntOp $R0 $R0 * 10
+  IntOp $R0 $R0 + $R4
+  IntOp $R0 $R0 * 10000
+  IntOp $R0 $R0 + $R5
+  
+  StrCpy $R2 ${PRODUCT_VERSION} 1
+  StrCpy $R3 ${PRODUCT_VERSION} 1 2
+  StrCpy $R4 ${PRODUCT_VERSION} 4 4
+  StrCpy $R5 ${PRODUCT_VERSION} 5 9
+;  StrCpy $R1 (($R2*10+$R3)*10+$R4)*10000+$R5
+  IntOp $R1 $R2 * 10
+  IntOp $R1 $R1 + $R3
+  IntOp $R1 $R1 * 10
+  IntOp $R1 $R1 + $R4
+  IntOp $R1 $R1 * 10000
+  IntOp $R1 $R1 + $R5
+  
+  ${If} $R0 <= $R1
+    ${If} $R0 != 0
+      ; installed old or equal version. Delete old and Setup
+      ReadRegStr $oldinstdir HKLM SOFTWARE\${PRODUCT_NAME} "SetupDir"
+      MessageBox MB_OKCANCEL $(previous) IDOK pdelete IDCANCEL pquit
+        pdelete:
+          ExecWait "$oldinstdir\Uninstall.exe"
+          goto cont
+        pquit:
+          Quit
+        cont:
+    ${EndIf}
+    ; not istalled yet. Setup
+  ${EndIf}
+  ${If} $R0 > $R1
+    ; installed newer version
+    MessageBox MB_OK|MB_ICONEXCLAMATION $(modern)
+    Quit
+  ${EndIf}
 FunctionEnd
 
 

@@ -41,3 +41,7 @@ LangString x3f_description ${LANG_ENGLISH} "Sigma camera raw file"
 LangString 3fr_description ${LANG_ENGLISH} "Hasselblad camera raw file"
 
 LangString queue ${LANG_ENGLISH} "Add to queue of ${PRODUCT_NAME}"
+
+LangString modern ${LANG_ENGLISH} "Modern version already installed. Installation aborted."
+
+LangString previous ${LANG_ENGLISH} "Previous version installed. Would you like to upgrade?"

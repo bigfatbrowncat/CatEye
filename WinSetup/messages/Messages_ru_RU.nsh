@@ -41,3 +41,7 @@ LangString x3f_description ${LANG_RUSSIAN} "Файл камеры Sigma"
 LangString 3fr_description ${LANG_RUSSIAN} "Файл камеры Hasselblad"
 
 LangString queue ${LANG_RUSSIAN} "Добавить в очередь ${PRODUCT_NAME}"
+
+LangString modern ${LANG_RUSSIAN} "Установлена более новая версия программы. Установка отменена."
+
+LangString previous ${LANG_RUSSIAN} "Установлена более ранняя версия программы. Вы хотите обновить программу?"
